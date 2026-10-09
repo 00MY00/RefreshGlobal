@@ -26,7 +26,9 @@ class SelfTestCommand extends Command
         try {
             $this->laravel['auth']->guard('web')->setUser($admin);
             $kernel = $this->laravel->make(\Illuminate\Contracts\Http\Kernel::class);
-            $request = \Illuminate\Http\Request::create(route('refreshglobal.tickets', [], false), 'GET');
+            // Absolute address (APP_URL host and scheme): FreeScout answers 403 to any other host
+            // (app/Http/Middleware/TrustHosts.php, "Check if current host matches APP_URL").
+            $request = \Illuminate\Http\Request::create(route('refreshglobal.tickets'), 'GET');
             $response = $kernel->handle($request);
             $content = (string) $response->getContent();
             $kernel->terminate($request, $response);

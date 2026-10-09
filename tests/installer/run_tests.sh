@@ -247,6 +247,12 @@ s_existing_refresh() {
     [ "$(docker exec rgi1-app stat -c %U /var/www/html/Modules/RefreshGlobal/module.json)" = "www-data" ] && record "$s" "propriétaire www-data" PASS || record "$s" "propriétaire" FAIL
     [ -n "$(docker exec rgi1-app sh -c 'ls /var/backups/refreshglobal/latest/database.sql.gz' 2>/dev/null)" ] && record "$s" "sauvegarde de la base créée" PASS || record "$s" "sauvegarde base" FAIL
     docker exec rgi1-app sh -c '! grep -q "db-test-password" /var/log/refreshglobal-install.log' && record "$s" "aucun mot de passe dans le journal" PASS || record "$s" "mot de passe absent du journal" FAIL
+    # production case: APP_URL host different from the host the command runs on (FreeScout's TrustHosts)
+    RC=0
+    docker exec rgi1-app bash -c "cd /var/www/html && sed -i 's#^APP_URL=.*#APP_URL=https://helpdesk.example.test#' .env \
+        && sudo -u www-data php artisan freescout:clear-cache >/dev/null && sudo -u www-data php artisan refreshglobal:selftest" >"$WORK/out.txt" 2>&1 || RC=$?
+    docker exec rgi1-app bash -c "cd /var/www/html && sed -i 's#^APP_URL=.*#APP_URL=http://localhost#' .env && sudo -u www-data php artisan freescout:clear-cache >/dev/null"
+    [ "$RC" = 0 ] && record "$s" "refreshglobal:selftest avec un APP_URL de production (autre hôte)" PASS || record "$s" "selftest APP_URL de production" FAIL "$(tail -c 200 "$WORK/out.txt")"
 }
 
 s_existing_norefresh() {

@@ -2,6 +2,11 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.2.1] — 2026-10-09
+
+### Corrigé
+- `refreshglobal:selftest` répondait HTTP 403 sur un serveur dont l'`APP_URL` n'est pas `localhost` (contrôle `TrustHosts` de FreeScout) : la mise à jour par `install.sh --update` (et la mise à jour automatique) était alors annulée à tort par le retour arrière automatique. L'auto-test utilise maintenant l'adresse complète d'`APP_URL`.
+
 ## [1.2.0] — 2026-10-09
 
 ### Ajouté

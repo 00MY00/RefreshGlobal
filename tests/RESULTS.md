@@ -1,4 +1,4 @@
-# Résultats des tests — RefreshGlobal 1.2.0
+# Résultats des tests — RefreshGlobal 1.2.1
 
 Date : 2026-10-09. Environnements jetables Docker : FreeScout 1.8.245 (dépôt officiel), PHP 8.2.34, Apache,
 MariaDB 10.11 ; Refresh 1.4.3 (dépôt officiel). Données de test uniquement (adresses `.test`).
@@ -168,3 +168,7 @@ réglage) : **16 vérifications réussies, 0 en échec**.
 | Liste Refresh sur téléphone, option désactivée | onglet « Toutes les boîtes » ajouté après « Tickets » (6 onglets) |
 | Option activée, téléphone | onglet « Tickets » de Refresh masqué, « Toutes les boîtes » en 1ʳᵉ position (5 onglets) |
 | Option activée, ordinateur | barre de gauche : Tableau de bord, Toutes les boîtes, Contacts (« Tickets » masqué) |
+
+## 9. Correctif 1.2.1 : auto-test avec un APP_URL de production
+
+Avec `APP_URL=https://helpdesk.example.test` : la 1.2.0 obtenait HTTP 403 (`TrustHosts` de FreeScout), la 1.2.1 HTTP 200. Scénarios rejoués : ajout avec Refresh (dont la nouvelle vérification « selftest avec un APP_URL de production ») et mise à jour automatique : **26 vérifications réussies, 0 en échec**.
