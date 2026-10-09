@@ -136,4 +136,10 @@ return [
         'effect' => 'Einige Texte von Refresh auf dem Telefon behalten ihre ursprüngliche Formulierung. Der Rest funktioniert.',
         'action' => 'RefreshGlobal auf eine Version für diese FreeScout-/Refresh-Version aktualisieren, dann php artisan refreshglobal:check ausführen.',
     ],
+    'view_lang' => [
+        'check'  => 'Sprachliste von FreeScout vorhanden (:item)',
+        'label'  => 'Die Sprachliste von FreeScout wurde nicht gefunden (:item).',
+        'effect' => 'Die Sprachauswahl der Seite „Alle Postfächer“ ist ausgeblendet; die Sprache lässt sich weiterhin im Profil ändern. Der Rest funktioniert.',
+        'action' => 'RefreshGlobal auf eine Version für diese FreeScout-Version aktualisieren, dann php artisan refreshglobal:check ausführen.',
+    ],
 ];

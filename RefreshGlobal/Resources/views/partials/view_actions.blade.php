@@ -43,6 +43,7 @@
             </details>
         @endif
     @endif
+    @include('refreshglobal::partials.language')
     @if ($is_admin)
         <a class="rg-diag-link" href="{{ route('refreshglobal.diagnostic') }}">{{ __('refreshglobal::messages.diagnostic') }}</a>
     @endif

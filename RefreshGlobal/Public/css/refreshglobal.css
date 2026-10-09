@@ -26,6 +26,10 @@
 .rf-list-layout:not(.rf-layout-table) .table-conversations td.rg-col-mailbox,
 .rg-dash .table-conversations th.rg-col-mailbox,
 .rg-dash .table-conversations td.rg-col-mailbox { width: 0 !important; max-width: 0; padding: 0 !important; border: 0 !important; font-size: 0; overflow: hidden; }
+/* language switch (bottom of the views panel / phone drawer) */
+.rg-language { margin: 10px 0 6px; }
+.rg-language-label { display: block; font-size: 12px; font-weight: normal; color: var(--fd-text-2, #64748b); margin-bottom: 4px; }
+.rg-language-select { max-width: 100%; }
 /* chosen Refresh view (dashboard tile) in the filters panel */
 .rg-rview-chip { display: inline-block; padding: 2px 8px; border-radius: 10px; background: var(--fd-bg-soft, #f1f5f9); border: 1px solid var(--fd-border, #e2e8f0); }
 .rg-rview-chip a { margin-left: 6px; text-decoration: none; font-weight: bold; }

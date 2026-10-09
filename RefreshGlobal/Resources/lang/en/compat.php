@@ -140,4 +140,10 @@ return [
         'effect' => 'Some phone strings of Refresh keep their original wording. The rest works.',
         'action' => 'Update RefreshGlobal to a version made for this FreeScout / Refresh version, then run php artisan refreshglobal:check.',
     ],
+    'view_lang' => [
+        'check'  => 'FreeScout’s list of languages present (:item)',
+        'label'  => 'FreeScout’s list of languages cannot be found (:item).',
+        'effect' => 'The language switch of the “All mailboxes” page is hidden; the language can still be changed in the profile. The rest works.',
+        'action' => 'Update RefreshGlobal to a version made for this FreeScout version, then run php artisan refreshglobal:check.',
+    ],
 ];

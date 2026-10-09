@@ -136,4 +136,10 @@ return [
         'effect' => 'Sommige teksten van Refresh op de telefoon houden hun oorspronkelijke formulering. De rest werkt.',
         'action' => 'RefreshGlobal bijwerken naar een versie voor deze FreeScout-/Refresh-versie en daarna php artisan refreshglobal:check uitvoeren.',
     ],
+    'view_lang' => [
+        'check'  => 'Talenlijst van FreeScout aanwezig (:item)',
+        'label'  => 'De talenlijst van FreeScout is niet gevonden (:item).',
+        'effect' => 'De taalkeuze van de pagina „Alle mailboxen” is verborgen; de taal kan nog in het profiel worden gewijzigd. De rest werkt.',
+        'action' => 'RefreshGlobal bijwerken naar een versie voor deze FreeScout-versie en daarna php artisan refreshglobal:check uitvoeren.',
+    ],
 ];

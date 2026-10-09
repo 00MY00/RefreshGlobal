@@ -37,6 +37,9 @@ otherwise it uses FreeScout's standard look.
 - **Compatibility diagnostic**: `php artisan refreshglobal:check` and an admin page, with explicit `RG-xxx` messages
   after a FreeScout or Refresh update.
 - Languages: English, French, German, Spanish, Italian, Dutch, Brazilian Portuguese.
+- **Language**: the module follows FreeScout's language, like Refresh (which has no language choice of its own): the
+  user's profile language, otherwise the default one. A **language switch** at the bottom of the views panel (and
+  of the phone drawer) changes that profile language: FreeScout, Refresh and the module switch together.
 
 ## 3. What it does not do
 

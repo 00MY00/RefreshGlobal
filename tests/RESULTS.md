@@ -1,4 +1,4 @@
-# Résultats des tests — RefreshGlobal 1.4.1
+# Résultats des tests — RefreshGlobal 1.4.2
 
 Date : 2026-10-09. Environnements jetables Docker : FreeScout 1.8.245 (dépôt officiel), PHP 8.2.34, Apache,
 MariaDB 10.11 ; Refresh 1.4.3 (dépôt officiel). Données de test uniquement (adresses `.test`).
@@ -198,3 +198,11 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
   FreeScout trop ancien, publication injoignable, réservé aux administrateurs ; rien n'est installé).
 - Navigateur, avec une publication locale en 1.5.0 : clic dans Gérer › Paramètres › RefreshGlobal → message « La
   version 1.5.0 est disponible (installée : 1.4.0)… » ; la page de diagnostic affiche « mise à jour disponible ».
+
+## 13. Sélecteur de langue (1.4.2)
+
+- PHPUnit : **67 tests, 921 assertions, 0 échec** (nouveau `LanguageTest` : sélecteur affiché, langue du profil et
+  session modifiées, langue inconnue refusée, retour vers un autre site ignoré). `refreshglobal:check` : RG-VIEW-06 OK.
+- Navigateur : interface en anglais, choix « Français » dans le sélecteur → la page, la barre de Refresh et le
+  tableau de bord passent en français ; `users.locale = fr` en base. Sélecteur visible en bas du panneau des vues
+  (ordinateur) et du tiroir (téléphone).

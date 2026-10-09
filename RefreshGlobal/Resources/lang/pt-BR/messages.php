@@ -168,4 +168,10 @@ return [
     'update_check_up_to_date'      => 'O RefreshGlobal está atualizado (:version).',
     'update_check_incompatible'    => 'A versão :version está disponível, mas requer o FreeScout :required ou mais recente: atualize o FreeScout primeiro.',
     'update_check_failed'          => 'Não foi possível procurar atualizações: :error',
+    'language'                     => 'Idioma',
+    'language_help'                => 'Seu idioma do FreeScout (o mesmo que o Refresh usa): mudá-lo aqui muda em todo lugar, como no seu perfil.',
+    'language_changed'             => 'Idioma alterado: :language.',
+    'language_settings_info'       => 'Idioma: o RefreshGlobal segue o idioma do FreeScout, como o Refresh (perfil de cada usuário, senão o idioma padrão). Idioma atual: :language.',
+    'language_profile_link'        => 'Mudar meu idioma',
+    'language_default_link'        => 'Idioma padrão (Geral)',
 ];

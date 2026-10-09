@@ -12,6 +12,11 @@
     $rg_need_refresh = $rg_refresh ? '' : __('refreshglobal::messages.refresh_required');
 @endphp
 <p class="margin-top">{{ __('refreshglobal::messages.settings_intro') }}</p>
+<p class="form-help">
+    {{ __('refreshglobal::messages.language_settings_info', ['language' => \Modules\RefreshGlobal\Http\Controllers\LanguageController::name(app()->getLocale())]) }}
+    <a href="{{ route('users.profile', ['id' => auth()->id()]) }}">{{ __('refreshglobal::messages.language_profile_link') }}</a>
+    · <a href="{{ route('settings', ['section' => 'general']) }}">{{ __('refreshglobal::messages.language_default_link') }}</a>
+</p>
 <p>
     <a href="{{ route('refreshglobal.tickets') }}">{{ __('refreshglobal::messages.open_page') }}</a>
     · <a href="{{ route('refreshglobal.diagnostic') }}">{{ __('refreshglobal::messages.diagnostic') }}</a>

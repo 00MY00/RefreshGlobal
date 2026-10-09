@@ -136,4 +136,10 @@ return [
         'effect' => 'Certains textes de Refresh sur téléphone gardent leur tournure d’origine. Le reste fonctionne.',
         'action' => 'Mettre à jour RefreshGlobal vers une version prévue pour cette version de FreeScout / Refresh, puis exécuter php artisan refreshglobal:check.',
     ],
+    'view_lang' => [
+        'check'  => 'Liste des langues de FreeScout présente (:item)',
+        'label'  => 'La liste des langues de FreeScout est introuvable (:item).',
+        'effect' => 'Le sélecteur de langue de la page « Toutes les boîtes » est masqué ; la langue se change toujours dans le profil. Le reste fonctionne.',
+        'action' => 'Mettre à jour RefreshGlobal vers une version prévue pour cette version de FreeScout, puis exécuter php artisan refreshglobal:check.',
+    ],
 ];

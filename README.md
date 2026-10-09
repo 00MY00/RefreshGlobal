@@ -53,6 +53,10 @@ Dans Gérer › Modules :
 - **Diagnostic de compatibilité** : `php artisan refreshglobal:check` et page d'administration, avec des messages
   explicites (codes `RG-xxx`) après une mise à jour de FreeScout ou de Refresh.
 - Traductions : français, anglais, allemand, espagnol, italien, néerlandais, portugais (Brésil).
+- **Langue** : le module suit la langue de FreeScout, comme Refresh (Refresh n'a pas de choix de langue à lui) :
+  celle du profil de l'utilisateur, sinon la langue par défaut (Gérer › Paramètres › Général). Un **sélecteur de
+  langue** en bas du panneau des vues (et du tiroir sur téléphone) change cette langue du profil : FreeScout,
+  Refresh et le module passent ensemble dans la nouvelle langue.
 
 ## 3. Ce que le module ne fait pas
 
@@ -287,6 +291,7 @@ curl -fsSL https://raw.githubusercontent.com/00MY00/RefreshGlobal/main/install.s
 | RG-JS-01 | dégradé | scripts de Refresh introuvables | idem |
 | RG-VIEW-01…04 | bloquant / dégradé | une vue de FreeScout a disparu | mettre à jour RefreshGlobal |
 | RG-VIEW-05 | dégradé | la page liste de Refresh a changé | mettre à jour RefreshGlobal |
+| RG-VIEW-06 | dégradé | liste des langues de FreeScout introuvable | sélecteur de langue masqué (la langue se change dans le profil) ; mettre à jour RefreshGlobal |
 | RG-HOOK-01…17 | dégradé | un hook n'est plus déclenché (menu, colonne « Boîte », icône, entrée de la barre latérale, onglet téléphone, réglages) | mettre à jour RefreshGlobal ; la liste fonctionne |
 | RG-HOOK-18…20, RG-CORE-09…11 | dégradé | tableau de bord de FreeScout ou de Refresh changé | le tableau de bord de Refresh s'affiche tel quel (première boîte) ; mettre à jour RefreshGlobal |
 | RG-HOOK-21, RG-ROUTE-04, RG-CORE-12 | dégradé | suppression d'un ticket de FreeScout changée | la suppression garde le comportement de FreeScout ; mettre à jour RefreshGlobal |

@@ -16,6 +16,7 @@ Route::group([
     Route::get('/', $users + ['uses' => 'GlobalTicketsController@home'])->name('refreshglobal.home');
     Route::get('/tickets', $users + ['uses' => 'GlobalTicketsController@index'])->name('refreshglobal.tickets');
     Route::get('/export', $users + ['uses' => 'ExportController@export'])->name('refreshglobal.export');
+    Route::post('/language', $users + ['uses' => 'LanguageController@update'])->name('refreshglobal.language');
 
     Route::post('/views', $users + ['uses' => 'SavedViewsController@store'])->name('refreshglobal.views.store');
     Route::post('/views/{id}/rename', $users + ['uses' => 'SavedViewsController@rename'])->name('refreshglobal.views.rename');

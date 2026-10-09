@@ -2,6 +2,16 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.4.2] — 2026-10-09
+
+### Ajouté
+- **Sélecteur de langue** en bas du panneau des vues de « Toutes les boîtes » (et du tiroir sur téléphone). Il n'y a
+  qu'un seul choix de langue, celui du profil FreeScout de l'utilisateur, que FreeScout, Refresh et le module suivent
+  tous : le sélecteur l'enregistre comme la page Profil, donc toute l'interface change de langue ensemble. Langues
+  proposées : celles de FreeScout ; le module est traduit en 7 langues (anglais pour les autres).
+- Gérer › Paramètres › RefreshGlobal : langue actuelle, liens « Changer ma langue » et « Langue par défaut ».
+- Contrôle RG-VIEW-06 (liste des langues de FreeScout).
+
 ## [1.4.1] — 2026-10-09
 
 ### Ajouté

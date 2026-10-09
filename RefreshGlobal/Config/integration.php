@@ -39,6 +39,8 @@ return [
         'RG-VIEW-03' => ['view' => 'partials/flash_messages', 'severity' => 'degraded', 'source' => 'resources/views/partials/flash_messages.blade.php'],
         'RG-VIEW-04' => ['view' => 'partials/empty', 'severity' => 'degraded', 'source' => 'resources/views/partials/empty.blade.php'],
         // Refresh's list page: the HTML structure of the module's page is copied from it (classes rf-*).
+        // Language switch: FreeScout's list of languages (the profile page uses it, users/profile.blade.php:156)
+        'RG-VIEW-06' => ['view' => 'partials/locale_options', 'family' => 'view_lang', 'severity' => 'degraded', 'source' => 'resources/views/partials/locale_options.blade.php'],
         'RG-VIEW-05' => ['view' => 'refresh::tickets', 'severity' => 'degraded', 'refresh' => true, 'source' => 'Modules/Refresh/Resources/views/tickets.blade.php'],
     ],
 

@@ -70,6 +70,11 @@
         }
 
         // Confirmation before deleting a saved view
+        // Language switch: saved as soon as a language is chosen
+        $(document).on('change', '.rg-language-select', function () {
+            $(this).closest('form').trigger('submit');
+        });
+
         $(document).on('submit', 'form.rg-confirm', function (e) {
             var msg = $(this).attr('data-confirm');
             if (msg && !window.confirm(msg)) {
