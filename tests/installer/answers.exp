@@ -1,0 +1,19 @@
+#!/usr/bin/expect -f
+# Answers the questions of FreeScout's official installer (tools/install.sh) by their text, for the --full test.
+# Usage: expect answers.exp <domain> <command...>
+set timeout 1800
+set domain [lindex $argv 0]
+set cmd [lrange $argv 1 end]
+log_user 1
+eval spawn $cmd
+expect {
+    -re {Would you like to start installation\? \(Y/n\) \[n\]:} { send "Y\r"; exp_continue }
+    -re {Enter help desk domain name}                          { send "$domain\r"; exp_continue }
+    -re {Do you want to continue\? \[Y/n\]}                    { send "Y\r"; exp_continue }
+    -re {Where would you like to install FreeScout\?}          { send "\r"; exp_continue }
+    -re {will be removed\. Continue\? \(Y/n\) \[n\]:}          { send "Y\r"; exp_continue }
+    -re {Would you like to enable HTTPS\?}                     { send "n\r"; exp_continue }
+    eof
+}
+catch wait result
+exit [lindex $result 3]
