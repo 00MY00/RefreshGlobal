@@ -55,10 +55,11 @@ Hooks utiles au module, tous dans `resources/views/layouts/app.blade.php` sauf m
 | `conversations_table.after_subject` / `preview_prepend` | action | `conversations_table.blade.php:191, 193` | après le sujet / avant l'aperçu |
 | **`conversations_table.td_before_conv_number`** | action | **`conversations_table.blade.php:206`** | **cellule → utilisé** |
 | `dashboard.before` / `dashboard.after` | filtre | `secure/dashboard.blade.php:8, 68` | tableau de bord |
+| **`mailbox.after_sidebar_buttons`** | action | **`mailboxes/sidebar_menu_view.blade.php:35`** ; Refresh : **`Modules/Refresh/Resources/views/core/mailboxes/sidebar_menu_view.blade.php:81`** (dans `.rf-views`) | **entrée « Toutes les boîtes » dans la barre latérale des boîtes → utilisé** ; sur téléphone, Refresh affiche ce panneau comme tiroir des vues alors que sa barre de gauche est masquée (`Public/css/mobile.css:19`) |
 
-Aucun hook ne permet d'ajouter un élément à la liste des boîtes de la barre latérale d'une boîte (la vue
+Aucun hook ne permet d'insérer un élément **dans** la liste des dossiers de la barre latérale d'une boîte (la vue
 `mailboxes/sidebar_menu_view` ne déclenche que `mailbox.view.before_name`, `mailbox.sidebar.buttons` et
-`mailbox.after_sidebar_buttons`).
+`mailbox.after_sidebar_buttons`) : le module utilise ce dernier pour placer son entrée sous la liste.
 
 ### 1.3 Boîtes accessibles à un utilisateur
 
@@ -222,6 +223,7 @@ du module.
 | vue `conversations/conversations_table` | `resources/views/conversations/conversations_table.blade.php` | **fragile** (balisage, variables) | liste | **bloquant** (RG-VIEW-02) |
 | hooks `conversations_table.*` | `conversations_table.blade.php:83, 118, 191, 206` | fragile | colonne / badge « Boîte » | liste sans colonne (RG-HOOK-02…05) |
 | hook `menu.append` | `layouts/app.blade.php:121` | stable | entrée de menu | adresse directe `/refresh-global/tickets` (RG-HOOK-01) |
+| hook `mailbox.after_sidebar_buttons` | `mailboxes/sidebar_menu_view.blade.php:35`, Refresh `core/mailboxes/sidebar_menu_view.blade.php:81` | stable / fragile (vue surchargée par Refresh) | entrée dans la barre latérale et le tiroir mobile | menu natif / barre de gauche (RG-HOOK-08, RG-HOOK-09) |
 | module Refresh actif | `modules` (`app/Module.php:44`) | — | style | style FreeScout standard (RG-REF-01) |
 | fichiers CSS/JS de Refresh | `RefreshServiceProvider.php:123-138` | fragile (noms de fichiers) | style identique | style FreeScout standard (RG-CSS-01, RG-JS-01) |
 | structure / classes `rf-*` de la liste | `Modules/Refresh/Resources/views/tickets.blade.php:32-172` | **fragile** (non documentées) | rendu identique | style standard si `refresh::tickets` disparaît (RG-VIEW-05) ; sinon rendu à vérifier visuellement |
@@ -256,7 +258,7 @@ du module.
 
 La liste ci-dessus est codée dans `Config/integration.php` (une seule source) et contrôlée par
 `Services/Compatibility/` : versions (RG-ENV-01, RG-REF-02), présence de Refresh (RG-REF-01), fichiers
-(RG-CSS-01, RG-JS-01), vues (RG-VIEW-01…05), hooks — en relisant le fichier qui les déclenche — (RG-HOOK-01…07),
+(RG-CSS-01, RG-JS-01), vues (RG-VIEW-01…05), hooks — en relisant le fichier qui les déclenche — (RG-HOOK-01…09),
 classes / méthodes / constantes (RG-CORE-01…06), routes (RG-ROUTE-01…03), tables / colonnes (RG-DB-01…05), règles
 d'accès (RG-ACL-01, RG-ACL-02). Après une mise à jour de FreeScout ou de Refresh : relancer la commande, puis
 corriger les lignes en échec (et les références de ce document).

@@ -51,6 +51,8 @@
             </div>
             <div class="rf-views-sec" data-sec="rg-views">
                 <button type="button" class="rf-views-sec-head">{{ __('refreshglobal::messages.my_views') }}<i class="rf-i rf-i-fd-chevron-down rf-i-sm"></i></button>
+                {{-- Refresh hides the section heads in its phone drawer: same title, shown on phones only --}}
+                <div class="rg-m-sectitle">{{ __('refreshglobal::messages.my_views') }}</div>
                 <div class="rf-views-list">
                     <a href="{{ route('refreshglobal.tickets', ['reset' => 1]) }}" class="rf-v @if (!$active_view && !$filters_count) active @endif" data-label="{{ mb_strtolower(__('refreshglobal::messages.title')) }}">
                         <i class="rf-i rf-i-fd-all-tickets"></i><span class="rf-v-label">{{ __('refreshglobal::messages.title') }}</span>@if ($total_all)<span class="rf-v-count">{{ $total_all }}</span>@endif
@@ -66,6 +68,8 @@
             </div>
             <div class="rf-views-sec" data-sec="rg-mailboxes">
                 <button type="button" class="rf-views-sec-head">{{ __('refreshglobal::messages.mailboxes') }}<i class="rf-i rf-i-fd-chevron-down rf-i-sm"></i></button>
+                {{-- Refresh hides the section heads in its phone drawer: same title, shown on phones only --}}
+                <div class="rg-m-sectitle">{{ __('refreshglobal::messages.mailboxes') }}</div>
                 <div class="rf-views-list">
                     @foreach ($mailboxes as $mb)
                         <a href="{{ $rg_url(['mb' => [$mb->id]], ['page']) }}" class="rf-v @if ($rg_single_mb === (int) $mb->id) active @endif" data-label="{{ mb_strtolower($mb->name) }}" title="{{ $mb->name }}">
@@ -76,6 +80,8 @@
             </div>
             <div class="rf-views-sec" data-sec="rg-status">
                 <button type="button" class="rf-views-sec-head">{{ __('refreshglobal::messages.statuses') }}<i class="rf-i rf-i-fd-chevron-down rf-i-sm"></i></button>
+                {{-- Refresh hides the section heads in its phone drawer: same title, shown on phones only --}}
+                <div class="rg-m-sectitle">{{ __('refreshglobal::messages.statuses') }}</div>
                 <div class="rf-views-list">
                     @foreach ($rg_statuses as $code => $label)
                         <a href="{{ $rg_url(['status' => [$code]], ['page']) }}" class="rf-v @if ($rg_single_status === (int) $code) active @endif" data-label="{{ mb_strtolower($label) }}">

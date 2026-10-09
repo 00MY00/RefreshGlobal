@@ -113,6 +113,18 @@ class AccessTest extends TestCase
         $this->seeIn($r, $s['prefix'].'-SALES-OPEN');
     }
 
+    public function testMailboxSidebarLinksToThePage()
+    {
+        // Refresh's views panel (also its phone drawer) or FreeScout's mailbox sidebar
+        $s = $this->s;
+        $url = \Route::has('refresh.tickets')
+            ? route('refresh.tickets', ['mailbox_id' => $s['support']->id, 'view' => 'all'])
+            : route('mailboxes.view', ['id' => $s['support']->id]);
+        $r = $this->actingAs($s['bob'])->get($url);
+        $r->assertStatus(200);
+        $this->seeIn($r, 'href="'.route('refreshglobal.tickets').'"');
+    }
+
     public function testGuestIsRedirectedToLogin()
     {
         $this->get(route('refreshglobal.tickets'))->assertStatus(302);

@@ -63,8 +63,18 @@
 .rg-mailbox-links ul { padding-left: 18px; }
 .rg-diag-table code { white-space: nowrap; }
 
+/* Elements only for phones (Refresh hides its section heads and its list toolbar there) */
+.rg-m-sectitle, .rg-m-only { display: none; }
+
 /* Phone (Refresh's breakpoint: 767px) */
 @media (max-width: 767px) {
+    .rg-views .rg-m-sectitle { display: block; padding: 6px 19.5px 4px 25.5px; font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--fd-muted, #64748b); }
+    .rg-view-actions { padding: 12px 19.5px 24px 25.5px; font-size: 15px; }
+    .rg-view-actions .rg-m-only { display: block; }
+    .rg-m-export { padding: 10px 0; font-weight: 500; }
+    .rg-details > summary { padding: 10px 0; }
+    .rg-form .form-control { font-size: 16px; height: 40px; }
+    .rg-form .btn { padding: 8px 14px; font-size: 15px; }
     /* FreeScout's standard look on phones (with Refresh, its phone cards show the mailbox as a pill) */
     [data-rg-skin="native"] .table-conversations colgroup col.rg-col-mailbox { width: 0; }
     [data-rg-skin="native"] .table-conversations th.rg-col-mailbox { display: none; }

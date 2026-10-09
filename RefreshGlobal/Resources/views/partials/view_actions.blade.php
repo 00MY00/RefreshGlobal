@@ -1,5 +1,7 @@
 {{-- Saved views: save the current filters, rename / default / delete the open view. Plain forms + CSRF token. --}}
 <div class="rg-view-actions">
+    {{-- Phones: Refresh hides the list toolbar (Export button), the export stays reachable from the drawer --}}
+    <a class="rg-m-only rg-m-export" href="{{ $rg_export }}">{{ __('refreshglobal::messages.export') }} (CSV)</a>
     @if (!$saved_views_ok)
         <p class="rg-muted">[RG-DB-05] {{ __('refreshglobal::messages.views_unavailable') }}</p>
     @else

@@ -14,13 +14,19 @@ la page a exactement son apparence ; sinon elle utilise le style standard de Fre
 
 ![Liste « Toutes les boîtes » avec Refresh](docs/screenshots/liste-cartes.png)
 
-| Filtres par boîte et statut | Vue tableau | Téléphone |
+| Filtres par boîte et statut | Vue tableau |
+|---|---|
+| ![Filtres](docs/screenshots/liste-filtree.png) | ![Tableau](docs/screenshots/liste-tableau.png) |
+
+Sur téléphone (avec Refresh) : l'entrée « Toutes les boîtes » en tête du tiroir des vues (☰), la liste, et le tiroir de la page (boîtes, statuts, export, vues enregistrées).
+
+| Tiroir de Refresh | Liste | Tiroir de la page |
 |---|---|---|
-| ![Filtres](docs/screenshots/liste-filtree.png) | ![Tableau](docs/screenshots/liste-tableau.png) | ![Mobile](docs/screenshots/mobile.png) |
+| ![Tiroir Refresh](docs/screenshots/mobile-tiroir-refresh.png) | ![Mobile](docs/screenshots/mobile.png) | ![Tiroir](docs/screenshots/mobile-tiroir.png) |
 
 ## 2. Fonctionnalités
 
-- **Page « Toutes les boîtes »** (`/refresh-global/tickets`), dans le menu de FreeScout et dans la barre latérale de Refresh.
+- **Page « Toutes les boîtes »** (`/refresh-global/tickets`), dans le menu de FreeScout, dans la barre de gauche de Refresh et, sur téléphone, en tête du tiroir des vues (☰).
 - **Filtre par boîte** (plusieurs boîtes à la fois), **statut**, **assignation** (moi, non assigné, un agent).
 - **Recherche** : sujet, nom du client, e-mail, numéro de ticket (`#123`).
 - **Colonne « Boîte »** dans la liste (badge en vue cartes, pastille sur téléphone).
@@ -186,7 +192,7 @@ curl -fsSL https://raw.githubusercontent.com/00MY00/RefreshGlobal/main/install.s
 | RG-JS-01 | dégradé | scripts de Refresh introuvables | idem |
 | RG-VIEW-01…04 | bloquant / dégradé | une vue de FreeScout a disparu | mettre à jour RefreshGlobal |
 | RG-VIEW-05 | dégradé | la page liste de Refresh a changé | mettre à jour RefreshGlobal |
-| RG-HOOK-01…07 | dégradé | un hook n'est plus déclenché (menu, colonne « Boîte », icône) | mettre à jour RefreshGlobal ; la liste fonctionne |
+| RG-HOOK-01…09 | dégradé | un hook n'est plus déclenché (menu, colonne « Boîte », icône, entrée de la barre latérale) | mettre à jour RefreshGlobal ; la liste fonctionne |
 | RG-CORE-01…06 | bloquant | classe / méthode / constante de FreeScout absente | mettre à jour RefreshGlobal |
 | RG-ROUTE-01…03 | bloquant | route introuvable | `php artisan freescout:clear-cache`, sinon mettre à jour |
 | RG-DB-01…04 | bloquant | table ou colonne de FreeScout absente | `php artisan migrate` |

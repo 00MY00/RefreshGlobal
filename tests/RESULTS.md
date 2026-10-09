@@ -1,4 +1,4 @@
-# Résultats des tests — RefreshGlobal 1.0.0
+# Résultats des tests — RefreshGlobal 1.0.1
 
 Date : 2026-10-09. Environnements jetables Docker : FreeScout 1.8.245 (dépôt officiel), PHP 8.2.34, Apache,
 MariaDB 10.11 ; Refresh 1.4.3 (dépôt officiel). Données de test uniquement (adresses `.test`).
@@ -13,11 +13,11 @@ MariaDB 10.11 ; Refresh 1.4.3 (dépôt officiel). Données de test uniquement (a
 
 ## 2. Tests PHPUnit du module (`RefreshGlobal/Tests`, PHPUnit 11.5.57)
 
-**36 tests, 467 assertions, 0 échec** (FreeScout 1.8.245 + Refresh 1.4.3 actif).
+**37 tests, 469 assertions, 0 échec** (1.0.0 : 36 tests) (FreeScout 1.8.245 + Refresh 1.4.3 actif).
 
 | Fichier | Tests | Contenu |
 |---|---|---|
-| `AccessTest` | 11 | liste limitée aux boîtes autorisées ; `mb[]` forcé vers une boîte interdite ignoré ; compteurs ; boîte archivée invisible à un non-admin ; permission « assignées uniquement » (y compris en forçant `assignee=none`) ; brouillons, supprimés, spam ; lien vers la page native du ticket ; recherche nom + numéro ; invité redirigé ; diagnostic réservé aux admins (403) |
+| `AccessTest` | 12 | liste limitée aux boîtes autorisées ; `mb[]` forcé vers une boîte interdite ignoré ; compteurs ; boîte archivée invisible à un non-admin ; permission « assignées uniquement » (y compris en forçant `assignee=none`) ; brouillons, supprimés, spam ; lien vers la page native du ticket ; recherche nom + numéro ; invité redirigé ; diagnostic réservé aux admins (403) ; lien vers la page dans la barre latérale des boîtes / le tiroir mobile de Refresh |
 | `ExportTest` | 5 | BOM UTF-8 ; aucune ligne d'une boîte interdite, même demandée ; filtres ; plafond (2 lignes) ; formule `=HYPERLINK` neutralisée ; utilisateur « assignées uniquement » |
 | `CompatibilityTest` | 13 | Refresh absent → dégradé + style standard + message admin seulement ; CSS absent → RG-CSS-01 avec message au format exigé (EN et FR) ; vue Refresh absente → dégradé ; vue du cœur absente → liste bloquée ; méthode absente → bloquant (liste, export) + liens de secours ; route absente → bloquant ; colonne absente → bloquant ; hook absent → dégradé ; version hors plage → avertissement ; clé de cache liée aux versions ; codes de sortie de `refreshglobal:check` ; échecs écrits dans le journal Laravel |
 | `SavedViewsTest` | 5 | créer, charger, renommer, défaut (ouverte sur l'adresse nue), `?reset=1`, supprimer ; boîtes interdites non enregistrées ; boîte perdue ignorée avec mention ; vues personnelles (404 pour un autre utilisateur) ; validation |
@@ -30,10 +30,10 @@ MariaDB 10.11 ; Refresh 1.4.3 (dépôt officiel). Données de test uniquement (a
 | Liste avec Refresh, vue cartes | identique à la liste de Refresh ; badge de boîte à côté des badges SLA ; icône dans la barre de gauche active |
 | Vue tableau (cookie `rf_layout=table` de Refresh) | colonne « Boîte » ; sujet étroit quand le panneau de filtres est ouvert (écart documenté) |
 | Filtres boîtes + statuts | 16 tickets ; compteurs par boîte et par statut cohérents |
-| Téléphone (390 px) | cartes mobiles de Refresh avec pastille de la boîte |
+| Téléphone (390 px) | cartes mobiles de Refresh avec pastille de la boîte ; 1.0.1 : entrée « Toutes les boîtes » en tête du tiroir des vues de Refresh ; tiroir de la page avec titres de section, « Exporter (CSV) » et vues enregistrées ; écran Filtres avec le choix multi-boîtes |
 | Refresh désactivé | style FreeScout standard, bandeau `[RG-REF-01]` détaillé (admin) |
 | Route simulée manquante | liste masquée, message `[RG-ROUTE-98]` au format exigé, liens vers les boîtes |
-| Diagnostic | tableau des 33 contrôles, état OK |
+| Diagnostic | tableau des 35 contrôles (33 en 1.0.0), état OK |
 | Export CSV | séparateur `;`, BOM, dates dans le fuseau de l'utilisateur, adresse du ticket |
 
 ## 4. Installeur `install.sh` — scénarios (`tests/installer/run_tests.sh`)

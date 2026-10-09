@@ -101,6 +101,37 @@ class RefreshGlobalServiceProvider extends ServiceProvider
 
             return $items;
         });
+
+        // Mailbox sidebar: FreeScout's (resources/views/mailboxes/sidebar_menu_view.blade.php:35) or Refresh's views
+        // panel (Modules/Refresh/Resources/views/core/mailboxes/sidebar_menu_view.blade.php:81). On phones Refresh hides
+        // its left bar and shows this panel as the views drawer: this entry is then the way to the page.
+        \Eventy::addAction('mailbox.after_sidebar_buttons', function () {
+            try {
+                if (!auth()->check() || self::isModulePage()) {
+                    return;
+                }
+                $url = e(route('refreshglobal.tickets'));
+                $label = e(__('refreshglobal::messages.menu'));
+                if (self::refreshViewsPanel()) {
+                    echo '<div class="rf-views-list rg-views-entry"><a href="'.$url.'" class="rf-v" data-label="'.e(mb_strtolower(__('refreshglobal::messages.menu'))).'">'
+                        .'<i class="rf-i rf-i-inbox"></i><span class="rf-v-label">'.$label.'</span></a></div>';
+                } else {
+                    echo '<ul class="sidebar-menu rg-sidebar-entry"><li><a href="'.$url.'"><i class="glyphicon glyphicon-inbox"></i> <span class="folder-name">'.$label.'</span></a></li></ul>';
+                }
+            } catch (\Exception $e) {
+                // optional entry
+            }
+        });
+    }
+
+    /** True when the mailbox sidebar is Refresh's views panel (Refresh active and its view override present). */
+    protected static function refreshViewsPanel()
+    {
+        try {
+            return \App\Module::isActive('refresh') && view()->exists('refresh::tickets');
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
     protected function registerMailboxColumn()
