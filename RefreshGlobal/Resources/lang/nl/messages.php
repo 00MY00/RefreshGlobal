@@ -133,4 +133,11 @@ return [
     'auto_update_on'               => 'Automatische update aangezet.',
     'auto_update_off'              => 'Automatische update uitgezet.',
     'update_rolled_back_banner'    => 'De automatische update naar RefreshGlobal :to is geannuleerd omdat de nieuwe versie niet werkte: versie :from is hersteld.',
+
+    // Navigation
+    'navigation'                   => 'Navigatie',
+    'replace_tickets'              => 'De invoer „Tickets” van Refresh vervangen door „Alle mailboxen”',
+    'replace_tickets_help'         => 'In de linkerbalk en de tabbalk op de telefoon van Refresh wordt „Tickets” verborgen en neemt „Alle mailboxen” de plaats in. De weergaven van elke mailbox blijven bereikbaar vanuit een mailbox.',
+    'replace_tickets_on'           => 'De invoer „Tickets” van Refresh wordt nu vervangen door „Alle mailboxen”.',
+    'replace_tickets_off'          => 'De invoer „Tickets” van Refresh wordt weer getoond.',
 ];

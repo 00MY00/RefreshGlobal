@@ -14,9 +14,11 @@ class HookCheck extends Check
     {
         $results = [];
         foreach ((array) $this->checker->integration('hooks') as $code => $def) {
+            // "marker": an element of Refresh's own scripts the module relies on (texts of compat.php "marker")
+            $family = $def['family'] ?? 'hook';
             if (!empty($def['refresh'])) {
                 if (!$this->checker->refreshUsable()) {
-                    $results[] = $this->result($code, 'hook', $def['severity'], null, $def['hook'], '', ['file' => $def['file']]);
+                    $results[] = $this->result($code, $family, $def['severity'], null, $def['hook'], '', ['file' => $def['file']]);
                     continue;
                 }
                 $path = $this->checker->refreshPath().'/'.$def['file'];
@@ -28,7 +30,7 @@ class HookCheck extends Check
             $content = is_file($path) ? @file_get_contents($path) : false;
             $ok = is_string($content) && strpos($content, $def['needle']) !== false;
             $details = $content === false ? $shown.': file not found' : ($ok ? '' : $shown.': call not found');
-            $results[] = $this->result($code, 'hook', $def['severity'], $ok, $def['hook'], $details, ['file' => $shown]);
+            $results[] = $this->result($code, $family, $def['severity'], $ok, $def['hook'], $details, ['file' => $shown]);
         }
 
         return $results;

@@ -139,4 +139,11 @@ return [
     'auto_update_on'               => 'Automatic update turned on.',
     'auto_update_off'              => 'Automatic update turned off.',
     'update_rolled_back_banner'    => 'The automatic update to RefreshGlobal :to was cancelled because the new version did not work: version :from was restored.',
+
+    // Navigation
+    'navigation'                   => 'Navigation',
+    'replace_tickets'              => 'Replace Refresh’s “Tickets” entry by “All mailboxes”',
+    'replace_tickets_help'         => 'In Refresh’s left bar and phone tab bar, the “Tickets” entry is hidden and “All mailboxes” takes its place. The views of each mailbox stay available from a mailbox.',
+    'replace_tickets_on'           => 'Refresh’s “Tickets” entry is now replaced by “All mailboxes”.',
+    'replace_tickets_off'          => 'Refresh’s “Tickets” entry is shown again.',
 ];

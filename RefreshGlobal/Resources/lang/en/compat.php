@@ -97,4 +97,10 @@ return [
         'effect' => 'The ticket list is not displayed.',
         'action' => 'Read storage/logs/laravel.log (code RG-ERR-01), then run php artisan refreshglobal:check.',
     ],
+    'marker' => [
+        'check'  => 'Refresh element present: :item (:file)',
+        'label'  => 'Refresh element no longer found: :item (:file).',
+        'effect' => 'The phone tab or the replacement of Refresh’s “Tickets” entry does not work. The page works.',
+        'action' => 'Update RefreshGlobal to a version made for this Refresh version, then run php artisan refreshglobal:check.',
+    ],
 ];

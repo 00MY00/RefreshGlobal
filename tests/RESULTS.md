@@ -1,4 +1,4 @@
-# Résultats des tests — RefreshGlobal 1.1.0
+# Résultats des tests — RefreshGlobal 1.2.0
 
 Date : 2026-10-09. Environnements jetables Docker : FreeScout 1.8.245 (dépôt officiel), PHP 8.2.34, Apache,
 MariaDB 10.11 ; Refresh 1.4.3 (dépôt officiel). Données de test uniquement (adresses `.test`).
@@ -13,7 +13,7 @@ MariaDB 10.11 ; Refresh 1.4.3 (dépôt officiel). Données de test uniquement (a
 
 ## 2. Tests PHPUnit du module (`RefreshGlobal/Tests`, PHPUnit 11.5.57)
 
-**42 tests, 506 assertions, 0 échec** (1.0.0 : 36 tests ; 1.0.1 : 37) (FreeScout 1.8.245 + Refresh 1.4.3 actif).
+**45 tests, 553 assertions, 0 échec** (1.0.0 : 36 tests ; 1.0.1 : 37 ; 1.1.0 : 42) (FreeScout 1.8.245 + Refresh 1.4.3 actif).
 
 | Fichier | Tests | Contenu |
 |---|---|---|
@@ -22,6 +22,7 @@ MariaDB 10.11 ; Refresh 1.4.3 (dépôt officiel). Données de test uniquement (a
 | `CompatibilityTest` | 13 | Refresh absent → dégradé + style standard + message admin seulement ; CSS absent → RG-CSS-01 avec message au format exigé (EN et FR) ; vue Refresh absente → dégradé ; vue du cœur absente → liste bloquée ; méthode absente → bloquant (liste, export) + liens de secours ; route absente → bloquant ; colonne absente → bloquant ; hook absent → dégradé ; version hors plage → avertissement ; clé de cache liée aux versions ; codes de sortie de `refreshglobal:check` ; échecs écrits dans le journal Laravel |
 | `SavedViewsTest` | 5 | créer, charger, renommer, défaut (ouverte sur l'adresse nue), `?reset=1`, supprimer ; boîtes interdites non enregistrées ; boîte perdue ignorée avec mention ; vues personnelles (404 pour un autre utilisateur) ; validation |
 | `UpdateSettingsTest` | 5 | mise à jour automatique : activer / désactiver (commande et page de diagnostic, réservé aux admins), tâche quotidienne dans le planificateur, image du module, pas de `latestVersionUrl` |
+| `NavigationTest` | 3 | `shell.js` dans le lot de scripts ; réglages `<meta name="refreshglobal">` sur les pages Refresh (page active, option) ; option « remplacer Tickets » réservée aux admins |
 | `TranslationsTest` | 2 | 7 langues : mêmes clés et mêmes paramètres que l'anglais |
 
 ## 3. Vérifications visuelles (Chromium headless, captures dans `docs/screenshots/`)
@@ -159,3 +160,11 @@ réglage) : **16 vérifications réussies, 0 en échec**.
 | Mise à jour automatique avec retour arrière | install.sh --update bloquant : retour automatique | PASS |  |
 
 **16 vérifications réussies, 0 en échec.**
+
+## 8. Onglet téléphone et option « remplacer Tickets » (1.2.0, captures 390 px et 1440 px)
+
+| Cas | Résultat |
+|---|---|
+| Liste Refresh sur téléphone, option désactivée | onglet « Toutes les boîtes » ajouté après « Tickets » (6 onglets) |
+| Option activée, téléphone | onglet « Tickets » de Refresh masqué, « Toutes les boîtes » en 1ʳᵉ position (5 onglets) |
+| Option activée, ordinateur | barre de gauche : Tableau de bord, Toutes les boîtes, Contacts (« Tickets » masqué) |

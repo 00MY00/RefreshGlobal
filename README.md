@@ -40,6 +40,9 @@ Dans Gérer › Modules :
 - Filtres dans l'adresse : un lien filtré se partage et le bouton « Retour » fonctionne.
 - **Respect des droits** : chacun ne voit, ne compte et n'exporte que les tickets de ses boîtes (et seulement ses
   tickets s'il a la permission « ne voir que les conversations assignées »).
+- Sur téléphone (avec Refresh) : **onglet « Toutes les boîtes »** dans la barre du bas.
+- **Option « Remplacer l'entrée Tickets de Refresh »** (page de diagnostic) : l'entrée « Tickets » de Refresh est
+  masquée dans la barre de gauche et la barre du bas, « Toutes les boîtes » prend sa place.
 - **Mise à jour automatique** (facultative) avec **retour arrière automatique** si la nouvelle version ne fonctionne pas.
 - **Diagnostic de compatibilité** : `php artisan refreshglobal:check` et page d'administration, avec des messages
   explicites (codes `RG-xxx`) après une mise à jour de FreeScout ou de Refresh.
@@ -142,6 +145,15 @@ Sans `--refresh-zip`, RefreshGlobal fonctionne avec le style FreeScout standard 
 - Page de diagnostic (administrateurs) : `https://votre-helpdesk/refresh-global/diagnostic`.
 
 ![Diagnostic](docs/screenshots/diagnostic.png)
+
+| Onglet ajouté | « Tickets » remplacé |
+|---|---|
+| ![Onglet](docs/screenshots/mobile-onglet.png) | ![Remplacé](docs/screenshots/mobile-onglet-remplace.png) |
+
+**Ne garder que « Toutes les boîtes »** (avec Refresh) : page de diagnostic › *Navigation* › « Activer ». L'entrée
+« Tickets » de Refresh est alors masquée (barre de gauche et barre du bas du téléphone) et remplacée par
+« Toutes les boîtes ». Les vues de chaque boîte restent accessibles depuis une boîte ; rien n'est modifié dans
+Refresh, « Désactiver » remet l'entrée.
 
 Réglages facultatifs dans le `.env` de FreeScout (puis `php artisan freescout:clear-cache`) :
 `REFRESHGLOBAL_PER_PAGE` (30), `REFRESHGLOBAL_EXPORT_MAX_ROWS` (5000), `REFRESHGLOBAL_CSV_DELIMITER` (`;`),

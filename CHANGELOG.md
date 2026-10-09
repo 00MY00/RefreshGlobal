@@ -2,6 +2,13 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.2.0] — 2026-10-09
+
+### Ajouté
+- Téléphone : onglet « Toutes les boîtes » dans la barre d'onglets du bas de Refresh (script `Public/js/shell.js`, chargé comme les scripts de Refresh).
+- Option (page de diagnostic, administrateurs) : remplacer l'entrée « Tickets » de Refresh par « Toutes les boîtes » dans la barre de gauche et la barre d'onglets ; l'entrée de Refresh est masquée, pas supprimée. Valeur par défaut : `REFRESHGLOBAL_REPLACE_REFRESH_TICKETS`.
+- Contrôles RG-HOOK-11…14 (filtres `javascripts` / `layout.head`, éléments `.rf-m-tab-tickets` et `fd-all-tickets` de Refresh).
+
 ## [1.1.0] — 2026-10-09
 
 ### Ajouté

@@ -48,6 +48,39 @@ class RefreshGlobalServiceProvider extends ServiceProvider
         $this->registerMenu();
         $this->registerMailboxColumn();
         $this->registerSchedule();
+        $this->registerShell();
+    }
+
+    /**
+     * Entry points inside Refresh's own interface (phone tab bar; optional replacement of its "Tickets" entry).
+     * Public/js/shell.js is added to FreeScout's script bundle ("javascripts" filter, resources/views/layouts/app.blade.php:284),
+     * like Refresh's scripts; its settings are written in <head> ("layout.head", app.blade.php:21) only when Refresh's
+     * interface is there, so without Refresh the script does nothing.
+     */
+    protected function registerShell()
+    {
+        \Eventy::addFilter('javascripts', function ($scripts) {
+            $scripts[] = \Module::getPublicPath(self::ALIAS).'/js/shell.js';
+
+            return $scripts;
+        });
+        \Eventy::addAction('layout.head', function () {
+            try {
+                if (!auth()->check() || !self::refreshViewsPanel()) {
+                    return;
+                }
+                $config = [
+                    'url'     => route('refreshglobal.tickets'),
+                    'label'   => __('refreshglobal::messages.menu'),
+                    'icon'    => asset(\Module::getPublicPath(self::ALIAS).'/img/all-mailboxes.svg'),
+                    'active'  => self::isModulePage(),
+                    'replace' => \Modules\RefreshGlobal\Services\Settings::replaceRefreshTickets(),
+                ];
+                echo '<meta name="refreshglobal" content="'.e(json_encode($config, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)).'">'."\n";
+            } catch (\Exception $e) {
+                // optional
+            }
+        });
     }
 
     /**

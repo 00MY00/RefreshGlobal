@@ -25,4 +25,8 @@ return [
     'update_url' => env('REFRESHGLOBAL_UPDATE_URL', 'https://github.com/00MY00/RefreshGlobal/releases/latest/download'),
     'auto_update_time' => env('REFRESHGLOBAL_AUTO_UPDATE_TIME', '03:30'),
     'auto_update_default' => (bool) env('REFRESHGLOBAL_AUTO_UPDATE', false),
+
+    // With Refresh: hide its "Tickets" entry (left bar, phone tab bar) and keep only "All mailboxes" (default before
+    // an administrator changes it on the diagnostic page).
+    'replace_refresh_tickets_default' => (bool) env('REFRESHGLOBAL_REPLACE_REFRESH_TICKETS', false),
 ];

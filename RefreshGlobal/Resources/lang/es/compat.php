@@ -93,4 +93,10 @@ return [
         'effect' => 'La lista de tickets no se muestra.',
         'action' => 'Lea storage/logs/laravel.log (código RG-ERR-01), luego ejecute php artisan refreshglobal:check.',
     ],
+    'marker' => [
+        'check'  => 'Elemento de Refresh presente: :item (:file)',
+        'label'  => 'Elemento de Refresh no encontrado: :item (:file).',
+        'effect' => 'La pestaña del teléfono o la sustitución de la entrada «Tickets» de Refresh no funciona. La página funciona.',
+        'action' => 'Actualice RefreshGlobal a una versión prevista para esta versión de Refresh, luego ejecute php artisan refreshglobal:check.',
+    ],
 ];

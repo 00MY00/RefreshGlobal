@@ -53,6 +53,10 @@ return [
         'RG-HOOK-08' => ['hook' => 'mailbox.after_sidebar_buttons', 'file' => 'resources/views/mailboxes/sidebar_menu_view.blade.php', 'needle' => "@action('mailbox.after_sidebar_buttons')", 'severity' => 'degraded', 'source' => 'resources/views/mailboxes/sidebar_menu_view.blade.php:35'],
         'RG-HOOK-09' => ['hook' => 'mailbox.after_sidebar_buttons', 'refresh' => true, 'file' => 'Resources/views/core/mailboxes/sidebar_menu_view.blade.php', 'needle' => "@action('mailbox.after_sidebar_buttons')", 'severity' => 'degraded', 'source' => 'Modules/Refresh/Resources/views/core/mailboxes/sidebar_menu_view.blade.php:81'],
         'RG-HOOK-10' => ['hook' => 'schedule', 'file' => 'app/Console/Kernel.php', 'needle' => "\\Eventy::filter('schedule', \$schedule)", 'severity' => 'degraded', 'source' => 'app/Console/Kernel.php:190'],
+        'RG-HOOK-11' => ['hook' => 'javascripts', 'file' => 'resources/views/layouts/app.blade.php', 'needle' => "\\Eventy::filter('javascripts'", 'severity' => 'degraded', 'source' => 'resources/views/layouts/app.blade.php:284'],
+        'RG-HOOK-12' => ['hook' => 'layout.head', 'file' => 'resources/views/layouts/app.blade.php', 'needle' => "@action('layout.head')", 'severity' => 'degraded', 'source' => 'resources/views/layouts/app.blade.php:21'],
+        'RG-HOOK-13' => ['hook' => '.rf-m-tab-tickets', 'family' => 'marker', 'refresh' => true, 'file' => 'Public/js/mobile.js', 'needle' => "'rf-m-tab-tickets'", 'severity' => 'degraded', 'source' => 'Modules/Refresh/Public/js/mobile.js:133'],
+        'RG-HOOK-14' => ['hook' => '.rf-i-fd-all-tickets', 'family' => 'marker', 'refresh' => true, 'file' => 'Providers/RefreshServiceProvider.php', 'needle' => "'icon' => 'fd-all-tickets'", 'severity' => 'degraded', 'source' => 'Modules/Refresh/Providers/RefreshServiceProvider.php:698'],
         'RG-HOOK-07' => ['hook' => 'refresh.rail_items', 'refresh' => true, 'file' => 'Providers/RefreshServiceProvider.php', 'needle' => "'refresh.rail_items'", 'severity' => 'degraded', 'source' => 'Modules/Refresh/Providers/RefreshServiceProvider.php:711'],
     ],
 

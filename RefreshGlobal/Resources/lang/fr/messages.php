@@ -133,4 +133,11 @@ return [
     'auto_update_on'               => 'Mise à jour automatique activée.',
     'auto_update_off'              => 'Mise à jour automatique désactivée.',
     'update_rolled_back_banner'    => 'La mise à jour automatique vers RefreshGlobal :to a été annulée car la nouvelle version ne fonctionnait pas : la version :from a été restaurée.',
+
+    // Navigation
+    'navigation'                   => 'Navigation',
+    'replace_tickets'              => 'Remplacer l’entrée « Tickets » de Refresh par « Toutes les boîtes »',
+    'replace_tickets_help'         => 'Dans la barre de gauche et la barre d’onglets du téléphone de Refresh, l’entrée « Tickets » est masquée et « Toutes les boîtes » prend sa place. Les vues de chaque boîte restent accessibles depuis une boîte.',
+    'replace_tickets_on'           => 'L’entrée « Tickets » de Refresh est maintenant remplacée par « Toutes les boîtes ».',
+    'replace_tickets_off'          => 'L’entrée « Tickets » de Refresh est de nouveau affichée.',
 ];

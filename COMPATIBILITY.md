@@ -28,6 +28,7 @@ Chacun est contrôlé par `php artisan refreshglobal:check`.
 | Partial natif `conversations/conversations_table` et ses hooks | balisage et variables internes de FreeScout | colonne « Boîte » absente (RG-HOOK-02…05) ou liste bloquée (RG-VIEW-02) |
 | Pagination / tri natifs en ajax (`main.js`) | désactivés sur la page par `refreshglobal.js` | si FreeScout renomme ses classes, un clic sur un en-tête pourrait recharger un dossier : la pagination serveur reste correcte |
 | Entrée dans le tiroir des vues de Refresh (`mailbox.after_sidebar_buttons` dans sa vue surchargée) | la vue surchargée par Refresh peut perdre ce hook | sur téléphone, plus d'accès depuis le tiroir ; l'adresse `/refresh-global/tickets` reste valable (RG-HOOK-09) |
+| Onglet du téléphone et option « remplacer Tickets » (`.rf-m-tab-tickets`, `fd-all-tickets`) | éléments internes des scripts de Refresh | l'onglet n'apparaît plus ou l'entrée de Refresh n'est plus masquée ; la page fonctionne (RG-HOOK-13, RG-HOOK-14) |
 | `refresh.rail_items` | point d'extension documenté de Refresh | icône remplacée par le lien générique du menu (RG-HOOK-07) |
 
 ## Mise à jour automatique

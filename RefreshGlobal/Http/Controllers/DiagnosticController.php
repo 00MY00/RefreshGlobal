@@ -29,7 +29,22 @@ class DiagnosticController extends Controller
                 'update_enabled' => Updater::enabled(),
                 'update_time'    => (string) config('refreshglobal.auto_update_time', '03:30'),
                 'current'        => Updater::currentVersion(),
+                'replace_tickets' => \Modules\RefreshGlobal\Services\Settings::replaceRefreshTickets(),
+                'refresh_active' => (bool) $report['versions']['refresh_active'],
             ])->render());
+        });
+    }
+
+    /** Navigation option: replace Refresh's "Tickets" entry by "All mailboxes". */
+    public function navigation(Request $request)
+    {
+        return $this->safely(function () use ($request) {
+            $this->validate($request, ['replace_refresh_tickets' => 'required|boolean']);
+            $on = (bool) $request->input('replace_refresh_tickets');
+            \Modules\RefreshGlobal\Services\Settings::setReplaceRefreshTickets($on);
+
+            return redirect()->route('refreshglobal.diagnostic')->with('flash_success', $on
+                ? __('refreshglobal::messages.replace_tickets_on') : __('refreshglobal::messages.replace_tickets_off'));
         });
     }
 

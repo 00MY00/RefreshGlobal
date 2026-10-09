@@ -34,6 +34,26 @@
 
         @include('partials/flash_messages')
 
+        {{-- Navigation (Refresh only) --}}
+        <div class="panel panel-default rg-update">
+            <div class="panel-body">
+                <h4 class="rg-update-title">{{ __('refreshglobal::messages.navigation') }}</h4>
+                <p>{{ __('refreshglobal::messages.replace_tickets') }}
+                    <span class="label {{ $replace_tickets ? 'label-success' : 'label-default' }}">{{ $replace_tickets ? __('refreshglobal::messages.on') : __('refreshglobal::messages.off') }}</span>
+                </p>
+                <p class="rg-muted">{{ __('refreshglobal::messages.replace_tickets_help') }}</p>
+                @if ($refresh_active)
+                    <form method="post" action="{{ route('refreshglobal.navigation') }}" class="rg-form">
+                        {{ csrf_field() }}
+                        <input type="hidden" name="replace_refresh_tickets" value="{{ $replace_tickets ? 0 : 1 }}">
+                        <button type="submit" class="btn btn-sm {{ $replace_tickets ? 'btn-default' : 'btn-primary' }}">{{ $replace_tickets ? __('refreshglobal::messages.turn_off') : __('refreshglobal::messages.turn_on') }}</button>
+                    </form>
+                @else
+                    <p class="rg-muted">[RG-REF-01] {{ __('refreshglobal::compat.ref_present.label') }}</p>
+                @endif
+            </div>
+        </div>
+
         {{-- Automatic update --}}
         <div class="panel panel-default rg-update">
             <div class="panel-body">

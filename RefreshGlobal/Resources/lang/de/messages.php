@@ -133,4 +133,11 @@ return [
     'auto_update_on'               => 'Automatische Aktualisierung eingeschaltet.',
     'auto_update_off'              => 'Automatische Aktualisierung ausgeschaltet.',
     'update_rolled_back_banner'    => 'Die automatische Aktualisierung auf RefreshGlobal :to wurde abgebrochen, weil die neue Version nicht funktionierte: Version :from wurde wiederhergestellt.',
+
+    // Navigation
+    'navigation'                   => 'Navigation',
+    'replace_tickets'              => 'Den Eintrag „Tickets“ von Refresh durch „Alle Postfächer“ ersetzen',
+    'replace_tickets_help'         => 'In der linken Leiste und der Tab-Leiste des Telefons von Refresh wird „Tickets“ ausgeblendet und „Alle Postfächer“ tritt an seine Stelle. Die Ansichten jedes Postfachs bleiben über ein Postfach erreichbar.',
+    'replace_tickets_on'           => 'Der Eintrag „Tickets“ von Refresh wird jetzt durch „Alle Postfächer“ ersetzt.',
+    'replace_tickets_off'          => 'Der Eintrag „Tickets“ von Refresh wird wieder angezeigt.',
 ];

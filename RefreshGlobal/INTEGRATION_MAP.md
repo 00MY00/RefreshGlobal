@@ -208,6 +208,16 @@ la suppression de **vues partagées de Refresh** (`RefreshServiceProvider.php:10
 ajax ne s'active que sur la route `refresh.tickets` (`RefreshServiceProvider.php:755, 1273`), donc pas sur la page
 du module.
 
+### 2.4 bis Barre d'onglets du téléphone et entrée « Tickets » (RefreshGlobal 1.2.0)
+
+| Élément | Fichier:ligne | Utilisation |
+|---|---|---|
+| barre d'onglets `nav.rf-m-tabs`, onglets `a.rf-m-tab`, onglet `.rf-m-tab-tickets`, actif `.active` | `Modules/Refresh/Public/js/mobile.js:127-140` (liste fixe, aucun point d'extension) | `Public/js/shell.js` ajoute un onglet `a.rf-m-tab.rg-m-tab` après `.rf-m-tab-tickets` (RG-HOOK-13) |
+| icône par variable CSS `--rf-i` sur `i.rf-i` | `RefreshServiceProvider.php:884-890` (icônes des modules dans la barre) | même technique pour l'icône de l'onglet |
+| lien « Tickets » de la barre de gauche (`.rf-rail-link` contenant `.rf-i-fd-all-tickets`) | `RefreshServiceProvider.php:698` | option « remplacer » : masqué (pas supprimé : `mobile.js:113-115` lit encore son adresse), notre entrée placée à sa suite (RG-HOOK-14) |
+| chargement des scripts de module dans le lot de la page | filtre `javascripts`, `resources/views/layouts/app.blade.php:284` | `shell.js` chargé sur toutes les pages (RG-HOOK-11) |
+| réglages lus par le script | action `layout.head`, `layouts/app.blade.php:21` (même méthode que Refresh pour ses traductions, `RefreshServiceProvider.php:77-86`) | `<meta name="refreshglobal">` écrit seulement quand l'interface de Refresh est présente (RG-HOOK-12) |
+
 ### 2.5 Points d'extension exposés par Refresh
 
 | Point | Fichier:ligne | Utilisation |
