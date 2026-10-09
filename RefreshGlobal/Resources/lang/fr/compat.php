@@ -55,6 +55,7 @@ return [
         'check'  => 'La route :item existe',
         'label'  => 'Une route utilisée par le module est introuvable : :item.',
         'effect' => 'La liste des tickets n’est pas affichée : ses liens ne mèneraient nulle part.',
+        'effect_degraded' => 'La suppression d’un ticket garde le comportement de FreeScout (retour à la boîte, corbeille). Le reste fonctionne.',
         'action' => 'Vider le cache (php artisan freescout:clear-cache), puis exécuter php artisan refreshglobal:check. Si le problème persiste, mettre à jour RefreshGlobal.',
     ],
     'db' => [
@@ -98,5 +99,41 @@ return [
         'label'  => 'Élément de Refresh introuvable : :item (:file).',
         'effect' => 'L’onglet du téléphone ou le remplacement de l’entrée « Tickets » de Refresh ne fonctionne pas. La page fonctionne.',
         'action' => 'Mettre à jour RefreshGlobal vers une version prévue pour cette version de Refresh, puis exécuter php artisan refreshglobal:check.',
+    ],
+    'hook_dash' => [
+        'check'  => 'Hook « :item » déclenché par :file',
+        'label'  => 'Le hook « :item » n’est plus déclenché par :file.',
+        'effect' => 'Le tableau de bord de Refresh est affiché tel quel (première boîte seulement). Le reste fonctionne.',
+        'action' => 'Mettre à jour RefreshGlobal vers une version prévue pour cette version de FreeScout / Refresh, puis exécuter php artisan refreshglobal:check.',
+    ],
+    'marker_dash' => [
+        'check'  => 'Élément de Refresh présent : :item (:file)',
+        'label'  => 'Élément de Refresh introuvable : :item (:file).',
+        'effect' => 'Le tableau de bord de Refresh est affiché tel quel (première boîte seulement). Le reste fonctionne.',
+        'action' => 'Mettre à jour RefreshGlobal vers une version prévue pour cette version de FreeScout / Refresh, puis exécuter php artisan refreshglobal:check.',
+    ],
+    'core_refresh' => [
+        'check'  => 'Code de Refresh présent : :item',
+        'label'  => 'Une classe ou méthode de Refresh utilisée par le module est absente : :item.',
+        'effect' => 'Le tableau de bord de Refresh est affiché tel quel (première boîte seulement). Le reste fonctionne.',
+        'action' => 'Mettre à jour RefreshGlobal vers une version prévue pour cette version de FreeScout / Refresh, puis exécuter php artisan refreshglobal:check.',
+    ],
+    'hook_delete' => [
+        'check'  => 'Hook « :item » déclenché par :file',
+        'label'  => 'Le hook « :item » n’est plus déclenché par :file.',
+        'effect' => 'La suppression d’un ticket garde le comportement de FreeScout (retour à la boîte, corbeille). Le reste fonctionne.',
+        'action' => 'Mettre à jour RefreshGlobal vers une version prévue pour cette version de FreeScout / Refresh, puis exécuter php artisan refreshglobal:check.',
+    ],
+    'core_delete' => [
+        'check'  => 'Code FreeScout présent : :item',
+        'label'  => 'Une classe, méthode ou constante de FreeScout utilisée par le module est absente : :item.',
+        'effect' => 'Une suppression groupée met les tickets à la corbeille même avec « Supprimer définitivement ». Le reste fonctionne.',
+        'action' => 'Mettre à jour RefreshGlobal vers une version prévue pour cette version de FreeScout / Refresh, puis exécuter php artisan refreshglobal:check.',
+    ],
+    'marker_l10n' => [
+        'check'  => 'Élément de Refresh présent : :item (:file)',
+        'label'  => 'Élément de Refresh introuvable : :item (:file).',
+        'effect' => 'Certains textes de Refresh sur téléphone gardent leur tournure d’origine. Le reste fonctionne.',
+        'action' => 'Mettre à jour RefreshGlobal vers une version prévue pour cette version de FreeScout / Refresh, puis exécuter php artisan refreshglobal:check.',
     ],
 ];

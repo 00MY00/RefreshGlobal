@@ -15,6 +15,10 @@ class SettingsSectionTest extends TestCase
         $r->assertStatus(200);
         $this->seeIn($r, 'name="settings['.Settings::REPLACE_REFRESH_TICKETS.']"');
         $this->seeIn($r, 'name="settings['.Updater::OPTION.']"');
+        foreach ([Settings::GLOBAL_DASHBOARD, Settings::SHOW_MAILBOX, Settings::DELETE_GOES_NEXT, Settings::DELETE_PERMANENTLY] as $key) {
+            $this->seeIn($r, 'name="settings['.$key.']"');
+        }
+        $this->seeIn($r, 'onoffswitch-checkbox');
         $this->seeIn($r, route('refreshglobal.update_now'));
         // listed in the settings menu of FreeScout
         $this->seeIn($this->actingAs($this->s['admin'])->get(route('settings')), route('settings', ['section' => 'refreshglobal']));
@@ -38,6 +42,27 @@ class SettingsSectionTest extends TestCase
         ]])->assertStatus(302);
         $this->assertFalse(Settings::replaceRefreshTickets());
         $this->assertFalse(Updater::enabled());
+    }
+
+    public function testDefaultsAndNewSwitches()
+    {
+        foreach ([Settings::GLOBAL_DASHBOARD, Settings::SHOW_MAILBOX, Settings::DELETE_GOES_NEXT, Settings::DELETE_PERMANENTLY] as $key) {
+            \App\Option::remove($key);
+        }
+        // defaults: dashboard of all mailboxes, mailbox shown, back to the list, trash
+        $this->assertTrue(Settings::globalDashboard());
+        $this->assertTrue(Settings::showMailbox());
+        $this->assertFalse(Settings::deleteGoesNext());
+        $this->assertFalse(Settings::deletePermanently());
+
+        $this->actingAs($this->s['admin'])->post(route('settings.save', ['section' => 'refreshglobal']), ['settings' => [
+            Settings::SHOW_MAILBOX       => '0',
+            Settings::DELETE_GOES_NEXT   => '1',
+            Settings::DELETE_PERMANENTLY => '1',
+        ]])->assertStatus(302);
+        $this->assertFalse(Settings::showMailbox());
+        $this->assertTrue(Settings::deleteGoesNext());
+        $this->assertTrue(Settings::deletePermanently());
     }
 
     public function testRegularUserHasNoAccess()

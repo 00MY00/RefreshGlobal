@@ -13,6 +13,7 @@ use App\Conversation;
  *   status    int[]   empty = every status except spam (like FreeScout's folders and Refresh's "All tickets")
  *   assignee  string  '' any | 'me' | 'none' | user id
  *   q         string  subject, customer name, customer e-mail, ticket number
+ *   rview     string  '' | a Refresh view (GlobalDashboard::VIEWS) with Refresh's own definition (URL parameter rv)
  *   sort      string  one of sorts()
  *   order     string  asc | desc
  */
@@ -39,6 +40,7 @@ class GlobalTicketQuery
             'status'    => [],
             'assignee'  => '',
             'q'         => '',
+            'rview'     => '',
             'sort'      => 'updated',
             'order'     => 'desc',
         ];
@@ -97,6 +99,13 @@ class GlobalTicketQuery
         $q = isset($input['q']) && is_scalar($input['q']) ? trim((string) $input['q']) : '';
         $f['q'] = mb_substr($q, 0, self::MAX_QUERY_LENGTH);
 
+        // Refresh view (links of the dashboard tiles), only when Refresh's API is there
+        $rv = isset($input['rv']) ? $input['rv'] : ($input['rview'] ?? '');
+        $rv = is_scalar($rv) ? (string) $rv : '';
+        if (in_array($rv, GlobalDashboard::VIEWS, true) && GlobalDashboard::refreshApi()) {
+            $f['rview'] = $rv;
+        }
+
         $sort = isset($input['sort']) && is_scalar($input['sort']) ? (string) $input['sort'] : '';
         $f['sort'] = array_key_exists($sort, self::sorts()) ? $sort : 'updated';
         $order = isset($input['order']) && is_scalar($input['order']) ? (string) $input['order'] : '';
@@ -121,6 +130,9 @@ class GlobalTicketQuery
         if (isset($f['q']) && $f['q'] !== '') {
             $params['q'] = $f['q'];
         }
+        if (isset($f['rview']) && $f['rview'] !== '') {
+            $params['rv'] = $f['rview'];
+        }
         if (isset($f['sort']) && $f['sort'] !== 'updated') {
             $params['sort'] = $f['sort'];
         }
@@ -140,7 +152,7 @@ class GlobalTicketQuery
                 $n++;
             }
         }
-        foreach (['assignee', 'q'] as $k) {
+        foreach (['assignee', 'q', 'rview'] as $k) {
             if (isset($f[$k]) && $f[$k] !== '') {
                 $n++;
             }
@@ -206,6 +218,10 @@ class GlobalTicketQuery
 
         if ($f['q'] !== '') {
             $this->applySearch($query, $f['q']);
+        }
+
+        if ($f['rview'] !== '' && GlobalDashboard::refreshApi()) {
+            GlobalDashboard::applyView($query, $f['rview'], $ids, $user);
         }
 
         return $query;

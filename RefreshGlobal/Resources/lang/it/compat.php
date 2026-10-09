@@ -55,6 +55,7 @@ return [
         'check'  => 'La rotta :item esiste',
         'label'  => 'Una rotta usata dal modulo non è stata trovata: :item.',
         'effect' => 'L’elenco dei ticket non viene mostrato: i suoi collegamenti non porterebbero da nessuna parte.',
+        'effect_degraded' => 'L’eliminazione di un ticket mantiene il comportamento di FreeScout (ritorno alla casella, cestino). Il resto funziona.',
         'action' => 'Svuotare la cache (php artisan freescout:clear-cache), poi eseguire php artisan refreshglobal:check. Se persiste, aggiornare RefreshGlobal.',
     ],
     'db' => [
@@ -98,5 +99,41 @@ return [
         'label'  => 'Elemento di Refresh non trovato: :item (:file).',
         'effect' => 'La scheda del telefono o la sostituzione della voce «Tickets» di Refresh non funziona. La pagina funziona.',
         'action' => 'Aggiornare RefreshGlobal a una versione prevista per questa versione di Refresh, poi eseguire php artisan refreshglobal:check.',
+    ],
+    'hook_dash' => [
+        'check'  => 'Hook «:item» attivato da :file',
+        'label'  => 'L’hook «:item» non viene più attivato da :file.',
+        'effect' => 'Viene mostrata la dashboard di Refresh (solo la prima casella). Il resto funziona.',
+        'action' => 'Aggiornare RefreshGlobal a una versione prevista per questa versione di FreeScout / Refresh, poi eseguire php artisan refreshglobal:check.',
+    ],
+    'marker_dash' => [
+        'check'  => 'Elemento di Refresh presente: :item (:file)',
+        'label'  => 'Elemento di Refresh non più trovato: :item (:file).',
+        'effect' => 'Viene mostrata la dashboard di Refresh (solo la prima casella). Il resto funziona.',
+        'action' => 'Aggiornare RefreshGlobal a una versione prevista per questa versione di FreeScout / Refresh, poi eseguire php artisan refreshglobal:check.',
+    ],
+    'core_refresh' => [
+        'check'  => 'Codice di Refresh presente: :item',
+        'label'  => 'Manca una classe o un metodo di Refresh usato dal modulo: :item.',
+        'effect' => 'Viene mostrata la dashboard di Refresh (solo la prima casella). Il resto funziona.',
+        'action' => 'Aggiornare RefreshGlobal a una versione prevista per questa versione di FreeScout / Refresh, poi eseguire php artisan refreshglobal:check.',
+    ],
+    'hook_delete' => [
+        'check'  => 'Hook «:item» attivato da :file',
+        'label'  => 'L’hook «:item» non viene più attivato da :file.',
+        'effect' => 'L’eliminazione di un ticket mantiene il comportamento di FreeScout (ritorno alla casella, cestino). Il resto funziona.',
+        'action' => 'Aggiornare RefreshGlobal a una versione prevista per questa versione di FreeScout / Refresh, poi eseguire php artisan refreshglobal:check.',
+    ],
+    'core_delete' => [
+        'check'  => 'Codice FreeScout presente: :item',
+        'label'  => 'Manca una classe, un metodo o una costante di FreeScout usata dal modulo: :item.',
+        'effect' => 'Un’eliminazione multipla mette i ticket nel cestino anche con «Elimina definitivamente». Il resto funziona.',
+        'action' => 'Aggiornare RefreshGlobal a una versione prevista per questa versione di FreeScout / Refresh, poi eseguire php artisan refreshglobal:check.',
+    ],
+    'marker_l10n' => [
+        'check'  => 'Elemento di Refresh presente: :item (:file)',
+        'label'  => 'Elemento di Refresh non più trovato: :item (:file).',
+        'effect' => 'Alcuni testi di Refresh sul telefono mantengono la formulazione originale. Il resto funziona.',
+        'action' => 'Aggiornare RefreshGlobal a una versione prevista per questa versione di FreeScout / Refresh, poi eseguire php artisan refreshglobal:check.',
     ],
 ];

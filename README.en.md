@@ -19,7 +19,15 @@ otherwise it uses FreeScout's standard look.
 - **"All mailboxes" page** (`/refresh-global/tickets`), in FreeScout's menu and in Refresh's left bar.
 - **Mailbox filter** (several at once), **status**, **assignee** (me, unassigned, an agent).
 - **Search**: subject, customer name, e-mail, ticket number (`#123`).
-- **"Mailbox" column** (badge in card view, pill on phones).
+- **Mailbox above each ticket**: name and address of the mailbox (badge in card view, pill on phones, column in
+  table view); can be hidden in the settings.
+- **Refresh's "My dashboard" over all mailboxes**: Refresh alone shows the first mailbox only; the module shows the
+  same dashboard (same look) with the figures and tickets of all the user's mailboxes. Tiles lead to "All mailboxes"
+  filtered on the matching Refresh view.
+- **Deleting a ticket**: back to "All mailboxes" with the last filters (or the next ticket of that list); trash
+  (default) or permanent deletion.
+- With Refresh: **"All mailboxes" phone tab**, option to replace Refresh's "Tickets" entry, automatic update with
+  rollback.
 - **Counters** per mailbox and per status (grouped queries).
 - **CSV export** of the filtered list (UTF-8 with BOM for Excel, capped number of rows).
 - **Personal saved views**: save filters, rename, set a default view, delete.
@@ -83,6 +91,19 @@ Updates: `sudo git -C /opt/RefreshGlobal pull`, then the same command with `--up
 - Menu **"All mailboxes"**, or `https://your-helpdesk/refresh-global/tickets`.
 - Check: `cd /var/www/html && sudo -u www-data php artisan refreshglobal:check` (exit code 0 OK, 1 degraded, 2 blocking).
 - Admin diagnostic page: `https://your-helpdesk/refresh-global/diagnostic`.
+- Settings: **Manage › Settings › RefreshGlobal** (admins).
+
+| Setting | Default | Effect |
+|---|---|---|
+| "Tickets" entry | off | replaces Refresh's "Tickets" entry by "All mailboxes" |
+| Dashboard of all mailboxes | on | Refresh's "My dashboard" covers all the user's mailboxes |
+| Mailbox above each ticket | on | name and address of the mailbox above the subject (list and dashboard) |
+| Go to the next ticket | off | after a deletion: off = back to "All mailboxes" (last filters), on = next ticket of that list |
+| Delete permanently | off | off = FreeScout's trash (can be restored); on = the ticket and its e-mails are removed from FreeScout at once (cannot be undone; the mail server is not touched) |
+| Automatic update | off | daily safe update with automatic rollback |
+
+With Refresh in French, the module also corrects two of Refresh's phone strings ("Créé 7h il y a" → "Créé il y a
+7h") without modifying Refresh: see `RefreshGlobal/Resources/lang/refresh-fixes.php`.
 
 ## 7. Updating
 

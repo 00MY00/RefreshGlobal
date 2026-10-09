@@ -1,4 +1,4 @@
-# Résultats des tests — RefreshGlobal 1.3.0
+# Résultats des tests — RefreshGlobal 1.4.0
 
 Date : 2026-10-09. Environnements jetables Docker : FreeScout 1.8.245 (dépôt officiel), PHP 8.2.34, Apache,
 MariaDB 10.11 ; Refresh 1.4.3 (dépôt officiel). Données de test uniquement (adresses `.test`).
@@ -177,3 +177,17 @@ Avec `APP_URL=https://helpdesk.example.test` : la 1.2.0 obtenait HTTP 403 (`Trus
 ## 10. Paramètres et « Mettre à jour maintenant » (1.3.0)
 
 Scénario `auto-update` rejoué avec trois vérifications de plus (rien sans demande ; mise à jour faite par la tâche planifiée ; demande effacée) : **19 vérifications réussies, 0 en échec**. Capture : `docs/screenshots/parametres.png`.
+
+## 11. Tableau de bord, suppression, réglages (1.4.0)
+
+FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HOOK-18…22, RG-CORE-09…12, RG-ROUTE-04).
+
+- PHPUnit : **62 tests, 816 assertions, 0 échec** (nouveaux : `DashboardTest` 4, `DeleteTest` 8, `SettingsSectionTest` +1).
+- Syntaxe PHP 7.1 (`php:7.1-cli`) et 8.4 : aucune erreur ; shellcheck : 0 remarque.
+- Navigateur (Chromium headless, 1440 px et 390 px, interface en français) : un seul tableau de bord (celui de
+  Refresh remplacé), tuiles sur les 4 boîtes, « Créé il y a 2h » au lieu de « Créé 2h il y a » sur téléphone, nom et
+  adresse de la boîte au-dessus de chaque ticket, puce « Vue Refresh ». Captures : `docs/screenshots/tableau-de-bord*.png`.
+- Suppression réelle depuis la page d'un ticket (boutons natifs de FreeScout) après avoir ouvert
+  `Toutes les boîtes ?mb[]=Support` : retour sur cette même liste, ticket dans la corbeille (`state = 3`).
+- Défaut trouvé et corrigé pendant les essais : le tableau de bord mis en cache une minute gardait la langue de la
+  visite précédente (clé de cache sans la langue) ; test de non-régression ajouté.

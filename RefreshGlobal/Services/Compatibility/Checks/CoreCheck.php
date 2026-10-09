@@ -4,13 +4,20 @@ namespace Modules\RefreshGlobal\Services\Compatibility\Checks;
 
 use Modules\RefreshGlobal\Services\Compatibility\Check;
 
-/** RG-CORE-xx: every FreeScout class, method and constant the module calls exists. Blocking. */
+/** RG-CORE-xx: every FreeScout (or Refresh) class, method and constant the module calls exists. Blocking by default. */
 class CoreCheck extends Check
 {
     public function run()
     {
         $results = [];
         foreach ((array) $this->checker->integration('core') as $code => $def) {
+            // texts of compat.php: "core", or the family of a secondary feature (core_refresh, core_delete)
+            $family = $def['family'] ?? 'core';
+            // classes of Refresh: not applicable without Refresh
+            if (!empty($def['refresh']) && !$this->checker->refreshUsable()) {
+                $results[] = $this->result($code, $family, $def['severity'] ?? self::BLOCKING, null, $def['class'] ?? implode(', ', (array) ($def['classes'] ?? [])));
+                continue;
+            }
             $missing = [];
             $items = [];
             if (!empty($def['classes'])) {
@@ -42,7 +49,7 @@ class CoreCheck extends Check
                 }
             }
             $severity = $def['severity'] ?? self::BLOCKING;
-            $results[] = $this->result($code, 'core', $severity, !$missing, $expected, $missing ? 'missing: '.implode(', ', $missing) : '');
+            $results[] = $this->result($code, $family, $severity, !$missing, $expected, $missing ? 'missing: '.implode(', ', $missing) : '');
         }
 
         return $results;

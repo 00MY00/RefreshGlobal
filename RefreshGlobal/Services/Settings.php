@@ -24,4 +24,85 @@ class Settings
     {
         \App\Option::set(self::REPLACE_REFRESH_TICKETS, $on ? 1 : 0);
     }
+
+    /** Refresh's "My dashboard" over all the user's mailboxes instead of the first one only. */
+    const GLOBAL_DASHBOARD = 'refreshglobal.global_dashboard';
+
+    public static function globalDashboard()
+    {
+        try {
+            return (bool) \App\Option::get(self::GLOBAL_DASHBOARD, (bool) config('refreshglobal.global_dashboard_default', true), true, false);
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    public static function setGlobalDashboard($on)
+    {
+        \App\Option::set(self::GLOBAL_DASHBOARD, $on ? 1 : 0);
+    }
+
+    /** After deleting a ticket: next ticket of the "All mailboxes" list (on) or back to that list (off, default). */
+    const DELETE_GOES_NEXT = 'refreshglobal.delete_goes_next';
+
+    public static function deleteGoesNext()
+    {
+        try {
+            return (bool) \App\Option::get(self::DELETE_GOES_NEXT, config('refreshglobal.after_delete_default', 'list') === 'next', true, false);
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    public static function setDeleteGoesNext($on)
+    {
+        \App\Option::set(self::DELETE_GOES_NEXT, $on ? 1 : 0);
+    }
+
+    /** Mailbox badge above each ticket (name and address) on the "All mailboxes" list and the dashboard. */
+    const SHOW_MAILBOX = 'refreshglobal.show_mailbox';
+
+    public static function showMailbox()
+    {
+        try {
+            return (bool) \App\Option::get(self::SHOW_MAILBOX, (bool) config('refreshglobal.show_mailbox_default', true), true, false);
+        } catch (\Exception $e) {
+            return true;
+        }
+    }
+
+    public static function setShowMailbox($on)
+    {
+        \App\Option::set(self::SHOW_MAILBOX, $on ? 1 : 0);
+    }
+
+    /** Options shown in Manage › Settings › RefreshGlobal (saved by FreeScout itself) => current value. */
+    public static function sectionValues()
+    {
+        return [
+            self::REPLACE_REFRESH_TICKETS => self::replaceRefreshTickets(),
+            self::GLOBAL_DASHBOARD        => self::globalDashboard(),
+            self::SHOW_MAILBOX            => self::showMailbox(),
+            self::DELETE_GOES_NEXT        => self::deleteGoesNext(),
+            self::DELETE_PERMANENTLY      => self::deletePermanently(),
+            Update\Updater::OPTION        => Update\Updater::enabled(),
+        ];
+    }
+
+    /** Deleting a ticket removes it with its e-mails from FreeScout at once instead of putting it in the trash. */
+    const DELETE_PERMANENTLY = 'refreshglobal.delete_permanently';
+
+    public static function deletePermanently()
+    {
+        try {
+            return (bool) \App\Option::get(self::DELETE_PERMANENTLY, (bool) config('refreshglobal.delete_permanently_default', false), true, false);
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    public static function setDeletePermanently($on)
+    {
+        \App\Option::set(self::DELETE_PERMANENTLY, $on ? 1 : 0);
+    }
 }

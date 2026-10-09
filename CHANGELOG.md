@@ -2,6 +2,29 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.4.0] — 2026-10-09
+
+### Ajouté
+- **« Mon tableau de bord » de Refresh sur toutes les boîtes** : Refresh calcule son tableau de bord pour la première
+  boîte seulement ; le module remplace ce bloc (filtre `dashboard.before`) par le même tableau de bord, avec les mêmes
+  classes et les fonctions de Refresh (`Views::query`, `Dashboard::chart/delta/duration`), pour toutes les boîtes de
+  l'utilisateur et avec ses droits. Tuiles, agents et e-mails non livrés par boîte, liste des tickets non résolus
+  avec la boîte. Réglage « Tableau de bord de toutes les boîtes » (activé par défaut).
+- Filtre **vue Refresh** (`rv`) sur « Toutes les boîtes » (non résolus, en retard, échéance aujourd'hui, ouverts, en
+  attente, non assignés, nouveaux), avec la définition de Refresh ; puce retirable dans les filtres.
+- **Suppression d'un ticket** (middleware sur `conversations.ajax`) : retour à « Toutes les boîtes » avec les
+  derniers filtres, ou ticket suivant de cette liste (réglage « Passer au ticket suivant ») ; réglage « Supprimer
+  définitivement » (le ticket et ses e-mails sont effacés de FreeScout, aussi en suppression groupée ; le serveur de
+  messagerie n'est pas touché). Par défaut : retour à la liste, corbeille.
+- Réglage **« Boîte au-dessus de chaque ticket »** (activé par défaut) : nom **et adresse** de la boîte.
+- Réglages présentés en interrupteurs, comme ceux de FreeScout.
+- Contrôles RG-HOOK-18…22, RG-CORE-09…12, RG-ROUTE-04, avec leurs propres textes d'effet.
+
+### Corrigé
+- Français, Refresh sur téléphone : « Créé 7h il y a » / « Fermé 7h il y a » deviennent « Créé il y a 7h » /
+  « Fermé il y a 7h » (correction appliquée au dictionnaire de Refresh dans la page, sans modifier Refresh, et
+  seulement tant que Refresh garde l'ancienne tournure).
+
 ## [1.3.0] — 2026-10-09
 
 ### Ajouté

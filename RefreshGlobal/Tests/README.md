@@ -19,6 +19,8 @@ sudo -u www-data php artisan freescout:clear-cache # remet le cache de configura
 | `Feature/ExportTest.php` | BOM UTF-8, lignes autorisées seulement, filtres, plafond, formules neutralisées |
 | `Feature/CompatibilityTest.php` | absence simulée de Refresh, d'un CSS, d'une vue, d'une méthode, d'une route, d'une colonne, d'un hook ; état, format du message (EN/FR), page bloquée, code de sortie de la commande, journalisation |
 | `Feature/SavedViewsTest.php` | créer, charger, renommer, défaut, supprimer ; boîtes interdites non enregistrées ; boîte perdue ignorée avec mention ; vues personnelles ; validation |
+| `Feature/DashboardTest.php` | tableau de bord de toutes les boîtes à la place de celui de Refresh (un seul bloc, droits respectés, option désactivée), filtre `rv`, correction des textes français de Refresh |
+| `Feature/DeleteTest.php` | après suppression : retour à la dernière liste « Toutes les boîtes » ou ticket suivant ; corbeille / définitif (simple et groupé) ; autres actions inchangées ; boîte au-dessus de chaque ticket |
 | `Feature/TranslationsTest.php` | chaque langue a toutes les clés et les mêmes paramètres que l'anglais |
 
 `Support/Fixtures.php` construit les données avec les modèles de FreeScout (adresses en `.test`).

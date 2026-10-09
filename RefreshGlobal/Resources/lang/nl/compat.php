@@ -55,6 +55,7 @@ return [
         'check'  => 'Route :item bestaat',
         'label'  => 'Een door de module gebruikte route is niet gevonden: :item.',
         'effect' => 'De ticketlijst wordt niet weergegeven: de links zouden nergens naartoe leiden.',
+        'effect_degraded' => 'Een ticket verwijderen houdt het gedrag van FreeScout (terug naar de mailbox, prullenbak). De rest werkt.',
         'action' => 'Leeg de cache (php artisan freescout:clear-cache) en voer daarna php artisan refreshglobal:check uit. Blijft het probleem bestaan, werk RefreshGlobal dan bij.',
     ],
     'db' => [
@@ -98,5 +99,41 @@ return [
         'label'  => 'Refresh-element niet meer gevonden: :item (:file).',
         'effect' => 'Het telefoontabblad of het vervangen van de invoer „Tickets” van Refresh werkt niet. De pagina werkt.',
         'action' => 'Werk RefreshGlobal bij naar een versie voor deze Refresh-versie en voer daarna php artisan refreshglobal:check uit.',
+    ],
+    'hook_dash' => [
+        'check'  => 'Hook „:item” aangeroepen door :file',
+        'label'  => 'De hook „:item” wordt niet meer aangeroepen door :file.',
+        'effect' => 'Het eigen dashboard van Refresh wordt getoond (alleen de eerste mailbox). De rest werkt.',
+        'action' => 'RefreshGlobal bijwerken naar een versie voor deze FreeScout-/Refresh-versie en daarna php artisan refreshglobal:check uitvoeren.',
+    ],
+    'marker_dash' => [
+        'check'  => 'Refresh-element aanwezig: :item (:file)',
+        'label'  => 'Refresh-element niet meer gevonden: :item (:file).',
+        'effect' => 'Het eigen dashboard van Refresh wordt getoond (alleen de eerste mailbox). De rest werkt.',
+        'action' => 'RefreshGlobal bijwerken naar een versie voor deze FreeScout-/Refresh-versie en daarna php artisan refreshglobal:check uitvoeren.',
+    ],
+    'core_refresh' => [
+        'check'  => 'Refresh-code aanwezig: :item',
+        'label'  => 'Een klasse of methode van Refresh die de module gebruikt ontbreekt: :item.',
+        'effect' => 'Het eigen dashboard van Refresh wordt getoond (alleen de eerste mailbox). De rest werkt.',
+        'action' => 'RefreshGlobal bijwerken naar een versie voor deze FreeScout-/Refresh-versie en daarna php artisan refreshglobal:check uitvoeren.',
+    ],
+    'hook_delete' => [
+        'check'  => 'Hook „:item” aangeroepen door :file',
+        'label'  => 'De hook „:item” wordt niet meer aangeroepen door :file.',
+        'effect' => 'Een ticket verwijderen houdt het gedrag van FreeScout (terug naar de mailbox, prullenbak). De rest werkt.',
+        'action' => 'RefreshGlobal bijwerken naar een versie voor deze FreeScout-/Refresh-versie en daarna php artisan refreshglobal:check uitvoeren.',
+    ],
+    'core_delete' => [
+        'check'  => 'FreeScout-code aanwezig: :item',
+        'label'  => 'Een klasse, methode of constante van FreeScout die de module gebruikt ontbreekt: :item.',
+        'effect' => 'Bij bulkverwijderen gaan de tickets naar de prullenbak, ook met „Definitief verwijderen”. De rest werkt.',
+        'action' => 'RefreshGlobal bijwerken naar een versie voor deze FreeScout-/Refresh-versie en daarna php artisan refreshglobal:check uitvoeren.',
+    ],
+    'marker_l10n' => [
+        'check'  => 'Refresh-element aanwezig: :item (:file)',
+        'label'  => 'Refresh-element niet meer gevonden: :item (:file).',
+        'effect' => 'Sommige teksten van Refresh op de telefoon houden hun oorspronkelijke formulering. De rest werkt.',
+        'action' => 'RefreshGlobal bijwerken naar een versie voor deze FreeScout-/Refresh-versie en daarna php artisan refreshglobal:check uitvoeren.',
     ],
 ];

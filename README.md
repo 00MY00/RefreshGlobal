@@ -33,7 +33,13 @@ Dans Gérer › Modules :
 - **Page « Toutes les boîtes »** (`/refresh-global/tickets`), dans le menu de FreeScout, dans la barre de gauche de Refresh et, sur téléphone, en tête du tiroir des vues (☰).
 - **Filtre par boîte** (plusieurs boîtes à la fois), **statut**, **assignation** (moi, non assigné, un agent).
 - **Recherche** : sujet, nom du client, e-mail, numéro de ticket (`#123`).
-- **Colonne « Boîte »** dans la liste (badge en vue cartes, pastille sur téléphone).
+- **Boîte au-dessus de chaque ticket** : nom et adresse de la boîte (badge en vue cartes, pastille sur téléphone,
+  colonne en vue tableau) ; peut être masquée dans les réglages.
+- **« Mon tableau de bord » de Refresh sur toutes les boîtes** : Refresh seul n'affiche que la première boîte ; le
+  module affiche le même tableau de bord (même présentation) avec les chiffres et les tickets de toutes les boîtes de
+  l'utilisateur. Les tuiles mènent à « Toutes les boîtes », filtrée sur la vue Refresh correspondante.
+- **Suppression d'un ticket** : retour à « Toutes les boîtes » avec les derniers filtres (ou ticket suivant de cette
+  liste) ; au choix corbeille (par défaut) ou suppression définitive.
 - **Compteurs** par boîte et par statut, calculés en une requête groupée.
 - **Export CSV** de la liste filtrée (UTF-8 avec BOM pour Excel, nombre de lignes plafonné).
 - **Vues enregistrées** personnelles : enregistrer les filtres, renommer, définir une vue par défaut, supprimer.
@@ -41,8 +47,8 @@ Dans Gérer › Modules :
 - **Respect des droits** : chacun ne voit, ne compte et n'exporte que les tickets de ses boîtes (et seulement ses
   tickets s'il a la permission « ne voir que les conversations assignées »).
 - Sur téléphone (avec Refresh) : **onglet « Toutes les boîtes »** dans la barre du bas.
-- **Option « Remplacer l'entrée Tickets de Refresh »** (page de diagnostic) : l'entrée « Tickets » de Refresh est
-  masquée dans la barre de gauche et la barre du bas, « Toutes les boîtes » prend sa place.
+- **Option « Remplacer l'entrée Tickets de Refresh »** : l'entrée « Tickets » de Refresh est masquée dans la barre de
+  gauche et la barre du bas, « Toutes les boîtes » prend sa place.
 - **Mise à jour automatique** (facultative) avec **retour arrière automatique** si la nouvelle version ne fonctionne pas.
 - **Diagnostic de compatibilité** : `php artisan refreshglobal:check` et page d'administration, avec des messages
   explicites (codes `RG-xxx`) après une mise à jour de FreeScout ou de Refresh.
@@ -169,9 +175,22 @@ Sans l'installeur, il n'y a ni sauvegarde automatique ni retour arrière.
 |---|---|
 | ![Onglet](docs/screenshots/mobile-onglet.png) | ![Remplacé](docs/screenshots/mobile-onglet-remplace.png) |
 
-**Réglages du module** : **Gérer › Paramètres › RefreshGlobal** (ou la page de diagnostic).
+**Réglages du module** : **Gérer › Paramètres › RefreshGlobal** (administrateurs).
 
 ![Gérer › Paramètres › RefreshGlobal](docs/screenshots/parametres.png)
+
+| Réglage | Par défaut | Effet |
+|---|---|---|
+| Entrée « Tickets » | désactivé | remplace l'entrée « Tickets » de Refresh par « Toutes les boîtes » |
+| Tableau de bord de toutes les boîtes | activé | « Mon tableau de bord » de Refresh couvre toutes les boîtes de l'utilisateur |
+| Boîte au-dessus de chaque ticket | activé | nom et adresse de la boîte au-dessus du sujet (liste et tableau de bord) |
+| Passer au ticket suivant | désactivé | après une suppression : désactivé = retour à « Toutes les boîtes » (derniers filtres), activé = ticket suivant de cette liste |
+| Supprimer définitivement | désactivé | désactivé = corbeille de FreeScout (restaurable) ; activé = le ticket et ses e-mails sont effacés de FreeScout tout de suite (irréversible ; rien n'est touché sur le serveur de messagerie) |
+| Mise à jour automatique | désactivé | voir § 7 |
+
+| Tableau de bord (toutes les boîtes) | Sur téléphone |
+|---|---|
+| ![Tableau de bord](docs/screenshots/tableau-de-bord.png) | ![Tableau de bord téléphone](docs/screenshots/tableau-de-bord-mobile.png) |
 
 **Ne garder que « Toutes les boîtes »** (avec Refresh) : Gérer › Paramètres › RefreshGlobal › *Navigation*, ou page
 de diagnostic › *Navigation* › « Activer ». L'entrée
@@ -181,7 +200,12 @@ Refresh, « Désactiver » remet l'entrée.
 
 Réglages facultatifs dans le `.env` de FreeScout (puis `php artisan freescout:clear-cache`) :
 `REFRESHGLOBAL_PER_PAGE` (30), `REFRESHGLOBAL_EXPORT_MAX_ROWS` (5000), `REFRESHGLOBAL_CSV_DELIMITER` (`;`),
-`REFRESHGLOBAL_COMPAT_CACHE_MINUTES` (5), `REFRESHGLOBAL_MAX_SAVED_VIEWS` (50).
+`REFRESHGLOBAL_COMPAT_CACHE_MINUTES` (5), `REFRESHGLOBAL_MAX_SAVED_VIEWS` (50). Valeurs par défaut des réglages
+avant le premier enregistrement : `REFRESHGLOBAL_GLOBAL_DASHBOARD` (true), `REFRESHGLOBAL_SHOW_MAILBOX` (true),
+`REFRESHGLOBAL_AFTER_DELETE` (`list` ou `next`), `REFRESHGLOBAL_DELETE_PERMANENTLY` (false).
+
+Avec Refresh en français, le module corrige aussi deux textes de Refresh sur téléphone (« Créé 7h il y a » →
+« Créé il y a 7h », idem pour « Fermé ») sans modifier Refresh : voir `RefreshGlobal/Resources/lang/refresh-fixes.php`.
 
 ## 7. Mise à jour
 
@@ -260,14 +284,20 @@ curl -fsSL https://raw.githubusercontent.com/00MY00/RefreshGlobal/main/install.s
 | RG-JS-01 | dégradé | scripts de Refresh introuvables | idem |
 | RG-VIEW-01…04 | bloquant / dégradé | une vue de FreeScout a disparu | mettre à jour RefreshGlobal |
 | RG-VIEW-05 | dégradé | la page liste de Refresh a changé | mettre à jour RefreshGlobal |
-| RG-HOOK-01…09 | dégradé | un hook n'est plus déclenché (menu, colonne « Boîte », icône, entrée de la barre latérale) | mettre à jour RefreshGlobal ; la liste fonctionne |
+| RG-HOOK-01…17 | dégradé | un hook n'est plus déclenché (menu, colonne « Boîte », icône, entrée de la barre latérale, onglet téléphone, réglages) | mettre à jour RefreshGlobal ; la liste fonctionne |
+| RG-HOOK-18…20, RG-CORE-09…11 | dégradé | tableau de bord de FreeScout ou de Refresh changé | le tableau de bord de Refresh s'affiche tel quel (première boîte) ; mettre à jour RefreshGlobal |
+| RG-HOOK-21, RG-ROUTE-04, RG-CORE-12 | dégradé | suppression d'un ticket de FreeScout changée | la suppression garde le comportement de FreeScout ; mettre à jour RefreshGlobal |
+| RG-HOOK-22 | avertissement | dictionnaire des textes de Refresh changé | certains textes de Refresh sur téléphone gardent leur tournure d'origine |
 | RG-CORE-01…06 | bloquant | classe / méthode / constante de FreeScout absente | mettre à jour RefreshGlobal |
+| RG-CORE-07, 08 | dégradé | classes nécessaires à la mise à jour automatique absentes | la liste fonctionne ; mise à jour automatique désactivée |
 | RG-ROUTE-01…03 | bloquant | route introuvable | `php artisan freescout:clear-cache`, sinon mettre à jour |
 | RG-DB-01…04 | bloquant | table ou colonne de FreeScout absente | `php artisan migrate` |
 | RG-DB-05 | dégradé | table des vues enregistrées absente | `php artisan migrate` (les vues enregistrées sont désactivées en attendant) |
 | RG-ACL-01, RG-ACL-02 | bloquant | règles d'accès de FreeScout indisponibles | mettre à jour RefreshGlobal |
 | RG-ERR-01 | bloquant | erreur inattendue en construisant la page | lire `storage/logs/laravel.log` (le code y figure) |
 | RG-ERR-02 | bloquant | un contrôle de compatibilité a planté | lire `storage/logs/laravel.log` |
+| RG-ERR-03 | — | erreur en construisant le tableau de bord de toutes les boîtes | celui de Refresh s'affiche à la place ; lire `storage/logs/laravel.log` |
+| RG-ERR-04 | — | erreur en préparant la redirection après une suppression | FreeScout redirige comme d'habitude ; lire `storage/logs/laravel.log` |
 
 Exemples des deux états :
 

@@ -60,6 +60,14 @@ return [
         'RG-HOOK-15' => ['hook' => 'settings.sections', 'file' => 'app/Http/Controllers/SettingsController.php', 'needle' => "\\Eventy::filter('settings.sections'", 'severity' => 'degraded', 'source' => 'app/Http/Controllers/SettingsController.php:267'],
         'RG-HOOK-16' => ['hook' => 'settings.section_settings', 'file' => 'app/Http/Controllers/SettingsController.php', 'needle' => "\\Eventy::filter('settings.section_settings'", 'severity' => 'degraded', 'source' => 'app/Http/Controllers/SettingsController.php:250'],
         'RG-HOOK-17' => ['hook' => 'settings.view', 'file' => 'resources/views/settings/view.blade.php', 'needle' => "'settings.view'", 'severity' => 'degraded', 'source' => 'resources/views/settings/view.blade.php:27'],
+        // Dashboard for all mailboxes: FreeScout's filter, and Refresh's block that it replaces (class rf-dash)
+        'RG-HOOK-18' => ['hook' => 'dashboard.before', 'family' => 'hook_dash', 'file' => 'resources/views/secure/dashboard.blade.php', 'needle' => "@filter('dashboard.before'", 'severity' => 'degraded', 'source' => 'resources/views/secure/dashboard.blade.php:8'],
+        'RG-HOOK-19' => ['hook' => 'dashboard.before (Refresh)', 'family' => 'marker_dash', 'refresh' => true, 'file' => 'Providers/RefreshServiceProvider.php', 'needle' => "\\Eventy::addFilter('dashboard.before'", 'severity' => 'degraded', 'source' => 'Modules/Refresh/Providers/RefreshServiceProvider.php:491'],
+        'RG-HOOK-20' => ['hook' => '.rf-dash', 'family' => 'marker_dash', 'refresh' => true, 'file' => 'Resources/views/dashboard.blade.php', 'needle' => 'class="rf-dash"', 'severity' => 'degraded', 'source' => 'Modules/Refresh/Resources/views/dashboard.blade.php:13'],
+        // Deleting a ticket (Http/Middleware/AfterDelete.php): actions of FreeScout's conversations.ajax
+        'RG-HOOK-21' => ['hook' => 'conversations.ajax delete_conversation(_forever)', 'family' => 'hook_delete', 'file' => 'app/Http/Controllers/ConversationsController.php', 'needle' => "case 'delete_conversation_forever':", 'severity' => 'degraded', 'source' => 'app/Http/Controllers/ConversationsController.php:1944,1966,2164'],
+        // Refresh's dictionary of its phone strings (corrections of Resources/lang/refresh-fixes.php)
+        'RG-HOOK-22' => ['hook' => 'meta refresh-l10n', 'family' => 'marker_l10n', 'refresh' => true, 'file' => 'Providers/RefreshServiceProvider.php', 'needle' => 'meta name="refresh-l10n"', 'severity' => 'warning', 'source' => 'Modules/Refresh/Providers/RefreshServiceProvider.php:77-86'],
         'RG-HOOK-07' => ['hook' => 'refresh.rail_items', 'refresh' => true, 'file' => 'Providers/RefreshServiceProvider.php', 'needle' => "'refresh.rail_items'", 'severity' => 'degraded', 'source' => 'Modules/Refresh/Providers/RefreshServiceProvider.php:711'],
     ],
 
@@ -76,6 +84,12 @@ return [
         ], 'source' => 'app/Conversation.php:78-81,131'],
         // Automatic update only (degraded: the list works without them)
         'RG-CORE-07' => ['class' => 'App\Option', 'methods' => ['get', 'set'], 'severity' => 'degraded', 'source' => 'app/Option.php:35,75'],
+        // Dashboard for all mailboxes (degraded: Refresh's own dashboard is shown instead)
+        'RG-CORE-09' => ['class' => 'Modules\Refresh\Services\Views', 'methods' => ['query', 'labels'], 'refresh' => true, 'family' => 'core_refresh', 'severity' => 'degraded', 'source' => 'Modules/Refresh/Services/Views.php:89,99'],
+        'RG-CORE-10' => ['class' => 'Modules\Refresh\Services\Dashboard', 'methods' => ['chart', 'delta', 'duration'], 'refresh' => true, 'family' => 'core_refresh', 'severity' => 'degraded', 'source' => 'Modules/Refresh/Services/Dashboard.php:121,130,147'],
+        'RG-CORE-11' => ['class' => 'Modules\Refresh\Services\Settings', 'methods' => ['resolutionHours'], 'refresh' => true, 'family' => 'core_refresh', 'severity' => 'degraded', 'source' => 'Modules/Refresh/Services/Settings.php:26'],
+        // Deleting a ticket permanently in a bulk delete (degraded: the tickets stay in the trash)
+        'RG-CORE-12' => ['class' => 'App\Conversation', 'methods' => ['deleteForever'], 'constants' => ['App\Conversation::STATE_DELETED'], 'family' => 'core_delete', 'severity' => 'degraded', 'source' => 'app/Conversation.php:2156'],
         'RG-CORE-08' => ['classes' => ['ZipArchive', 'GuzzleHttp\Client', 'Symfony\Component\Process\Process', 'Symfony\Component\Process\PhpExecutableFinder'], 'severity' => 'degraded', 'source' => 'PHP zip extension (config/installer.php), vendor/guzzlehttp, vendor/symfony/process'],
     ],
 
@@ -84,6 +98,7 @@ return [
         'RG-ROUTE-01' => ['route' => 'conversations.view', 'severity' => 'blocking', 'source' => 'routes/web.php:63'],
         'RG-ROUTE-02' => ['route' => 'mailboxes.view', 'severity' => 'blocking', 'source' => 'routes/web.php:82'],
         'RG-ROUTE-03' => ['route' => 'refreshglobal.tickets', 'severity' => 'blocking', 'source' => 'Modules/RefreshGlobal/Http/routes.php'],
+        'RG-ROUTE-04' => ['route' => 'conversations.ajax', 'severity' => 'degraded', 'source' => 'routes/web.php:64'],
     ],
 
     // Tables / columns read. RG-DB-05 is the module's own table (saved views only).

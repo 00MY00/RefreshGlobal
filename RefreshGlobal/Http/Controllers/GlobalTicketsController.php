@@ -17,7 +17,7 @@ use Modules\RefreshGlobal\Services\MailboxAccess;
 class GlobalTicketsController extends Controller
 {
     /** Filter parameters; a request without any of them can load the user's default view. */
-    const FILTER_PARAMS = ['mb', 'status', 'assignee', 'q', 'sort', 'order', 'view'];
+    const FILTER_PARAMS = ['mb', 'status', 'assignee', 'q', 'rv', 'sort', 'order', 'view'];
 
     public function home()
     {
@@ -43,6 +43,7 @@ class GlobalTicketsController extends Controller
                 'status.*' => 'nullable|integer',
                 'assignee' => 'nullable|string|max:20',
                 'q'        => 'nullable|string|max:'.GlobalTicketQuery::MAX_QUERY_LENGTH,
+                'rv'       => 'nullable|string|max:30',
                 'sort'     => 'nullable|string|in:'.implode(',', array_keys(GlobalTicketQuery::sorts())),
                 'order'    => 'nullable|string|in:asc,desc',
                 'page'     => 'nullable|integer|min:1',
@@ -76,11 +77,17 @@ class GlobalTicketsController extends Controller
             }
             $conversations = $query->paginate(max(1, (int) config('refreshglobal.per_page', 30)))->appends($params);
 
+            // where to come back after deleting a ticket opened from this list (Http\Middleware\AfterDelete)
+            \Modules\RefreshGlobal\Http\Middleware\AfterDelete::rememberList(
+                $conversations->currentPage() > 1 ? $params + ['page' => $conversations->currentPage()] : $params,
+                $filters
+            );
+
             $counts_by_mailbox = $query->countsByMailbox();
             $counts_by_status = $query->countsByStatus();
 
             // The "Mailbox" column of the native table is printed by the module's hooks on this page only
-            RefreshGlobalServiceProvider::$show_mailbox_column = true;
+            RefreshGlobalServiceProvider::$show_mailbox_column = RefreshGlobalServiceProvider::mailboxColumnMode();
 
             // rendered here so that a rendering error is caught by safely() too
             return response(view('refreshglobal::tickets', [

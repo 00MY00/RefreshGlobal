@@ -30,7 +30,9 @@
         return route('refreshglobal.tickets', $p);
     };
     $rg_export = route('refreshglobal.export', $rg_params);
-    $rg_title = $active_view ? $active_view->name : __('refreshglobal::messages.title');
+    $rg_title = $active_view ? $active_view->name : ($filters['rview'] !== ''
+        ? \Modules\RefreshGlobal\Services\GlobalDashboard::viewLabel($filters['rview']).' · '.__('refreshglobal::messages.title')
+        : __('refreshglobal::messages.title'));
     $rg_first = $conversations->firstItem() ?: 0;
     $rg_last = $conversations->lastItem() ?: 0;
     $rg_sel = function ($list, $value) { return in_array((string) $value, array_map('strval', (array) $list), true) ? 'selected' : ''; };

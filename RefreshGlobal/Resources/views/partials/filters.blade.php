@@ -5,6 +5,10 @@
 <form class="{{ $form_class }}" id="rg-filters" method="get" action="{{ route('refreshglobal.tickets') }}">
     <input type="hidden" name="sort" value="{{ $filters['sort'] }}">
     <input type="hidden" name="order" value="{{ $filters['order'] }}">
+    @if ($filters['rview'] !== '')
+        {{-- Refresh view chosen on the dashboard: kept while filtering, removable --}}
+        <input type="hidden" name="rv" value="{{ $filters['rview'] }}">
+    @endif
     @if ($rg_is_refresh)
         <div class="rf-filters-head">
             <span class="rf-filters-title">{{ __('refreshglobal::messages.filters') }}</span>
@@ -12,6 +16,13 @@
         </div>
     @endif
     <div class="@if ($rg_is_refresh) rf-filters-body @else rg-filters-row @endif">
+        @if ($filters['rview'] !== '')
+            <div class="@if ($rg_is_refresh) rf-f @else form-group rg-f @endif rg-rview">
+                <label>{{ __('refreshglobal::messages.refresh_view') }}</label>
+                <span class="rg-rview-chip">{{ \Modules\RefreshGlobal\Services\GlobalDashboard::viewLabel($filters['rview']) }}
+                    <a href="{{ $rg_url([], ['rv', 'page']) }}" title="{{ __('refreshglobal::messages.remove') }}">&times;</a></span>
+            </div>
+        @endif
         <div class="@if ($rg_is_refresh) rf-f @else form-group rg-f @endif">
             @if ($rg_is_refresh)
                 <div class="rf-search"><i class="rf-i rf-i-search"></i><input type="text" name="q" value="{{ $filters['q'] }}" maxlength="200" placeholder="{{ __('refreshglobal::messages.search_placeholder') }}" class="rf-f-q"></div>

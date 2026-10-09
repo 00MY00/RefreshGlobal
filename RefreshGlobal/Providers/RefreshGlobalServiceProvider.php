@@ -13,7 +13,9 @@ use Illuminate\Support\ServiceProvider;
  *     menu.append (resources/views/layouts/app.blade.php:121)                 → "All mailboxes" menu entry
  *     refresh.rail_items (Modules/Refresh/Providers/RefreshServiceProvider.php:711) → same entry in Refresh's left bar
  *     conversations_table.col/th/td_before_conv_number
- *       (resources/views/conversations/conversations_table.blade.php:83,118,206) → "Mailbox" column, on its page only.
+ *       (resources/views/conversations/conversations_table.blade.php:83,118,206) → "Mailbox" column, on its page only;
+ *     dashboard.before (resources/views/secure/dashboard.blade.php:8)          → Refresh's dashboard for all mailboxes;
+ * - adds a middleware to the "web" group for the deletion of tickets (Http/Middleware/AfterDelete.php).
  */
 class RefreshGlobalServiceProvider extends ServiceProvider
 {
@@ -50,6 +52,52 @@ class RefreshGlobalServiceProvider extends ServiceProvider
         $this->registerSchedule();
         $this->registerShell();
         $this->registerSettings();
+        $this->registerDashboard();
+
+        // Deleting a ticket: where to go next, trash or permanent (Http\Middleware\AfterDelete). Added to the "web"
+        // group like Refresh's own middlewares (RefreshServiceProvider.php:55-57); it acts on conversations.ajax only.
+        $this->app['router']->pushMiddlewareToGroup('web', \Modules\RefreshGlobal\Http\Middleware\AfterDelete::class);
+    }
+
+    /** Dashboard HTML before Refresh's own filter runs (see registerDashboard()). */
+    protected static $dashboardBefore = null;
+
+    /**
+     * Refresh's "My dashboard" over all mailboxes. FreeScout's filter "dashboard.before"
+     * (resources/views/secure/dashboard.blade.php:8) runs its listeners by ascending priority
+     * (overrides/tormjens/eventy/src/Event.php:34-35); Refresh appends its block at the default priority 20
+     * (RefreshServiceProvider.php:491). At 19 the module notes the HTML before Refresh; at 21, if what Refresh added is
+     * its dashboard block (class "rf-dash"), that addition is replaced by the same dashboard for all mailboxes.
+     * Anything else (another module, a changed Refresh) is left untouched.
+     */
+    protected function registerDashboard()
+    {
+        \Eventy::addFilter('dashboard.before', function ($html) {
+            self::$dashboardBefore = (string) $html;
+
+            return $html;
+        }, 19);
+        \Eventy::addFilter('dashboard.before', function ($html) {
+            $before = self::$dashboardBefore;
+            self::$dashboardBefore = null;
+            try {
+                $html = (string) $html;
+                if ($before === null || !auth()->check() || !\Modules\RefreshGlobal\Services\Settings::globalDashboard()
+                    || !self::refreshViewsPanel() || !\Modules\RefreshGlobal\Services\GlobalDashboard::refreshApi()
+                    || strpos($html, $before) !== 0
+                    || strpos(substr($html, strlen($before)), 'class="rf-dash"') === false
+                ) {
+                    return $html;
+                }
+                $ours = \Modules\RefreshGlobal\Services\GlobalDashboard::render(auth()->user());
+
+                return $ours === '' ? $html : $before.$ours;
+            } catch (\Throwable $e) {
+                \Log::warning('[RefreshGlobal] [RG-ERR-03] dashboard for all mailboxes: '.$e->getMessage());
+
+                return $html;
+            }
+        }, 21);
     }
 
     /**
@@ -60,20 +108,17 @@ class RefreshGlobalServiceProvider extends ServiceProvider
      */
     protected function registerSettings()
     {
-        $keys = [\Modules\RefreshGlobal\Services\Settings::REPLACE_REFRESH_TICKETS, \Modules\RefreshGlobal\Services\Update\Updater::OPTION];
         \Eventy::addFilter('settings.sections', function ($sections) {
             $sections[self::ALIAS] = ['title' => 'RefreshGlobal', 'icon' => 'inbox', 'order' => 160];
 
             return $sections;
         }, 40);
-        \Eventy::addFilter('settings.section_settings', function ($settings, $section) use ($keys) {
+        \Eventy::addFilter('settings.section_settings', function ($settings, $section) {
             if ($section !== self::ALIAS) {
                 return $settings;
             }
-            $settings[$keys[0]] = \Modules\RefreshGlobal\Services\Settings::replaceRefreshTickets();
-            $settings[$keys[1]] = \Modules\RefreshGlobal\Services\Update\Updater::enabled();
 
-            return $settings;
+            return array_merge($settings, \Modules\RefreshGlobal\Services\Settings::sectionValues());
         }, 20, 2);
         \Eventy::addFilter('settings.view', function ($view, $section) {
             return $section === self::ALIAS ? 'refreshglobal::settings' : $view;
@@ -110,6 +155,22 @@ class RefreshGlobalServiceProvider extends ServiceProvider
                 // optional
             }
         });
+        // After Refresh's dictionary (its "layout.head" action, default priority 20): corrections of wrong strings
+        // (Resources/lang/refresh-fixes.php), applied to the meta before any script reads it.
+        \Eventy::addAction('layout.head', function () {
+            try {
+                $fixes = (array) ((require __DIR__.'/../Resources/lang/refresh-fixes.php')[app()->getLocale()] ?? []);
+                if (!$fixes || !auth()->check() || !\App\Module::isActive('refresh')) {
+                    return;
+                }
+                echo '<script '.\Helper::cspNonceAttr().'>(function(f){var m=document.querySelector(\'meta[name="refresh-l10n"]\');'
+                    .'if(!m){return;}try{var d=JSON.parse(m.getAttribute("content")),c=0;for(var k in f){if(d[k]===f[k][0]){d[k]=f[k][1];c++;}}'
+                    .'if(c){m.setAttribute("content",JSON.stringify(d));}}catch(e){}})('
+                    .json_encode($fixes, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP).');</script>'."\n";
+            } catch (\Throwable $e) {
+                // optional
+            }
+        }, 30);
     }
 
     /**
@@ -252,12 +313,26 @@ class RefreshGlobalServiceProvider extends ServiceProvider
         // closes the badge line at 500, RefreshServiceProvider.php:396-411); CSS shows either this badge or the column.
         // Class rf-badge: Refresh's phone version turns the row's .rf-badge elements into pills
         // (Modules/Refresh/Public/js/mobile.js:592), so the mailbox also appears on phones.
+        // Setting "show the mailbox above each ticket" (on by default): name and address. $show_mailbox_column is
+        // true (column) or 'badge' (column + badge), set by the page before rendering the table.
         \Eventy::addAction('conversations_table.before_subject', function ($conversation) {
-            if (self::$show_mailbox_column && $conversation) {
-                $name = self::mailboxName($conversation);
-                echo '<span class="rf-badge rg-mailbox-badge rg-subject-mailbox" title="'.e($name).'">'.e($name).'</span>';
+            if (self::$show_mailbox_column !== 'badge' || !$conversation) {
+                return;
             }
+            $name = self::mailboxName($conversation);
+            $email = $conversation->relationLoaded('mailbox') && $conversation->mailbox ? (string) $conversation->mailbox->email : '';
+            $text = e($name);
+            if ($email !== '' && mb_strtolower($email) !== mb_strtolower($name)) {
+                $text .= ' <span class="rg-mailbox-email">'.e($email).'</span>';
+            }
+            echo '<span class="rf-badge rg-mailbox-badge rg-subject-mailbox" title="'.e(trim($name.' '.$email)).'">'.$text.'</span>';
         }, 0);
+    }
+
+    /** Value of $show_mailbox_column for the module's lists: with or without the badge above each ticket. */
+    public static function mailboxColumnMode()
+    {
+        return \Modules\RefreshGlobal\Services\Settings::showMailbox() ? 'badge' : true;
     }
 
     /** Mailbox name from the relation eager-loaded by GlobalTicketQuery::paginate() (no query per row). */

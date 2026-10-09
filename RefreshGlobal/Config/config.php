@@ -29,4 +29,17 @@ return [
     // With Refresh: hide its "Tickets" entry (left bar, phone tab bar) and keep only "All mailboxes" (default before
     // an administrator changes it on the diagnostic page).
     'replace_refresh_tickets_default' => (bool) env('REFRESHGLOBAL_REPLACE_REFRESH_TICKETS', false),
+
+    // With Refresh: its "My dashboard" shows all the user's mailboxes (Refresh alone shows the first one only).
+    'global_dashboard_default' => (bool) env('REFRESHGLOBAL_GLOBAL_DASHBOARD', true),
+
+    // After deleting a ticket: "list" = back to the "All mailboxes" page, "next" = next ticket of that list.
+    'after_delete_default' => env('REFRESHGLOBAL_AFTER_DELETE', 'list'),
+
+    // Deleting a ticket: false = to FreeScout's trash (can be restored), true = removed with its e-mails at once
+    // (FreeScout only, the mail server is not touched).
+    'delete_permanently_default' => (bool) env('REFRESHGLOBAL_DELETE_PERMANENTLY', false),
+
+    // Mailbox badge (name and address) above each ticket on the "All mailboxes" list and the dashboard.
+    'show_mailbox_default' => (bool) env('REFRESHGLOBAL_SHOW_MAILBOX', true),
 ];

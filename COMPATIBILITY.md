@@ -30,6 +30,9 @@ Chacun est contrôlé par `php artisan refreshglobal:check`.
 | Entrée dans le tiroir des vues de Refresh (`mailbox.after_sidebar_buttons` dans sa vue surchargée) | la vue surchargée par Refresh peut perdre ce hook | sur téléphone, plus d'accès depuis le tiroir ; l'adresse `/refresh-global/tickets` reste valable (RG-HOOK-09) |
 | Onglet du téléphone et option « remplacer Tickets » (`.rf-m-tab-tickets`, `fd-all-tickets`) | éléments internes des scripts de Refresh | l'onglet n'apparaît plus ou l'entrée de Refresh n'est plus masquée ; la page fonctionne (RG-HOOK-13, RG-HOOK-14) |
 | `refresh.rail_items` | point d'extension documenté de Refresh | icône remplacée par le lien générique du menu (RG-HOOK-07) |
+| Tableau de bord de toutes les boîtes (bloc `rf-dash` de Refresh, `Views::query`, `Dashboard::chart/delta/duration`) | balisage et classes internes de Refresh, formules recopiées de `Dashboard::stats()` | le tableau de bord de Refresh s'affiche tel quel (première boîte) (RG-HOOK-18…20, RG-CORE-09…11) |
+| Suppression d'un ticket (`conversations.ajax`, actions `delete_conversation*`) | noms d'actions internes de FreeScout | comportement de FreeScout (retour à la boîte, corbeille) (RG-HOOK-21, RG-ROUTE-04, RG-CORE-12) |
+| Correction des textes français de Refresh (`<meta name="refresh-l10n">`) | balise interne de Refresh | textes d'origine de Refresh (RG-HOOK-22, avertissement) |
 
 ## Mise à jour automatique
 

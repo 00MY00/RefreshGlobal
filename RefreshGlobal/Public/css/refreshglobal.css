@@ -17,10 +17,18 @@
 /* Refresh's card layout: the mailbox goes next to the badges (.rg-subject-mailbox) and the column is collapsed,
    the same way Refresh collapses the native columns it does not use */
 .rg-subject-mailbox { display: none; }
-.rf-list-layout:not(.rf-layout-table) .rg-subject-mailbox { display: inline-block; margin: 0 6px 4px 0; max-width: 220px; }
-.rf-list-layout:not(.rf-layout-table) .table-conversations colgroup col.rg-col-mailbox { width: 0 !important; }
+.rf-list-layout:not(.rf-layout-table) .rg-subject-mailbox,
+.rg-dash .rg-subject-mailbox { display: inline-block; margin: 0 6px 4px 0; max-width: 360px; }
+.rg-mailbox-email { opacity: .75; margin-left: 4px; }
+.rf-list-layout:not(.rf-layout-table) .table-conversations colgroup col.rg-col-mailbox,
+.rg-dash .table-conversations colgroup col.rg-col-mailbox { width: 0 !important; }
 .rf-list-layout:not(.rf-layout-table) .table-conversations th.rg-col-mailbox,
-.rf-list-layout:not(.rf-layout-table) .table-conversations td.rg-col-mailbox { width: 0 !important; max-width: 0; padding: 0 !important; border: 0 !important; font-size: 0; overflow: hidden; }
+.rf-list-layout:not(.rf-layout-table) .table-conversations td.rg-col-mailbox,
+.rg-dash .table-conversations th.rg-col-mailbox,
+.rg-dash .table-conversations td.rg-col-mailbox { width: 0 !important; max-width: 0; padding: 0 !important; border: 0 !important; font-size: 0; overflow: hidden; }
+/* chosen Refresh view (dashboard tile) in the filters panel */
+.rg-rview-chip { display: inline-block; padding: 2px 8px; border-radius: 10px; background: var(--fd-bg-soft, #f1f5f9); border: 1px solid var(--fd-border, #e2e8f0); }
+.rg-rview-chip a { margin-left: 6px; text-decoration: none; font-weight: bold; }
 
 /* The native footer pager loads FreeScout folders by ajax: the module paginates on the server instead */
 [data-rg-page="tickets"] .table-conversations tfoot .conv-nav .table-pager { display: none; }

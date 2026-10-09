@@ -8,8 +8,8 @@
     $rg_current = \Modules\RefreshGlobal\Services\Update\Updater::currentVersion();
     $rg_requested = \Modules\RefreshGlobal\Services\Update\Updater::pendingRequest();
     $rg_refresh = \App\Module::isActive('refresh');
-    $rg_k_replace = \Modules\RefreshGlobal\Services\Settings::REPLACE_REFRESH_TICKETS;
-    $rg_k_auto = \Modules\RefreshGlobal\Services\Update\Updater::OPTION;
+    $rg_s = '\Modules\RefreshGlobal\Services\Settings';
+    $rg_need_refresh = $rg_refresh ? '' : __('refreshglobal::messages.refresh_required');
 @endphp
 <p class="margin-top">{{ __('refreshglobal::messages.settings_intro') }}</p>
 <p>
@@ -21,30 +21,22 @@
     {{ csrf_field() }}
 
     <h3 class="subheader">{{ __('refreshglobal::messages.navigation') }}</h3>
-    <div class="form-group">
-        <label class="col-sm-2 control-label">{{ __('refreshglobal::messages.menu') }}</label>
-        <div class="col-sm-8">
-            <input type="hidden" name="settings[{{ $rg_k_replace }}]" value="0">
-            <label class="checkbox">
-                <input type="checkbox" name="settings[{{ $rg_k_replace }}]" value="1" @if (!empty($settings[$rg_k_replace])) checked @endif @if (!$rg_refresh) disabled @endif>
-                {{ __('refreshglobal::messages.replace_tickets') }}
-            </label>
-            <p class="form-help">{{ __('refreshglobal::messages.replace_tickets_help') }}@if (!$rg_refresh) {{ __('refreshglobal::messages.refresh_required') }}@endif</p>
-        </div>
-    </div>
+    @include('refreshglobal::partials.switch', ['key' => $rg_s::REPLACE_REFRESH_TICKETS, 'label' => __('refreshglobal::messages.replace_tickets_label'),
+        'help' => __('refreshglobal::messages.replace_tickets').'. '.__('refreshglobal::messages.replace_tickets_help'), 'extra_help' => $rg_need_refresh, 'disabled' => !$rg_refresh])
+    @include('refreshglobal::partials.switch', ['key' => $rg_s::GLOBAL_DASHBOARD, 'label' => __('refreshglobal::messages.global_dashboard'),
+        'help' => __('refreshglobal::messages.global_dashboard_help'), 'extra_help' => $rg_need_refresh, 'disabled' => !$rg_refresh])
+    @include('refreshglobal::partials.switch', ['key' => $rg_s::SHOW_MAILBOX, 'label' => __('refreshglobal::messages.show_mailbox'),
+        'help' => __('refreshglobal::messages.show_mailbox_help')])
+
+    <h3 class="subheader">{{ __('refreshglobal::messages.ticket_deletion') }}</h3>
+    @include('refreshglobal::partials.switch', ['key' => $rg_s::DELETE_GOES_NEXT, 'label' => __('refreshglobal::messages.delete_goes_next'),
+        'help' => __('refreshglobal::messages.delete_goes_next_help')])
+    @include('refreshglobal::partials.switch', ['key' => $rg_s::DELETE_PERMANENTLY, 'label' => __('refreshglobal::messages.delete_permanently'),
+        'help' => __('refreshglobal::messages.delete_permanently_help')])
 
     <h3 class="subheader">{{ __('refreshglobal::messages.auto_update') }}</h3>
-    <div class="form-group">
-        <label class="col-sm-2 control-label">{{ __('refreshglobal::messages.auto_update') }}</label>
-        <div class="col-sm-8">
-            <input type="hidden" name="settings[{{ $rg_k_auto }}]" value="0">
-            <label class="checkbox">
-                <input type="checkbox" name="settings[{{ $rg_k_auto }}]" value="1" @if (!empty($settings[$rg_k_auto])) checked @endif>
-                {{ __('refreshglobal::messages.turn_on') }}
-            </label>
-            <p class="form-help">{{ __('refreshglobal::messages.auto_update_help', ['time' => (string) config('refreshglobal.auto_update_time', '03:30')]) }}</p>
-        </div>
-    </div>
+    @include('refreshglobal::partials.switch', ['key' => \Modules\RefreshGlobal\Services\Update\Updater::OPTION, 'label' => __('refreshglobal::messages.auto_update'),
+        'help' => __('refreshglobal::messages.auto_update_help', ['time' => (string) config('refreshglobal.auto_update_time', '03:30')])])
 
     <div class="form-group">
         <div class="col-sm-6 col-sm-offset-2">

@@ -29,6 +29,13 @@ abstract class TestCase extends \Illuminate\Foundation\Testing\TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        // In a real request the HTTP kernel exists before the providers boot. In tests it is built later and resets the
+        // "web" group (Illuminate\Foundation\Http\Kernel::__construct): the module's middleware is added again.
+        $this->app->make(\Illuminate\Contracts\Http\Kernel::class);
+        $router = $this->app['router'];
+        if (!in_array(\Modules\RefreshGlobal\Http\Middleware\AfterDelete::class, $router->getMiddlewareGroups()['web'] ?? [], true)) {
+            $router->pushMiddlewareToGroup('web', \Modules\RefreshGlobal\Http\Middleware\AfterDelete::class);
+        }
         $prefix = 'RGT'.Fixtures::uid();
         $this->s = Fixtures::scenario($prefix);
         $this->s['prefix'] = $prefix;

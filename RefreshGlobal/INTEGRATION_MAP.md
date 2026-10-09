@@ -219,6 +219,21 @@ du module.
 | chargement des scripts de module dans le lot de la page | filtre `javascripts`, `resources/views/layouts/app.blade.php:284` | `shell.js` chargé sur toutes les pages (RG-HOOK-11) |
 | réglages lus par le script | action `layout.head`, `layouts/app.blade.php:21` (même méthode que Refresh pour ses traductions, `RefreshServiceProvider.php:77-86`) | `<meta name="refreshglobal">` écrit seulement quand l'interface de Refresh est présente (RG-HOOK-12) |
 
+### 2.4 ter Tableau de bord, suppression d'un ticket, textes (RefreshGlobal 1.4.0)
+
+| Élément | Fichier:ligne | Utilisation |
+|---|---|---|
+| filtre **`dashboard.before`** de FreeScout | `resources/views/secure/dashboard.blade.php:8` (`@filter('dashboard.before', '')`) | point d'insertion du tableau de bord (RG-HOOK-18) |
+| ordre des écouteurs Eventy | `overrides/tormjens/eventy/src/Event.php:34-35` (priorité croissante) ; priorité par défaut 20 : `vendor/tormjens/eventy/src/Events.php:58, 93` | à 19 le module note le HTML reçu ; à 21 il remplace **seulement** la partie ajoutée par Refresh, et seulement si elle contient `class="rf-dash"` |
+| tableau de bord de Refresh | `RefreshServiceProvider.php:491-523` (`$user->mailboxesCanView()->first()` : **première boîte seulement**, aucun paramètre) ; vue `Resources/views/dashboard.blade.php:13` (`<div class="rf-dash">`) | remplacé par la même présentation pour toutes les boîtes (RG-HOOK-19, RG-HOOK-20) ; Refresh lui-même n'est pas modifié |
+| `Views::query($mailbox_id, $view, $user)`, `Views::labels()` | `Modules/Refresh/Services/Views.php:99, 89` | tuiles et filtre `rv` avec la définition de Refresh, boîte par boîte (RG-CORE-09) |
+| `Dashboard::chart()`, `delta()`, `duration()` ; formules de `Dashboard::stats()` | `Modules/Refresh/Services/Dashboard.php:147, 121, 130` ; `:16-117` | graphique et formats de Refresh ; chiffres recalculés sur plusieurs boîtes avec les mêmes formules (RG-CORE-10) |
+| `Settings::resolutionHours()` | `Modules/Refresh/Services/Settings.php:26` | SLA de « Résolution dans le cadre du SLA » (RG-CORE-11) |
+| action **`delete_conversation`**, `delete_conversation_forever`, `bulk_delete_conversation` de `conversations.ajax` | `app/Http/Controllers/ConversationsController.php:1944, 1966, 2164` ; route `routes/web.php:64` ; redirection d'origine `getRedirectUrlAfterDelete()` (même fichier) | middleware `Http/Middleware/AfterDelete.php` ajouté au groupe `web` (même méthode que Refresh, `RefreshServiceProvider.php:55-57`) : change `redirect_url` d'une réponse réussie ; « définitif » = action `delete_conversation_forever` de FreeScout (même contrôle de droits) ; suppression groupée : `Conversation::deleteForever()` (`app/Conversation.php:2156`) sur les seuls tickets que FreeScout vient de mettre à la corbeille (RG-HOOK-21, RG-ROUTE-04, RG-CORE-12) |
+| langue de l'utilisateur | `app/Http/Middleware/Localize.php` (session `user_locale`) | — |
+| dictionnaire des scripts de Refresh | `RefreshServiceProvider.php:77-86` (`<meta name="refresh-l10n">` lu tel quel dans `Resources/lang/<langue>.json`), lu par `rfT()` (`Public/js/mobile.js:15-21`), textes `Created :time ago` / `Closed :time ago` (`mobile.js:612-614`, `fr.json:49, 65`) | aucun point d'extension : action `layout.head` à la priorité 30 (après Refresh) qui corrige le contenu de la balise avant tout script, seulement pour les valeurs fautives connues (`Resources/lang/refresh-fixes.php`) (RG-HOOK-22) |
+| traductions de FreeScout surchargées par Refresh | `RefreshServiceProvider.php:170-198`, `Resources/lang/overrides/fr.php` (`*.Mailbox` → « Tous les tickets ») | le module utilise ses propres textes pour « Boîte » |
+
 ### 2.5 Points d'extension exposés par Refresh
 
 | Point | Fichier:ligne | Utilisation |
@@ -253,6 +268,9 @@ du module.
 | `refresh.rail_items` | `RefreshServiceProvider.php:711` | stable (documenté) | icône dans la barre | lien recopié depuis le menu natif (RG-HOOK-07) |
 | `.rf-badge` → pastille mobile | `Modules/Refresh/Public/js/mobile.js:592` | fragile | boîte visible sur téléphone | la colonne reste visible sur ordinateur |
 | version FreeScout / Refresh | `config/app.php:21`, `module.json` | — | plages testées | avertissement (RG-ENV-01, RG-REF-02) |
+| `dashboard.before` + bloc `rf-dash` de Refresh | `secure/dashboard.blade.php:8`, `RefreshServiceProvider.php:491`, `dashboard.blade.php:13` | fragile (non documenté) | tableau de bord de toutes les boîtes | tableau de bord de Refresh tel quel (RG-HOOK-18…20, RG-CORE-09…11, RG-ERR-03) |
+| actions de suppression de `conversations.ajax` | `ConversationsController.php:1944-1990, 2164-2200` | stable | retour à la liste, définitif | comportement de FreeScout (RG-HOOK-21, RG-ROUTE-04, RG-CORE-12, RG-ERR-04) |
+| `<meta name="refresh-l10n">` | `RefreshServiceProvider.php:77-86` | fragile | correction de deux textes français | textes de Refresh d'origine (RG-HOOK-22) |
 
 ### 3.2 Intégrable proprement
 
@@ -265,9 +283,11 @@ du module.
 
 * **Recherche de la barre du haut** de Refresh : elle cible toujours la vue « Tous les tickets » de la première boîte
   (`RefreshServiceProvider.php:876, 979`). La page globale a sa propre recherche.
-* **Fil d'Ariane et « ticket suivant »** sur la page d'un ticket : ils reviennent à la dernière vue Refresh
-  (cookie `rf_last_view`, `RefreshServiceProvider.php:745-747`, `Http/Middleware/ViewNextRedirect.php:51-56`),
-  pas à la page globale.
+* **Fil d'Ariane et « ticket suivant » après fermeture** sur la page d'un ticket : ils reviennent à la dernière vue
+  Refresh (cookie `rf_last_view`, `RefreshServiceProvider.php:745-747`, `Http/Middleware/ViewNextRedirect.php:51-56`),
+  pas à la page globale. (La **suppression** d'un ticket, elle, revient à la page globale depuis 1.4.0.)
+* **Tableau de bord de Refresh** : aucun paramètre pour lui donner d'autres boîtes ; le module affiche à la place le
+  même tableau de bord calculé sur toutes les boîtes (2.4 ter).
 * **Menus « Agent » des cartes** : la liste des agents vient de la boîte courante ou de la première boîte
   (`RefreshServiceProvider.php:728-733`). Sur la page globale, un ticket d'une autre boîte peut proposer des agents
   de la première boîte ; FreeScout contrôle l'assignation côté serveur (`conversations.ajax`).
@@ -281,7 +301,8 @@ du module.
 
 La liste ci-dessus est codée dans `Config/integration.php` (une seule source) et contrôlée par
 `Services/Compatibility/` : versions (RG-ENV-01, RG-REF-02), présence de Refresh (RG-REF-01), fichiers
-(RG-CSS-01, RG-JS-01), vues (RG-VIEW-01…05), hooks — en relisant le fichier qui les déclenche — (RG-HOOK-01…09),
-classes / méthodes / constantes (RG-CORE-01…06), routes (RG-ROUTE-01…03), tables / colonnes (RG-DB-01…05), règles
+(RG-CSS-01, RG-JS-01), vues (RG-VIEW-01…05), hooks et éléments de Refresh — en relisant le fichier qui les
+contient — (RG-HOOK-01…22), classes / méthodes / constantes de FreeScout et de Refresh (RG-CORE-01…12), routes
+(RG-ROUTE-01…04), tables / colonnes (RG-DB-01…05), règles
 d'accès (RG-ACL-01, RG-ACL-02). Après une mise à jour de FreeScout ou de Refresh : relancer la commande, puis
 corriger les lignes en échec (et les références de ce document).

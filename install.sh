@@ -33,7 +33,7 @@ set -Eeuo pipefail   # -E : le piège d'erreur s'applique aussi dans les fonctio
 # ---------------------------------------------------------------------------------------------------------------
 REPO_URL="${RG_REPO_URL:-https://github.com/00MY00/RefreshGlobal}"
 
-SCRIPT_VERSION="1.3.0"
+SCRIPT_VERSION="1.4.0"
 MODULE_NAME="RefreshGlobal"
 MODULE_ALIAS="refreshglobal"
 MODULE_TABLE="refreshglobal_saved_views"
