@@ -1,7 +1,6 @@
 # RefreshGlobal — "All mailboxes" for FreeScout
 
-> **Repository address**: `https://github.com/OWNER/RefreshGlobal`
-> (set it when publishing: it is the only value to replace here, together with `REPO_URL` at the top of `install.sh`).
+> **Repository**: https://github.com/00MY00/RefreshGlobal
 
 [Version française](README.md)
 
@@ -55,14 +54,14 @@ there is no PowerShell installer; use the manual installation.
 Add to an existing FreeScout (one command):
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/OWNER/RefreshGlobal/main/install.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/00MY00/RefreshGlobal/main/install.sh | sudo bash
 ```
 
 Full install on a blank Ubuntu/Debian server (runs FreeScout's official installer, then RefreshGlobal; Refresh too
 if you give its official archive):
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/OWNER/RefreshGlobal/main/install.sh | sudo bash -s -- --full [--refresh-zip=/root/Refresh.zip]
+curl -fsSL https://raw.githubusercontent.com/00MY00/RefreshGlobal/main/install.sh | sudo bash -s -- --full [--refresh-zip=/root/Refresh.zip]
 ```
 
 Manual install (no `curl | bash`): download `RefreshGlobal.zip` and `SHA256SUMS` from the releases page, check with
@@ -79,7 +78,7 @@ Modules/RefreshGlobal` and activate it in **Manage › Modules**.
 ## 7. Updating
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/OWNER/RefreshGlobal/main/install.sh | sudo bash -s -- --update
+curl -fsSL https://raw.githubusercontent.com/00MY00/RefreshGlobal/main/install.sh | sudo bash -s -- --update
 ```
 
 After every Refresh or FreeScout update: 1. `php artisan refreshglobal:check`, 2. read the report, 3. fix the failed

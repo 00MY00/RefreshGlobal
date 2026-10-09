@@ -31,7 +31,7 @@ set -Eeuo pipefail   # -E : le piège d'erreur s'applique aussi dans les fonctio
 # Adresse du dépôt Git : à renseigner à la publication (une seule variable, reprise dans le README).
 # Peut aussi être donnée par la variable d'environnement RG_REPO_URL.
 # ---------------------------------------------------------------------------------------------------------------
-REPO_URL="${RG_REPO_URL:-https://github.com/OWNER/RefreshGlobal}"
+REPO_URL="${RG_REPO_URL:-https://github.com/00MY00/RefreshGlobal}"
 
 SCRIPT_VERSION="1.0.0"
 MODULE_NAME="RefreshGlobal"

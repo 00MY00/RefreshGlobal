@@ -1,7 +1,6 @@
 # RefreshGlobal — « Toutes les boîtes » pour FreeScout
 
-> **Adresse du dépôt** : `https://github.com/OWNER/RefreshGlobal`
-> (à renseigner à la publication : c'est la seule valeur à remplacer ici, avec `REPO_URL` en haut de `install.sh`).
+> **Dépôt** : https://github.com/00MY00/RefreshGlobal
 
 [English version](README.en.md)
 
@@ -63,7 +62,7 @@ yet »). Il n'y a donc pas d'installeur `install.ps1` ; sous Windows, utilisez l
 Sur le serveur FreeScout, en SSH :
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/OWNER/RefreshGlobal/main/install.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/00MY00/RefreshGlobal/main/install.sh | sudo bash
 ```
 
 Le script trouve FreeScout (sinon : `… | sudo bash -s -- --path=/var/www/html`), sauvegarde la base et le module,
@@ -84,7 +83,7 @@ télécharge la dernière version, l'active, vérifie la compatibilité et affic
 Sur un serveur Ubuntu ou Debian neuf, avec un nom de domaine pointant vers lui :
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/OWNER/RefreshGlobal/main/install.sh | sudo bash -s -- --full
+curl -fsSL https://raw.githubusercontent.com/00MY00/RefreshGlobal/main/install.sh | sudo bash -s -- --full
 ```
 
 Le script lance **le script officiel de FreeScout** (il pose ses propres questions : domaine, confirmations
@@ -95,7 +94,7 @@ Pour installer aussi Refresh, téléchargez d'abord son archive officielle
 ([Refresh.zip](https://github.com/altmenorg/freescout-refresh/releases/latest/download/Refresh.zip)) puis :
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/OWNER/RefreshGlobal/main/install.sh | sudo bash -s -- --full --refresh-zip=/root/Refresh.zip
+curl -fsSL https://raw.githubusercontent.com/00MY00/RefreshGlobal/main/install.sh | sudo bash -s -- --full --refresh-zip=/root/Refresh.zip
 ```
 
 Sans `--refresh-zip`, RefreshGlobal fonctionne avec le style FreeScout standard (et le dit clairement).
@@ -107,7 +106,7 @@ Sans `--refresh-zip`, RefreshGlobal fonctionne avec le style FreeScout standard 
 2. Vérifier : `sha256sum -c SHA256SUMS --ignore-missing`
 3. **Soit** lancer l'installeur après l'avoir lu :
    ```bash
-   curl -fsSLO https://raw.githubusercontent.com/OWNER/RefreshGlobal/main/install.sh
+   curl -fsSLO https://raw.githubusercontent.com/00MY00/RefreshGlobal/main/install.sh
    less install.sh
    sudo bash install.sh --source=RefreshGlobal.zip
    ```
@@ -142,7 +141,7 @@ Réglages facultatifs dans le `.env` de FreeScout (puis `php artisan freescout:c
 **Mettre à jour RefreshGlobal** (les vues enregistrées sont conservées) :
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/OWNER/RefreshGlobal/main/install.sh | sudo bash -s -- --update
+curl -fsSL https://raw.githubusercontent.com/00MY00/RefreshGlobal/main/install.sh | sudo bash -s -- --update
 ```
 
 (`--version=1.2.3` pour une version précise.)
@@ -161,10 +160,10 @@ liens vers les boîtes (état « bloquant »).
 
 ```bash
 # désactiver le module (propose de supprimer sa table et ses fichiers ; rien d'autre n'est touché)
-curl -fsSL https://raw.githubusercontent.com/OWNER/RefreshGlobal/main/install.sh | sudo bash -s -- --uninstall
+curl -fsSL https://raw.githubusercontent.com/00MY00/RefreshGlobal/main/install.sh | sudo bash -s -- --uninstall
 
 # revenir à l'état d'avant la dernière installation / mise à jour
-curl -fsSL https://raw.githubusercontent.com/OWNER/RefreshGlobal/main/install.sh | sudo bash -s -- --rollback
+curl -fsSL https://raw.githubusercontent.com/00MY00/RefreshGlobal/main/install.sh | sudo bash -s -- --rollback
 ```
 
 - Mode non interactif : `--yes` (la table est alors **conservée**, sauf `--drop-tables` ; les fichiers aussi, sauf `--remove-files`).
