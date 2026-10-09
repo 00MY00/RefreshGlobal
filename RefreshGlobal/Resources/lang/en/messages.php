@@ -167,4 +167,11 @@ return [
     'delete_permanently_help'      => 'Off (default): a deleted ticket goes to FreeScout’s trash and can be restored. On: the ticket and its e-mails are removed from FreeScout at once, without the trash (cannot be undone). The e-mails on the mail server are not touched.',
     'refresh_view'                 => 'Refresh view',
     'remove'                       => 'Remove',
+    'check_update'                 => 'Check for updates',
+    'check_update_help'            => 'Looks now for a newer version of RefreshGlobal (nothing is installed).',
+    'last_check'                   => 'Last check: :time',
+    'update_check_available'       => 'Version :version is available (installed: :current). Click “Update now” to install it safely.',
+    'update_check_up_to_date'      => 'RefreshGlobal is up to date (:version).',
+    'update_check_incompatible'    => 'Version :version is available but requires FreeScout :required or later: update FreeScout first.',
+    'update_check_failed'          => 'Could not check for updates: :error',
 ];

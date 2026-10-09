@@ -2,6 +2,14 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.4.1] — 2026-10-09
+
+### Ajouté
+- Bouton **« Rechercher une mise à jour »** (Gérer › Paramètres › RefreshGlobal et page de diagnostic) : lit tout
+  de suite le `module.json` de la dernière version publiée (délai 15 s, rien n'est installé) et indique si une
+  version plus récente existe, si elle demande un FreeScout plus récent, ou pourquoi la recherche a échoué. Date de
+  la dernière recherche affichée.
+
 ## [1.4.0] — 2026-10-09
 
 ### Ajouté

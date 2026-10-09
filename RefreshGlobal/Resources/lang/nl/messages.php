@@ -161,4 +161,11 @@ return [
     'delete_permanently_help'      => 'Uit (standaard): een verwijderd ticket gaat naar de prullenbak van FreeScout en kan worden hersteld. Aan: het ticket en zijn e-mails worden meteen uit FreeScout verwijderd, zonder prullenbak (onomkeerbaar). De e-mails op de mailserver blijven onaangeroerd.',
     'refresh_view'                 => 'Refresh-weergave',
     'remove'                       => 'Verwijderen',
+    'check_update'                 => 'Zoeken naar updates',
+    'check_update_help'            => 'Zoekt nu naar een nieuwere versie van RefreshGlobal (er wordt niets geïnstalleerd).',
+    'last_check'                   => 'Laatste zoekactie: :time',
+    'update_check_available'       => 'Versie :version is beschikbaar (geïnstalleerd: :current). Klik op „Nu bijwerken” om ze veilig te installeren.',
+    'update_check_up_to_date'      => 'RefreshGlobal is bijgewerkt (:version).',
+    'update_check_incompatible'    => 'Versie :version is beschikbaar maar vereist FreeScout :required of nieuwer: werk eerst FreeScout bij.',
+    'update_check_failed'          => 'Zoeken naar updates mislukt: :error',
 ];

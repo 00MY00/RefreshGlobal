@@ -161,4 +161,11 @@ return [
     'delete_permanently_help'      => 'Aus (Standard): ein gelöschtes Ticket kommt in den Papierkorb von FreeScout und kann wiederhergestellt werden. Ein: das Ticket und seine E-Mails werden sofort aus FreeScout entfernt, ohne Papierkorb (nicht rückgängig zu machen). Die E-Mails auf dem Mailserver bleiben unberührt.',
     'refresh_view'                 => 'Refresh-Ansicht',
     'remove'                       => 'Entfernen',
+    'check_update'                 => 'Nach Aktualisierungen suchen',
+    'check_update_help'            => 'Sucht jetzt nach einer neueren Version von RefreshGlobal (es wird nichts installiert).',
+    'last_check'                   => 'Letzte Suche: :time',
+    'update_check_available'       => 'Version :version ist verfügbar (installiert: :current). Klicken Sie auf „Jetzt aktualisieren“, um sie sicher zu installieren.',
+    'update_check_up_to_date'      => 'RefreshGlobal ist aktuell (:version).',
+    'update_check_incompatible'    => 'Version :version ist verfügbar, erfordert aber FreeScout :required oder neuer: zuerst FreeScout aktualisieren.',
+    'update_check_failed'          => 'Suche nach Aktualisierungen nicht möglich: :error',
 ];

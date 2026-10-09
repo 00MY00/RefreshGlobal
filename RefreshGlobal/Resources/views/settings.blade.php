@@ -56,6 +56,15 @@
                     @if (version_compare($rg_update['latest'], $rg_current, '>'))<span class="label label-info">{{ __('refreshglobal::messages.update_available') }}</span>@endif
                 @endif
             </p>
+            @if (!empty($rg_update['last_check_at']))
+                <p class="form-help">{{ __('refreshglobal::messages.last_check', ['time' => \Carbon\Carbon::parse($rg_update['last_check_at'])->format('Y-m-d H:i')]) }}</p>
+            @endif
+            <form method="POST" action="{{ route('refreshglobal.check_update') }}" class="margin-bottom-10">
+                {{ csrf_field() }}
+                <input type="hidden" name="back" value="settings">
+                <button type="submit" class="btn btn-default">{{ __('refreshglobal::messages.check_update') }}</button>
+            </form>
+            <p class="form-help">{{ __('refreshglobal::messages.check_update_help') }}</p>
             @if (!empty($rg_update['last_result']))
                 <p class="form-help @if (in_array($rg_update['last_result'], ['rolled_back', 'failed'])) text-danger @endif">
                     {{ __('refreshglobal::messages.last_update') }}

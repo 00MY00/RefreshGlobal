@@ -161,4 +161,11 @@ return [
     'delete_permanently_help'      => 'Desativado (padrão): o ticket excluído vai para a lixeira do FreeScout e pode ser restaurado. Ativado: o ticket e seus e-mails são apagados do FreeScout na hora, sem lixeira (irreversível). Os e-mails no servidor de e-mail não são alterados.',
     'refresh_view'                 => 'Visualização do Refresh',
     'remove'                       => 'Remover',
+    'check_update'                 => 'Procurar atualizações',
+    'check_update_help'            => 'Procura agora uma versão mais recente do RefreshGlobal (nada é instalado).',
+    'last_check'                   => 'Última busca: :time',
+    'update_check_available'       => 'A versão :version está disponível (instalada: :current). Clique em “Atualizar agora” para instalá-la com segurança.',
+    'update_check_up_to_date'      => 'O RefreshGlobal está atualizado (:version).',
+    'update_check_incompatible'    => 'A versão :version está disponível, mas requer o FreeScout :required ou mais recente: atualize o FreeScout primeiro.',
+    'update_check_failed'          => 'Não foi possível procurar atualizações: :error',
 ];

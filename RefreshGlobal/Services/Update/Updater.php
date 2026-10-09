@@ -123,6 +123,16 @@ class Updater
 
     // --------------------------------------------------------------------------------------------- release source
 
+    /** Seconds allowed per download (shorter for the "Check for updates" button, which runs in a web request). */
+    protected $timeout = 120;
+
+    public function setTimeout($seconds)
+    {
+        $this->timeout = max(1, (int) $seconds);
+
+        return $this;
+    }
+
     protected function url($file)
     {
         return rtrim((string) config('refreshglobal.update_url'), '/').'/'.$file;
@@ -146,7 +156,7 @@ class Updater
             return (string) file_get_contents($path);
         }
         $options = method_exists(\App\Misc\Helper::class, 'setGuzzleDefaultOptions')
-            ? \App\Misc\Helper::setGuzzleDefaultOptions(['timeout' => 120]) : ['timeout' => 120];
+            ? \App\Misc\Helper::setGuzzleDefaultOptions(['timeout' => $this->timeout]) : ['timeout' => $this->timeout];
         if ($to) {
             $options['sink'] = $to;
         }

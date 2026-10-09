@@ -188,6 +188,9 @@ Sans l'installeur, il n'y a ni sauvegarde automatique ni retour arrière.
 | Supprimer définitivement | désactivé | désactivé = corbeille de FreeScout (restaurable) ; activé = le ticket et ses e-mails sont effacés de FreeScout tout de suite (irréversible ; rien n'est touché sur le serveur de messagerie) |
 | Mise à jour automatique | désactivé | voir § 7 |
 
+Boutons sous les réglages : **« Rechercher une mise à jour »** (indique tout de suite si une version plus récente
+existe, sans rien installer) et **« Mettre à jour maintenant »** (mise à jour sécurisée lancée dans la minute).
+
 | Tableau de bord (toutes les boîtes) | Sur téléphone |
 |---|---|
 | ![Tableau de bord](docs/screenshots/tableau-de-bord.png) | ![Tableau de bord téléphone](docs/screenshots/tableau-de-bord-mobile.png) |

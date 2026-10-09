@@ -51,6 +51,38 @@ class DiagnosticController extends Controller
         });
     }
 
+    /**
+     * "Check for updates": reads the module.json of the latest release now (nothing is installed) and tells the
+     * result. Only a small file is downloaded, with a short time limit, so it can run in the web request.
+     */
+    public function checkUpdate(Request $request)
+    {
+        return $this->safely(function () use ($request) {
+            $to = $request->input('back') === 'settings'
+                ? route('settings', ['section' => 'refreshglobal'])
+                : route('refreshglobal.diagnostic');
+            try {
+                $info = (new Updater())->setTimeout(15)->check();
+            } catch (\Throwable $e) {
+                \Log::warning('[RefreshGlobal] [update] check failed: '.$e->getMessage());
+
+                return redirect($to)->with('flash_error', __('refreshglobal::messages.update_check_failed', ['error' => $e->getMessage()]));
+            }
+            if (!$info['available']) {
+                return redirect($to)->with('flash_success', __('refreshglobal::messages.update_check_up_to_date', ['version' => $info['current']]));
+            }
+            if (!$info['compatible']) {
+                return redirect($to)->with('flash_error', __('refreshglobal::messages.update_check_incompatible', [
+                    'version' => $info['latest'], 'required' => $info['required_app'],
+                ]));
+            }
+
+            return redirect($to)->with('flash_success', __('refreshglobal::messages.update_check_available', [
+                'version' => $info['latest'], 'current' => $info['current'],
+            ]));
+        });
+    }
+
     /** Navigation option: replace Refresh's "Tickets" entry by "All mailboxes". */
     public function navigation(Request $request)
     {

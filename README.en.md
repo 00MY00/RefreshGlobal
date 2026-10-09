@@ -102,6 +102,9 @@ Updates: `sudo git -C /opt/RefreshGlobal pull`, then the same command with `--up
 | Delete permanently | off | off = FreeScout's trash (can be restored); on = the ticket and its e-mails are removed from FreeScout at once (cannot be undone; the mail server is not touched) |
 | Automatic update | off | daily safe update with automatic rollback |
 
+Buttons below the settings: **"Check for updates"** (tells at once whether a newer version exists, installs nothing)
+and **"Update now"** (safe update started within a minute).
+
 With Refresh in French, the module also corrects two of Refresh's phone strings ("Créé 7h il y a" → "Créé il y a
 7h") without modifying Refresh: see `RefreshGlobal/Resources/lang/refresh-fixes.php`.
 

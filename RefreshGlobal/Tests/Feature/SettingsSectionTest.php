@@ -65,6 +65,44 @@ class SettingsSectionTest extends TestCase
         $this->assertTrue(Settings::deletePermanently());
     }
 
+    /** "Check for updates": reads the release's module.json now, installs nothing. */
+    public function testCheckForUpdates()
+    {
+        $dir = sys_get_temp_dir().'/rg-check-'.uniqid();
+        mkdir($dir);
+        config(['refreshglobal.update_url' => $dir]);
+        $release = function ($version, $required = '1.8.0') use ($dir) {
+            file_put_contents($dir.'/module.json', json_encode(['alias' => 'refreshglobal', 'version' => $version, 'requiredAppVersion' => $required]));
+        };
+        $check = function () {
+            return $this->actingAs($this->s['admin'])->post(route('refreshglobal.check_update'), ['back' => 'settings']);
+        };
+        $current = Updater::currentVersion();
+
+        // newer version available
+        $release('99.0.0');
+        $r = $check()->assertRedirect(route('settings', ['section' => 'refreshglobal']));
+        $this->assertStringContainsString('99.0.0', (string) $r->getSession()->get('flash_success'));
+        $this->assertSame('99.0.0', Updater::status()['latest']);
+        $this->assertSame($current, Updater::currentVersion()); // nothing installed
+
+        // up to date
+        $release($current);
+        $this->assertStringContainsString($current, (string) $check()->getSession()->get('flash_success'));
+
+        // needs a newer FreeScout
+        $release('99.0.0', '99.0.0');
+        $this->assertStringContainsString('99.0.0', (string) $check()->getSession()->get('flash_error'));
+
+        // release unreachable
+        unlink($dir.'/module.json');
+        $this->assertNotEmpty($check()->getSession()->get('flash_error'));
+        rmdir($dir);
+
+        // admins only
+        $this->actingAs($this->s['bob'])->post(route('refreshglobal.check_update'))->assertStatus(403);
+    }
+
     public function testRegularUserHasNoAccess()
     {
         $this->actingAs($this->s['bob'])->get(route('settings', ['section' => 'refreshglobal']))->assertStatus(403);
