@@ -132,6 +132,18 @@ pagination côté serveur et le tri transformé en liens (`Public/js/refreshglob
 
 ---
 
+### 1.7 Mise à jour des modules et tâches planifiées (RefreshGlobal 1.1.0)
+
+| Élément | Fichier:ligne | Constat / utilisation |
+|---|---|---|
+| filtre **`schedule`** | `app/Console/Kernel.php:190` | un module peut ajouter une tâche au planificateur (cron `schedule:run` de FreeScout) → **utilisé** : `refreshglobal:update --scheduled` chaque jour |
+| `freescout:module-update` | `app/Console/Commands/ModuleUpdate.php:17, 107` | met à jour les modules non officiels dont `module.json` déclare `latestVersionUrl` |
+| `App\Module::updateModule()` | `app/Module.php` (bouton « Mettre à jour » de Gérer › Modules) | télécharge `latestVersionZipUrl`, remplace les fichiers, lance `freescout:module-install` ; en cas d'échec, désactive le module — **aucun retour à l'ancienne version** |
+| → choix | `module.json` | **pas de `latestVersionUrl` / `latestVersionZipUrl`** : seul l'outil du module (avec retour arrière) met RefreshGlobal à jour |
+| `App\Option::get/set` | `app/Option.php:75, 35` | réglage « mise à jour automatique » (`refreshglobal.auto_update`) |
+| `Helper::setGuzzleDefaultOptions()` | `app/Misc/Helper.php:3018` | délais et proxy de FreeScout pour les téléchargements |
+| image de la carte du module | `resources/views/modules/partials/module_card.blade.php:2-3` (champ `img` de `module.json`) | `../modules/refreshglobal/img/module.svg`, même forme que Refresh |
+
 ## 2. Refresh
 
 ### 2.1 Manifeste et fournisseur

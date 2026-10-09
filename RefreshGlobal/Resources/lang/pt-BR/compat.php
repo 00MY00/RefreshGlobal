@@ -48,6 +48,7 @@ return [
         'check'  => 'Código do FreeScout presente: :item',
         'label'  => 'Uma classe, método ou constante do FreeScout usada pelo módulo está ausente: :item.',
         'effect' => 'A lista de tickets não é exibida, para não mostrar nenhum ticket não autorizado.',
+        'effect_degraded' => 'As atualizações automáticas estão desativadas; a lista funciona.',
         'action' => 'Atualize o RefreshGlobal para uma versão feita para esta versão do FreeScout (COMPATIBILITY.md) e depois execute php artisan refreshglobal:check.',
     ],
     'route' => [

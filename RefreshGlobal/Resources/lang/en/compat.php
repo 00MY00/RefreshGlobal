@@ -52,6 +52,7 @@ return [
         'check'  => 'FreeScout code present: :item',
         'label'  => 'A FreeScout class, method or constant used by the module is missing: :item.',
         'effect' => 'The ticket list is not displayed, so that no unauthorised ticket can be shown.',
+        'effect_degraded' => 'Automatic updates are disabled; the list works.',
         'action' => 'Update RefreshGlobal to a version made for this FreeScout version (COMPATIBILITY.md), then run php artisan refreshglobal:check.',
     ],
     'route' => [

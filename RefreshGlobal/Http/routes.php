@@ -23,4 +23,5 @@ Route::group([
     Route::delete('/views/{id}', $users + ['uses' => 'SavedViewsController@destroy'])->name('refreshglobal.views.destroy');
 
     Route::get('/diagnostic', $admins + ['uses' => 'DiagnosticController@index'])->name('refreshglobal.diagnostic');
+    Route::post('/auto-update', $admins + ['uses' => 'DiagnosticController@autoUpdate'])->name('refreshglobal.auto_update');
 });

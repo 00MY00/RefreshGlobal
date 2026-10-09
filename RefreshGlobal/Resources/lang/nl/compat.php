@@ -48,6 +48,7 @@ return [
         'check'  => 'FreeScout-code aanwezig: :item',
         'label'  => 'Een door de module gebruikte klasse, methode of constante van FreeScout ontbreekt: :item.',
         'effect' => 'De ticketlijst wordt niet weergegeven, zodat geen enkel onbevoegd ticket zichtbaar wordt.',
+        'effect_degraded' => 'Automatische updates zijn uitgeschakeld; de lijst werkt.',
         'action' => 'Werk RefreshGlobal bij naar een versie voor deze FreeScout-versie (COMPATIBILITY.md) en voer daarna php artisan refreshglobal:check uit.',
     ],
     'route' => [

@@ -30,6 +30,18 @@ Chacun est contrôlé par `php artisan refreshglobal:check`.
 | Entrée dans le tiroir des vues de Refresh (`mailbox.after_sidebar_buttons` dans sa vue surchargée) | la vue surchargée par Refresh peut perdre ce hook | sur téléphone, plus d'accès depuis le tiroir ; l'adresse `/refresh-global/tickets` reste valable (RG-HOOK-09) |
 | `refresh.rail_items` | point d'extension documenté de Refresh | icône remplacée par le lien générique du menu (RG-HOOK-07) |
 
+## Mise à jour automatique
+
+- Passe par le planificateur de FreeScout (filtre `schedule`, `app/Console/Kernel.php:190`) : il faut le cron
+  `* * * * * php /var/www/html/artisan schedule:run` (installé par le script officiel de FreeScout). Sans lui,
+  utiliser `php artisan refreshglobal:update` à la main.
+- Nécessite l'extension PHP zip, Guzzle et Symfony Process (fournis avec FreeScout) : contrôle RG-CORE-08 ; sinon
+  la liste fonctionne, seule la mise à jour automatique est indisponible.
+- Le module n'annonce pas ses versions au bouton « Mettre à jour » de FreeScout (pas de `latestVersionUrl`), car ce
+  bouton ne sait pas revenir en arrière.
+- Le retour arrière restaure les fichiers du module, ses vues enregistrées et annule ses nouvelles migrations ; il
+  ne touche à aucune autre table. Sauvegardes : `storage/app/refreshglobal/backups/` (les 3 dernières).
+
 ## Écarts connus par rapport au style de Refresh
 
 - La **recherche de la barre du haut** de Refresh cherche toujours dans « Tous les tickets » de la première boîte ;

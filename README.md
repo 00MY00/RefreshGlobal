@@ -24,6 +24,10 @@ Sur téléphone (avec Refresh) : l'entrée « Toutes les boîtes » en tête du 
 |---|---|---|
 | ![Tiroir Refresh](docs/screenshots/mobile-tiroir-refresh.png) | ![Mobile](docs/screenshots/mobile.png) | ![Tiroir](docs/screenshots/mobile-tiroir.png) |
 
+Dans Gérer › Modules :
+
+![Carte du module](docs/screenshots/carte-module.png)
+
 ## 2. Fonctionnalités
 
 - **Page « Toutes les boîtes »** (`/refresh-global/tickets`), dans le menu de FreeScout, dans la barre de gauche de Refresh et, sur téléphone, en tête du tiroir des vues (☰).
@@ -36,6 +40,7 @@ Sur téléphone (avec Refresh) : l'entrée « Toutes les boîtes » en tête du 
 - Filtres dans l'adresse : un lien filtré se partage et le bouton « Retour » fonctionne.
 - **Respect des droits** : chacun ne voit, ne compte et n'exporte que les tickets de ses boîtes (et seulement ses
   tickets s'il a la permission « ne voir que les conversations assignées »).
+- **Mise à jour automatique** (facultative) avec **retour arrière automatique** si la nouvelle version ne fonctionne pas.
 - **Diagnostic de compatibilité** : `php artisan refreshglobal:check` et page d'administration, avec des messages
   explicites (codes `RG-xxx`) après une mise à jour de FreeScout ou de Refresh.
 - Traductions : français, anglais, allemand, espagnol, italien, néerlandais, portugais (Brésil).
@@ -151,6 +156,30 @@ curl -fsSL https://raw.githubusercontent.com/00MY00/RefreshGlobal/main/install.s
 ```
 
 (`--version=1.2.3` pour une version précise.)
+
+### Mise à jour automatique (avec retour arrière)
+
+Désactivée par défaut. Une fois activée, le module vérifie chaque jour (à 03:30) s'il existe une nouvelle version
+publiée sur GitHub et l'installe en sécurité :
+
+1. téléchargement de l'archive et vérification de son empreinte SHA-256 (refusée si elle ne correspond pas) ;
+2. sauvegarde du module, des vues enregistrées et de la liste de ses migrations ;
+3. installation (comme Gérer › Modules) puis contrôles : `refreshglobal:check` et affichage réel de la page pour un
+   administrateur (`refreshglobal:selftest`) ;
+4. **si quelque chose ne va pas** (installation en erreur, état bloquant ou plus mauvais qu'avant, page qui ne
+   s'affiche pas) : **retour automatique à la version précédente** (fichiers, vues enregistrées, nouvelles tables
+   annulées). Cette version n'est plus retentée automatiquement, et un bandeau prévient les administrateurs.
+
+Activer ou désactiver :
+- **page de diagnostic** (`/refresh-global/diagnostic`, administrateurs) : bouton « Activer » / « Désactiver » ;
+- ou `cd /var/www/html && sudo -u www-data php artisan refreshglobal:update --enable` (`--disable`) ;
+- ou à l'installation : `… | sudo bash -s -- --auto-update=on`.
+
+Elle passe par le cron de FreeScout (`php artisan schedule:run`, installé par le script officiel). Mise à jour à la
+main avec les mêmes garanties : `sudo -u www-data php artisan refreshglobal:update` (`--check` pour seulement
+vérifier). Heure : `REFRESHGLOBAL_AUTO_UPDATE_TIME=03:30` dans le `.env`. Le bouton « Mettre à jour » de Gérer ›
+Modules n'est volontairement pas utilisé (il ne sait pas revenir en arrière). `install.sh --update` revient lui
+aussi automatiquement à la version précédente si la nouvelle est bloquante (`--no-auto-rollback` pour l'empêcher).
 
 **Après chaque mise à jour de Refresh ou de FreeScout** :
 

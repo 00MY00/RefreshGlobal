@@ -19,4 +19,10 @@ return [
 
     // Maximum number of saved views per user.
     'max_saved_views' => (int) env('REFRESHGLOBAL_MAX_SAVED_VIEWS', 50),
+
+    // Automatic update: where the releases are (module.json, RefreshGlobal.zip, SHA256SUMS), time of the daily run
+    // (application time zone) and default state before anyone turns it on or off (off: an administrator decides).
+    'update_url' => env('REFRESHGLOBAL_UPDATE_URL', 'https://github.com/00MY00/RefreshGlobal/releases/latest/download'),
+    'auto_update_time' => env('REFRESHGLOBAL_AUTO_UPDATE_TIME', '03:30'),
+    'auto_update_default' => (bool) env('REFRESHGLOBAL_AUTO_UPDATE', false),
 ];

@@ -4,8 +4,12 @@ namespace Modules\RefreshGlobal\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Modules\RefreshGlobal\Services\Compatibility\CompatibilityChecker;
+use Modules\RefreshGlobal\Services\Update\Updater;
 
-/** Admin page /refresh-global/diagnostic: full compatibility report (same checks as php artisan refreshglobal:check). */
+/**
+ * Admin page /refresh-global/diagnostic: full compatibility report (same checks as php artisan refreshglobal:check)
+ * and automatic update (state, last result, on/off). The update itself never runs in a web request.
+ */
 class DiagnosticController extends Controller
 {
     public function index(Request $request)
@@ -19,7 +23,24 @@ class DiagnosticController extends Controller
                 CompatibilityChecker::log($report);
             }
 
-            return response(view('refreshglobal::diagnostic', ['report' => $report])->render());
+            return response(view('refreshglobal::diagnostic', [
+                'report'         => $report,
+                'update'         => Updater::status(),
+                'update_enabled' => Updater::enabled(),
+                'update_time'    => (string) config('refreshglobal.auto_update_time', '03:30'),
+                'current'        => Updater::currentVersion(),
+            ])->render());
+        });
+    }
+
+    public function autoUpdate(Request $request)
+    {
+        return $this->safely(function () use ($request) {
+            $this->validate($request, ['enabled' => 'required|boolean']);
+            Updater::setEnabled((bool) $request->input('enabled'));
+
+            return redirect()->route('refreshglobal.diagnostic')->with('flash_success', $request->input('enabled')
+                ? __('refreshglobal::messages.auto_update_on') : __('refreshglobal::messages.auto_update_off'));
         });
     }
 }

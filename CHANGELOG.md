@@ -2,6 +2,20 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.1.0] — 2026-10-09
+
+### Ajouté
+- Mise à jour automatique quotidienne (désactivée par défaut) avec retour arrière automatique : empreinte SHA-256
+  obligatoire, sauvegarde, installation, `refreshglobal:check` + `refreshglobal:selftest`, retour à la version
+  précédente (fichiers, vues enregistrées, migrations) si la nouvelle ne fonctionne pas ; version annulée non
+  retentée ; bandeau pour les administrateurs. Commande `php artisan refreshglobal:update` (`--check`, `--enable`,
+  `--disable`, `--force`), réglage sur la page de diagnostic, option `install.sh --auto-update=on|off`.
+- Commande `php artisan refreshglobal:selftest` : affiche la page pour un administrateur et la vérifie.
+- `install.sh --update` revient automatiquement à la version précédente si la nouvelle est bloquante
+  (`--no-auto-rollback`).
+- Image du module pour Gérer › Modules (`Public/img/module.svg`).
+- Contrôles RG-HOOK-10 (planificateur), RG-CORE-07 (`App\Option`), RG-CORE-08 (ZipArchive, Guzzle, Symfony Process).
+
 ## [1.0.1] — 2026-10-09
 
 ### Corrigé

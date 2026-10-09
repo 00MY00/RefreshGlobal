@@ -52,6 +52,7 @@ return [
         'RG-HOOK-06' => ['hook' => 'mailbox.url', 'file' => 'resources/views/layouts/app.blade.php', 'needle' => "'mailbox.url'", 'severity' => 'degraded', 'source' => 'resources/views/layouts/app.blade.php:77,85'],
         'RG-HOOK-08' => ['hook' => 'mailbox.after_sidebar_buttons', 'file' => 'resources/views/mailboxes/sidebar_menu_view.blade.php', 'needle' => "@action('mailbox.after_sidebar_buttons')", 'severity' => 'degraded', 'source' => 'resources/views/mailboxes/sidebar_menu_view.blade.php:35'],
         'RG-HOOK-09' => ['hook' => 'mailbox.after_sidebar_buttons', 'refresh' => true, 'file' => 'Resources/views/core/mailboxes/sidebar_menu_view.blade.php', 'needle' => "@action('mailbox.after_sidebar_buttons')", 'severity' => 'degraded', 'source' => 'Modules/Refresh/Resources/views/core/mailboxes/sidebar_menu_view.blade.php:81'],
+        'RG-HOOK-10' => ['hook' => 'schedule', 'file' => 'app/Console/Kernel.php', 'needle' => "\\Eventy::filter('schedule', \$schedule)", 'severity' => 'degraded', 'source' => 'app/Console/Kernel.php:190'],
         'RG-HOOK-07' => ['hook' => 'refresh.rail_items', 'refresh' => true, 'file' => 'Providers/RefreshServiceProvider.php', 'needle' => "'refresh.rail_items'", 'severity' => 'degraded', 'source' => 'Modules/Refresh/Providers/RefreshServiceProvider.php:711'],
     ],
 
@@ -66,6 +67,9 @@ return [
             'App\Conversation::STATUS_ACTIVE', 'App\Conversation::STATUS_PENDING', 'App\Conversation::STATUS_CLOSED',
             'App\Conversation::STATUS_SPAM', 'App\Conversation::STATE_PUBLISHED',
         ], 'source' => 'app/Conversation.php:78-81,131'],
+        // Automatic update only (degraded: the list works without them)
+        'RG-CORE-07' => ['class' => 'App\Option', 'methods' => ['get', 'set'], 'severity' => 'degraded', 'source' => 'app/Option.php:35,75'],
+        'RG-CORE-08' => ['classes' => ['ZipArchive', 'GuzzleHttp\Client', 'Symfony\Component\Process\Process', 'Symfony\Component\Process\PhpExecutableFinder'], 'severity' => 'degraded', 'source' => 'PHP zip extension (config/installer.php), vendor/guzzlehttp, vendor/symfony/process'],
     ],
 
     // Named routes the module links to.

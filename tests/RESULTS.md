@@ -1,4 +1,4 @@
-# Résultats des tests — RefreshGlobal 1.0.1
+# Résultats des tests — RefreshGlobal 1.1.0
 
 Date : 2026-10-09. Environnements jetables Docker : FreeScout 1.8.245 (dépôt officiel), PHP 8.2.34, Apache,
 MariaDB 10.11 ; Refresh 1.4.3 (dépôt officiel). Données de test uniquement (adresses `.test`).
@@ -13,7 +13,7 @@ MariaDB 10.11 ; Refresh 1.4.3 (dépôt officiel). Données de test uniquement (a
 
 ## 2. Tests PHPUnit du module (`RefreshGlobal/Tests`, PHPUnit 11.5.57)
 
-**37 tests, 469 assertions, 0 échec** (1.0.0 : 36 tests) (FreeScout 1.8.245 + Refresh 1.4.3 actif).
+**42 tests, 506 assertions, 0 échec** (1.0.0 : 36 tests ; 1.0.1 : 37) (FreeScout 1.8.245 + Refresh 1.4.3 actif).
 
 | Fichier | Tests | Contenu |
 |---|---|---|
@@ -21,6 +21,7 @@ MariaDB 10.11 ; Refresh 1.4.3 (dépôt officiel). Données de test uniquement (a
 | `ExportTest` | 5 | BOM UTF-8 ; aucune ligne d'une boîte interdite, même demandée ; filtres ; plafond (2 lignes) ; formule `=HYPERLINK` neutralisée ; utilisateur « assignées uniquement » |
 | `CompatibilityTest` | 13 | Refresh absent → dégradé + style standard + message admin seulement ; CSS absent → RG-CSS-01 avec message au format exigé (EN et FR) ; vue Refresh absente → dégradé ; vue du cœur absente → liste bloquée ; méthode absente → bloquant (liste, export) + liens de secours ; route absente → bloquant ; colonne absente → bloquant ; hook absent → dégradé ; version hors plage → avertissement ; clé de cache liée aux versions ; codes de sortie de `refreshglobal:check` ; échecs écrits dans le journal Laravel |
 | `SavedViewsTest` | 5 | créer, charger, renommer, défaut (ouverte sur l'adresse nue), `?reset=1`, supprimer ; boîtes interdites non enregistrées ; boîte perdue ignorée avec mention ; vues personnelles (404 pour un autre utilisateur) ; validation |
+| `UpdateSettingsTest` | 5 | mise à jour automatique : activer / désactiver (commande et page de diagnostic, réservé aux admins), tâche quotidienne dans le planificateur, image du module, pas de `latestVersionUrl` |
 | `TranslationsTest` | 2 | 7 langues : mêmes clés et mêmes paramètres que l'anglais |
 
 ## 3. Vérifications visuelles (Chromium headless, captures dans `docs/screenshots/`)
@@ -131,3 +132,30 @@ Constats intégrés au script et au README pendant ces essais :
 - Base PostgreSQL (le code évite les fonctions propres à MySQL, mais aucun essai n'a été fait).
 - Installation complète sur Debian (seul Ubuntu 24.04 a été essayé) et sur une vraie machine virtuelle avec systemd.
 - Téléchargement depuis l'adresse de publication (le dépôt n'est pas encore publié) : remplacé par `--source`.
+## 7. Mise à jour automatique avec retour arrière (1.1.0, `run_tests.sh auto-update`)
+
+FreeScout + Refresh jetables ; cinq fausses publications servies en local (`REFRESHGLOBAL_UPDATE_URL=file:///…`) :
+bonne version 9.0.1, version bloquante 9.0.2, version qui fait planter PHP 9.0.3, version qui ajoute une table puis
+échoue 9.0.4, archive à l'empreinte fausse 9.0.5. Exécuté deux fois (la seconde après la correction de la lecture du
+réglage) : **16 vérifications réussies, 0 en échec**.
+
+| Scénario | Vérification | Résultat | Détail |
+|---|---|---|---|
+| Mise à jour automatique avec retour arrière | install.sh --auto-update=on | PASS |  |
+| Mise à jour automatique avec retour arrière | --check : nouvelle version détectée | PASS |  |
+| Mise à jour automatique avec retour arrière | bonne version : installée (9.0.1) | PASS |  |
+| Mise à jour automatique avec retour arrière | page = 200 après mise à jour | PASS |  |
+| Mise à jour automatique avec retour arrière | vues enregistrées conservées | PASS |  |
+| Mise à jour automatique avec retour arrière | version bloquante : retour automatique à 9.0.1 (code 3) | PASS |  |
+| Mise à jour automatique avec retour arrière | page de nouveau affichée après le retour arrière | PASS |  |
+| Mise à jour automatique avec retour arrière | bandeau d'avertissement pour l'administrateur | PASS |  |
+| Mise à jour automatique avec retour arrière | version annulée non retentée automatiquement | PASS |  |
+| Mise à jour automatique avec retour arrière | version qui plante PHP : retour automatique | PASS |  |
+| Mise à jour automatique avec retour arrière | FreeScout fonctionne (tableau de bord 200) | PASS |  |
+| Mise à jour automatique avec retour arrière | nouvelle table annulée (migration défaite) | PASS |  |
+| Mise à jour automatique avec retour arrière | empreinte SHA-256 fausse : refusée, rien modifié | PASS |  |
+| Mise à jour automatique avec retour arrière | désactivée : la tâche quotidienne vérifie sans installer | PASS |  |
+| Mise à jour automatique avec retour arrière | tâche quotidienne enregistrée dans le planificateur de FreeScout | PASS |  |
+| Mise à jour automatique avec retour arrière | install.sh --update bloquant : retour automatique | PASS |  |
+
+**16 vérifications réussies, 0 en échec.**

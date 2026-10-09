@@ -27,13 +27,15 @@ cp "$ROOT/CHANGELOG.md" "$ROOT/COMPATIBILITY.md" "$ROOT/LICENSE" "$STAGE/Refresh
 find "$STAGE" -name '.DS_Store' -delete
 
 mkdir -p "$DIST"
-rm -f "$DIST/RefreshGlobal.zip" "$DIST/SHA256SUMS"
+rm -f "$DIST/RefreshGlobal.zip" "$DIST/SHA256SUMS" "$DIST/module.json"
 if command -v zip >/dev/null 2>&1; then
     (cd "$STAGE" && zip -qrX "$DIST/RefreshGlobal.zip" RefreshGlobal)
 else
     (cd "$STAGE" && python3 -m zipfile -c "$DIST/RefreshGlobal.zip" RefreshGlobal)
 fi
 cp "$ROOT/install.sh" "$DIST/install.sh"
-(cd "$DIST" && sha256sum RefreshGlobal.zip install.sh >SHA256SUMS)
+# read by the module's automatic update (latest version, required FreeScout version)
+cp "$ROOT/RefreshGlobal/module.json" "$DIST/module.json"
+(cd "$DIST" && sha256sum RefreshGlobal.zip install.sh module.json >SHA256SUMS)
 printf 'RefreshGlobal %s : %s\n' "$version" "$DIST/RefreshGlobal.zip"
 cat "$DIST/SHA256SUMS"

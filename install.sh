@@ -33,7 +33,7 @@ set -Eeuo pipefail   # -E : le piège d'erreur s'applique aussi dans les fonctio
 # ---------------------------------------------------------------------------------------------------------------
 REPO_URL="${RG_REPO_URL:-https://github.com/00MY00/RefreshGlobal}"
 
-SCRIPT_VERSION="1.0.1"
+SCRIPT_VERSION="1.1.0"
 MODULE_NAME="RefreshGlobal"
 MODULE_ALIAS="refreshglobal"
 MODULE_TABLE="refreshglobal_saved_views"
@@ -54,6 +54,9 @@ DRY_RUN=0
 ASSUME_YES=0
 FORCE=0
 NO_DB_BACKUP=0
+AUTO_UPDATE=""        # on | off | vide (ne change rien)
+AUTO_ROLLBACK=1
+MODULE_CHANGED=0
 DROP_TABLES=0
 REMOVE_FILES=0
 ROLLBACK_ID=""
@@ -234,6 +237,8 @@ Options :
   --drop-tables         avec --uninstall : supprimer la table du module sans le demander
   --remove-files        avec --uninstall : supprimer les fichiers du module sans le demander
   --force               réinstaller même si la même version est déjà installée
+  --auto-update=on|off  activer / désactiver la mise à jour automatique quotidienne du module (avec retour arrière)
+  --no-auto-rollback    ne pas revenir automatiquement à l'ancienne version si la nouvelle est bloquante
   --dry-run             afficher toutes les actions sans rien exécuter
   --yes                 mode non interactif (répond oui ; garde les tables à la désinstallation sauf --drop-tables)
   --help                cette aide
@@ -260,6 +265,8 @@ parse_args() {
             --drop-tables) DROP_TABLES=1 ;;
             --remove-files) REMOVE_FILES=1 ;;
             --force) FORCE=1 ;;
+            --auto-update=on|--auto-update=off) AUTO_UPDATE="${arg#*=}" ;;
+            --no-auto-rollback) AUTO_ROLLBACK=0 ;;
             --dry-run) DRY_RUN=1 ;;
             --yes|-y) ASSUME_YES=1 ;;
             --help|-h) usage; exit 0 ;;
@@ -785,11 +792,14 @@ mode_add() {
 
         step "Activation du module (migrations, lien public, caches)"
         activate_module
+        MODULE_CHANGED=1
         step_ok
     fi
+    apply_auto_update
 
     step "Vérification de compatibilité (php artisan refreshglobal:check)"
     run_check
+    run_selftest
     printf '%s' "${C_BOLD}[${STEP}/${TOTAL}]${C_RESET} Vérification de compatibilité... "
     case "$CHECK_CODE" in
         0) step_ok "OK" ;;
@@ -801,8 +811,45 @@ mode_add() {
     step_ok
     summary
     if [ "$CHECK_CODE" = 2 ]; then
+        if [ "$MODULE_CHANGED" = 1 ] && [ -n "$INSTALLED_VERSION" ] && [ -n "$BACKUP_DIR" ] && [ "$AUTO_ROLLBACK" = 1 ] && [ "$DRY_RUN" = 0 ]; then
+            auto_rollback
+        fi
         fail_msg "Le module est installé mais l'état est BLOQUANT : lire le rapport ci-dessus ; retour arrière possible avec --rollback."
         exit 4
+    fi
+}
+
+# La nouvelle version ne fonctionne pas : retour automatique à la version sauvegardée juste avant.
+auto_rollback() {
+    say ""
+    warn "La nouvelle version (${TARGET_VERSION}) ne fonctionne pas : retour automatique à la version ${INSTALLED_VERSION}."
+    ROLLBACK_ID="${BACKUP_DIR##*/}"
+    STEP=0
+    mode_rollback
+    fail_msg "Mise à jour annulée : RefreshGlobal ${INSTALLED_VERSION} a été restauré. Détails : ${LOG_FILE}"
+    exit 4
+}
+
+# --auto-update=on|off : réglage enregistré par le module (php artisan refreshglobal:update --enable / --disable).
+apply_auto_update() {
+    [ -n "$AUTO_UPDATE" ] || return 0
+    if [ "$AUTO_UPDATE" = on ]; then
+        artisan refreshglobal:update --enable
+        info "Mise à jour automatique quotidienne activée (retour arrière automatique si la nouvelle version ne fonctionne pas)."
+    else
+        artisan refreshglobal:update --disable
+        info "Mise à jour automatique désactivée."
+    fi
+}
+
+# Page rendue pour un administrateur (commande présente à partir de RefreshGlobal 1.1.0).
+run_selftest() {
+    if [ "$DRY_RUN" = 1 ] || [ "$CHECK_CODE" = 2 ] || [ ! -f "$FS_PATH/Modules/${MODULE_NAME}/Console/SelfTestCommand.php" ]; then
+        return 0
+    fi
+    if ! artisan refreshglobal:selftest; then
+        CHECK_CODE=2
+        CHECK_STATE="BLOQUANT (la page ne s'affiche pas : php artisan refreshglobal:selftest)"
     fi
 }
 

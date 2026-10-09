@@ -13,7 +13,15 @@ class CoreCheck extends Check
         foreach ((array) $this->checker->integration('core') as $code => $def) {
             $missing = [];
             $items = [];
-            if (!empty($def['class'])) {
+            if (!empty($def['classes'])) {
+                // several classes (vendor / PHP extensions), no method list
+                foreach ((array) $def['classes'] as $class) {
+                    if (!class_exists($class)) {
+                        $missing[] = $class;
+                    }
+                }
+                $expected = implode(', ', (array) $def['classes']);
+            } elseif (!empty($def['class'])) {
                 $items[] = $def['class'];
                 if (!class_exists($def['class'])) {
                     $missing[] = $def['class'];
@@ -33,7 +41,8 @@ class CoreCheck extends Check
                     $missing[] = $constant;
                 }
             }
-            $results[] = $this->result($code, 'core', self::BLOCKING, !$missing, $expected, $missing ? 'missing: '.implode(', ', $missing) : '');
+            $severity = $def['severity'] ?? self::BLOCKING;
+            $results[] = $this->result($code, 'core', $severity, !$missing, $expected, $missing ? 'missing: '.implode(', ', $missing) : '');
         }
 
         return $results;

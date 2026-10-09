@@ -33,6 +33,8 @@ class RefreshGlobalServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../Config/integration.php', 'refreshglobal_integration');
         $this->commands([
             \Modules\RefreshGlobal\Console\CheckCompatibilityCommand::class,
+            \Modules\RefreshGlobal\Console\UpdateCommand::class,
+            \Modules\RefreshGlobal\Console\SelfTestCommand::class,
         ]);
     }
 
@@ -45,6 +47,28 @@ class RefreshGlobalServiceProvider extends ServiceProvider
 
         $this->registerMenu();
         $this->registerMailboxColumn();
+        $this->registerSchedule();
+    }
+
+    /**
+     * Daily update run through FreeScout's scheduler (filter "schedule", app/Console/Kernel.php:190; FreeScout's
+     * cron runs "php artisan schedule:run" every minute). It checks for a new version every day and installs it
+     * only when the automatic update is on (php artisan refreshglobal:update --enable, or the diagnostic page).
+     */
+    protected function registerSchedule()
+    {
+        \Eventy::addFilter('schedule', function ($schedule) {
+            try {
+                $time = (string) config('refreshglobal.auto_update_time', '03:30');
+                $schedule->command('refreshglobal:update --scheduled')
+                    ->dailyAt(preg_match('/^\d{1,2}:\d{2}$/', $time) ? $time : '03:30')
+                    ->withoutOverlapping();
+            } catch (\Exception $e) {
+                // no automatic update rather than a broken scheduler
+            }
+
+            return $schedule;
+        });
     }
 
     /** Fake folder for the native conversations table (same technique as Refresh, RefreshServiceProvider.php:228). */

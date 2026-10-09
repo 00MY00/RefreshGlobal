@@ -107,4 +107,5 @@ jobs:
           files: |
             dist/RefreshGlobal.zip
             dist/install.sh
+            dist/module.json
             dist/SHA256SUMS

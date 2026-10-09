@@ -15,6 +15,12 @@
         {{ __('refreshglobal::messages.degraded_short') }}
     </div>
 @endif
+@if ($is_admin && !empty($update_status['last_result']) && $update_status['last_result'] === 'rolled_back')
+    <div class="alert alert-warning rg-notice">
+        {{ __('refreshglobal::messages.update_rolled_back_banner', ['to' => $update_status['last_to'] ?? '?', 'from' => $update_status['last_from'] ?? '?']) }}
+        <a href="{{ route('refreshglobal.diagnostic') }}">{{ __('refreshglobal::messages.open_diagnostic') }}</a>
+    </div>
+@endif
 @if ($dropped_mailboxes)
     <p class="rg-muted rg-dropped">{{ trans_choice('refreshglobal::messages.dropped_mailboxes', $dropped_mailboxes, ['count' => $dropped_mailboxes]) }}</p>
 @endif
