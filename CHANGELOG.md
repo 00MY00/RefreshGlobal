@@ -2,6 +2,17 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.4.4] — 2026-10-09
+
+### Modifié
+- Gérer › Paramètres › RefreshGlobal : les liens deviennent de vrais boutons (« Ouvrir la page « Toutes les
+  boîtes » », « Diagnostic RefreshGlobal », « Changer ma langue », « Langue par défaut (Général) »).
+- Page de diagnostic : boutons « Relancer les contrôles », « Ouvrir la page « Toutes les boîtes » » et « Réglages ».
+- Panneau des vues de « Toutes les boîtes » : « Diagnostic RefreshGlobal » en bouton.
+
+### Corrigé
+- Tests : le test du bouton « Rechercher une mise à jour » remet le fichier d'état des mises à jour comme avant.
+
 ## [1.4.3] — 2026-10-09
 
 ### Modifié

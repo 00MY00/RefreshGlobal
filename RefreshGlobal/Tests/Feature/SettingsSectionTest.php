@@ -68,6 +68,22 @@ class SettingsSectionTest extends TestCase
     /** "Check for updates": reads the release's module.json now, installs nothing. */
     public function testCheckForUpdates()
     {
+        // the check writes the update status file: restored at the end
+        $statusFile = Updater::dir('update-status.json');
+        $savedStatus = is_file($statusFile) ? file_get_contents($statusFile) : null;
+        try {
+            $this->checkForUpdates();
+        } finally {
+            if ($savedStatus === null) {
+                @unlink($statusFile);
+            } else {
+                file_put_contents($statusFile, $savedStatus);
+            }
+        }
+    }
+
+    protected function checkForUpdates()
+    {
         $dir = sys_get_temp_dir().'/rg-check-'.uniqid();
         mkdir($dir);
         config(['refreshglobal.update_url' => $dir]);

@@ -12,14 +12,16 @@
     $rg_need_refresh = $rg_refresh ? '' : __('refreshglobal::messages.refresh_required');
 @endphp
 <p class="margin-top">{{ __('refreshglobal::messages.settings_intro') }}</p>
+<p class="rg-buttons">
+    <a class="btn btn-default" href="{{ route('refreshglobal.tickets') }}"><i class="glyphicon glyphicon-inbox"></i> {{ __('refreshglobal::messages.open_page') }}</a>
+    <a class="btn btn-default" href="{{ route('refreshglobal.diagnostic') }}"><i class="glyphicon glyphicon-check"></i> {{ __('refreshglobal::messages.diagnostic') }}</a>
+</p>
 <p class="form-help">
     {{ __('refreshglobal::messages.language_settings_info', ['language' => \Modules\RefreshGlobal\Http\Controllers\LanguageController::name(app()->getLocale())]) }}
-    <a href="{{ route('users.profile', ['id' => auth()->id()]) }}">{{ __('refreshglobal::messages.language_profile_link') }}</a>
-    · <a href="{{ route('settings', ['section' => 'general']) }}">{{ __('refreshglobal::messages.language_default_link') }}</a>
 </p>
-<p>
-    <a href="{{ route('refreshglobal.tickets') }}">{{ __('refreshglobal::messages.open_page') }}</a>
-    · <a href="{{ route('refreshglobal.diagnostic') }}">{{ __('refreshglobal::messages.diagnostic') }}</a>
+<p class="rg-buttons">
+    <a class="btn btn-default btn-sm" href="{{ route('users.profile', ['id' => auth()->id()]) }}"><i class="glyphicon glyphicon-globe"></i> {{ __('refreshglobal::messages.language_profile_link') }}</a>
+    <a class="btn btn-default btn-sm" href="{{ route('settings', ['section' => 'general']) }}"><i class="glyphicon glyphicon-cog"></i> {{ __('refreshglobal::messages.language_default_link') }}</a>
 </p>
 
 <form class="form-horizontal margin-top margin-bottom" method="POST" action="" autocomplete="off">

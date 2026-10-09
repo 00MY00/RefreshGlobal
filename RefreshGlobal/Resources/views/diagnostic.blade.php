@@ -27,9 +27,10 @@
             Refresh {{ $report['versions']['refresh'] ?: '—' }}@if ($report['versions']['refresh'] && !$report['versions']['refresh_active']) ({{ __('refreshglobal::messages.inactive') }})@endif ·
             PHP {{ $report['versions']['php'] }} · {{ $report['generated_at'] }}
         </p>
-        <p>
-            <a class="btn btn-default btn-sm" href="{{ route('refreshglobal.diagnostic', ['refresh' => 1]) }}">{{ __('refreshglobal::messages.run_again') }}</a>
-            <a class="btn btn-link btn-sm" href="{{ route('refreshglobal.tickets') }}">{{ __('refreshglobal::messages.title') }}</a>
+        <p class="rg-buttons">
+            <a class="btn btn-default btn-sm" href="{{ route('refreshglobal.diagnostic', ['refresh' => 1]) }}"><i class="glyphicon glyphicon-refresh"></i> {{ __('refreshglobal::messages.run_again') }}</a>
+            <a class="btn btn-default btn-sm" href="{{ route('refreshglobal.tickets') }}"><i class="glyphicon glyphicon-inbox"></i> {{ __('refreshglobal::messages.open_page') }}</a>
+            <a class="btn btn-default btn-sm" href="{{ route('settings', ['section' => 'refreshglobal']) }}"><i class="glyphicon glyphicon-cog"></i> {{ __('refreshglobal::messages.settings_link') }}</a>
         </p>
 
         @include('partials/flash_messages')
@@ -93,8 +94,7 @@
                     <button type="submit" class="btn btn-sm btn-default">{{ __('refreshglobal::messages.update_now') }}</button>
                     <span class="rg-muted">{{ __('refreshglobal::messages.update_now_help') }}</span>
                 </form>
-                <p class="rg-muted">{{ __('refreshglobal::messages.update_cli') }} <code>sudo -u www-data php artisan refreshglobal:update</code>
-                    · <a href="{{ route('settings', ['section' => 'refreshglobal']) }}">{{ __('refreshglobal::messages.settings_link') }}</a></p>
+                <p class="rg-muted">{{ __('refreshglobal::messages.update_cli') }} <code>sudo -u www-data php artisan refreshglobal:update</code></p>
             </div>
         </div>
 

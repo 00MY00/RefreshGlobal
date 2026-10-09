@@ -1,4 +1,4 @@
-# Résultats des tests — RefreshGlobal 1.4.3
+# Résultats des tests — RefreshGlobal 1.4.4
 
 Date : 2026-10-09. Environnements jetables Docker : FreeScout 1.8.245 (dépôt officiel), PHP 8.2.34, Apache,
 MariaDB 10.11 ; Refresh 1.4.3 (dépôt officiel). Données de test uniquement (adresses `.test`).
