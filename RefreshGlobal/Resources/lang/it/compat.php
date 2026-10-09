@@ -1,0 +1,95 @@
+<?php
+
+return [
+    'env' => [
+        'check'  => 'Versione di FreeScout nell’intervallo testato',
+        'label'  => 'Versione di FreeScout fuori dall’intervallo testato.',
+        'effect' => 'La pagina funziona ma non è stata testata con questa versione di FreeScout.',
+        'action' => 'Consultare COMPATIBILITY.md e l’ultima versione di RefreshGlobal, poi eseguire php artisan refreshglobal:check.',
+    ],
+    'ref_present' => [
+        'check'  => 'Modulo Refresh presente e attivo',
+        'label'  => 'Il modulo Refresh non è installato o non è attivo.',
+        'effect' => 'La pagina «Tutte le caselle» è mostrata con l’aspetto standard di FreeScout.',
+        'action' => 'Installare e attivare Refresh (Gestisci › Moduli) oppure mantenere l’aspetto standard. Poi eseguire php artisan refreshglobal:check.',
+    ],
+    'ref_version' => [
+        'check'  => 'Versione di Refresh nell’intervallo testato',
+        'label'  => 'Versione di Refresh fuori dall’intervallo testato.',
+        'effect' => 'La pagina funziona; il suo aspetto può differire leggermente dalle pagine di Refresh.',
+        'action' => 'Consultare COMPATIBILITY.md e l’ultima versione di RefreshGlobal, poi eseguire php artisan refreshglobal:check.',
+    ],
+    'css' => [
+        'check'  => 'Fogli di stile di Refresh presenti',
+        'label'  => 'Il foglio di stile di Refresh non è stato trovato.',
+        'effect' => 'La pagina «Tutte le caselle» è mostrata con l’aspetto standard di FreeScout.',
+        'action' => 'Verificare la versione di Refresh installata, poi eseguire php artisan refreshglobal:check.',
+    ],
+    'js' => [
+        'check'  => 'Script di Refresh presenti',
+        'label'  => 'Gli script di Refresh non sono stati trovati.',
+        'effect' => 'La pagina «Tutte le caselle» è mostrata con l’aspetto standard di FreeScout.',
+        'action' => 'Verificare la versione di Refresh installata, poi eseguire php artisan refreshglobal:check.',
+    ],
+    'view' => [
+        'check'           => 'La vista :item esiste',
+        'label'           => 'Una vista usata dalla pagina non è stata trovata: :item.',
+        'effect_blocking' => 'L’elenco dei ticket non può essere mostrato.',
+        'effect'          => 'La pagina è mostrata con l’aspetto standard di FreeScout.',
+        'action'          => 'Aggiornare RefreshGlobal a una versione prevista per questa versione di FreeScout / Refresh (COMPATIBILITY.md), poi eseguire php artisan refreshglobal:check.',
+    ],
+    'hook' => [
+        'check'  => 'L’hook «:item» è attivato da :file',
+        'label'  => 'L’hook «:item» non è più attivato da :file.',
+        'effect' => 'Manca l’elemento aggiunto da questo hook (voce di menu, colonna «Casella» o icona della barra laterale). L’elenco funziona.',
+        'action' => 'Aggiornare RefreshGlobal a una versione prevista per questa versione di FreeScout / Refresh, poi eseguire php artisan refreshglobal:check.',
+    ],
+    'core' => [
+        'check'  => 'Codice di FreeScout presente: :item',
+        'label'  => 'Manca una classe, un metodo o una costante di FreeScout usata dal modulo: :item.',
+        'effect' => 'L’elenco dei ticket non viene mostrato, per non esporre ticket non autorizzati.',
+        'action' => 'Aggiornare RefreshGlobal a una versione prevista per questa versione di FreeScout (COMPATIBILITY.md), poi eseguire php artisan refreshglobal:check.',
+    ],
+    'route' => [
+        'check'  => 'La rotta :item esiste',
+        'label'  => 'Una rotta usata dal modulo non è stata trovata: :item.',
+        'effect' => 'L’elenco dei ticket non viene mostrato: i suoi collegamenti non porterebbero da nessuna parte.',
+        'action' => 'Svuotare la cache (php artisan freescout:clear-cache), poi eseguire php artisan refreshglobal:check. Se persiste, aggiornare RefreshGlobal.',
+    ],
+    'db' => [
+        'check'  => 'Tabella e colonne presenti: :item',
+        'label'  => 'Manca una tabella o colonna di FreeScout usata dal modulo: :item.',
+        'effect' => 'L’elenco dei ticket non viene mostrato.',
+        'action' => 'Eseguire php artisan migrate (o Gestisci › Sistema › Strumenti › Migra DB), poi php artisan refreshglobal:check.',
+    ],
+    'db_own' => [
+        'check'  => 'Tabella delle viste salvate presente: :item',
+        'label'  => 'Manca la tabella del modulo per le viste salvate: :item.',
+        'effect' => 'L’elenco funziona; le viste salvate sono disattivate.',
+        'action' => 'Eseguire php artisan migrate (o Gestisci › Sistema › Strumenti › Migra DB), poi php artisan refreshglobal:check.',
+    ],
+    'acl' => [
+        'check'  => 'Regole di accesso alle caselle disponibili (:item)',
+        'label'  => 'L’elenco di FreeScout delle caselle visibili a un utente (User::mailboxesCanView) non è disponibile.',
+        'effect' => 'L’elenco dei ticket non viene mostrato, per non esporre ticket non autorizzati.',
+        'action' => 'Aggiornare RefreshGlobal a una versione prevista per questa versione di FreeScout, poi eseguire php artisan refreshglobal:check.',
+    ],
+    'acl_assigned' => [
+        'check'  => 'Regola «solo conversazioni assegnate» disponibile (:item)',
+        'label'  => 'Il permesso di FreeScout «solo conversazioni assegnate» (User::canSeeOnlyAssignedConversations) non è disponibile.',
+        'effect' => 'L’elenco dei ticket non viene mostrato, per non esporre ticket non autorizzati.',
+        'action' => 'Aggiornare RefreshGlobal a una versione prevista per questa versione di FreeScout, poi eseguire php artisan refreshglobal:check.',
+    ],
+    'check_error' => [
+        'check'  => 'Il controllo :item viene eseguito senza errori',
+        'label'  => 'Un controllo di compatibilità è fallito in modo imprevisto: :item.',
+        'effect' => 'Per precauzione, l’elenco dei ticket non viene mostrato.',
+        'action' => 'Leggere storage/logs/laravel.log, poi eseguire php artisan refreshglobal:check.',
+    ],
+    'error' => [
+        'check'  => 'Pagina generata senza errori',
+        'label'  => 'Errore imprevisto durante la generazione della pagina.',
+        'effect' => 'L’elenco dei ticket non viene mostrato.',
+        'action' => 'Leggere storage/logs/laravel.log (codice RG-ERR-01), poi eseguire php artisan refreshglobal:check.',
+    ],
+];

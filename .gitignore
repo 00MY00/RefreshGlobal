@@ -1,0 +1,31 @@
+# Dépendances et fichiers générés
+vendor/
+node_modules/
+dist/
+*.phar
+
+# Configuration locale et secrets
+.env
+.env.*
+*.pem
+*.key
+
+# Journaux, sauvegardes, exports, données clients
+*.log
+*.sql
+*.sql.gz
+*.csv
+backups/
+storage/
+
+# Sorties des tests (peuvent contenir des mots de passe de bases jetables)
+tests/installer/full*.txt
+tests/installer/out*.txt
+
+# Éditeurs et système
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini

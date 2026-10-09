@@ -1,0 +1,74 @@
+/*
+ * RefreshGlobal — only the elements Refresh and FreeScout do not have (.rg-*).
+ * Colours: Refresh's variables (--fd-*, Modules/Refresh/Public/css/refresh.css) with FreeScout-like fallbacks
+ * when Refresh is absent.
+ */
+
+/* "Mailbox" column of the native table (added through conversations_table.*_before_conv_number) */
+.table-conversations colgroup col.rg-col-mailbox { width: 120px; }
+.table-conversations th.rg-col-mailbox,
+.table-conversations td.rg-col-mailbox { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; vertical-align: middle; }
+.rg-mailbox-badge {
+    display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle;
+    padding: 1px 8px; border-radius: 10px; font-size: 12px; line-height: 18px;
+    color: var(--fd-text-2, #475569); background: var(--fd-bg-soft, #f1f5f9); border: 1px solid var(--fd-border, #e2e8f0);
+}
+
+/* Refresh's card layout: the mailbox goes next to the badges (.rg-subject-mailbox) and the column is collapsed,
+   the same way Refresh collapses the native columns it does not use */
+.rg-subject-mailbox { display: none; }
+.rf-list-layout:not(.rf-layout-table) .rg-subject-mailbox { display: inline-block; margin: 0 6px 4px 0; max-width: 220px; }
+.rf-list-layout:not(.rf-layout-table) .table-conversations colgroup col.rg-col-mailbox { width: 0 !important; }
+.rf-list-layout:not(.rf-layout-table) .table-conversations th.rg-col-mailbox,
+.rf-list-layout:not(.rf-layout-table) .table-conversations td.rg-col-mailbox { width: 0 !important; max-width: 0; padding: 0 !important; border: 0 !important; font-size: 0; overflow: hidden; }
+
+/* The native footer pager loads FreeScout folders by ajax: the module paginates on the server instead */
+[data-rg-page="tickets"] .table-conversations tfoot .conv-nav .table-pager { display: none; }
+.rg-pagination { padding: 8px 16px; }
+
+/* Saved views / diagnostic link, under the views panel or the native sidebar */
+.rg-view-actions { padding: 8px 12px 16px; font-size: 13px; }
+.rg-details { margin: 6px 0; }
+.rg-details > summary { cursor: pointer; color: var(--fd-text-2, #475569); padding: 4px 0; }
+.rg-form { margin: 6px 0 10px; }
+.rg-form .form-control { margin: 4px 0 6px; }
+.rg-label { display: block; font-weight: 500; margin: 0; }
+.rg-check { display: block; font-weight: normal; margin: 0 0 6px; }
+.rg-danger { color: #b91c1c; padding-left: 0; }
+.rg-default-mark { margin-left: auto; padding-left: 6px; color: #f59e0b; font-size: 12px; }
+.rg-diag-link { display: inline-block; margin-top: 6px; font-size: 12px; }
+.rg-muted { color: var(--fd-muted, #64748b); font-size: 12px; margin: 4px 0; }
+.rg-sidebar-subtitle { margin-top: 12px; }
+
+/* Native skin (state "degraded"): heading + filters row */
+.rg-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+.rg-heading-title { font-weight: 600; }
+.rg-heading-actions .btn { margin-left: 4px; }
+.rg-filters-native { padding: 8px 16px; border-bottom: 1px solid #e5e5e5; }
+.rg-filters-native.rg-collapsed { display: none; }
+.rg-filters-row { display: flex; flex-wrap: wrap; gap: 12px; }
+.rg-filters-row .rg-f { flex: 1 1 200px; min-width: 180px; margin-bottom: 8px; }
+.rg-filters-row .rg-sort-select, .rg-filters-row .rg-order-select { display: inline-block; width: 49%; }
+.rg-filters-foot { padding-top: 4px; }
+
+/* Compatibility messages */
+.rg-notice { margin: 8px 16px; }
+.rg-result { margin: 8px 0; padding: 8px 10px; border-left: 3px solid #94a3b8; background: rgba(255, 255, 255, 0.6); font-size: 13px; }
+.rg-result-blocking { border-left-color: #dc2626; }
+.rg-result-degraded { border-left-color: #f59e0b; }
+.rg-result-warning { border-left-color: #0ea5e9; }
+.rg-result-title { font-weight: 600; margin-bottom: 2px; }
+.rg-result-key { font-weight: 600; }
+.rg-blocked, .rg-diagnostic { max-width: 980px; padding-top: 16px; padding-bottom: 32px; }
+.rg-mailbox-links ul { padding-left: 18px; }
+.rg-diag-table code { white-space: nowrap; }
+
+/* Phone (Refresh's breakpoint: 767px) */
+@media (max-width: 767px) {
+    /* FreeScout's standard look on phones (with Refresh, its phone cards show the mailbox as a pill) */
+    [data-rg-skin="native"] .table-conversations colgroup col.rg-col-mailbox { width: 0; }
+    [data-rg-skin="native"] .table-conversations th.rg-col-mailbox { display: none; }
+    [data-rg-skin="native"] .table-conversations td.rg-col-mailbox { display: block; max-width: none; padding: 0 0 4px !important; border: 0 !important; }
+    .rg-filters-row .rg-f { flex-basis: 100%; }
+    .rg-heading-actions { width: 100%; }
+}

@@ -1,0 +1,99 @@
+<?php
+
+/*
+ * Compatibility checks: one entry per family. "label" = what failed, "effect" = concrete consequence,
+ * "action" = what to do. An "effect_<severity>" entry takes precedence for that severity.
+ */
+return [
+    'env' => [
+        'check'  => 'FreeScout version in the tested range',
+        'label'  => 'FreeScout version outside the tested range.',
+        'effect' => 'The page works but has not been tested with this FreeScout version.',
+        'action' => 'Check COMPATIBILITY.md and the latest RefreshGlobal release, then run php artisan refreshglobal:check.',
+    ],
+    'ref_present' => [
+        'check'  => 'Refresh module present and active',
+        'label'  => 'The Refresh module is not installed or not active.',
+        'effect' => 'The "All mailboxes" page is shown with FreeScout\'s standard look.',
+        'action' => 'Install and activate Refresh (Manage › Modules), or keep the standard look. Then run php artisan refreshglobal:check.',
+    ],
+    'ref_version' => [
+        'check'  => 'Refresh version in the tested range',
+        'label'  => 'Refresh version outside the tested range.',
+        'effect' => 'The page works; its look may differ slightly from Refresh\'s own pages.',
+        'action' => 'Check COMPATIBILITY.md and the latest RefreshGlobal release, then run php artisan refreshglobal:check.',
+    ],
+    'css' => [
+        'check'  => 'Refresh stylesheets present',
+        'label'  => 'Refresh\'s stylesheet cannot be found.',
+        'effect' => 'The "All mailboxes" page is shown with FreeScout\'s standard look.',
+        'action' => 'Check the installed Refresh version, then run php artisan refreshglobal:check.',
+    ],
+    'js' => [
+        'check'  => 'Refresh scripts present',
+        'label'  => 'Refresh\'s scripts cannot be found.',
+        'effect' => 'The "All mailboxes" page is shown with FreeScout\'s standard look.',
+        'action' => 'Check the installed Refresh version, then run php artisan refreshglobal:check.',
+    ],
+    'view' => [
+        'check'           => 'View :item exists',
+        'label'           => 'A view used by the page cannot be found: :item.',
+        'effect_blocking' => 'The ticket list cannot be displayed.',
+        'effect'          => 'The page is shown with FreeScout\'s standard look.',
+        'action'          => 'Update RefreshGlobal to a version made for this FreeScout / Refresh version (COMPATIBILITY.md), then run php artisan refreshglobal:check.',
+    ],
+    'hook' => [
+        'check'  => 'Hook ":item" fired by :file',
+        'label'  => 'The hook ":item" is no longer fired by :file.',
+        'effect' => 'The element added through this hook (menu entry, "Mailbox" column or left bar icon) is missing. The list still works.',
+        'action' => 'Update RefreshGlobal to a version made for this FreeScout / Refresh version, then run php artisan refreshglobal:check.',
+    ],
+    'core' => [
+        'check'  => 'FreeScout code present: :item',
+        'label'  => 'A FreeScout class, method or constant used by the module is missing: :item.',
+        'effect' => 'The ticket list is not displayed, so that no unauthorised ticket can be shown.',
+        'action' => 'Update RefreshGlobal to a version made for this FreeScout version (COMPATIBILITY.md), then run php artisan refreshglobal:check.',
+    ],
+    'route' => [
+        'check'  => 'Route :item exists',
+        'label'  => 'A route used by the module cannot be found: :item.',
+        'effect' => 'The ticket list is not displayed: its links would lead nowhere.',
+        'action' => 'Clear the cache (php artisan freescout:clear-cache), then run php artisan refreshglobal:check. If it persists, update RefreshGlobal.',
+    ],
+    'db' => [
+        'check'  => 'Table and columns present: :item',
+        'label'  => 'A FreeScout table or column used by the module is missing: :item.',
+        'effect' => 'The ticket list is not displayed.',
+        'action' => 'Run php artisan migrate (or Manage › System › Tools › Migrate DB), then php artisan refreshglobal:check.',
+    ],
+    'db_own' => [
+        'check'  => 'Saved views table present: :item',
+        'label'  => 'The module\'s table for saved views is missing: :item.',
+        'effect' => 'The list works; saved views are disabled.',
+        'action' => 'Run php artisan migrate (or Manage › System › Tools › Migrate DB), then php artisan refreshglobal:check.',
+    ],
+    'acl' => [
+        'check'  => 'Mailbox access rules available (:item)',
+        'label'  => 'FreeScout\'s list of the mailboxes a user may see (User::mailboxesCanView) is not available.',
+        'effect' => 'The ticket list is not displayed, so that no unauthorised ticket can be shown.',
+        'action' => 'Update RefreshGlobal to a version made for this FreeScout version, then run php artisan refreshglobal:check.',
+    ],
+    'acl_assigned' => [
+        'check'  => '"Only assigned conversations" rule available (:item)',
+        'label'  => 'FreeScout\'s "only assigned conversations" permission (User::canSeeOnlyAssignedConversations) is not available.',
+        'effect' => 'The ticket list is not displayed, so that no unauthorised ticket can be shown.',
+        'action' => 'Update RefreshGlobal to a version made for this FreeScout version, then run php artisan refreshglobal:check.',
+    ],
+    'check_error' => [
+        'check'  => 'Check :item ran without error',
+        'label'  => 'A compatibility check failed unexpectedly: :item.',
+        'effect' => 'The ticket list is not displayed as a precaution.',
+        'action' => 'Read storage/logs/laravel.log, then run php artisan refreshglobal:check.',
+    ],
+    'error' => [
+        'check'  => 'Page built without error',
+        'label'  => 'Unexpected error while building the page.',
+        'effect' => 'The ticket list is not displayed.',
+        'action' => 'Read storage/logs/laravel.log (code RG-ERR-01), then run php artisan refreshglobal:check.',
+    ],
+];

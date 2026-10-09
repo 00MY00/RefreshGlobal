@@ -1,0 +1,18 @@
+{
+    "name": "RefreshGlobal",
+    "alias": "refreshglobal",
+    "description": "\"All mailboxes\" page for FreeScout: tickets of every mailbox you can access in one list, with mailbox filter, counters, CSV export and saved views. Uses the Refresh module's look when it is installed.",
+    "version": "1.0.0",
+    "author": "RefreshGlobal contributors",
+    "requiredAppVersion": "1.8.0",
+    "license": "AGPL-3.0",
+    "keywords": ["mailboxes", "tickets", "list", "refresh", "export"],
+    "active": 0,
+    "order": 100,
+    "providers": [
+        "Modules\\RefreshGlobal\\Providers\\RefreshGlobalServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}
