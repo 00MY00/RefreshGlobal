@@ -60,6 +60,9 @@ docker exec "$C" sh -c '! grep -q "Database Password" /var/log/refreshglobal-ins
 # official installer: it is started here and the database / user it should have created are ensured.
 PASS_DB="test-$(date +%s)"
 docker exec "$C" bash -c "service mysql start >/dev/null 2>&1 || service mariadb start >/dev/null 2>&1 || true"
+# systemd creates /run/mysqld with mode 0755 (mysql.service: RuntimeDirectory=mysqld); in a container the package
+# leaves it 0700, so PHP (www-data) could not reach the socket. Same state as a real server:
+docker exec "$C" chmod 755 /var/run/mysqld
 if docker exec "$C" mysql -u root -N -e "SHOW DATABASES LIKE 'freescout'" 2>/dev/null | grep -q freescout; then
     record "base « freescout » créée par le script officiel" PASS
 else
@@ -67,7 +70,7 @@ else
 fi
 docker exec "$C" mysql -u root -e "CREATE DATABASE IF NOT EXISTS freescout CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci; CREATE USER IF NOT EXISTS 'freescout'@'localhost' IDENTIFIED BY '${PASS_DB}'; ALTER USER 'freescout'@'localhost' IDENTIFIED BY '${PASS_DB}'; GRANT ALL ON freescout.* TO 'freescout'@'localhost'; FLUSH PRIVILEGES;"
 docker exec "$C" bash -c "cat > /var/www/html/.env <<EOF
-APP_URL=http://localhost
+APP_URL=http://helpdesk.example.test
 APP_ENV=production
 APP_DEBUG=false
 APP_KEY=
