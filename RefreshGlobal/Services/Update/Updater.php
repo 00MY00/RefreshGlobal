@@ -82,6 +82,46 @@ class Updater
         \App\Option::set(self::OPTION_REQUEST, '');
     }
 
+    /** An update is running now: another process holds the update lock (see update()). */
+    public static function isRunning()
+    {
+        $file = self::dir('update.lock');
+        if (!is_file($file)) {
+            return false;
+        }
+        $lock = @fopen($file, 'c');
+        if (!$lock) {
+            return false;
+        }
+        $free = flock($lock, LOCK_EX | LOCK_NB);
+        if ($free) {
+            flock($lock, LOCK_UN);
+        }
+        fclose($lock);
+
+        return !$free;
+    }
+
+    /**
+     * What the settings and diagnostic pages show: running | requested | available | up_to_date | unknown.
+     * After a successful update the installed version equals the latest one: "up_to_date", nothing else to do.
+     */
+    public static function state()
+    {
+        if (self::isRunning()) {
+            return 'running';
+        }
+        if (self::pendingRequest() !== '') {
+            return 'requested';
+        }
+        $latest = (string) (self::status()['latest'] ?? '');
+        if ($latest === '') {
+            return 'unknown';
+        }
+
+        return version_compare($latest, self::currentVersion(), '>') ? 'available' : 'up_to_date';
+    }
+
     public static function dir($sub = '')
     {
         return storage_path('app/refreshglobal'.($sub !== '' ? '/'.$sub : ''));
@@ -232,6 +272,7 @@ class Updater
         if (!$lock || !flock($lock, LOCK_EX | LOCK_NB)) {
             return $this->finish('skipped', '', '', 'another update is running');
         }
+        $this->saveStatus(['running_since' => date('c'), 'running_to' => '']);
         try {
             return $this->doUpdate($force);
         } catch (\Throwable $e) {
@@ -239,6 +280,7 @@ class Updater
 
             return $this->finish('failed', self::currentVersion(), '', $e->getMessage());
         } finally {
+            $this->saveStatus(['running_since' => '', 'running_to' => '']);
             flock($lock, LOCK_UN);
             fclose($lock);
         }
@@ -265,6 +307,9 @@ class Updater
 
             return $this->finish('skipped', $from, $to, 'version '.$to.' was rolled back before');
         }
+
+        // shown as "update to X in progress" on the settings / diagnostic pages
+        $this->saveStatus(['running_to' => $to]);
 
         // 1. download + checksum
         $work = self::dir('tmp/'.date('YmdHis'));

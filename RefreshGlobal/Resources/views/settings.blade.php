@@ -4,9 +4,6 @@
     Same markup as FreeScout's settings pages and Refresh's (Modules/Refresh/Resources/views/settings.blade.php).
 --}}
 @php
-    $rg_update = \Modules\RefreshGlobal\Services\Update\Updater::status();
-    $rg_current = \Modules\RefreshGlobal\Services\Update\Updater::currentVersion();
-    $rg_requested = \Modules\RefreshGlobal\Services\Update\Updater::pendingRequest();
     $rg_refresh = \App\Module::isActive('refresh');
     $rg_s = '\Modules\RefreshGlobal\Services\Settings';
     $rg_need_refresh = $rg_refresh ? '' : __('refreshglobal::messages.refresh_required');
@@ -54,45 +51,9 @@
 
 <div class="form-horizontal margin-bottom">
     <div class="form-group">
-        <label class="col-sm-2 control-label">{{ __('refreshglobal::messages.installed_version') }}</label>
-        <div class="col-sm-8">
-            <p class="form-control-static">
-                <strong>{{ $rg_current }}</strong>
-                @if (!empty($rg_update['latest']))
-                    · {{ __('refreshglobal::messages.latest_version') }} <strong>{{ $rg_update['latest'] }}</strong>@if (($rg_update['source'] ?? '') === 'branch') <small>{{ __('refreshglobal::messages.update_source_branch') }}</small>@endif
-                    @if (version_compare($rg_update['latest'], $rg_current, '>'))<span class="label label-info">{{ __('refreshglobal::messages.update_available') }}</span>@endif
-                @endif
-            </p>
-            @if (!empty($rg_update['last_check_at']))
-                <p class="form-help">{{ __('refreshglobal::messages.last_check', ['time' => \Carbon\Carbon::parse($rg_update['last_check_at'])->format('Y-m-d H:i')]) }}</p>
-            @endif
-            <form method="POST" action="{{ route('refreshglobal.check_update') }}" class="margin-bottom-10">
-                {{ csrf_field() }}
-                <input type="hidden" name="back" value="settings">
-                <button type="submit" class="btn btn-default">{{ __('refreshglobal::messages.check_update') }}</button>
-            </form>
-            <p class="form-help">{{ __('refreshglobal::messages.check_update_help') }}</p>
-            @if (!empty($rg_update['last_result']))
-                <p class="form-help @if (in_array($rg_update['last_result'], ['rolled_back', 'failed'])) text-danger @endif">
-                    {{ __('refreshglobal::messages.last_update') }}
-                    {{ __('refreshglobal::messages.update_result_'.$rg_update['last_result']) }}
-                    @if (!empty($rg_update['last_to']))({{ $rg_update['last_from'] ?? '' }} → {{ $rg_update['last_to'] }})@endif
-                    — {{ $rg_update['last_run_at'] ?? '' }}
-                    @if (!empty($rg_update['last_reason']))<br><small>{{ $rg_update['last_reason'] }}</small>@endif
-                </p>
-            @endif
-            <form method="POST" action="{{ route('refreshglobal.update_now') }}">
-                {{ csrf_field() }}
-                <input type="hidden" name="back" value="settings">
-                <button type="submit" class="btn btn-default" @if ($rg_requested !== '') disabled @endif>{{ __('refreshglobal::messages.update_now') }}</button>
-            </form>
-            <p class="form-help">
-                @if ($rg_requested !== '')
-                    {{ __('refreshglobal::messages.update_requested', ['time' => $rg_requested]) }}
-                @else
-                    {{ __('refreshglobal::messages.update_now_help') }}
-                @endif
-            </p>
+        <label class="col-sm-2 control-label">RefreshGlobal</label>
+        <div class="col-sm-8 form-control-static">
+            @include('refreshglobal::partials.update_state', ['back' => 'settings', 'small' => false])
         </div>
     </div>
 </div>

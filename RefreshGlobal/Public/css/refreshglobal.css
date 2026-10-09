@@ -51,6 +51,8 @@
 .rg-diag-link { display: inline-block; margin-top: 6px; }
 /* rows of buttons (settings page) */
 .rg-buttons .btn { margin: 0 6px 6px 0; }
+.rg-inline-form { display: inline-block; }
+.rg-update-line .label { margin-left: 6px; }
 .rg-muted { color: var(--fd-muted, #64748b); font-size: 12px; margin: 4px 0; }
 .rg-sidebar-subtitle { margin-top: 12px; }
 

@@ -2,6 +2,19 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.4.5] — 2026-10-09
+
+### Modifié
+- État de la mise à jour plus clair (réglages et diagnostic, même bloc) :
+  - **à jour** (par exemple juste après une mise à jour réussie) : « Version installée : 1.4.5 — À jour », sans
+    « dernière : … (branche main …) » qui faisait croire à une nouvelle version ;
+  - **nouvelle version** : « nouvelle version : X » (avec la source si c'est la branche `main`) ;
+  - **demandée** puis **en cours** (« Mise à jour vers X en cours… ») : boutons désactivés et page rechargée toute
+    seule jusqu'à la fin. « En cours » vient du verrou réellement tenu par la mise à jour.
+- « Dernière mise à jour : réussie (installée et vérifiée) » au lieu de « Dernière mise à jour automatique :
+  installée » (la mise à jour peut venir du bouton).
+- Boutons « Rechercher une mise à jour » et « Mettre à jour maintenant » côte à côte.
+
 ## [1.4.4] — 2026-10-09
 
 ### Modifié

@@ -62,38 +62,12 @@
                     <span class="label {{ $update_enabled ? 'label-success' : 'label-default' }}">{{ $update_enabled ? __('refreshglobal::messages.on') : __('refreshglobal::messages.off') }}</span>
                 </h4>
                 <p class="rg-muted">{{ __('refreshglobal::messages.auto_update_help', ['time' => $update_time]) }}</p>
-                <p>
-                    {{ __('refreshglobal::messages.installed_version') }} <strong>{{ $current }}</strong>
-                    @if (!empty($update['latest']))
-                        · {{ __('refreshglobal::messages.latest_version') }} <strong>{{ $update['latest'] }}</strong>@if (($update['source'] ?? '') === 'branch') <small>{{ __('refreshglobal::messages.update_source_branch') }}</small>@endif
-                        @if (version_compare($update['latest'], $current, '>'))<span class="label label-info">{{ __('refreshglobal::messages.update_available') }}</span>@endif
-                        @if (!empty($update['last_check_at']))<small class="rg-muted">({{ __('refreshglobal::messages.last_check', ['time' => \Carbon\Carbon::parse($update['last_check_at'])->format('Y-m-d H:i')]) }})</small>@endif
-                    @endif
-                </p>
-                @if (!empty($update['last_result']))
-                    <p class="@if ($update['last_result'] === 'rolled_back' || $update['last_result'] === 'failed') text-danger @endif">
-                        {{ __('refreshglobal::messages.last_update') }}
-                        <strong>{{ __('refreshglobal::messages.update_result_'.$update['last_result']) }}</strong>
-                        @if (!empty($update['last_to'])) ({{ $update['last_from'] ?? '' }} → {{ $update['last_to'] }})@endif
-                        — {{ $update['last_run_at'] ?? '' }}
-                        @if (!empty($update['last_reason']))<br><small>{{ $update['last_reason'] }}</small>@endif
-                    </p>
-                @endif
                 <form method="post" action="{{ route('refreshglobal.auto_update') }}" class="rg-form">
                     {{ csrf_field() }}
                     <input type="hidden" name="enabled" value="{{ $update_enabled ? 0 : 1 }}">
                     <button type="submit" class="btn btn-sm {{ $update_enabled ? 'btn-default' : 'btn-primary' }}">{{ $update_enabled ? __('refreshglobal::messages.turn_off') : __('refreshglobal::messages.turn_on') }}</button>
                 </form>
-                <form method="post" action="{{ route('refreshglobal.check_update') }}" class="rg-form">
-                    {{ csrf_field() }}
-                    <button type="submit" class="btn btn-sm btn-default">{{ __('refreshglobal::messages.check_update') }}</button>
-                    <span class="rg-muted">{{ __('refreshglobal::messages.check_update_help') }}</span>
-                </form>
-                <form method="post" action="{{ route('refreshglobal.update_now') }}" class="rg-form">
-                    {{ csrf_field() }}
-                    <button type="submit" class="btn btn-sm btn-default">{{ __('refreshglobal::messages.update_now') }}</button>
-                    <span class="rg-muted">{{ __('refreshglobal::messages.update_now_help') }}</span>
-                </form>
+                @include('refreshglobal::partials.update_state', ['back' => '', 'small' => true])
                 <p class="rg-muted">{{ __('refreshglobal::messages.update_cli') }} <code>sudo -u www-data php artisan refreshglobal:update</code></p>
             </div>
         </div>

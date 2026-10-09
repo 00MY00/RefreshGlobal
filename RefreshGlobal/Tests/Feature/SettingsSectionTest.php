@@ -132,6 +132,65 @@ class SettingsSectionTest extends TestCase
         $this->actingAs($this->s['bob'])->post(route('refreshglobal.check_update'))->assertStatus(403);
     }
 
+    /** Up to date after an update: no "latest version" shown; requested / running: said clearly, buttons disabled. */
+    public function testUpdateStates()
+    {
+        $statusFile = Updater::dir('update-status.json');
+        $savedStatus = is_file($statusFile) ? file_get_contents($statusFile) : null;
+        @mkdir(Updater::dir(), 0775, true);
+        $page = function () {
+            return $this->actingAs($this->s['admin'])->get(route('settings', ['section' => 'refreshglobal']));
+        };
+        $current = Updater::currentVersion();
+        try {
+            Updater::clearRequest();
+
+            // right after a successful update: installed = latest (from the main branch)
+            file_put_contents($statusFile, json_encode(['latest' => $current, 'source' => 'branch', 'last_result' => 'updated', 'last_from' => '0.9.0', 'last_to' => $current]));
+            $r = $page();
+            $this->seeIn($r, 'data-rg-update-state="up_to_date"');
+            $this->seeIn($r, __('refreshglobal::messages.update_state_up_to_date'));
+            $this->dontSeeIn($r, e(__('refreshglobal::messages.update_source_branch')));
+            $this->dontSeeIn($r, __('refreshglobal::messages.update_available'));
+
+            // newer version
+            file_put_contents($statusFile, json_encode(['latest' => '99.0.0', 'source' => 'branch']));
+            $r = $page();
+            $this->seeIn($r, 'data-rg-update-state="available"');
+            $this->seeIn($r, '99.0.0');
+
+            // requested: shown, buttons disabled, the page reloads itself
+            Updater::requestUpdate();
+            $r = $page();
+            $this->seeIn($r, 'data-rg-update-state="requested"');
+            $this->seeIn($r, 'window.location.reload()');
+            $this->seeIn($r, 'disabled');
+            Updater::clearRequest();
+
+            // running: another process holds the update lock
+            $lock = fopen(Updater::dir('update.lock'), 'c');
+            flock($lock, LOCK_EX);
+            file_put_contents($statusFile, json_encode(['latest' => '99.0.0', 'running_to' => '99.0.0']));
+            try {
+                $this->assertTrue(Updater::isRunning());
+                $r = $page();
+                $this->seeIn($r, 'data-rg-update-state="running"');
+                $this->seeIn($r, e(__('refreshglobal::messages.update_state_running', ['version' => '99.0.0'])));
+            } finally {
+                flock($lock, LOCK_UN);
+                fclose($lock);
+            }
+            $this->assertFalse(Updater::isRunning());
+        } finally {
+            Updater::clearRequest();
+            if ($savedStatus === null) {
+                @unlink($statusFile);
+            } else {
+                file_put_contents($statusFile, $savedStatus);
+            }
+        }
+    }
+
     public function testRegularUserHasNoAccess()
     {
         $this->actingAs($this->s['bob'])->get(route('settings', ['section' => 'refreshglobal']))->assertStatus(403);

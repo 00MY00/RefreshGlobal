@@ -35,7 +35,7 @@ REPO_URL="${RG_REPO_URL:-https://github.com/00MY00/RefreshGlobal}"
 # When no release is published: archive of the current main branch (no SHA256SUMS for a branch)
 BRANCH_ZIP_URL="${RG_BRANCH_ZIP_URL:-${REPO_URL}/archive/refs/heads/main.zip}"
 
-SCRIPT_VERSION="1.4.4"
+SCRIPT_VERSION="1.4.5"
 MODULE_NAME="RefreshGlobal"
 MODULE_ALIAS="refreshglobal"
 MODULE_TABLE="refreshglobal_saved_views"

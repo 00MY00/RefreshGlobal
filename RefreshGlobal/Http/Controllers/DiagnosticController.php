@@ -47,7 +47,8 @@ class DiagnosticController extends Controller
                 ? route('settings', ['section' => 'refreshglobal'])
                 : route('refreshglobal.diagnostic');
 
-            return redirect($to)->with('flash_success', __('refreshglobal::messages.update_requested', ['time' => date('H:i')]));
+            // no flash message: the update block of the page shows "requested" then "in progress" (it reloads itself)
+            return redirect($to);
         });
     }
 

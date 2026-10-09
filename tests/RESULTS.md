@@ -1,4 +1,4 @@
-# Résultats des tests — RefreshGlobal 1.4.4
+# Résultats des tests — RefreshGlobal 1.4.5
 
 Date : 2026-10-09. Environnements jetables Docker : FreeScout 1.8.245 (dépôt officiel), PHP 8.2.34, Apache,
 MariaDB 10.11 ; Refresh 1.4.3 (dépôt officiel). Données de test uniquement (adresses `.test`).
@@ -206,6 +206,16 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
 - Navigateur : interface en anglais, choix « Français » dans le sélecteur → la page, la barre de Refresh et le
   tableau de bord passent en français ; `users.locale = fr` en base. Sélecteur visible en bas du panneau des vues
   (ordinateur) et du tiroir (téléphone).
+
+## 15. État de la mise à jour : à jour / demandée / en cours (1.4.5)
+
+- PHPUnit : **68 tests, 952 assertions, 0 échec** (nouveau `testUpdateStates` : après une mise à jour, « À jour »
+  sans « dernière version » ni « branche main » ; nouvelle version ; demandée → boutons désactivés et rechargement
+  automatique ; en cours → verrou tenu par un autre processus détecté, « Mise à jour vers X en cours… »).
+- Scénario `auto-update` : **22 vérifications réussies, 0 en échec** (la mise à jour note et efface son état
+  « en cours »).
+- Navigateur : réglages « Version installée : 1.4.5 — À jour », « Dernière mise à jour : réussie (installée et
+  vérifiée) » ; clic sur « Mettre à jour maintenant » → « Mise à jour demandée », demande enregistrée en base.
 
 ## 14. Sans release publiée : branche `main` (1.4.3)
 
