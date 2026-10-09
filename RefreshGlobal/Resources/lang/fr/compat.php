@@ -142,4 +142,16 @@ return [
         'effect' => 'Le sélecteur de langue de la page « Toutes les boîtes » est masqué ; la langue se change toujours dans le profil. Le reste fonctionne.',
         'action' => 'Mettre à jour RefreshGlobal vers une version prévue pour cette version de FreeScout, puis exécuter php artisan refreshglobal:check.',
     ],
+    'core_trash' => [
+        'check'  => 'Code FreeScout présent : :item',
+        'label'  => 'Une classe, méthode ou constante de FreeScout utilisée pour vider la corbeille est absente : :item.',
+        'effect' => 'Vider la corbeille (bouton et automatique) n’est pas disponible ; le « Vider la corbeille » de chaque boîte de FreeScout fonctionne toujours. Le reste fonctionne.',
+        'action' => 'Mettre à jour RefreshGlobal vers une version prévue pour cette version de FreeScout, puis exécuter php artisan refreshglobal:check.',
+    ],
+    'db_trash' => [
+        'check'  => 'Table et colonnes présentes : :item',
+        'label'  => 'Une colonne utilisée pour vider automatiquement la corbeille est absente : :item.',
+        'effect' => 'Le vidage automatique ne peut pas savoir depuis quand un ticket est dans la corbeille. Le reste fonctionne.',
+        'action' => 'Mettre à jour RefreshGlobal vers une version prévue pour cette version de FreeScout, puis exécuter php artisan refreshglobal:check.',
+    ],
 ];

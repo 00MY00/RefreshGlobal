@@ -142,4 +142,16 @@ return [
         'effect' => 'Die Sprachauswahl der Seite „Alle Postfächer“ ist ausgeblendet; die Sprache lässt sich weiterhin im Profil ändern. Der Rest funktioniert.',
         'action' => 'RefreshGlobal auf eine Version für diese FreeScout-Version aktualisieren, dann php artisan refreshglobal:check ausführen.',
     ],
+    'core_trash' => [
+        'check'  => 'FreeScout-Code vorhanden: :item',
+        'label'  => 'Eine zum Leeren des Papierkorbs verwendete Klasse, Methode oder Konstante von FreeScout fehlt: :item.',
+        'effect' => 'Das Leeren des Papierkorbs (Schaltfläche und automatisch) ist nicht verfügbar; „Papierkorb leeren“ von FreeScout in jedem Postfach funktioniert weiterhin. Der Rest funktioniert.',
+        'action' => 'RefreshGlobal auf eine Version für diese FreeScout-Version aktualisieren, dann php artisan refreshglobal:check ausführen.',
+    ],
+    'db_trash' => [
+        'check'  => 'Tabelle und Spalten vorhanden: :item',
+        'label'  => 'Eine für das automatische Leeren des Papierkorbs verwendete Spalte fehlt: :item.',
+        'effect' => 'Das automatische Leeren kann nicht erkennen, seit wann ein Ticket im Papierkorb liegt. Der Rest funktioniert.',
+        'action' => 'RefreshGlobal auf eine Version für diese FreeScout-Version aktualisieren, dann php artisan refreshglobal:check ausführen.',
+    ],
 ];

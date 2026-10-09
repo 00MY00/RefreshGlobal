@@ -1,4 +1,4 @@
-# Résultats des tests — RefreshGlobal 1.4.5
+# Résultats des tests — RefreshGlobal 1.5.0
 
 Date : 2026-10-09. Environnements jetables Docker : FreeScout 1.8.245 (dépôt officiel), PHP 8.2.34, Apache,
 MariaDB 10.11 ; Refresh 1.4.3 (dépôt officiel). Données de test uniquement (adresses `.test`).
@@ -206,6 +206,17 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
 - Navigateur : interface en anglais, choix « Français » dans le sélecteur → la page, la barre de Refresh et le
   tableau de bord passent en français ; `users.locale = fr` en base. Sélecteur visible en bas du panneau des vues
   (ordinateur) et du tiroir (téléphone).
+
+## 16. Vider la corbeille (1.5.0)
+
+- PHPUnit : **74 tests, 1056 assertions, 0 échec** (nouveau `TrashTest`, 6 tests : l'administrateur vide tout sans
+  toucher aux tickets publiés, brouillons et indésirables ; sans permission → 403 et pas de bouton ; utilisateur
+  autorisé → seulement ses boîtes ; « seulement assignés » → seulement ses tickets ; vidage automatique : rien à
+  0 jour, à 30 jours le ticket de 40 jours est supprimé et celui de 2 jours gardé ; tâche quotidienne enregistrée ;
+  réglage enregistré par FreeScout et borné à 0…3650). `refreshglobal:check` : RG-CORE-13 et RG-DB-06 OK.
+- Navigateur : 2 tickets mis à la corbeille, clic sur « Vider la corbeille (2) » dans les réglages → confirmation
+  « Supprimer définitivement les 2 ticket(s)… » → « Corbeille vidée : 2 ticket(s) supprimé(s) définitivement » ;
+  en base : 0 ticket dans la corbeille, les 38 autres intacts. Bouton aussi visible dans le panneau des vues.
 
 ## 15. État de la mise à jour : à jour / demandée / en cours (1.4.5)
 

@@ -26,7 +26,7 @@ class DatabaseCheck extends Check
             } catch (\Exception $e) {
                 $missing[] = 'database error: '.$e->getMessage();
             }
-            $family = $def['table'] === 'refreshglobal_saved_views' ? 'db_own' : 'db';
+            $family = $def['family'] ?? ($def['table'] === 'refreshglobal_saved_views' ? 'db_own' : 'db');
             $results[] = $this->result($code, $family, $def['severity'], !$missing, $expected, $missing ? 'missing: '.implode(', ', $missing) : '');
         }
 

@@ -142,4 +142,16 @@ return [
         'effect' => 'De taalkeuze van de pagina „Alle mailboxen” is verborgen; de taal kan nog in het profiel worden gewijzigd. De rest werkt.',
         'action' => 'RefreshGlobal bijwerken naar een versie voor deze FreeScout-versie en daarna php artisan refreshglobal:check uitvoeren.',
     ],
+    'core_trash' => [
+        'check'  => 'FreeScout-code aanwezig: :item',
+        'label'  => 'Een klasse, methode of constante van FreeScout voor het legen van de prullenbak ontbreekt: :item.',
+        'effect' => 'De prullenbak legen (knop en automatisch) is niet beschikbaar; „Prullenbak legen” van FreeScout per mailbox werkt nog. De rest werkt.',
+        'action' => 'RefreshGlobal bijwerken naar een versie voor deze FreeScout-versie en daarna php artisan refreshglobal:check uitvoeren.',
+    ],
+    'db_trash' => [
+        'check'  => 'Tabel en kolommen aanwezig: :item',
+        'label'  => 'Een kolom voor het automatisch legen van de prullenbak ontbreekt: :item.',
+        'effect' => 'Het automatisch legen kan niet weten sinds wanneer een ticket in de prullenbak staat. De rest werkt.',
+        'action' => 'RefreshGlobal bijwerken naar een versie voor deze FreeScout-versie en daarna php artisan refreshglobal:check uitvoeren.',
+    ],
 ];

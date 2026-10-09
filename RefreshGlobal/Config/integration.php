@@ -92,6 +92,8 @@ return [
         'RG-CORE-11' => ['class' => 'Modules\Refresh\Services\Settings', 'methods' => ['resolutionHours'], 'refresh' => true, 'family' => 'core_refresh', 'severity' => 'degraded', 'source' => 'Modules/Refresh/Services/Settings.php:26'],
         // Deleting a ticket permanently in a bulk delete (degraded: the tickets stay in the trash)
         'RG-CORE-12' => ['class' => 'App\Conversation', 'methods' => ['deleteForever'], 'constants' => ['App\Conversation::STATE_DELETED'], 'family' => 'core_delete', 'severity' => 'degraded', 'source' => 'app/Conversation.php:2156'],
+        // "Empty the trash" (button and automatic emptying): FreeScout's own permanent deletion, its permission
+        'RG-CORE-13' => ['class' => 'App\Conversation', 'methods' => ['deleteConversationsForever'], 'constants' => ['App\Conversation::STATE_DELETED', 'App\User::PERM_DELETE_CONVERSATIONS'], 'family' => 'core_trash', 'severity' => 'degraded', 'source' => 'app/Conversation.php:2161, app/User.php:89'],
         'RG-CORE-08' => ['classes' => ['ZipArchive', 'GuzzleHttp\Client', 'Symfony\Component\Process\Process', 'Symfony\Component\Process\PhpExecutableFinder'], 'severity' => 'degraded', 'source' => 'PHP zip extension (config/installer.php), vendor/guzzlehttp, vendor/symfony/process'],
     ],
 
@@ -109,6 +111,8 @@ return [
         'RG-DB-02' => ['table' => 'mailboxes', 'columns' => ['id', 'name'], 'severity' => 'blocking', 'source' => 'database/migrations/2018_06_25_065719_create_mailboxes_table.php'],
         'RG-DB-03' => ['table' => 'customers', 'columns' => ['id', 'first_name', 'last_name'], 'severity' => 'blocking', 'source' => 'database/migrations/2018_07_09_053559_create_customers_table.php'],
         'RG-DB-04' => ['table' => 'mailbox_user', 'columns' => ['mailbox_id', 'user_id'], 'severity' => 'blocking', 'source' => 'database/migrations/2018_06_29_041002_create_mailbox_user_table.php'],
+        // "in the trash since" for the automatic emptying (set by Conversation::deleteToFolder(), app/Conversation.php:2125)
+        'RG-DB-06' => ['table' => 'conversations', 'columns' => ['user_updated_at', 'updated_at'], 'family' => 'db_trash', 'severity' => 'degraded', 'source' => 'database/migrations/2018_07_11_010333_create_conversations_table.php:67'],
         'RG-DB-05' => ['table' => 'refreshglobal_saved_views', 'columns' => ['id', 'user_id', 'name', 'filters', 'is_default'], 'severity' => 'degraded', 'source' => 'Modules/RefreshGlobal/Database/Migrations'],
     ],
 ];

@@ -43,6 +43,16 @@
             </details>
         @endif
     @endif
+    {{-- Empty the trash of the user's mailboxes (admins / users allowed to delete conversations), with confirmation --}}
+    @if (\Modules\RefreshGlobal\Services\Trash::userCanEmpty(auth()->user()))
+        @php $rg_trash = \Modules\RefreshGlobal\Services\Trash::count(auth()->user()); @endphp
+        <form method="POST" action="{{ route('refreshglobal.trash.empty') }}" class="rg-trash" data-rg-confirm="{{ __('refreshglobal::messages.trash_empty_confirm', ['count' => $rg_trash]) }}">
+            {{ csrf_field() }}
+            <button type="submit" class="btn btn-default btn-sm rg-trash-btn" @if (!$rg_trash) disabled @endif title="{{ __('refreshglobal::messages.trash_empty_help') }}">
+                <i class="glyphicon glyphicon-trash"></i> {{ __('refreshglobal::messages.trash_empty_button', ['count' => $rg_trash]) }}
+            </button>
+        </form>
+    @endif
     @include('refreshglobal::partials.language')
     @if ($is_admin)
         <a class="btn btn-default btn-sm rg-diag-link" href="{{ route('refreshglobal.diagnostic') }}"><i class="glyphicon glyphicon-check"></i> {{ __('refreshglobal::messages.diagnostic') }}</a>

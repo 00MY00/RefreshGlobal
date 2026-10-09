@@ -44,6 +44,11 @@ return [
     // (FreeScout only, the mail server is not touched).
     'delete_permanently_default' => (bool) env('REFRESHGLOBAL_DELETE_PERMANENTLY', false),
 
+    // Automatic emptying of the trash: tickets in the trash for more than N days are deleted for good, every day at
+    // trash_auto_time (0 = never, the default).
+    'trash_auto_days_default' => (int) env('REFRESHGLOBAL_TRASH_AUTO_DAYS', 0),
+    'trash_auto_time' => env('REFRESHGLOBAL_TRASH_AUTO_TIME', '03:45'),
+
     // Mailbox badge (name and address) above each ticket on the "All mailboxes" list and the dashboard.
     'show_mailbox_default' => (bool) env('REFRESHGLOBAL_SHOW_MAILBOX', true),
 ];

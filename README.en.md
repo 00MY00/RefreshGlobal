@@ -103,7 +103,12 @@ Updates: `sudo git -C /opt/RefreshGlobal pull`, then the same command with `--up
 | Mailbox above each ticket | on | name and address of the mailbox above the subject (list and dashboard) |
 | Go to the next ticket | off | after a deletion: off = back to "All mailboxes" (last filters), on = next ticket of that list |
 | Delete permanently | off | off = FreeScout's trash (can be restored); on = the ticket and its e-mails are removed from FreeScout at once (cannot be undone; the mail server is not touched) |
+| Empty automatically (trash) | 0 days = never | every day at 03:45, tickets in the trash for more than N days are deleted for good with their e-mails (all mailboxes; mail server untouched) |
 | Automatic update | off | daily safe update with automatic rollback |
+
+**Empty the trash now**: "Empty the trash (N)" button in these settings and at the bottom of the "All mailboxes" views
+panel (phones too), with confirmation; same rules as FreeScout's own "Empty trash" (admins or users allowed to delete
+conversations, their mailboxes only). Cannot be undone. CLI: `php artisan refreshglobal:trash --older-than=30`.
 
 Buttons below the settings: **"Check for updates"** (tells at once whether a newer version exists, installs nothing)
 and **"Update now"** (safe update started within a minute).

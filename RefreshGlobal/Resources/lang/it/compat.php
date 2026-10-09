@@ -142,4 +142,16 @@ return [
         'effect' => 'Il selettore della lingua della pagina «Tutte le caselle» è nascosto; la lingua si può sempre cambiare nel profilo. Il resto funziona.',
         'action' => 'Aggiornare RefreshGlobal a una versione prevista per questa versione di FreeScout, poi eseguire php artisan refreshglobal:check.',
     ],
+    'core_trash' => [
+        'check'  => 'Codice FreeScout presente: :item',
+        'label'  => 'Manca una classe, un metodo o una costante di FreeScout usata per svuotare il cestino: :item.',
+        'effect' => 'Svuotare il cestino (pulsante e automatico) non è disponibile; lo «Svuota cestino» di ogni casella di FreeScout funziona ancora. Il resto funziona.',
+        'action' => 'Aggiornare RefreshGlobal a una versione prevista per questa versione di FreeScout, poi eseguire php artisan refreshglobal:check.',
+    ],
+    'db_trash' => [
+        'check'  => 'Tabella e colonne presenti: :item',
+        'label'  => 'Manca una colonna usata per svuotare automaticamente il cestino: :item.',
+        'effect' => 'Lo svuotamento automatico non può sapere da quando un ticket è nel cestino. Il resto funziona.',
+        'action' => 'Aggiornare RefreshGlobal a una versione prevista per questa versione di FreeScout, poi eseguire php artisan refreshglobal:check.',
+    ],
 ];

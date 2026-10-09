@@ -37,6 +37,7 @@ class RefreshGlobalServiceProvider extends ServiceProvider
             \Modules\RefreshGlobal\Console\CheckCompatibilityCommand::class,
             \Modules\RefreshGlobal\Console\UpdateCommand::class,
             \Modules\RefreshGlobal\Console\SelfTestCommand::class,
+            \Modules\RefreshGlobal\Console\TrashCommand::class,
         ]);
     }
 
@@ -189,6 +190,11 @@ class RefreshGlobalServiceProvider extends ServiceProvider
                 // "Update now" button (settings / diagnostic page): picked up within a minute
                 $schedule->command('refreshglobal:update --requested')
                     ->everyMinute()
+                    ->withoutOverlapping();
+                // automatic emptying of the trash (does nothing while the setting is 0 days)
+                $trash = (string) config('refreshglobal.trash_auto_time', '03:45');
+                $schedule->command('refreshglobal:trash --scheduled')
+                    ->dailyAt(preg_match('/^\d{1,2}:\d{2}$/', $trash) ? $trash : '03:45')
                     ->withoutOverlapping();
             } catch (\Exception $e) {
                 // no automatic update rather than a broken scheduler

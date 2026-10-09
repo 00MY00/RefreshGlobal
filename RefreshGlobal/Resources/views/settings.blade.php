@@ -7,6 +7,7 @@
     $rg_refresh = \App\Module::isActive('refresh');
     $rg_s = '\Modules\RefreshGlobal\Services\Settings';
     $rg_need_refresh = $rg_refresh ? '' : __('refreshglobal::messages.refresh_required');
+    $rg_trash = \Modules\RefreshGlobal\Services\Trash::count(auth()->user());
 @endphp
 <p class="margin-top">{{ __('refreshglobal::messages.settings_intro') }}</p>
 <p class="rg-buttons">
@@ -38,6 +39,28 @@
     @include('refreshglobal::partials.switch', ['key' => $rg_s::DELETE_PERMANENTLY, 'label' => __('refreshglobal::messages.delete_permanently'),
         'help' => __('refreshglobal::messages.delete_permanently_help')])
 
+    <h3 class="subheader">{{ __('refreshglobal::messages.trash') }}</h3>
+    <div class="form-group">
+        <label for="rg-trash-days" class="col-sm-2 control-label">{{ __('refreshglobal::messages.trash_auto') }}</label>
+        <div class="col-sm-6">
+            <div class="input-group" style="max-width: 220px;">
+                <input type="number" id="rg-trash-days" name="settings[{{ $rg_s::TRASH_AUTO_DAYS }}]" value="{{ (int) ($settings[$rg_s::TRASH_AUTO_DAYS] ?? 0) }}" min="0" max="{{ $rg_s::TRASH_AUTO_DAYS_MAX }}" step="1" class="form-control">
+                <span class="input-group-addon">{{ __('refreshglobal::messages.trash_days') }}</span>
+            </div>
+            <p class="form-help">{{ __('refreshglobal::messages.trash_auto_help', ['time' => (string) config('refreshglobal.trash_auto_time', '03:45')]) }}</p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">{{ __('refreshglobal::messages.trash_now') }}</label>
+        <div class="col-sm-6">
+            {{-- submits the separate form below (forms can not be nested) --}}
+            <button type="submit" form="rg-trash-form" class="btn btn-danger" @if (!$rg_trash) disabled @endif>
+                <i class="glyphicon glyphicon-trash"></i> {{ __('refreshglobal::messages.trash_empty_button', ['count' => $rg_trash]) }}
+            </button>
+            <p class="form-help">{{ __('refreshglobal::messages.trash_empty_help') }}</p>
+        </div>
+    </div>
+
     <h3 class="subheader">{{ __('refreshglobal::messages.auto_update') }}</h3>
     @include('refreshglobal::partials.switch', ['key' => \Modules\RefreshGlobal\Services\Update\Updater::OPTION, 'label' => __('refreshglobal::messages.auto_update'),
         'help' => __('refreshglobal::messages.auto_update_help', ['time' => (string) config('refreshglobal.auto_update_time', '03:30')])])
@@ -47,6 +70,12 @@
             <button type="submit" class="btn btn-primary">{{ __('refreshglobal::messages.save') }}</button>
         </div>
     </div>
+</form>
+
+{{-- "Empty the trash now" (button above, in the settings form); confirmation asked by Public/js/shell.js --}}
+<form id="rg-trash-form" method="POST" action="{{ route('refreshglobal.trash.empty') }}" data-rg-confirm="{{ __('refreshglobal::messages.trash_empty_confirm', ['count' => $rg_trash]) }}">
+    {{ csrf_field() }}
+    <input type="hidden" name="back" value="settings">
 </form>
 
 <div class="form-horizontal margin-bottom">

@@ -146,4 +146,16 @@ return [
         'effect' => 'The language switch of the “All mailboxes” page is hidden; the language can still be changed in the profile. The rest works.',
         'action' => 'Update RefreshGlobal to a version made for this FreeScout version, then run php artisan refreshglobal:check.',
     ],
+    'core_trash' => [
+        'check'  => 'FreeScout code present: :item',
+        'label'  => 'A FreeScout class, method or constant used to empty the trash is missing: :item.',
+        'effect' => 'Emptying the trash (button and automatic) is not available; FreeScout’s own “Empty trash” of each mailbox still works. The rest works.',
+        'action' => 'Update RefreshGlobal to a version made for this FreeScout version, then run php artisan refreshglobal:check.',
+    ],
+    'db_trash' => [
+        'check'  => 'Table and columns present: :item',
+        'label'  => 'A column used for the automatic emptying of the trash is missing: :item.',
+        'effect' => 'The automatic emptying of the trash cannot know since when a ticket is in the trash. The rest works.',
+        'action' => 'Update RefreshGlobal to a version made for this FreeScout version, then run php artisan refreshglobal:check.',
+    ],
 ];

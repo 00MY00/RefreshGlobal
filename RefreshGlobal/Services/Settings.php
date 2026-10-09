@@ -76,6 +76,26 @@ class Settings
         \App\Option::set(self::SHOW_MAILBOX, $on ? 1 : 0);
     }
 
+    /** Automatic emptying of the trash: tickets in the trash for more than this number of days (0 = never). */
+    const TRASH_AUTO_DAYS = 'refreshglobal.trash_auto_days';
+    const TRASH_AUTO_DAYS_MAX = 3650;
+
+    public static function trashAutoDays()
+    {
+        try {
+            $days = (int) \App\Option::get(self::TRASH_AUTO_DAYS, (int) config('refreshglobal.trash_auto_days_default', 0), true, false);
+        } catch (\Exception $e) {
+            $days = 0;
+        }
+
+        return max(0, min(self::TRASH_AUTO_DAYS_MAX, $days));
+    }
+
+    public static function setTrashAutoDays($days)
+    {
+        \App\Option::set(self::TRASH_AUTO_DAYS, max(0, min(self::TRASH_AUTO_DAYS_MAX, (int) $days)));
+    }
+
     /** Options shown in Manage › Settings › RefreshGlobal (saved by FreeScout itself) => current value. */
     public static function sectionValues()
     {
@@ -85,6 +105,7 @@ class Settings
             self::SHOW_MAILBOX            => self::showMailbox(),
             self::DELETE_GOES_NEXT        => self::deleteGoesNext(),
             self::DELETE_PERMANENTLY      => self::deletePermanently(),
+            self::TRASH_AUTO_DAYS         => self::trashAutoDays(),
             Update\Updater::OPTION        => Update\Updater::enabled(),
         ];
     }

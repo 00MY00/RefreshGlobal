@@ -26,6 +26,8 @@
 .rf-list-layout:not(.rf-layout-table) .table-conversations td.rg-col-mailbox,
 .rg-dash .table-conversations th.rg-col-mailbox,
 .rg-dash .table-conversations td.rg-col-mailbox { width: 0 !important; max-width: 0; padding: 0 !important; border: 0 !important; font-size: 0; overflow: hidden; }
+/* "Empty the trash" (bottom of the views panel / phone drawer) */
+.rg-trash { margin: 10px 0 4px; }
 /* language switch (bottom of the views panel / phone drawer) */
 .rg-language { margin: 10px 0 6px; }
 .rg-language-label { display: block; font-size: 12px; font-weight: normal; color: var(--fd-text-2, #64748b); margin-bottom: 4px; }

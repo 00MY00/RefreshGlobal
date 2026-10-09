@@ -6,13 +6,23 @@
  *   Refresh's "Tickets" tab.
  * - Option "replace Refresh's Tickets entry": Refresh's "Tickets" rail link (desktop) and tab (phone) are HIDDEN (not
  *   removed: Refresh's scripts still read their address) and "All mailboxes" takes their place.
- * Nothing of Refresh is modified; without Refresh (no .rf-rail / .rf-m-tabs) this script does nothing.
+ * - Confirmation of the module's destructive forms (data-rg-confirm), with or without Refresh.
+ * Nothing of Refresh is modified; without Refresh (no .rf-rail / .rf-m-tabs) the Refresh parts do nothing.
  */
 (function ($) {
     'use strict';
     if (!$) {
         return;
     }
+    // Forms of the module that destroy data ("Empty the trash"): confirmation first, on any page (also FreeScout's
+    // settings page, where the module's page script is not loaded)
+    $(document).on('submit', 'form[data-rg-confirm]', function (e) {
+        var msg = this.getAttribute('data-rg-confirm');
+        if (msg && !window.confirm(msg)) {
+            e.preventDefault();
+        }
+    });
+
     var config = function () {
         try {
             return JSON.parse(document.querySelector('meta[name="refreshglobal"]').getAttribute('content'));

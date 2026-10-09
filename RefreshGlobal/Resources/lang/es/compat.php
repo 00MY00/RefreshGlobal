@@ -142,4 +142,16 @@ return [
         'effect' => 'El selector de idioma de la página «Todos los buzones» se oculta; el idioma se puede seguir cambiando en el perfil. El resto funciona.',
         'action' => 'Actualizar RefreshGlobal a una versión prevista para esta versión de FreeScout y ejecutar php artisan refreshglobal:check.',
     ],
+    'core_trash' => [
+        'check'  => 'Código de FreeScout presente: :item',
+        'label'  => 'Falta una clase, método o constante de FreeScout usada para vaciar la papelera: :item.',
+        'effect' => 'Vaciar la papelera (botón y automático) no está disponible; el «Vaciar papelera» de cada buzón de FreeScout sigue funcionando. El resto funciona.',
+        'action' => 'Actualizar RefreshGlobal a una versión prevista para esta versión de FreeScout y ejecutar php artisan refreshglobal:check.',
+    ],
+    'db_trash' => [
+        'check'  => 'Tabla y columnas presentes: :item',
+        'label'  => 'Falta una columna usada para vaciar automáticamente la papelera: :item.',
+        'effect' => 'El vaciado automático no puede saber desde cuándo un ticket está en la papelera. El resto funciona.',
+        'action' => 'Actualizar RefreshGlobal a una versión prevista para esta versión de FreeScout y ejecutar php artisan refreshglobal:check.',
+    ],
 ];

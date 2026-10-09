@@ -142,4 +142,16 @@ return [
         'effect' => 'O seletor de idioma da página “Todas as caixas” fica oculto; o idioma ainda pode ser alterado no perfil. O resto funciona.',
         'action' => 'Atualizar o RefreshGlobal para uma versão feita para esta versão do FreeScout e depois executar php artisan refreshglobal:check.',
     ],
+    'core_trash' => [
+        'check'  => 'Código do FreeScout presente: :item',
+        'label'  => 'Falta uma classe, método ou constante do FreeScout usada para esvaziar a lixeira: :item.',
+        'effect' => 'Esvaziar a lixeira (botão e automático) não está disponível; o “Esvaziar lixeira” de cada caixa do FreeScout continua funcionando. O resto funciona.',
+        'action' => 'Atualizar o RefreshGlobal para uma versão feita para esta versão do FreeScout e depois executar php artisan refreshglobal:check.',
+    ],
+    'db_trash' => [
+        'check'  => 'Tabela e colunas presentes: :item',
+        'label'  => 'Falta uma coluna usada para esvaziar automaticamente a lixeira: :item.',
+        'effect' => 'O esvaziamento automático não consegue saber desde quando um ticket está na lixeira. O resto funciona.',
+        'action' => 'Atualizar o RefreshGlobal para uma versão feita para esta versão do FreeScout e depois executar php artisan refreshglobal:check.',
+    ],
 ];

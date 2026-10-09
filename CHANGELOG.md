@@ -2,6 +2,22 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.5.0] — 2026-10-09
+
+### Ajouté
+- **Vider la corbeille** : bouton « Vider la corbeille (N) » dans Gérer › Paramètres › RefreshGlobal et en bas du
+  panneau des vues de « Toutes les boîtes » (et du tiroir sur téléphone), avec confirmation. Les tickets de la
+  corbeille sont supprimés définitivement avec leurs e-mails, par la fonction de FreeScout
+  (`Conversation::deleteConversationsForever`), avec les mêmes règles que son « Vider la corbeille » par boîte :
+  administrateurs ou utilisateurs autorisés à supprimer des conversations, seulement leurs boîtes, seulement leurs
+  tickets s'ils ne voient que les tickets assignés.
+- **Vidage automatique** : réglage « Vider automatiquement — N jours » (0 = jamais, par défaut). Chaque jour (03:45,
+  `REFRESHGLOBAL_TRASH_AUTO_TIME`), les tickets qui sont dans la corbeille depuis plus de N jours sont supprimés
+  définitivement, dans toutes les boîtes ; chaque ticket reste donc au moins N jours récupérable. Commande
+  `php artisan refreshglobal:trash --older-than=N`.
+- Le serveur de messagerie n'est jamais touché.
+- Contrôles RG-CORE-13 (suppression définitive de FreeScout) et RG-DB-06 (date d'entrée dans la corbeille).
+
 ## [1.4.5] — 2026-10-09
 
 ### Modifié
