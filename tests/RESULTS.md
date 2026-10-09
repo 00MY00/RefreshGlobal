@@ -1,4 +1,4 @@
-# Résultats des tests — RefreshGlobal 1.2.1
+# Résultats des tests — RefreshGlobal 1.3.0
 
 Date : 2026-10-09. Environnements jetables Docker : FreeScout 1.8.245 (dépôt officiel), PHP 8.2.34, Apache,
 MariaDB 10.11 ; Refresh 1.4.3 (dépôt officiel). Données de test uniquement (adresses `.test`).
@@ -13,7 +13,7 @@ MariaDB 10.11 ; Refresh 1.4.3 (dépôt officiel). Données de test uniquement (a
 
 ## 2. Tests PHPUnit du module (`RefreshGlobal/Tests`, PHPUnit 11.5.57)
 
-**45 tests, 553 assertions, 0 échec** (1.0.0 : 36 tests ; 1.0.1 : 37 ; 1.1.0 : 42) (FreeScout 1.8.245 + Refresh 1.4.3 actif).
+**49 tests, 578 assertions, 0 échec** (1.0.0 : 36 tests ; 1.0.1 : 37 ; 1.1.0 : 42 ; 1.2.0 : 45) (FreeScout 1.8.245 + Refresh 1.4.3 actif).
 
 | Fichier | Tests | Contenu |
 |---|---|---|
@@ -23,6 +23,7 @@ MariaDB 10.11 ; Refresh 1.4.3 (dépôt officiel). Données de test uniquement (a
 | `SavedViewsTest` | 5 | créer, charger, renommer, défaut (ouverte sur l'adresse nue), `?reset=1`, supprimer ; boîtes interdites non enregistrées ; boîte perdue ignorée avec mention ; vues personnelles (404 pour un autre utilisateur) ; validation |
 | `UpdateSettingsTest` | 5 | mise à jour automatique : activer / désactiver (commande et page de diagnostic, réservé aux admins), tâche quotidienne dans le planificateur, image du module, pas de `latestVersionUrl` |
 | `NavigationTest` | 3 | `shell.js` dans le lot de scripts ; réglages `<meta name="refreshglobal">` sur les pages Refresh (page active, option) ; option « remplacer Tickets » réservée aux admins |
+| `SettingsSectionTest` | 4 | section Gérer › Paramètres › RefreshGlobal affichée et listée ; enregistrement par FreeScout (cases cochées / décochées) ; accès refusé aux non-admins ; « Mettre à jour maintenant » : demande enregistrée, tâche `--requested` planifiée, sans effet sans demande |
 | `TranslationsTest` | 2 | 7 langues : mêmes clés et mêmes paramètres que l'anglais |
 
 ## 3. Vérifications visuelles (Chromium headless, captures dans `docs/screenshots/`)
@@ -172,3 +173,7 @@ réglage) : **16 vérifications réussies, 0 en échec**.
 ## 9. Correctif 1.2.1 : auto-test avec un APP_URL de production
 
 Avec `APP_URL=https://helpdesk.example.test` : la 1.2.0 obtenait HTTP 403 (`TrustHosts` de FreeScout), la 1.2.1 HTTP 200. Scénarios rejoués : ajout avec Refresh (dont la nouvelle vérification « selftest avec un APP_URL de production ») et mise à jour automatique : **26 vérifications réussies, 0 en échec**.
+
+## 10. Paramètres et « Mettre à jour maintenant » (1.3.0)
+
+Scénario `auto-update` rejoué avec trois vérifications de plus (rien sans demande ; mise à jour faite par la tâche planifiée ; demande effacée) : **19 vérifications réussies, 0 en échec**. Capture : `docs/screenshots/parametres.png`.

@@ -64,10 +64,19 @@ if you give its official archive):
 curl -fsSL https://raw.githubusercontent.com/00MY00/RefreshGlobal/main/install.sh | sudo bash -s -- --full [--refresh-zip=/root/Refresh.zip]
 ```
 
-Manual install (no `curl | bash`): download `RefreshGlobal.zip` and `SHA256SUMS` from the releases page, check with
-`sha256sum -c SHA256SUMS --ignore-missing`, then either read and run `install.sh --source=RefreshGlobal.zip`
-(`--dry-run` shows every action first), or unzip into FreeScout's `Modules/` folder, `chown -R www-data:www-data
-Modules/RefreshGlobal` and activate it in **Manage › Modules**.
+Reading the script before running it (the commands above pipe it straight into `bash`):
+
+```bash
+sudo git clone https://github.com/00MY00/RefreshGlobal.git /opt/RefreshGlobal
+less /opt/RefreshGlobal/install.sh
+sudo bash /opt/RefreshGlobal/install.sh --dry-run --source=/opt/RefreshGlobal/RefreshGlobal   # shows every action, changes nothing
+sudo bash /opt/RefreshGlobal/install.sh --source=/opt/RefreshGlobal/RefreshGlobal
+```
+
+Updates: `sudo git -C /opt/RefreshGlobal pull`, then the same command with `--update`. Without Git: download
+`RefreshGlobal.zip`, `install.sh` and `SHA256SUMS` from the Releases page, `sha256sum -c SHA256SUMS --ignore-missing`, then
+`sudo bash install.sh --source=RefreshGlobal.zip`; or unzip into FreeScout's `Modules/` folder,
+`chown -R www-data:www-data Modules/RefreshGlobal` and activate it in **Manage › Modules** (no backup or rollback then).
 
 ## 6. After installing
 

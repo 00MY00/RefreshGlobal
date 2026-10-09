@@ -57,6 +57,9 @@ return [
         'RG-HOOK-12' => ['hook' => 'layout.head', 'file' => 'resources/views/layouts/app.blade.php', 'needle' => "@action('layout.head')", 'severity' => 'degraded', 'source' => 'resources/views/layouts/app.blade.php:21'],
         'RG-HOOK-13' => ['hook' => '.rf-m-tab-tickets', 'family' => 'marker', 'refresh' => true, 'file' => 'Public/js/mobile.js', 'needle' => "'rf-m-tab-tickets'", 'severity' => 'degraded', 'source' => 'Modules/Refresh/Public/js/mobile.js:133'],
         'RG-HOOK-14' => ['hook' => '.rf-i-fd-all-tickets', 'family' => 'marker', 'refresh' => true, 'file' => 'Providers/RefreshServiceProvider.php', 'needle' => "'icon' => 'fd-all-tickets'", 'severity' => 'degraded', 'source' => 'Modules/Refresh/Providers/RefreshServiceProvider.php:698'],
+        'RG-HOOK-15' => ['hook' => 'settings.sections', 'file' => 'app/Http/Controllers/SettingsController.php', 'needle' => "\\Eventy::filter('settings.sections'", 'severity' => 'degraded', 'source' => 'app/Http/Controllers/SettingsController.php:267'],
+        'RG-HOOK-16' => ['hook' => 'settings.section_settings', 'file' => 'app/Http/Controllers/SettingsController.php', 'needle' => "\\Eventy::filter('settings.section_settings'", 'severity' => 'degraded', 'source' => 'app/Http/Controllers/SettingsController.php:250'],
+        'RG-HOOK-17' => ['hook' => 'settings.view', 'file' => 'resources/views/settings/view.blade.php', 'needle' => "'settings.view'", 'severity' => 'degraded', 'source' => 'resources/views/settings/view.blade.php:27'],
         'RG-HOOK-07' => ['hook' => 'refresh.rail_items', 'refresh' => true, 'file' => 'Providers/RefreshServiceProvider.php', 'needle' => "'refresh.rail_items'", 'severity' => 'degraded', 'source' => 'Modules/Refresh/Providers/RefreshServiceProvider.php:711'],
     ],
 

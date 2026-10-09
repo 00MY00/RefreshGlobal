@@ -35,6 +35,22 @@ class DiagnosticController extends Controller
         });
     }
 
+    /**
+     * "Update now": only records the request; FreeScout's scheduler runs `refreshglobal:update --requested` every
+     * minute, which performs the safe update (automatic rollback) outside any web request.
+     */
+    public function updateNow(Request $request)
+    {
+        return $this->safely(function () use ($request) {
+            Updater::requestUpdate();
+            $to = $request->input('back') === 'settings'
+                ? route('settings', ['section' => 'refreshglobal'])
+                : route('refreshglobal.diagnostic');
+
+            return redirect($to)->with('flash_success', __('refreshglobal::messages.update_requested', ['time' => date('H:i')]));
+        });
+    }
+
     /** Navigation option: replace Refresh's "Tickets" entry by "All mailboxes". */
     public function navigation(Request $request)
     {

@@ -59,6 +59,29 @@ class Updater
         \App\Option::set(self::OPTION, $enabled ? 1 : 0);
     }
 
+    const OPTION_REQUEST = 'refreshglobal.update_requested';
+
+    /** "Update now" button: the update runs from the scheduler within a minute (never inside a web request). */
+    public static function requestUpdate()
+    {
+        \App\Option::set(self::OPTION_REQUEST, date('c'));
+    }
+
+    /** Date of the pending request, or '' (read without Option's in-memory cache). */
+    public static function pendingRequest()
+    {
+        try {
+            return (string) \App\Option::get(self::OPTION_REQUEST, '', true, false);
+        } catch (\Exception $e) {
+            return '';
+        }
+    }
+
+    public static function clearRequest()
+    {
+        \App\Option::set(self::OPTION_REQUEST, '');
+    }
+
     public static function dir($sub = '')
     {
         return storage_path('app/refreshglobal'.($sub !== '' ? '/'.$sub : ''));

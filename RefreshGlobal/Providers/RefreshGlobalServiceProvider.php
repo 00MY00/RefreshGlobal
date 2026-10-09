@@ -49,6 +49,35 @@ class RefreshGlobalServiceProvider extends ServiceProvider
         $this->registerMailboxColumn();
         $this->registerSchedule();
         $this->registerShell();
+        $this->registerSettings();
+    }
+
+    /**
+     * Manage › Settings › RefreshGlobal, the same way as Refresh (RefreshServiceProvider.php:91-116): filters
+     * "settings.sections" (app/Http/Controllers/SettingsController.php:267), "settings.section_settings" (:250) and
+     * "settings.view" (resources/views/settings/view.blade.php:27). FreeScout saves the posted values in its options
+     * table itself (SettingsController::processSave, :288-379).
+     */
+    protected function registerSettings()
+    {
+        $keys = [\Modules\RefreshGlobal\Services\Settings::REPLACE_REFRESH_TICKETS, \Modules\RefreshGlobal\Services\Update\Updater::OPTION];
+        \Eventy::addFilter('settings.sections', function ($sections) {
+            $sections[self::ALIAS] = ['title' => 'RefreshGlobal', 'icon' => 'inbox', 'order' => 160];
+
+            return $sections;
+        }, 40);
+        \Eventy::addFilter('settings.section_settings', function ($settings, $section) use ($keys) {
+            if ($section !== self::ALIAS) {
+                return $settings;
+            }
+            $settings[$keys[0]] = \Modules\RefreshGlobal\Services\Settings::replaceRefreshTickets();
+            $settings[$keys[1]] = \Modules\RefreshGlobal\Services\Update\Updater::enabled();
+
+            return $settings;
+        }, 20, 2);
+        \Eventy::addFilter('settings.view', function ($view, $section) {
+            return $section === self::ALIAS ? 'refreshglobal::settings' : $view;
+        }, 20, 2);
     }
 
     /**
@@ -95,6 +124,10 @@ class RefreshGlobalServiceProvider extends ServiceProvider
                 $time = (string) config('refreshglobal.auto_update_time', '03:30');
                 $schedule->command('refreshglobal:update --scheduled')
                     ->dailyAt(preg_match('/^\d{1,2}:\d{2}$/', $time) ? $time : '03:30')
+                    ->withoutOverlapping();
+                // "Update now" button (settings / diagnostic page): picked up within a minute
+                $schedule->command('refreshglobal:update --requested')
+                    ->everyMinute()
                     ->withoutOverlapping();
             } catch (\Exception $e) {
                 // no automatic update rather than a broken scheduler

@@ -24,5 +24,6 @@ Route::group([
 
     Route::get('/diagnostic', $admins + ['uses' => 'DiagnosticController@index'])->name('refreshglobal.diagnostic');
     Route::post('/auto-update', $admins + ['uses' => 'DiagnosticController@autoUpdate'])->name('refreshglobal.auto_update');
+    Route::post('/update-now', $admins + ['uses' => 'DiagnosticController@updateNow'])->name('refreshglobal.update_now');
     Route::post('/navigation', $admins + ['uses' => 'DiagnosticController@navigation'])->name('refreshglobal.navigation');
 });

@@ -140,4 +140,13 @@ return [
     'replace_tickets_help'         => 'In der linken Leiste und der Tab-Leiste des Telefons von Refresh wird „Tickets“ ausgeblendet und „Alle Postfächer“ tritt an seine Stelle. Die Ansichten jedes Postfachs bleiben über ein Postfach erreichbar.',
     'replace_tickets_on'           => 'Der Eintrag „Tickets“ von Refresh wird jetzt durch „Alle Postfächer“ ersetzt.',
     'replace_tickets_off'          => 'Der Eintrag „Tickets“ von Refresh wird wieder angezeigt.',
+
+    // Manage › Settings › RefreshGlobal
+    'settings_intro'               => 'Einstellungen der Seite „Alle Postfächer“. Der vollständige Kompatibilitätsbericht steht auf der Diagnoseseite.',
+    'open_page'                    => 'Seite „Alle Postfächer“ öffnen',
+    'refresh_required'             => '(erfordert das Refresh-Modul)',
+    'update_now'                   => 'Jetzt aktualisieren',
+    'update_now_help'              => 'Startet die sichere Aktualisierung (automatische Rückkehr, falls die neue Version nicht funktioniert) innerhalb einer Minute über den Planer von FreeScout.',
+    'update_requested'             => 'Aktualisierung angefordert (:time): Sie läuft innerhalb einer Minute. Laden Sie diese Seite neu, um das Ergebnis zu sehen.',
+    'settings_link'                => 'Einstellungen (Verwalten › Einstellungen › RefreshGlobal)',
 ];

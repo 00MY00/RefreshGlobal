@@ -140,4 +140,13 @@ return [
     'replace_tickets_help'         => 'Na barra esquerda e na barra de abas do celular do Refresh, a entrada “Tickets” fica oculta e “Todas as caixas” ocupa o seu lugar. As visualizações de cada caixa continuam acessíveis a partir de uma caixa.',
     'replace_tickets_on'           => 'A entrada “Tickets” do Refresh agora é substituída por “Todas as caixas”.',
     'replace_tickets_off'          => 'A entrada “Tickets” do Refresh voltou a ser exibida.',
+
+    // Manage › Settings › RefreshGlobal
+    'settings_intro'               => 'Configurações da página “Todas as caixas”. O relatório de compatibilidade completo está na página de diagnóstico.',
+    'open_page'                    => 'Abrir a página “Todas as caixas”',
+    'refresh_required'             => '(requer o módulo Refresh)',
+    'update_now'                   => 'Atualizar agora',
+    'update_now_help'              => 'Inicia a atualização segura (volta automática se a nova versão não funcionar) em até um minuto, pelo agendador do FreeScout.',
+    'update_requested'             => 'Atualização solicitada (:time): será executada em até um minuto. Recarregue esta página para ver o resultado.',
+    'settings_link'                => 'Configurações (Gerenciar › Configurações › RefreshGlobal)',
 ];

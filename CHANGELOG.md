@@ -2,6 +2,13 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.3.0] — 2026-10-09
+
+### Ajouté
+- Section **Gérer › Paramètres › RefreshGlobal** (comme Refresh) : option « remplacer l'entrée Tickets de Refresh », mise à jour automatique, versions installée / disponible, dernier résultat, liens vers la page et le diagnostic.
+- Bouton **« Mettre à jour maintenant »** (paramètres et diagnostic) : la mise à jour sécurisée est lancée dans la minute par la tâche planifiée `refreshglobal:update --requested` (jamais pendant une requête web), même si la mise à jour quotidienne est désactivée.
+- Contrôles RG-HOOK-15…17 (filtres `settings.sections`, `settings.section_settings`, `settings.view`).
+
 ## [1.2.1] — 2026-10-09
 
 ### Corrigé

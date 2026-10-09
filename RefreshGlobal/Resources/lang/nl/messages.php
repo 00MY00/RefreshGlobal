@@ -140,4 +140,13 @@ return [
     'replace_tickets_help'         => 'In de linkerbalk en de tabbalk op de telefoon van Refresh wordt „Tickets” verborgen en neemt „Alle mailboxen” de plaats in. De weergaven van elke mailbox blijven bereikbaar vanuit een mailbox.',
     'replace_tickets_on'           => 'De invoer „Tickets” van Refresh wordt nu vervangen door „Alle mailboxen”.',
     'replace_tickets_off'          => 'De invoer „Tickets” van Refresh wordt weer getoond.',
+
+    // Manage › Settings › RefreshGlobal
+    'settings_intro'               => 'Instellingen van de pagina „Alle mailboxen”. Het volledige compatibiliteitsrapport staat op de diagnosepagina.',
+    'open_page'                    => 'Pagina „Alle mailboxen” openen',
+    'refresh_required'             => '(vereist de Refresh-module)',
+    'update_now'                   => 'Nu bijwerken',
+    'update_now_help'              => 'Start de veilige update (automatisch terug als de nieuwe versie niet werkt) binnen een minuut, via de planner van FreeScout.',
+    'update_requested'             => 'Update aangevraagd (:time): wordt binnen een minuut uitgevoerd. Laad deze pagina opnieuw om het resultaat te zien.',
+    'settings_link'                => 'Instellingen (Beheren › Instellingen › RefreshGlobal)',
 ];

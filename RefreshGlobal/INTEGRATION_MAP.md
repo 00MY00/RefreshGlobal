@@ -142,6 +142,7 @@ pagination côté serveur et le tri transformé en liens (`Public/js/refreshglob
 | → choix | `module.json` | **pas de `latestVersionUrl` / `latestVersionZipUrl`** : seul l'outil du module (avec retour arrière) met RefreshGlobal à jour |
 | `App\Option::get/set` | `app/Option.php:75, 35` | réglage « mise à jour automatique » (`refreshglobal.auto_update`) |
 | `Helper::setGuzzleDefaultOptions()` | `app/Misc/Helper.php:3018` | délais et proxy de FreeScout pour les téléchargements |
+| filtres **`settings.sections`**, **`settings.section_settings`**, **`settings.view`** | `app/Http/Controllers/SettingsController.php:267, 250` ; `resources/views/settings/view.blade.php:27` | section **Gérer › Paramètres › RefreshGlobal** (même méthode que Refresh, `RefreshServiceProvider.php:91-116`) ; l'enregistrement est fait par FreeScout (`SettingsController::processSave`, `:288-379`, options), RG-HOOK-15…17 |
 | image de la carte du module | `resources/views/modules/partials/module_card.blade.php:2-3` (champ `img` de `module.json`) | `../modules/refreshglobal/img/module.svg`, même forme que Refresh |
 
 ## 2. Refresh

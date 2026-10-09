@@ -140,4 +140,13 @@ return [
     'replace_tickets_help'         => 'Nella barra a sinistra e nella barra delle schede del telefono di Refresh, la voce «Tickets» viene nascosta e «Tutte le caselle» prende il suo posto. Le viste di ogni casella restano accessibili da una casella.',
     'replace_tickets_on'           => 'La voce «Tickets» di Refresh è ora sostituita da «Tutte le caselle».',
     'replace_tickets_off'          => 'La voce «Tickets» di Refresh è di nuovo visibile.',
+
+    // Manage › Settings › RefreshGlobal
+    'settings_intro'               => 'Impostazioni della pagina «Tutte le caselle». Il rapporto di compatibilità completo è nella pagina di diagnostica.',
+    'open_page'                    => 'Apri la pagina «Tutte le caselle»',
+    'refresh_required'             => '(richiede il modulo Refresh)',
+    'update_now'                   => 'Aggiorna ora',
+    'update_now_help'              => 'Avvia l’aggiornamento sicuro (ritorno automatico se la nuova versione non funziona) entro un minuto, tramite il pianificatore di FreeScout.',
+    'update_requested'             => 'Aggiornamento richiesto (:time): verrà eseguito entro un minuto. Ricarica questa pagina per vedere il risultato.',
+    'settings_link'                => 'Impostazioni (Gestisci › Impostazioni › RefreshGlobal)',
 ];

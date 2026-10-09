@@ -83,7 +83,13 @@
                     <input type="hidden" name="enabled" value="{{ $update_enabled ? 0 : 1 }}">
                     <button type="submit" class="btn btn-sm {{ $update_enabled ? 'btn-default' : 'btn-primary' }}">{{ $update_enabled ? __('refreshglobal::messages.turn_off') : __('refreshglobal::messages.turn_on') }}</button>
                 </form>
-                <p class="rg-muted">{{ __('refreshglobal::messages.update_cli') }} <code>sudo -u www-data php artisan refreshglobal:update</code></p>
+                <form method="post" action="{{ route('refreshglobal.update_now') }}" class="rg-form">
+                    {{ csrf_field() }}
+                    <button type="submit" class="btn btn-sm btn-default">{{ __('refreshglobal::messages.update_now') }}</button>
+                    <span class="rg-muted">{{ __('refreshglobal::messages.update_now_help') }}</span>
+                </form>
+                <p class="rg-muted">{{ __('refreshglobal::messages.update_cli') }} <code>sudo -u www-data php artisan refreshglobal:update</code>
+                    · <a href="{{ route('settings', ['section' => 'refreshglobal']) }}">{{ __('refreshglobal::messages.settings_link') }}</a></p>
             </div>
         </div>
 

@@ -113,25 +113,44 @@ curl -fsSL https://raw.githubusercontent.com/00MY00/RefreshGlobal/main/install.s
 
 Sans `--refresh-zip`, RefreshGlobal fonctionne avec le style FreeScout standard (et le dit clairement).
 
-### 5.3 Installation manuelle (sans `curl | bash`)
+### 5.3 Installation sans exécuter un script téléchargé à l'aveugle
 
-1. Télécharger l'archive et son empreinte depuis la page des publications du dépôt :
-   `RefreshGlobal.zip` et `SHA256SUMS`.
-2. Vérifier : `sha256sum -c SHA256SUMS --ignore-missing`
-3. **Soit** lancer l'installeur après l'avoir lu :
-   ```bash
-   curl -fsSLO https://raw.githubusercontent.com/00MY00/RefreshGlobal/main/install.sh
-   less install.sh
-   sudo bash install.sh --source=RefreshGlobal.zip
-   ```
-   (`sudo bash install.sh --dry-run --source=RefreshGlobal.zip` affiche d'abord toutes les actions sans rien faire.)
-4. **Soit** à la main, comme pour tout module FreeScout (wiki FreeScout, « FreeScout Modules ») :
-   ```bash
-   cd /var/www/html                       # dossier de FreeScout
-   sudo unzip ~/RefreshGlobal.zip -d Modules/
-   sudo chown -R www-data:www-data Modules/RefreshGlobal
-   ```
-   puis **Gérer › Modules › RefreshGlobal › Activer** dans FreeScout (ou `sudo -u www-data php artisan module:enable RefreshGlobal && sudo -u www-data php artisan freescout:module-install refreshglobal`).
+Les commandes des sections 5.1 et 5.2 envoient le script directement à `bash`. Pour **lire avant d'exécuter**,
+trois méthodes :
+
+**a) Avec Git** (recommandé : `git pull` suffit ensuite pour les mises à jour)
+
+```bash
+sudo git clone https://github.com/00MY00/RefreshGlobal.git /opt/RefreshGlobal
+less /opt/RefreshGlobal/install.sh                                   # lire le script
+sudo bash /opt/RefreshGlobal/install.sh --dry-run --source=/opt/RefreshGlobal/RefreshGlobal   # voir les actions, sans rien faire
+sudo bash /opt/RefreshGlobal/install.sh --source=/opt/RefreshGlobal/RefreshGlobal             # installer
+```
+
+Mise à jour : `sudo git -C /opt/RefreshGlobal pull` puis
+`sudo bash /opt/RefreshGlobal/install.sh --update --source=/opt/RefreshGlobal/RefreshGlobal`.
+
+**b) Avec les fichiers de la publication** (page *Releases* du dépôt, téléchargés dans le navigateur puis copiés
+sur le serveur, par exemple avec `scp`) : `RefreshGlobal.zip`, `install.sh` et `SHA256SUMS`, dans le même dossier :
+
+```bash
+sha256sum -c SHA256SUMS --ignore-missing    # RefreshGlobal.zip et install.sh doivent être « OK »
+less install.sh
+sudo bash install.sh --source=RefreshGlobal.zip
+```
+
+**c) Entièrement à la main**, comme pour tout module FreeScout (wiki FreeScout, « FreeScout Modules »), avec
+`RefreshGlobal.zip` :
+
+```bash
+cd /var/www/html                       # dossier de FreeScout
+sudo unzip ~/RefreshGlobal.zip -d Modules/
+sudo chown -R www-data:www-data Modules/RefreshGlobal
+```
+
+puis **Gérer › Modules › RefreshGlobal › Activer** dans FreeScout (ou
+`sudo -u www-data php artisan module:enable RefreshGlobal && sudo -u www-data php artisan freescout:module-install refreshglobal`).
+Sans l'installeur, il n'y a ni sauvegarde automatique ni retour arrière.
 
 ## 6. Après l'installation
 
@@ -150,7 +169,12 @@ Sans `--refresh-zip`, RefreshGlobal fonctionne avec le style FreeScout standard 
 |---|---|
 | ![Onglet](docs/screenshots/mobile-onglet.png) | ![Remplacé](docs/screenshots/mobile-onglet-remplace.png) |
 
-**Ne garder que « Toutes les boîtes »** (avec Refresh) : page de diagnostic › *Navigation* › « Activer ». L'entrée
+**Réglages du module** : **Gérer › Paramètres › RefreshGlobal** (ou la page de diagnostic).
+
+![Gérer › Paramètres › RefreshGlobal](docs/screenshots/parametres.png)
+
+**Ne garder que « Toutes les boîtes »** (avec Refresh) : Gérer › Paramètres › RefreshGlobal › *Navigation*, ou page
+de diagnostic › *Navigation* › « Activer ». L'entrée
 « Tickets » de Refresh est alors masquée (barre de gauche et barre du bas du téléphone) et remplacée par
 « Toutes les boîtes ». Les vues de chaque boîte restent accessibles depuis une boîte ; rien n'est modifié dans
 Refresh, « Désactiver » remet l'entrée.
@@ -183,7 +207,10 @@ publiée sur GitHub et l'installe en sécurité :
    annulées). Cette version n'est plus retentée automatiquement, et un bandeau prévient les administrateurs.
 
 Activer ou désactiver :
-- **page de diagnostic** (`/refresh-global/diagnostic`, administrateurs) : bouton « Activer » / « Désactiver » ;
+- **Gérer › Paramètres › RefreshGlobal** (administrateurs) : case « Mise à jour automatique », versions installée et
+  disponible, dernier résultat, et bouton **« Mettre à jour maintenant »** (la mise à jour sécurisée est lancée dans
+  la minute par le planificateur, jamais pendant le chargement de la page) ;
+- **page de diagnostic** (`/refresh-global/diagnostic`) : mêmes boutons ;
 - ou `cd /var/www/html && sudo -u www-data php artisan refreshglobal:update --enable` (`--disable`) ;
 - ou à l'installation : `… | sudo bash -s -- --auto-update=on`.
 
@@ -258,7 +285,7 @@ détail est dans `/var/log/refreshglobal-install.log`.
   (il est croisé avec les boîtes autorisées par FreeScout). Les boîtes archivées restent invisibles aux non-admins.
 - Toutes les actions qui modifient (vues enregistrées) passent par des formulaires POST/DELETE avec jeton CSRF.
 - L'export neutralise les formules (cellules commençant par `=`, `+`, `-`, `@`).
-- **Lisez le script avant de l'exécuter** (`curl -fsSLO …/install.sh && less install.sh`), ou utilisez
+- **Lisez le script avant de l'exécuter** (méthodes de la section 5.3 : clone Git ou fichiers de la publication), ou utilisez
   `--dry-run`. Le script ne télécharge rien d'autre que l'archive de ce dépôt (vérifiée par SHA-256 si
   `SHA256SUMS` est publié) et, en mode `--full`, le script officiel de FreeScout ; il ne télécharge jamais Refresh.
 - Signaler une faille : ouvrir un ticket privé (« Security advisory ») sur le dépôt.

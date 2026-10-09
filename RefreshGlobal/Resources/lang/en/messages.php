@@ -146,4 +146,13 @@ return [
     'replace_tickets_help'         => 'In Refresh’s left bar and phone tab bar, the “Tickets” entry is hidden and “All mailboxes” takes its place. The views of each mailbox stay available from a mailbox.',
     'replace_tickets_on'           => 'Refresh’s “Tickets” entry is now replaced by “All mailboxes”.',
     'replace_tickets_off'          => 'Refresh’s “Tickets” entry is shown again.',
+
+    // Manage › Settings › RefreshGlobal
+    'settings_intro'               => 'Settings of the “All mailboxes” page. The full compatibility report is on the diagnostic page.',
+    'open_page'                    => 'Open the “All mailboxes” page',
+    'refresh_required'             => '(requires the Refresh module)',
+    'update_now'                   => 'Update now',
+    'update_now_help'              => 'Starts the safe update (automatic rollback if the new version does not work) within a minute, through FreeScout’s scheduler.',
+    'update_requested'             => 'Update requested (:time): it runs within a minute. Reload this page to see the result.',
+    'settings_link'                => 'Settings (Manage › Settings › RefreshGlobal)',
 ];

@@ -140,4 +140,13 @@ return [
     'replace_tickets_help'         => 'Dans la barre de gauche et la barre d’onglets du téléphone de Refresh, l’entrée « Tickets » est masquée et « Toutes les boîtes » prend sa place. Les vues de chaque boîte restent accessibles depuis une boîte.',
     'replace_tickets_on'           => 'L’entrée « Tickets » de Refresh est maintenant remplacée par « Toutes les boîtes ».',
     'replace_tickets_off'          => 'L’entrée « Tickets » de Refresh est de nouveau affichée.',
+
+    // Manage › Settings › RefreshGlobal
+    'settings_intro'               => 'Réglages de la page « Toutes les boîtes ». Le rapport de compatibilité complet est sur la page de diagnostic.',
+    'open_page'                    => 'Ouvrir la page « Toutes les boîtes »',
+    'refresh_required'             => '(nécessite le module Refresh)',
+    'update_now'                   => 'Mettre à jour maintenant',
+    'update_now_help'              => 'Lance la mise à jour sécurisée (retour arrière automatique si la nouvelle version ne fonctionne pas) dans la minute, via le planificateur de FreeScout.',
+    'update_requested'             => 'Mise à jour demandée (:time) : elle s’exécute dans la minute. Rechargez cette page pour voir le résultat.',
+    'settings_link'                => 'Réglages (Gérer › Paramètres › RefreshGlobal)',
 ];

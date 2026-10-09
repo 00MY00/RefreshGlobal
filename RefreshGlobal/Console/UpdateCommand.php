@@ -21,6 +21,7 @@ class UpdateCommand extends Command
         {--enable : Turn the daily automatic update on}
         {--disable : Turn the daily automatic update off}
         {--scheduled : Daily run from the scheduler (installs only when enabled)}
+        {--requested : Run from the scheduler every minute: updates only if an administrator clicked "Update now"}
         {--force : Install even the same version, or a version rolled back before}';
 
     protected $description = 'RefreshGlobal: update the module (automatic rollback if the new version is not OK)';
@@ -32,6 +33,15 @@ class UpdateCommand extends Command
             $this->info('RefreshGlobal: automatic update '.($this->option('enable') ? 'ON' : 'OFF').'.');
 
             return 0;
+        }
+
+        if ($this->option('requested')) {
+            // cheap when nothing was requested: no network, no output
+            if (Updater::pendingRequest() === '') {
+                return 0;
+            }
+            Updater::clearRequest();
+            $this->line('Update requested from the settings page.');
         }
 
         if (function_exists('posix_geteuid') && posix_geteuid() === 0 && !$this->option('check')) {

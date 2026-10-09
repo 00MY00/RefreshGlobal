@@ -228,10 +228,18 @@ s_auto_update() {
     docker exec rgi4-app bash -c "cd /var/www/html && sudo -u www-data php -r 'require \"vendor/autoload.php\"; \$a = require \"bootstrap/app.php\"; \$a->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap(); foreach (\$a->make(Illuminate\Console\Scheduling\Schedule::class)->events() as \$e) { echo \$e->command, \" \", \$e->expression, PHP_EOL; }'" >"$WORK/out.txt" 2>&1 || true
     out_has "refreshglobal:update --scheduled" && record "$s" "tâche quotidienne enregistrée dans le planificateur de FreeScout" PASS || record "$s" "tâche planifiée" FAIL "$(tail -c 300 "$WORK/out.txt")"
 
+    # "Update now" button: the request is picked up by the per-minute scheduled task (even with the daily update off)
+    rg_update rgi4 --requested
+    [ "$(installed_version rgi4)" = 9.0.1 ] && record "$s" "« Mettre à jour maintenant » : rien sans demande" PASS || record "$s" "rien sans demande" FAIL
+    db rgi4 "delete from options where name='refreshglobal.update_requested'; insert into options (name, value) values ('refreshglobal.update_requested', '2026-01-01T00:00:00+00:00')"
+    rg_update rgi4 --requested
+    [ "$RC" = 0 ] && [ "$(installed_version rgi4)" = 9.0.6 ] && record "$s" "« Mettre à jour maintenant » : mise à jour faite par la tâche planifiée (9.0.6)" PASS || record "$s" "mise à jour demandée" FAIL "exit $RC v$(installed_version rgi4) — $(tail -c 300 "$WORK/out.txt")"
+    [ -z "$(db rgi4 "select value from options where name='refreshglobal.update_requested'")" ] && record "$s" "demande effacée après exécution" PASS || record "$s" "demande effacée" FAIL
+
     # install.sh --update with a blocking version: automatic rollback too
     docker cp "$WORK/rel-blocking/RefreshGlobal.zip" rgi4-app:/tmp/RefreshGlobal-blocking.zip
     RC=0; docker exec -e NO_COLOR=1 rgi4-app bash /tmp/install.sh --update --source=/tmp/RefreshGlobal-blocking.zip --yes >"$WORK/out.txt" 2>&1 || RC=$?
-    [ "$RC" = 4 ] && [ "$(installed_version rgi4)" = 9.0.1 ] && out_has "retour automatique à la version 9.0.1" && record "$s" "install.sh --update bloquant : retour automatique" PASS || record "$s" "install.sh retour automatique" FAIL "exit $RC v$(installed_version rgi4)"
+    [ "$RC" = 4 ] && [ "$(installed_version rgi4)" = 9.0.6 ] && out_has "retour automatique à la version 9.0.6" && record "$s" "install.sh --update bloquant : retour automatique" PASS || record "$s" "install.sh retour automatique" FAIL "exit $RC v$(installed_version rgi4)"
 }
 
 s_existing_refresh() {

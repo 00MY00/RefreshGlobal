@@ -140,4 +140,13 @@ return [
     'replace_tickets_help'         => 'En la barra izquierda y la barra de pestañas del teléfono de Refresh, la entrada «Tickets» se oculta y «Todos los buzones» ocupa su lugar. Las vistas de cada buzón siguen disponibles desde un buzón.',
     'replace_tickets_on'           => 'La entrada «Tickets» de Refresh ahora se sustituye por «Todos los buzones».',
     'replace_tickets_off'          => 'La entrada «Tickets» de Refresh se muestra de nuevo.',
+
+    // Manage › Settings › RefreshGlobal
+    'settings_intro'               => 'Ajustes de la página «Todos los buzones». El informe de compatibilidad completo está en la página de diagnóstico.',
+    'open_page'                    => 'Abrir la página «Todos los buzones»',
+    'refresh_required'             => '(requiere el módulo Refresh)',
+    'update_now'                   => 'Actualizar ahora',
+    'update_now_help'              => 'Inicia la actualización segura (vuelta atrás automática si la nueva versión no funciona) en menos de un minuto, mediante el planificador de FreeScout.',
+    'update_requested'             => 'Actualización solicitada (:time): se ejecuta en menos de un minuto. Recargue esta página para ver el resultado.',
+    'settings_link'                => 'Ajustes (Administrar › Ajustes › RefreshGlobal)',
 ];
