@@ -224,12 +224,19 @@ curl -fsSL https://raw.githubusercontent.com/00MY00/RefreshGlobal/main/install.s
 
 (`--version=1.2.3` pour une version précise.)
 
+**D'où vient la nouvelle version** : de la dernière *release* GitHub (archive + `SHA256SUMS`). **S'il n'y a aucune
+release publiée**, le module et `install.sh` prennent la **version actuelle de la branche `main`** : un simple
+`git push` suffit alors. Pour une branche, il n'existe pas de fichier d'empreinte : l'intégrité repose sur HTTPS
+(l'empreinte de l'archive est notée dans le journal), et les contrôles après installation avec retour arrière
+automatique restent en place. Dès qu'une release existe, c'est elle qui est utilisée.
+
 ### Mise à jour automatique (avec retour arrière)
 
 Désactivée par défaut. Une fois activée, le module vérifie chaque jour (à 03:30) s'il existe une nouvelle version
 publiée sur GitHub et l'installe en sécurité :
 
-1. téléchargement de l'archive et vérification de son empreinte SHA-256 (refusée si elle ne correspond pas) ;
+1. téléchargement de l'archive et vérification de son empreinte SHA-256 (refusée si elle ne correspond pas ; sans
+   release : archive de la branche `main`, sans fichier d'empreinte) ;
 2. sauvegarde du module, des vues enregistrées et de la liste de ses migrations ;
 3. installation (comme Gérer › Modules) puis contrôles : `refreshglobal:check` et affichage réel de la page pour un
    administrateur (`refreshglobal:selftest`) ;
@@ -324,8 +331,9 @@ détail est dans `/var/log/refreshglobal-install.log`.
 - Toutes les actions qui modifient (vues enregistrées) passent par des formulaires POST/DELETE avec jeton CSRF.
 - L'export neutralise les formules (cellules commençant par `=`, `+`, `-`, `@`).
 - **Lisez le script avant de l'exécuter** (méthodes de la section 5.3 : clone Git ou fichiers de la publication), ou utilisez
-  `--dry-run`. Le script ne télécharge rien d'autre que l'archive de ce dépôt (vérifiée par SHA-256 si
-  `SHA256SUMS` est publié) et, en mode `--full`, le script officiel de FreeScout ; il ne télécharge jamais Refresh.
+  `--dry-run`. Le script ne télécharge rien d'autre que l'archive de ce dépôt (celle de la dernière release, vérifiée
+  par SHA-256 si `SHA256SUMS` est publié, ou à défaut celle de la branche `main`, en HTTPS sans empreinte) et, en mode
+  `--full`, le script officiel de FreeScout ; il ne télécharge jamais Refresh.
 - Signaler une faille : ouvrir un ticket privé (« Security advisory ») sur le dépôt.
 
 ## 11. Contribuer, licence, changelog

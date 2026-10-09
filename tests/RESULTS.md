@@ -1,4 +1,4 @@
-# Résultats des tests — RefreshGlobal 1.4.2
+# Résultats des tests — RefreshGlobal 1.4.3
 
 Date : 2026-10-09. Environnements jetables Docker : FreeScout 1.8.245 (dépôt officiel), PHP 8.2.34, Apache,
 MariaDB 10.11 ; Refresh 1.4.3 (dépôt officiel). Données de test uniquement (adresses `.test`).
@@ -206,3 +206,13 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
 - Navigateur : interface en anglais, choix « Français » dans le sélecteur → la page, la barre de Refresh et le
   tableau de bord passent en français ; `users.locale = fr` en base. Sélecteur visible en bas du panneau des vues
   (ordinateur) et du tiroir (téléphone).
+
+## 14. Sans release publiée : branche `main` (1.4.3)
+
+- PHPUnit : **67 tests, 932 assertions, 0 échec** (`testCheckForUpdates` : release absente → `module.json` de la
+  branche lu, source « branche main » indiquée ; ni release ni branche → message clair avec l'adresse).
+- Scénario `auto-update` (`run_tests.sh`) : **22 vérifications réussies, 0 en échec**, dont trois nouvelles : sans
+  release, `refreshglobal:update` installe la version de la branche (archive au format GitHub
+  `RefreshGlobal-main/RefreshGlobal/`), page 200 ensuite ; `install.sh --update` sans release installe la branche.
+- shellcheck : 0 remarque. Adresses réelles vérifiées : `raw.githubusercontent.com/…/main/RefreshGlobal/module.json`
+  et `github.com/…/archive/refs/heads/main.zip` répondent 200.

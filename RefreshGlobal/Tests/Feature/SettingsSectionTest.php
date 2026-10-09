@@ -94,9 +94,22 @@ class SettingsSectionTest extends TestCase
         $release('99.0.0', '99.0.0');
         $this->assertStringContainsString('99.0.0', (string) $check()->getSession()->get('flash_error'));
 
-        // release unreachable
+        // no release published (like a GitHub repository with tags only): the main branch is read instead
         unlink($dir.'/module.json');
-        $this->assertNotEmpty($check()->getSession()->get('flash_error'));
+        $branch = $dir.'-main.json';
+        file_put_contents($branch, json_encode(['alias' => 'refreshglobal', 'version' => '98.0.0', 'requiredAppVersion' => '1.8.0']));
+        config(['refreshglobal.update_branch_manifest' => $branch, 'refreshglobal.update_branch_zip' => $dir.'-main.zip']);
+        $msg = (string) $check()->getSession()->get('flash_success');
+        $this->assertStringContainsString('98.0.0', $msg);
+        $this->assertStringContainsString(__('refreshglobal::messages.update_source_branch'), $msg);
+        $this->assertSame('branch', Updater::status()['source']);
+
+        // neither a release nor the branch: clear message with the address
+        unlink($branch);
+        $this->assertStringContainsString($dir, (string) $check()->getSession()->get('flash_error'));
+        // fallback turned off: same message
+        config(['refreshglobal.update_branch_manifest' => '']);
+        $this->assertStringContainsString($dir, (string) $check()->getSession()->get('flash_error'));
         rmdir($dir);
 
         // admins only

@@ -141,7 +141,24 @@ class Updater
     /** Body of a release file (https://, or file:// / absolute path for tests and offline mirrors). */
     protected function fetch($file, $to = null)
     {
-        $url = $this->url($file);
+        return $this->fetchUrl($this->url($file), $to);
+    }
+
+    /** "release" (published release, with SHA256SUMS) or "branch" (current main branch, when no release exists). */
+    protected $source = 'release';
+
+    /** The address answered "nothing here" (HTTP 404, or missing local file). */
+    public static function isNotFound(\Throwable $e)
+    {
+        if ($e instanceof \GuzzleHttp\Exception\RequestException && $e->getResponse()) {
+            return $e->getResponse()->getStatusCode() === 404;
+        }
+
+        return strpos($e->getMessage(), 'not found:') === 0;
+    }
+
+    protected function fetchUrl($url, $to = null)
+    {
         if (strpos($url, 'file://') === 0 || strpos($url, '/') === 0) {
             $path = strpos($url, 'file://') === 0 ? substr($url, 7) : $url;
             if (!is_file($path)) {
@@ -168,13 +185,25 @@ class Updater
         return $to ? '' : (string) $response->getBody();
     }
 
-    /** ['current', 'latest', 'available', 'required_app', 'compatible'] — also saved in the status file. */
+    /** ['current', 'latest', 'available', 'required_app', 'compatible', 'source'] — also saved in the status file. */
     public function check()
     {
         $current = self::currentVersion();
-        $manifest = json_decode($this->fetch('module.json'), true);
+        try {
+            $body = $this->fetch('module.json');
+            $this->source = 'release';
+        } catch (\Throwable $e) {
+            // no release published: current version of the main branch, if configured
+            $branch = (string) config('refreshglobal.update_branch_manifest');
+            if (!self::isNotFound($e) || $branch === '' || (string) config('refreshglobal.update_branch_zip') === '') {
+                throw $e;
+            }
+            $body = $this->fetchUrl($branch);
+            $this->source = 'branch';
+        }
+        $manifest = json_decode($body, true);
         if (!is_array($manifest) || empty($manifest['version']) || ($manifest['alias'] ?? '') !== self::ALIAS) {
-            throw new \RuntimeException('invalid module.json in the release');
+            throw new \RuntimeException('invalid module.json in the '.$this->source);
         }
         $latest = (string) $manifest['version'];
         $required = (string) ($manifest['requiredAppVersion'] ?? '');
@@ -184,8 +213,9 @@ class Updater
             'available'    => version_compare($latest, $current, '>'),
             'required_app' => $required,
             'compatible'   => $required === '' || version_compare((string) config('app.version'), $required, '>='),
+            'source'       => $this->source,
         ];
-        $this->saveStatus(['last_check_at' => date('c'), 'current' => $current, 'latest' => $latest, 'enabled' => self::enabled()]);
+        $this->saveStatus(['last_check_at' => date('c'), 'current' => $current, 'latest' => $latest, 'source' => $this->source, 'enabled' => self::enabled()]);
 
         return $info;
     }
@@ -240,21 +270,33 @@ class Updater
         $work = self::dir('tmp/'.date('YmdHis'));
         @mkdir($work, 0775, true);
         $zip = $work.'/RefreshGlobal.zip';
-        $this->say('Downloading RefreshGlobal '.$to.'…');
-        $this->fetch('RefreshGlobal.zip', $zip);
-        $sums = $this->fetch('SHA256SUMS');
-        if (!preg_match('/^([a-f0-9]{64})\s+\*?RefreshGlobal\.zip\s*$/mi', $sums, $m)) {
-            throw new \RuntimeException('SHA256SUMS of the release has no line for RefreshGlobal.zip');
-        }
-        if (!hash_equals(strtolower($m[1]), hash_file('sha256', $zip))) {
-            throw new \RuntimeException('checksum mismatch: the downloaded archive is not installed');
+        if ($this->source === 'branch') {
+            // no release: archive of the main branch (no SHA256SUMS to compare with; HTTPS + checks + rollback)
+            $this->say('No published release: downloading RefreshGlobal '.$to.' from the main branch (no SHA-256 file to check).', 'warning');
+            $this->fetchUrl((string) config('refreshglobal.update_branch_zip'), $zip);
+            $this->say('SHA-256 of the downloaded archive: '.hash_file('sha256', $zip));
+        } else {
+            $this->say('Downloading RefreshGlobal '.$to.'…');
+            $this->fetch('RefreshGlobal.zip', $zip);
+            $sums = $this->fetch('SHA256SUMS');
+            if (!preg_match('/^([a-f0-9]{64})\s+\*?RefreshGlobal\.zip\s*$/mi', $sums, $m)) {
+                throw new \RuntimeException('SHA256SUMS of the release has no line for RefreshGlobal.zip');
+            }
+            if (!hash_equals(strtolower($m[1]), hash_file('sha256', $zip))) {
+                throw new \RuntimeException('checksum mismatch: the downloaded archive is not installed');
+            }
         }
         $archive = new \ZipArchive();
         if ($archive->open($zip) !== true || !$archive->extractTo($work.'/x')) {
             throw new \RuntimeException('cannot extract the archive');
         }
         $archive->close();
+        // release archive: RefreshGlobal/ at the root; branch archive: RefreshGlobal-main/RefreshGlobal/
         $new = $work.'/x/'.self::MODULE;
+        if (!is_dir($new)) {
+            $found = glob($work.'/x/*/'.self::MODULE, GLOB_ONLYDIR) ?: [];
+            $new = $found ? $found[0] : $new;
+        }
         $manifest = json_decode((string) @file_get_contents($new.'/module.json'), true);
         if (!is_array($manifest) || ($manifest['alias'] ?? '') !== self::ALIAS || ($manifest['version'] ?? '') !== $to) {
             throw new \RuntimeException('the archive does not contain RefreshGlobal '.$to);

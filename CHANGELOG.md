@@ -2,6 +2,21 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.4.3] — 2026-10-09
+
+### Modifié
+- **Sans release publiée, la version actuelle de la branche `main` est utilisée** : « Rechercher une mise à jour »,
+  la mise à jour automatique / « Mettre à jour maintenant » et `install.sh` (sans `--version`) se rabattent sur
+  `main` quand GitHub répond 404 pour la dernière release (dépôt avec des tags seulement). Il n'y a pas de fichier
+  SHA256SUMS pour une branche : l'intégrité repose sur HTTPS ; l'empreinte de l'archive est notée dans le journal,
+  et la vérification après installation avec retour arrière automatique reste en place. Une release publiée reste
+  prioritaire. Adresses réglables (`REFRESHGLOBAL_UPDATE_BRANCH_MANIFEST`, `REFRESHGLOBAL_UPDATE_BRANCH_ZIP`,
+  `RG_BRANCH_ZIP_URL` pour `install.sh`) ; valeur vide = pas de repli.
+
+### Corrigé
+- « Rechercher une mise à jour » : l'erreur HTTP 404 brute est remplacée par un message clair quand ni release ni
+  branche `main` ne sont lisibles.
+
 ## [1.4.2] — 2026-10-09
 
 ### Ajouté

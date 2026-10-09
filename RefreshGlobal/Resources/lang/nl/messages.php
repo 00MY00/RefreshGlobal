@@ -174,4 +174,6 @@ return [
     'language_settings_info'       => 'Taal: RefreshGlobal volgt de taal van FreeScout, net als Refresh (profiel van elke gebruiker, anders de standaardtaal). Huidige taal: :language.',
     'language_profile_link'        => 'Mijn taal wijzigen',
     'language_default_link'        => 'Standaardtaal (Algemeen)',
+    'update_check_no_release'      => 'Geen versie gevonden: noch een release op :url noch de branch main kon worden gelezen.',
+    'update_source_branch'         => '(branch main: geen release gepubliceerd)',
 ];

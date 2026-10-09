@@ -174,4 +174,6 @@ return [
     'language_settings_info'       => 'Idioma: o RefreshGlobal segue o idioma do FreeScout, como o Refresh (perfil de cada usuário, senão o idioma padrão). Idioma atual: :language.',
     'language_profile_link'        => 'Mudar meu idioma',
     'language_default_link'        => 'Idioma padrão (Geral)',
+    'update_check_no_release'      => 'Nenhuma versão encontrada: nem release em :url nem a branch main puderam ser lidas.',
+    'update_source_branch'         => '(branch main: nenhuma release publicada)',
 ];

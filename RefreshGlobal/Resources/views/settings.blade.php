@@ -57,7 +57,7 @@
             <p class="form-control-static">
                 <strong>{{ $rg_current }}</strong>
                 @if (!empty($rg_update['latest']))
-                    · {{ __('refreshglobal::messages.latest_version') }} <strong>{{ $rg_update['latest'] }}</strong>
+                    · {{ __('refreshglobal::messages.latest_version') }} <strong>{{ $rg_update['latest'] }}</strong>@if (($rg_update['source'] ?? '') === 'branch') <small>{{ __('refreshglobal::messages.update_source_branch') }}</small>@endif
                     @if (version_compare($rg_update['latest'], $rg_current, '>'))<span class="label label-info">{{ __('refreshglobal::messages.update_available') }}</span>@endif
                 @endif
             </p>

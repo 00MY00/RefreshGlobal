@@ -32,8 +32,10 @@ set -Eeuo pipefail   # -E : le piège d'erreur s'applique aussi dans les fonctio
 # Peut aussi être donnée par la variable d'environnement RG_REPO_URL.
 # ---------------------------------------------------------------------------------------------------------------
 REPO_URL="${RG_REPO_URL:-https://github.com/00MY00/RefreshGlobal}"
+# When no release is published: archive of the current main branch (no SHA256SUMS for a branch)
+BRANCH_ZIP_URL="${RG_BRANCH_ZIP_URL:-${REPO_URL}/archive/refs/heads/main.zip}"
 
-SCRIPT_VERSION="1.4.2"
+SCRIPT_VERSION="1.4.3"
 MODULE_NAME="RefreshGlobal"
 MODULE_ALIAS="refreshglobal"
 MODULE_TABLE="refreshglobal_saved_views"
@@ -538,9 +540,15 @@ get_module() {
             return 0
         fi
         log "Téléchargement ${url}"
-        fetch "$url" "$zip" || die "téléchargement impossible : ${url}" \
-            "Vérifier la version demandée et l'accès à Internet, ou utiliser --source=/chemin/RefreshGlobal.zip."
-        if fetch "${base}/SHA256SUMS" "$TMP_DIR/SHA256SUMS" 2>/dev/null; then
+        if ! fetch "$url" "$zip" 2>/dev/null; then
+            # aucune release publiée : version actuelle de la branche main (sauf si une version précise est demandée)
+            [ -z "$WANTED_VERSION" ] || die "téléchargement impossible : ${url}" \
+                "Vérifier la version demandée et l'accès à Internet, ou utiliser --source=/chemin/RefreshGlobal.zip."
+            warn "Aucune release publiée : installation de la version actuelle de la branche main (${BRANCH_ZIP_URL}), sans fichier d'empreinte SHA-256."
+            fetch "$BRANCH_ZIP_URL" "$zip" || die "téléchargement impossible : ${url} ni ${BRANCH_ZIP_URL}" \
+                "Vérifier l'accès à Internet, ou utiliser --source=/chemin/RefreshGlobal.zip."
+            log "SHA-256 de l'archive téléchargée : $(sha256sum "$zip" | awk '{print $1}')"
+        elif fetch "${base}/SHA256SUMS" "$TMP_DIR/SHA256SUMS" 2>/dev/null; then
             local expected actual
             expected="$(grep 'RefreshGlobal.zip' "$TMP_DIR/SHA256SUMS" 2>/dev/null | awk '{print $1}' | head -n 1 || true)"
             actual="$(sha256sum "$zip" | awk '{print $1}')"

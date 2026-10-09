@@ -154,6 +154,21 @@ release_dir() {
     fi
 }
 
+branch_dir() {
+    # branch_dir VERSION -> $WORK/branch-VERSION with main.zip (GitHub branch layout: RefreshGlobal-main/RefreshGlobal/)
+    # and module.json (what raw.githubusercontent.com serves for the branch); no SHA256SUMS, like a branch
+    local version=$1 dir="$WORK/branch-$1"
+    build_zip "$version"
+    rm -rf "$dir"; mkdir -p "$dir/RefreshGlobal-main"
+    cp -R "$WORK/zip-${version}/RefreshGlobal" "$dir/RefreshGlobal-main/RefreshGlobal"
+    cp "$dir/RefreshGlobal-main/RefreshGlobal/module.json" "$dir/module.json"
+    if command -v zip >/dev/null 2>&1; then
+        (cd "$dir" && zip -qr main.zip RefreshGlobal-main)
+    else
+        (cd "$dir" && python3 -m zipfile -c main.zip RefreshGlobal-main)
+    fi
+}
+
 use_release() {
     # use_release INSTANCE NAME: the module reads its releases from /opt/rel-NAME (REFRESHGLOBAL_UPDATE_URL)
     docker exec "$1-app" rm -rf "/opt/rel-$2"
@@ -240,6 +255,24 @@ s_auto_update() {
     docker cp "$WORK/rel-blocking/RefreshGlobal.zip" rgi4-app:/tmp/RefreshGlobal-blocking.zip
     RC=0; docker exec -e NO_COLOR=1 rgi4-app bash /tmp/install.sh --update --source=/tmp/RefreshGlobal-blocking.zip --yes >"$WORK/out.txt" 2>&1 || RC=$?
     [ "$RC" = 4 ] && [ "$(installed_version rgi4)" = 9.0.6 ] && out_has "retour automatique à la version 9.0.6" && record "$s" "install.sh --update bloquant : retour automatique" PASS || record "$s" "install.sh retour automatique" FAIL "exit $RC v$(installed_version rgi4)"
+
+    # no release published (GitHub repository with tags only): current version of the main branch
+    branch_dir 9.0.7
+    docker exec rgi4-app bash -c "rm -rf /opt/branch /opt/rel-empty && mkdir -p /opt/rel-empty"
+    docker cp "$WORK/branch-9.0.7" rgi4-app:/opt/branch
+    docker exec rgi4-app bash -c "cd /var/www/html && sed -i '/^REFRESHGLOBAL_UPDATE/d' .env \
+        && printf 'REFRESHGLOBAL_UPDATE_URL=file:///opt/rel-empty\nREFRESHGLOBAL_UPDATE_BRANCH_MANIFEST=file:///opt/branch/module.json\nREFRESHGLOBAL_UPDATE_BRANCH_ZIP=file:///opt/branch/main.zip\n' >>.env \
+        && sudo -u www-data php artisan freescout:clear-cache >/dev/null"
+    rg_update rgi4
+    [ "$RC" = 0 ] && [ "$(installed_version rgi4)" = 9.0.7 ] && out_has "No published release" && record "$s" "sans release : version de la branche main installée (9.0.7)" PASS || record "$s" "branche main" FAIL "exit $RC v$(installed_version rgi4) — $(tail -c 300 "$WORK/out.txt")"
+    [ "$(page rgi4-app /refresh-global/tickets)" = 200 ] && record "$s" "page = 200 après mise à jour depuis main" PASS || record "$s" "page après main" FAIL
+
+    # install.sh without a release: main branch too
+    branch_dir 9.0.8
+    docker cp "$WORK/branch-9.0.8/main.zip" rgi4-app:/tmp/main-9.0.8.zip
+    RC=0; docker exec -e NO_COLOR=1 -e RG_REPO_URL=file:///opt/no-such-repo -e RG_BRANCH_ZIP_URL=file:///tmp/main-9.0.8.zip rgi4-app \
+        bash /tmp/install.sh --update --yes >"$WORK/out.txt" 2>&1 || RC=$?
+    [ "$RC" = 0 ] && [ "$(installed_version rgi4)" = 9.0.8 ] && out_has "Aucune release publiée" && record "$s" "install.sh sans release : branche main (9.0.8)" PASS || record "$s" "install.sh branche main" FAIL "exit $RC v$(installed_version rgi4) — $(tail -c 300 "$WORK/out.txt")"
 }
 
 s_existing_refresh() {

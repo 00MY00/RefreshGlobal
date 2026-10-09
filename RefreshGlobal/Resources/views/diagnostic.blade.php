@@ -64,7 +64,7 @@
                 <p>
                     {{ __('refreshglobal::messages.installed_version') }} <strong>{{ $current }}</strong>
                     @if (!empty($update['latest']))
-                        · {{ __('refreshglobal::messages.latest_version') }} <strong>{{ $update['latest'] }}</strong>
+                        · {{ __('refreshglobal::messages.latest_version') }} <strong>{{ $update['latest'] }}</strong>@if (($update['source'] ?? '') === 'branch') <small>{{ __('refreshglobal::messages.update_source_branch') }}</small>@endif
                         @if (version_compare($update['latest'], $current, '>'))<span class="label label-info">{{ __('refreshglobal::messages.update_available') }}</span>@endif
                         @if (!empty($update['last_check_at']))<small class="rg-muted">({{ __('refreshglobal::messages.last_check', ['time' => \Carbon\Carbon::parse($update['last_check_at'])->format('Y-m-d H:i')]) }})</small>@endif
                     @endif

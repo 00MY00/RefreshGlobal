@@ -65,21 +65,29 @@ class DiagnosticController extends Controller
                 $info = (new Updater())->setTimeout(15)->check();
             } catch (\Throwable $e) {
                 \Log::warning('[RefreshGlobal] [update] check failed: '.$e->getMessage());
+                // 404 with no usable fallback: no release and no main-branch module.json either
+                if (Updater::isNotFound($e)) {
+                    return redirect($to)->with('flash_error', __('refreshglobal::messages.update_check_no_release', [
+                        'url' => rtrim((string) config('refreshglobal.update_url'), '/'),
+                    ]));
+                }
 
                 return redirect($to)->with('flash_error', __('refreshglobal::messages.update_check_failed', ['error' => $e->getMessage()]));
             }
+            // where the version was read: a published release, or the main branch when there is none
+            $source = ($info['source'] ?? '') === 'branch' ? ' '.__('refreshglobal::messages.update_source_branch') : '';
             if (!$info['available']) {
-                return redirect($to)->with('flash_success', __('refreshglobal::messages.update_check_up_to_date', ['version' => $info['current']]));
+                return redirect($to)->with('flash_success', __('refreshglobal::messages.update_check_up_to_date', ['version' => $info['current']]).$source);
             }
             if (!$info['compatible']) {
                 return redirect($to)->with('flash_error', __('refreshglobal::messages.update_check_incompatible', [
                     'version' => $info['latest'], 'required' => $info['required_app'],
-                ]));
+                ]).$source);
             }
 
             return redirect($to)->with('flash_success', __('refreshglobal::messages.update_check_available', [
                 'version' => $info['latest'], 'current' => $info['current'],
-            ]));
+            ]).$source);
         });
     }
 

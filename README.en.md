@@ -117,6 +117,11 @@ With Refresh in French, the module also corrects two of Refresh's phone strings 
 curl -fsSL https://raw.githubusercontent.com/00MY00/RefreshGlobal/main/install.sh | sudo bash -s -- --update
 ```
 
+New versions come from the latest GitHub *release* (archive + `SHA256SUMS`). **When no release is published**, the
+module and `install.sh` use the **current version of the `main` branch** (a `git push` is enough); there is no
+checksum file for a branch, so integrity relies on HTTPS, and the post-install checks with automatic rollback still
+apply. As soon as a release exists, it is used instead.
+
 After every Refresh or FreeScout update: 1. `php artisan refreshglobal:check`, 2. read the report, 3. fix the failed
 items (usually: install the RefreshGlobal release made for the new version).
 

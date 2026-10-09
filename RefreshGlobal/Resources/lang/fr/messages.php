@@ -174,4 +174,6 @@ return [
     'language_settings_info'       => 'Langue : RefreshGlobal suit la langue de FreeScout, comme Refresh (profil de chaque utilisateur, sinon langue par défaut). Langue actuelle : :language.',
     'language_profile_link'        => 'Changer ma langue',
     'language_default_link'        => 'Langue par défaut (Général)',
+    'update_check_no_release'      => 'Aucune version trouvée : ni release à :url, ni branche main lisible.',
+    'update_source_branch'         => '(branche main : aucune release publiée)',
 ];
