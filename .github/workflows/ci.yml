@@ -16,7 +16,7 @@ jobs:
       matrix:
         php: ['7.1', '8.2', '8.4']
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
@@ -44,14 +44,14 @@ jobs:
         ports: ['3306:3306']
         options: --health-cmd="healthcheck.sh --connect" --health-interval=5s --health-retries=20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           path: module
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           repository: freescout-helpdesk/freescout
           path: freescout
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           repository: altmenorg/freescout-refresh
           path: freescout/Modules/Refresh
@@ -95,7 +95,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Check the tag matches module.json
         run: |
           v="$(sed -n 's/^[[:space:]]*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' RefreshGlobal/module.json | head -n 1)"

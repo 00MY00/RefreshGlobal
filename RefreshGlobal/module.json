@@ -2,7 +2,7 @@
     "name": "RefreshGlobal",
     "alias": "refreshglobal",
     "description": "\"All mailboxes\" page for FreeScout: tickets of every mailbox you can access in one list, with mailbox filter, counters, CSV export and saved views. Uses the Refresh module's look when it is installed.",
-    "version": "1.5.2",
+    "version": "1.5.3",
     "detailsUrl": "https://github.com/00MY00/RefreshGlobal",
     "author": "RefreshGlobal contributors",
     "img": "../modules/refreshglobal/img/module.svg",

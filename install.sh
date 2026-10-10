@@ -35,7 +35,7 @@ REPO_URL="${RG_REPO_URL:-https://github.com/00MY00/RefreshGlobal}"
 # When no release is published: archive of the current main branch (no SHA256SUMS for a branch)
 BRANCH_ZIP_URL="${RG_BRANCH_ZIP_URL:-${REPO_URL}/archive/refs/heads/main.zip}"
 
-SCRIPT_VERSION="1.5.2"
+SCRIPT_VERSION="1.5.3"
 MODULE_NAME="RefreshGlobal"
 MODULE_ALIAS="refreshglobal"
 MODULE_TABLE="refreshglobal_saved_views"
@@ -932,8 +932,10 @@ mode_rollback() {
     else
         src="$(readlink -f "${BACKUP_ROOT}/latest" 2>/dev/null || true)"
     fi
-    [ -n "$src" ] && [ -f "$src/meta.env" ] || die "aucune sauvegarde trouvée (${src:-${BACKUP_ROOT}/latest})." \
-        "Les sauvegardes sont dans ${BACKUP_ROOT} ; choisir avec --rollback=AAAAMMJJ-HHMMSS."
+    if [ -z "$src" ] || [ ! -f "$src/meta.env" ]; then
+        die "aucune sauvegarde trouvée (${src:-${BACKUP_ROOT}/latest})." \
+            "Les sauvegardes sont dans ${BACKUP_ROOT} ; choisir avec --rollback=AAAAMMJJ-HHMMSS."
+    fi
     local was_active version_before
     was_active="$(sed -n 's/^WAS_ACTIVE=//p' "$src/meta.env")"
     version_before="$(sed -n 's/^VERSION_BEFORE=//p' "$src/meta.env")"

@@ -2,6 +2,15 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.5.3] — 2026-10-10
+
+### Corrigé
+- CI GitHub : la tâche shellcheck (dans « lint (8.2) ») échouait depuis la première version sur une construction
+  `A && B || C` de `install.sh` (SC2015, `--rollback`), réécrite en `if` (même comportement). Comme le job
+  `release` dépend de `lint`, **aucune release GitHub n'avait jamais été créée** ; elles le sont maintenant à chaque
+  tag (archive, `install.sh`, `module.json`, `SHA256SUMS`).
+- CI : `actions/checkout@v5` (Node.js 24) à la place de v4 (avertissement « Node.js 20 is deprecated »).
+
 ## [1.5.2] — 2026-10-10
 
 ### Corrigé
