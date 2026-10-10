@@ -2,6 +2,8 @@
 <div class="rg-view-actions">
     {{-- Phones: Refresh hides the list toolbar (Export button), the export stays reachable from the drawer --}}
     <a class="rg-m-only rg-m-export" href="{{ $rg_export }}">{{ __('refreshglobal::messages.export') }} (CSV)</a>
+    {{-- phones: the list toolbar is hidden by Refresh, the button is in the drawer --}}
+    @include('refreshglobal::partials.syncnow_button', ['class' => 'btn btn-default btn-sm rg-m-only rg-m-sync', 'label' => true])
     @if (!$saved_views_ok)
         <p class="rg-muted">[RG-DB-05] {{ __('refreshglobal::messages.views_unavailable') }}</p>
     @else

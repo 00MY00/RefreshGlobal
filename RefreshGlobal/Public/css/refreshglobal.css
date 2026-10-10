@@ -26,6 +26,12 @@
 .rf-list-layout:not(.rf-layout-table) .table-conversations td.rg-col-mailbox,
 .rg-dash .table-conversations th.rg-col-mailbox,
 .rg-dash .table-conversations td.rg-col-mailbox { width: 0 !important; max-width: 0; padding: 0 !important; border: 0 !important; font-size: 0; overflow: hidden; }
+/* "Fetch e-mails now" (SyncNow): the circular arrow turns while the mailboxes are fetched */
+@keyframes rg-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.rg-sync-btn.rg-busy .rg-sync-icon { animation: rg-spin 1s linear infinite; }
+.rg-sync-btn .rg-sync-icon { top: 2px; }
+.rg-sync-icon-only { padding-left: 10px; padding-right: 10px; }
+.rg-view-actions .rg-m-sync { margin: 6px 0; }
 /* "Empty the trash" (bottom of the views panel / phone drawer) */
 .rg-trash { margin: 10px 0 4px; }
 /* language switch (bottom of the views panel / phone drawer) */

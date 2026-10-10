@@ -1,4 +1,4 @@
-# Résultats des tests — RefreshGlobal 1.6.0
+# Résultats des tests — RefreshGlobal 1.7.0
 
 Date : 2026-10-09. Environnements jetables Docker : FreeScout 1.8.245 (dépôt officiel), PHP 8.2.34, Apache,
 MariaDB 10.11 ; Refresh 1.4.3 (dépôt officiel). Données de test uniquement (adresses `.test`).
@@ -206,6 +206,20 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
 - Navigateur : interface en anglais, choix « Français » dans le sélecteur → la page, la barre de Refresh et le
   tableau de bord passent en français ; `users.locale = fr` en base. Sélecteur visible en bas du panneau des vues
   (ordinateur) et du tiroir (téléphone).
+
+## 20. Bouton « Relever les e-mails » avec SyncNow (1.7.0)
+
+- Module tiers **SyncNow 1.3.0** (rabsym/freescout-syncnow) installé et activé à côté de Refresh et RefreshGlobal ;
+  `refreshglobal:check` : RG-ROUTE-05/06 OK (ignorés quand SyncNow n'est pas actif).
+- PHPUnit : **92 tests, 1334 assertions** sans SyncNow actif : 0 échec (1 test SyncNow ignoré). Avec SyncNow actif,
+  les tests SyncNow de RefreshGlobal passent ; 8 tests d'`AccessTest` tombent sur « Faker\Factory introuvable » :
+  SyncNow charge ses « factories » hors production (`SyncNowServiceProvider::registerFactories`, ligne 125) et
+  FreeScout n'embarque pas Faker — limité à un environnement de test, sans effet en production.
+- **Bout en bout** (vrai serveur mail GreenMail, vrai SyncNow) : un nouvel e-mail est déposé sur le serveur (non
+  relevé), la page « Toutes les boîtes » montre le bouton (boîte « Mail test ») ; clic → icône qui tourne, SyncNow
+  relève **1 e-mail** (historique SyncNow : success), la liste se recharge seule et **le nouveau ticket s'affiche**.
+  Barre d'outils : bouton en icône seule, « Filtres » reste visible ; téléphone : « Relever les e-mails » dans le
+  tiroir.
 
 ## 19. Actualisation automatique (1.6.0)
 

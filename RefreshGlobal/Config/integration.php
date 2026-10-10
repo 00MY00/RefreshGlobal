@@ -110,6 +110,9 @@ return [
         'RG-ROUTE-02' => ['route' => 'mailboxes.view', 'severity' => 'blocking', 'source' => 'routes/web.php:82'],
         'RG-ROUTE-03' => ['route' => 'refreshglobal.tickets', 'severity' => 'blocking', 'source' => 'Modules/RefreshGlobal/Http/routes.php'],
         'RG-ROUTE-04' => ['route' => 'conversations.ajax', 'severity' => 'degraded', 'source' => 'routes/web.php:64'],
+        // Optional third-party module SyncNow (rabsym/freescout-syncnow 1.3.0): "Fetch e-mails now" button
+        'RG-ROUTE-05' => ['route' => 'syncnow.force', 'module' => 'syncnow', 'family' => 'route_syncnow', 'severity' => 'warning', 'source' => 'Modules/SyncNow/Http/routes.php:54-57'],
+        'RG-ROUTE-06' => ['route' => 'syncnow.status', 'module' => 'syncnow', 'family' => 'route_syncnow', 'severity' => 'warning', 'source' => 'Modules/SyncNow/Http/routes.php:64-67'],
     ],
 
     // Tables / columns read. RG-DB-05 is the module's own table (saved views only).

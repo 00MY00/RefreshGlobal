@@ -210,4 +210,11 @@ return [
     'auto_refresh'                 => 'Automatic refresh',
     'auto_refresh_unit'            => 'seconds',
     'auto_refresh_help'            => 'The “All mailboxes” list and the dashboard check every N seconds whether their tickets changed (new ticket, reply, status, deletion…) and refresh themselves, without losing your place — never while you are ticking tickets, typing or using a menu. 0 = off; at least :min seconds.',
+    'sync_now'                     => 'Fetch e-mails',
+    'sync_now_help'                => 'Fetch the e-mails of these mailboxes now (SyncNow module)',
+    'sync_running'                 => 'Fetching :name…',
+    'sync_none'                    => 'No new e-mail.',
+    'sync_done'                    => ':count new e-mail(s): updating the list…',
+    'sync_problem'                 => ':name: :message',
+    'sync_cooldown'                => ':name was fetched a moment ago: try again in :seconds s',
 ];

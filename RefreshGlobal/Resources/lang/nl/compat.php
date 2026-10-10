@@ -178,4 +178,10 @@ return [
         'effect' => 'De e-mails van definitief verwijderde tickets blijven op de mailserver (ze gaan niet naar de prullenbak). De rest werkt.',
         'action' => 'RefreshGlobal bijwerken naar een versie voor deze FreeScout-versie en daarna php artisan refreshglobal:check uitvoeren.',
     ],
+    'route_syncnow' => [
+        'check'  => 'Route van de module SyncNow aanwezig: :item',
+        'label'  => 'Een route van de module SyncNow die de knop „E-mails ophalen” gebruikt ontbreekt: :item.',
+        'effect' => 'De knop „E-mails ophalen” wordt niet getoond; de pagina van SyncNow werkt nog. De rest werkt.',
+        'action' => 'De geïnstalleerde SyncNow-versie controleren (getest: 1.3.0), RefreshGlobal bijwerken en daarna php artisan refreshglobal:check uitvoeren.',
+    ],
 ];

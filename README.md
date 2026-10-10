@@ -52,6 +52,9 @@ Dans Gérer › Modules :
 - **Mise à jour automatique** (facultative) avec **retour arrière automatique** si la nouvelle version ne fonctionne pas.
 - **Diagnostic de compatibilité** : `php artisan refreshglobal:check` et page d'administration, avec des messages
   explicites (codes `RG-xxx`) après une mise à jour de FreeScout ou de Refresh.
+- **Bouton « Relever les e-mails »** (flèche en cercle) si le module
+  [SyncNow](https://github.com/rabsym/freescout-syncnow) est installé : relève tout de suite les boîtes IMAP de la
+  liste, avec les droits et le délai de SyncNow.
 - Traductions : français, anglais, allemand, espagnol, italien, néerlandais, portugais (Brésil).
 - **Langue** : le module suit la langue de FreeScout, comme Refresh (Refresh n'a pas de choix de langue à lui) :
   celle du profil de l'utilisateur, sinon la langue par défaut (Gérer › Paramètres › Général). Un **sélecteur de

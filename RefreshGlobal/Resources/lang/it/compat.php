@@ -178,4 +178,10 @@ return [
         'effect' => 'Le e-mail dei ticket eliminati definitivamente restano sul server di posta (non vanno nel suo cestino). Il resto funziona.',
         'action' => 'Aggiornare RefreshGlobal a una versione prevista per questa versione di FreeScout, poi eseguire php artisan refreshglobal:check.',
     ],
+    'route_syncnow' => [
+        'check'  => 'Route del modulo SyncNow presente: :item',
+        'label'  => 'Manca una route del modulo SyncNow usata dal pulsante «Scarica e-mail»: :item.',
+        'effect' => 'Il pulsante «Scarica e-mail» non viene mostrato; la pagina di SyncNow funziona ancora. Il resto funziona.',
+        'action' => 'Verificare la versione di SyncNow installata (testata: 1.3.0), aggiornare RefreshGlobal, poi eseguire php artisan refreshglobal:check.',
+    ],
 ];

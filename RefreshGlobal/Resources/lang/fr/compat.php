@@ -178,4 +178,10 @@ return [
         'effect' => 'Les e-mails des tickets supprimés définitivement restent sur le serveur mail (ils ne vont pas dans sa corbeille). Le reste fonctionne.',
         'action' => 'Mettre à jour RefreshGlobal vers une version prévue pour cette version de FreeScout, puis exécuter php artisan refreshglobal:check.',
     ],
+    'route_syncnow' => [
+        'check'  => 'Route du module SyncNow présente : :item',
+        'label'  => 'Une route du module SyncNow utilisée par le bouton « Relever les e-mails » est absente : :item.',
+        'effect' => 'Le bouton « Relever les e-mails » n’est pas affiché ; la page de SyncNow fonctionne toujours. Le reste fonctionne.',
+        'action' => 'Vérifier la version de SyncNow installée (testée : 1.3.0), mettre à jour RefreshGlobal, puis exécuter php artisan refreshglobal:check.',
+    ],
 ];

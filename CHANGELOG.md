@@ -2,6 +2,17 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.7.0] — 2026-10-10
+
+### Ajouté
+- Bouton **« Relever les e-mails »** (flèche en cercle) sur la page « Toutes les boîtes » (barre d'outils ; tiroir
+  sur téléphone), **seulement si le module [SyncNow](https://github.com/rabsym/freescout-syncnow) est installé et
+  actif** et que l'utilisateur peut s'en servir (administrateur, ou permission « Force sync » de SyncNow). Il relève
+  tout de suite les boîtes IMAP de la liste affichée, une par une, avec les appels de SyncNow (`syncnow.force` puis
+  `syncnow.status` jusqu'à la fin : historique et verrou de SyncNow gérés normalement) ; l'icône tourne pendant la
+  relève, la liste se recharge s'il y a de nouveaux e-mails, sinon un message (« Aucun nouvel e-mail », délai de
+  SyncNow avant une nouvelle relève…). Contrôles RG-ROUTE-05/06 (ignorés sans SyncNow).
+
 ## [1.6.0] — 2026-10-10
 
 ### Ajouté

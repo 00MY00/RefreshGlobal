@@ -100,6 +100,8 @@ class GlobalTicketsController extends Controller
                 'filters'           => $filters,
                 // not "params": the native table reads a $params variable of its own (data-param_* attributes)
                 'rg_params'         => $params,
+                // "Fetch e-mails now" through the SyncNow module, when it is installed (IMAP mailboxes of the list)
+                'rg_sync'           => \Modules\RefreshGlobal\Services\SyncNow::mailboxes($user, $filters['mailboxes']),
                 // fingerprint of this list when shown (automatic refresh compares with it)
                 'rg_fp'             => \Modules\RefreshGlobal\Services\Settings::autoRefresh() ? $query->fingerprint() : '',
                 'filters_count'     => GlobalTicketQuery::activeCount($filters),

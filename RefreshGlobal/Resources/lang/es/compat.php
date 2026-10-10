@@ -178,4 +178,10 @@ return [
         'effect' => 'Los correos de los tickets eliminados definitivamente se quedan en el servidor de correo (no van a su papelera). El resto funciona.',
         'action' => 'Actualizar RefreshGlobal a una versión prevista para esta versión de FreeScout y ejecutar php artisan refreshglobal:check.',
     ],
+    'route_syncnow' => [
+        'check'  => 'Ruta del módulo SyncNow presente: :item',
+        'label'  => 'Falta una ruta del módulo SyncNow usada por el botón «Recibir correos»: :item.',
+        'effect' => 'El botón «Recibir correos» no se muestra; la página de SyncNow sigue funcionando. El resto funciona.',
+        'action' => 'Comprobar la versión de SyncNow instalada (probada: 1.3.0), actualizar RefreshGlobal y ejecutar php artisan refreshglobal:check.',
+    ],
 ];

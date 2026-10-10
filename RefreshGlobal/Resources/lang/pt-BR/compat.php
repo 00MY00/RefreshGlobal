@@ -178,4 +178,10 @@ return [
         'effect' => 'Os e-mails dos tickets excluídos definitivamente ficam no servidor de e-mail (não vão para a lixeira dele). O resto funciona.',
         'action' => 'Atualizar o RefreshGlobal para uma versão feita para esta versão do FreeScout e depois executar php artisan refreshglobal:check.',
     ],
+    'route_syncnow' => [
+        'check'  => 'Rota do módulo SyncNow presente: :item',
+        'label'  => 'Falta uma rota do módulo SyncNow usada pelo botão “Buscar e-mails”: :item.',
+        'effect' => 'O botão “Buscar e-mails” não é exibido; a página do SyncNow continua funcionando. O resto funciona.',
+        'action' => 'Verificar a versão do SyncNow instalada (testada: 1.3.0), atualizar o RefreshGlobal e depois executar php artisan refreshglobal:check.',
+    ],
 ];

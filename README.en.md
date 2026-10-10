@@ -36,6 +36,8 @@ otherwise it uses FreeScout's standard look.
   tickets with the "see only assigned conversations" permission).
 - **Compatibility diagnostic**: `php artisan refreshglobal:check` and an admin page, with explicit `RG-xxx` messages
   after a FreeScout or Refresh update.
+- **"Fetch e-mails" button** (circular arrow) when the [SyncNow](https://github.com/rabsym/freescout-syncnow) module
+  is installed: fetches the IMAP mailboxes of the list right away, with SyncNow's rights and cooldown.
 - Languages: English, French, German, Spanish, Italian, Dutch, Brazilian Portuguese.
 - **Language**: the module follows FreeScout's language, like Refresh (which has no language choice of its own): the
   user's profile language, otherwise the default one. A **language switch** at the bottom of the views panel (and

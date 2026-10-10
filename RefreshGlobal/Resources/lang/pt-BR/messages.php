@@ -204,4 +204,11 @@ return [
     'auto_refresh'                 => 'Atualização automática',
     'auto_refresh_unit'            => 'segundos',
     'auto_refresh_help'            => 'A lista “Todas as caixas” e o painel verificam a cada N segundos se seus tickets mudaram (novo ticket, resposta, status, exclusão…) e se atualizam sozinhos, sem perder sua posição — nunca enquanto você marca tickets, digita ou usa um menu. 0 = desativada; no mínimo :min segundos.',
+    'sync_now'                     => 'Buscar e-mails',
+    'sync_now_help'                => 'Buscar agora os e-mails destas caixas (módulo SyncNow)',
+    'sync_running'                 => 'Buscando :name…',
+    'sync_none'                    => 'Nenhum e-mail novo.',
+    'sync_done'                    => ':count novo(s) e-mail(s): atualizando a lista…',
+    'sync_problem'                 => ':name: :message',
+    'sync_cooldown'                => ':name foi buscada há pouco: tente de novo em :seconds s',
 ];

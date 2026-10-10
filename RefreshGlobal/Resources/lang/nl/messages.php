@@ -204,4 +204,11 @@ return [
     'auto_refresh'                 => 'Automatisch vernieuwen',
     'auto_refresh_unit'            => 'seconden',
     'auto_refresh_help'            => 'De lijst „Alle mailboxen” en het dashboard controleren elke N seconden of hun tickets zijn gewijzigd (nieuw ticket, antwoord, status, verwijdering…) en vernieuwen zichzelf, zonder dat u uw plek kwijtraakt — nooit terwijl u tickets aanvinkt, typt of een menu gebruikt. 0 = uit; minstens :min seconden.',
+    'sync_now'                     => 'E-mails ophalen',
+    'sync_now_help'                => 'De e-mails van deze mailboxen nu ophalen (module SyncNow)',
+    'sync_running'                 => ':name ophalen…',
+    'sync_none'                    => 'Geen nieuwe e-mail.',
+    'sync_done'                    => ':count nieuwe e-mail(s): lijst wordt bijgewerkt…',
+    'sync_problem'                 => ':name: :message',
+    'sync_cooldown'                => ':name is net opgehaald: opnieuw proberen over :seconds s',
 ];

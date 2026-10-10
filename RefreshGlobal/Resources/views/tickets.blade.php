@@ -172,6 +172,8 @@
                                 <li class="@if ($rg_layout_table) active @endif"><a href="#" class="rf-set-layout" data-layout="table">{{ __('refreshglobal::messages.table_view') }}</a></li>
                             </ul>
                         </div>
+                        {{-- icon only (circular arrow, text in the tooltip): the toolbar has no room for one more label --}}
+                        @include('refreshglobal::partials.syncnow_button', ['class' => 'rf-btn rg-sync-icon-only', 'label' => false])
                         <a class="rf-btn rg-export" href="{{ $rg_export }}" title="{{ __('refreshglobal::messages.export_hint', ['max' => $export_max]) }}"><i class="rf-i rf-i-download"></i> {{ __('refreshglobal::messages.export') }}</a>
                         <span class="rf-range">{{ __('refreshglobal::messages.range', ['from' => $rg_first, 'to' => $rg_last, 'total' => $conversations->total()]) }}</span>
                         <span class="rf-pager">
@@ -193,6 +195,7 @@
             <span class="rg-heading-title">{{ $rg_title }} <small>({{ $conversations->total() }})</small></span>
             <span class="rg-heading-actions">
                 <a class="btn btn-default btn-sm rg-toggle-filters" href="#rg-filters"><i class="glyphicon glyphicon-filter"></i> {{ __('refreshglobal::messages.filters') }} @if ($filters_count)({{ $filters_count }})@endif</a>
+                @include('refreshglobal::partials.syncnow_button', ['class' => 'btn btn-default btn-sm', 'label' => true])
                 <a class="btn btn-default btn-sm rg-export" href="{{ $rg_export }}" title="{{ __('refreshglobal::messages.export_hint', ['max' => $export_max]) }}"><i class="glyphicon glyphicon-download-alt"></i> {{ __('refreshglobal::messages.export') }}</a>
             </span>
         </div>

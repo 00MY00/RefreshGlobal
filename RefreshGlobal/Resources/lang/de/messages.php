@@ -204,4 +204,11 @@ return [
     'auto_refresh'                 => 'Automatische Aktualisierung',
     'auto_refresh_unit'            => 'Sekunden',
     'auto_refresh_help'            => 'Die Liste „Alle Postfächer“ und das Dashboard prüfen alle N Sekunden, ob sich ihre Tickets geändert haben (neues Ticket, Antwort, Status, Löschung…), und aktualisieren sich selbst, ohne Ihre Stelle zu verlieren — nie, während Sie Tickets ankreuzen, tippen oder ein Menü benutzen. 0 = aus; mindestens :min Sekunden.',
+    'sync_now'                     => 'E-Mails abrufen',
+    'sync_now_help'                => 'Die E-Mails dieser Postfächer jetzt abrufen (Modul SyncNow)',
+    'sync_running'                 => 'Abruf von :name…',
+    'sync_none'                    => 'Keine neue E-Mail.',
+    'sync_done'                    => ':count neue E-Mail(s): Liste wird aktualisiert…',
+    'sync_problem'                 => ':name: :message',
+    'sync_cooldown'                => ':name wurde gerade abgerufen: in :seconds s erneut versuchen',
 ];

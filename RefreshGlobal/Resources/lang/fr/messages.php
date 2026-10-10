@@ -204,4 +204,11 @@ return [
     'auto_refresh'                 => 'Actualisation automatique',
     'auto_refresh_unit'            => 'secondes',
     'auto_refresh_help'            => 'La liste « Toutes les boîtes » et le tableau de bord vérifient toutes les N secondes si leurs tickets ont changé (nouveau ticket, réponse, statut, suppression…) et se mettent à jour seuls, sans perdre votre place — jamais pendant que vous cochez des tickets, tapez du texte ou utilisez un menu. 0 = désactivée ; au moins :min secondes.',
+    'sync_now'                     => 'Relever les e-mails',
+    'sync_now_help'                => 'Relever tout de suite les e-mails de ces boîtes (module SyncNow)',
+    'sync_running'                 => 'Relève de :name…',
+    'sync_none'                    => 'Aucun nouvel e-mail.',
+    'sync_done'                    => ':count nouvel(s) e-mail(s) : mise à jour de la liste…',
+    'sync_problem'                 => ':name : :message',
+    'sync_cooldown'                => ':name a été relevée il y a peu : réessayer dans :seconds s',
 ];

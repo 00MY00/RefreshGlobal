@@ -178,4 +178,10 @@ return [
         'effect' => 'Die E-Mails endgültig gelöschter Tickets bleiben auf dem Mailserver (sie werden nicht in seinen Papierkorb verschoben). Der Rest funktioniert.',
         'action' => 'RefreshGlobal auf eine Version für diese FreeScout-Version aktualisieren, dann php artisan refreshglobal:check ausführen.',
     ],
+    'route_syncnow' => [
+        'check'  => 'Route des Moduls SyncNow vorhanden: :item',
+        'label'  => 'Eine von der Schaltfläche „E-Mails abrufen“ verwendete Route des Moduls SyncNow fehlt: :item.',
+        'effect' => 'Die Schaltfläche „E-Mails abrufen“ wird nicht angezeigt; die Seite von SyncNow funktioniert weiterhin. Der Rest funktioniert.',
+        'action' => 'Installierte SyncNow-Version prüfen (getestet: 1.3.0), RefreshGlobal aktualisieren, dann php artisan refreshglobal:check ausführen.',
+    ],
 ];

@@ -85,7 +85,98 @@
         if (state.attr('data-keep-position') === '1') {
             keepPosition();
         }
+
+        $(document).on('click', '.rg-sync-btn', function () {
+            syncNow($(this));
+        });
     });
+
+    /*
+     * "Fetch e-mails now" with the SyncNow module (Services/SyncNow.php): for each IMAP mailbox of the list, one after
+     * the other, SyncNow's own calls — POST force, then GET status every 1.5 s until it is no longer "running"
+     * (that call also records SyncNow's history and releases its lock). New e-mails: the list is reloaded (the
+     * place in the list is kept); otherwise a short message.
+     */
+    function syncNow(btn) {
+        if (btn.hasClass('rg-busy') || !window.fetch) {
+            return;
+        }
+        var boxes = [];
+        try { boxes = JSON.parse(btn.attr('data-mailboxes') || '[]'); } catch (e) { boxes = []; }
+        if (!boxes.length) {
+            return;
+        }
+        var token = (document.querySelector('meta[name="csrf-token"]') || {}).content || '';
+        var headers = { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': token };
+        var all = $('.rg-sync-btn').addClass('rg-busy').prop('disabled', true);
+        var label = btn.find('.rg-sync-label');
+        var labelText = label.text();
+        var titleText = btn.attr('title') || '';
+        var fetched = 0, problems = [];
+        var msg = function (key, vals) {
+            var s = btn.attr('data-msg-' + key) || '';
+            $.each(vals || {}, function (k, v) { s = s.split(':' + k).join(v); });
+            return s;
+        };
+        var say = function (type, text) {
+            if (typeof window.showFloatingAlert === 'function') { window.showFloatingAlert(type, text); } else { window.alert(text); }
+        };
+        var wait = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
+        var json = function (r) { return r.ok ? r.json() : { status: 'error', message: 'HTTP ' + r.status }; };
+
+        var poll = function (box, syncToken, offset, tries) {
+            return wait(1500).then(function () {
+                var url = box.status + (box.status.indexOf('?') < 0 ? '?' : '&') + 'sync_token=' + encodeURIComponent(syncToken) + '&offset=' + offset;
+                return window.fetch(url, { credentials: 'same-origin', headers: headers, cache: 'no-store' }).then(json);
+            }).then(function (d) {
+                if (d && d.status === 'running' && tries < 160) { // about 4 minutes at most
+                    return poll(box, syncToken, d.offset || offset, tries + 1);
+                }
+                if (d && (d.status === 'success' || d.status === 'done')) {
+                    fetched += parseInt(d.emails_fetched, 10) || 0;
+                } else {
+                    problems.push(msg('problem', { name: box.name, message: (d && d.message) || (d && d.status) || '?' }));
+                }
+            });
+        };
+        var one = function (box) {
+            label.text(msg('running', { name: box.name }));
+            btn.attr('title', msg('running', { name: box.name })); // icon-only button: progress in the tooltip
+            return window.fetch(box.force, { method: 'POST', credentials: 'same-origin', headers: headers, body: new URLSearchParams({ _token: token }) })
+                .then(json)
+                .then(function (d) {
+                    if (d && d.status === 'running' && d.sync_token) {
+                        return poll(box, d.sync_token, 0, 0);
+                    }
+                    if (d && d.status === 'skipped') {
+                        return null; // FreeScout's own fetch is handling this mailbox right now
+                    }
+                    if (d && d.status === 'cooldown') {
+                        problems.push(msg('cooldown', { name: box.name, seconds: d.seconds_remaining || '?' }));
+                        return null;
+                    }
+                    problems.push(msg('problem', { name: box.name, message: (d && d.message) || (d && d.status) || '?' }));
+                    return null;
+                })
+                .catch(function (e) { problems.push(msg('problem', { name: box.name, message: e.message || 'network error' })); });
+        };
+
+        boxes.reduce(function (chain, box) { return chain.then(function () { return one(box); }); }, Promise.resolve())
+            .then(function () {
+                all.removeClass('rg-busy').prop('disabled', false);
+                label.text(labelText);
+                btn.attr('title', titleText);
+                if (problems.length) {
+                    say('warning', problems.join(' — '));
+                }
+                if (fetched > 0) {
+                    say('success', msg('done', { count: fetched }));
+                    setTimeout(function () { window.location.reload(); }, 800);
+                } else if (!problems.length) {
+                    say('success', msg('none'));
+                }
+            });
+    }
 
     /*
      * Setting "Keep my place in the list after a deletion" (on by default).

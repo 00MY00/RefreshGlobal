@@ -204,4 +204,11 @@ return [
     'auto_refresh'                 => 'Actualización automática',
     'auto_refresh_unit'            => 'segundos',
     'auto_refresh_help'            => 'La lista «Todos los buzones» y el panel comprueban cada N segundos si sus tickets han cambiado (ticket nuevo, respuesta, estado, eliminación…) y se actualizan solos, sin perder su posición — nunca mientras marca tickets, escribe o usa un menú. 0 = desactivada; al menos :min segundos.',
+    'sync_now'                     => 'Recibir correos',
+    'sync_now_help'                => 'Recibir ahora los correos de estos buzones (módulo SyncNow)',
+    'sync_running'                 => 'Recibiendo :name…',
+    'sync_none'                    => 'Ningún correo nuevo.',
+    'sync_done'                    => ':count correo(s) nuevo(s): actualizando la lista…',
+    'sync_problem'                 => ':name: :message',
+    'sync_cooldown'                => ':name se recibió hace un momento: reintentar en :seconds s',
 ];

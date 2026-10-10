@@ -182,4 +182,10 @@ return [
         'effect' => 'E-mails of the tickets deleted for good stay on the mail server (they are not moved to its trash). The rest works.',
         'action' => 'Update RefreshGlobal to a version made for this FreeScout version, then run php artisan refreshglobal:check.',
     ],
+    'route_syncnow' => [
+        'check'  => 'SyncNow module route present: :item',
+        'label'  => 'A route of the SyncNow module used by the “Fetch e-mails” button is missing: :item.',
+        'effect' => 'The “Fetch e-mails” button is not shown; SyncNow’s own page still works. The rest works.',
+        'action' => 'Check the installed SyncNow version (tested: 1.3.0), update RefreshGlobal, then run php artisan refreshglobal:check.',
+    ],
 ];

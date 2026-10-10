@@ -204,4 +204,11 @@ return [
     'auto_refresh'                 => 'Aggiornamento automatico',
     'auto_refresh_unit'            => 'secondi',
     'auto_refresh_help'            => 'La lista «Tutte le caselle» e la dashboard controllano ogni N secondi se i loro ticket sono cambiati (nuovo ticket, risposta, stato, eliminazione…) e si aggiornano da sole, senza perdere la posizione — mai mentre selezioni ticket, scrivi o usi un menu. 0 = disattivato; almeno :min secondi.',
+    'sync_now'                     => 'Scarica e-mail',
+    'sync_now_help'                => 'Scarica subito le e-mail di queste caselle (modulo SyncNow)',
+    'sync_running'                 => 'Scaricamento di :name…',
+    'sync_none'                    => 'Nessuna nuova e-mail.',
+    'sync_done'                    => ':count nuove e-mail: aggiornamento della lista…',
+    'sync_problem'                 => ':name: :message',
+    'sync_cooldown'                => ':name è stata scaricata poco fa: riprova tra :seconds s',
 ];
