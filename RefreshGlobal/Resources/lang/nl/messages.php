@@ -194,4 +194,11 @@ return [
     'trash_nothing'                => 'De prullenbak is al leeg.',
     'keep_position'                => 'Mijn plek in de lijst behouden',
     'keep_position_help'           => 'Aan (standaard): na het verwijderen van een ticket (vanuit het ticket, of meerdere tegelijk vanuit de lijst) opent de lijst „Alle mailboxen” waar u was, met het volgende ticket op de plaats van het verwijderde: niet opnieuw naar beneden scrollen. Uit: de lijst opent bovenaan.',
+    'server_trash'                 => 'Ook op de mailserver',
+    'server_trash_help'            => 'Aan (standaard): wanneer een ticket definitief wordt verwijderd (Definitief verwijderen, Prullenbak legen, automatisch legen), worden de e-mails binnen een minuut ook naar de prullenbak van de mailserver (IMAP) verplaatst: ze kunnen via de webmail worden teruggezet. Een hele mailbox verwijderen in FreeScout raakt de server nooit. POP3-mailboxen: niet mogelijk.',
+    'server_trash_folder'          => 'Prullenbak van de server',
+    'server_trash_folder_auto'     => 'automatisch (Trash, Prullenbak, Deleted Items…)',
+    'server_trash_folder_help'     => 'Leeg laten om hem automatisch te vinden. Anders de exacte naam op de server, bijvoorbeeld INBOX.Trash of [Gmail]/Trash.',
+    'server_trash_status'          => 'E-mails: :pending wachtend, :moved naar de prullenbak van de server verplaatst, :not_found niet gevonden op de server, :failed niet verplaatst.',
+    'server_trash_last_error'      => 'Laatste fout: :error',
 ];

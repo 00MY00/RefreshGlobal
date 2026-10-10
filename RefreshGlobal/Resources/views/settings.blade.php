@@ -52,6 +52,28 @@
             <p class="form-help">{{ __('refreshglobal::messages.trash_auto_help', ['time' => (string) config('refreshglobal.trash_auto_time', '03:45')]) }}</p>
         </div>
     </div>
+    @include('refreshglobal::partials.switch', ['key' => $rg_s::SERVER_TRASH, 'label' => __('refreshglobal::messages.server_trash'),
+        'help' => __('refreshglobal::messages.server_trash_help')])
+    <div class="form-group">
+        <label for="rg-server-trash-folder" class="col-sm-2 control-label">{{ __('refreshglobal::messages.server_trash_folder') }}</label>
+        <div class="col-sm-6">
+            <input type="text" id="rg-server-trash-folder" name="settings[{{ $rg_s::SERVER_TRASH_FOLDER }}]" value="{{ $settings[$rg_s::SERVER_TRASH_FOLDER] ?? '' }}" maxlength="200" class="form-control" style="max-width: 320px;" placeholder="{{ __('refreshglobal::messages.server_trash_folder_auto') }}">
+            <p class="form-help">{{ __('refreshglobal::messages.server_trash_folder_help') }}</p>
+            @php
+                $rg_mt = \Modules\RefreshGlobal\Services\MailServerTrash::counts();
+                $rg_mt_err = \Modules\RefreshGlobal\Services\MailServerTrash::lastError();
+            @endphp
+            @if (array_sum($rg_mt))
+                <p class="form-help">{{ __('refreshglobal::messages.server_trash_status', [
+                    'pending' => $rg_mt['pending'] ?? 0, 'moved' => $rg_mt['moved'] ?? 0,
+                    'not_found' => $rg_mt['not_found'] ?? 0, 'failed' => ($rg_mt['failed'] ?? 0) + ($rg_mt['skipped'] ?? 0),
+                ]) }}</p>
+            @endif
+            @if ($rg_mt_err && (($rg_mt['pending'] ?? 0) || ($rg_mt['failed'] ?? 0)))
+                <p class="form-help text-danger">{{ __('refreshglobal::messages.server_trash_last_error', ['error' => $rg_mt_err->error]) }}</p>
+            @endif
+        </div>
+    </div>
     <div class="form-group">
         <label class="col-sm-2 control-label">{{ __('refreshglobal::messages.trash_now') }}</label>
         <div class="col-sm-6">

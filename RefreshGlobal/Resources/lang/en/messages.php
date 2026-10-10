@@ -200,4 +200,11 @@ return [
     'trash_nothing'                => 'The trash is already empty.',
     'keep_position'                => 'Keep my place in the list',
     'keep_position_help'           => 'On (default): after deleting a ticket (from the ticket, or several at once from the list), the “All mailboxes” list opens where you were, the ticket that followed in place of the deleted one: no need to scroll back down. Off: the list opens at the top.',
+    'server_trash'                 => 'Also on the mail server',
+    'server_trash_help'            => 'On (default): when a ticket is deleted for good (Delete forever, Empty the trash, automatic emptying), its e-mails are also moved to the trash folder of the mail server (IMAP), within a minute: they can still be restored from the webmail. Deleting a whole mailbox in FreeScout never touches the server. POP3 mailboxes: not possible.',
+    'server_trash_folder'          => 'Trash folder of the server',
+    'server_trash_folder_auto'     => 'automatic (Trash, Corbeille, Deleted Items…)',
+    'server_trash_folder_help'     => 'Leave empty to find it automatically. Otherwise its exact name on the server, e.g. INBOX.Trash or [Gmail]/Trash.',
+    'server_trash_status'          => 'E-mails: :pending waiting, :moved moved to the server’s trash, :not_found not found on the server, :failed not moved.',
+    'server_trash_last_error'      => 'Last error: :error',
 ];

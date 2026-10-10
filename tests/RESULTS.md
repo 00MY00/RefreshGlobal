@@ -1,4 +1,4 @@
-# Résultats des tests — RefreshGlobal 1.5.1
+# Résultats des tests — RefreshGlobal 1.5.2
 
 Date : 2026-10-09. Environnements jetables Docker : FreeScout 1.8.245 (dépôt officiel), PHP 8.2.34, Apache,
 MariaDB 10.11 ; Refresh 1.4.3 (dépôt officiel). Données de test uniquement (adresses `.test`).
@@ -206,6 +206,18 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
 - Navigateur : interface en anglais, choix « Français » dans le sélecteur → la page, la barre de Refresh et le
   tableau de bord passent en français ; `users.locale = fr` en base. Sélecteur visible en bas du panneau des vues
   (ordinateur) et du tiroir (téléphone).
+
+## 18. E-mails des tickets supprimés définitivement → corbeille du serveur mail (1.5.2)
+
+- PHPUnit : **84 tests, 1233 assertions, 0 échec** (nouveau `MailServerTrashTest`, 9 tests avec un faux serveur IMAP :
+  « Supprimer définitivement » met en file les e-mails du client (dossiers relevés) et les réponses (dossier Envoyés),
+  sans `< >` ; mise à la corbeille de FreeScout et suppression d'une boîte entière : rien ; « Vider la corbeille » :
+  en file ; réglage désactivé : rien ; traitement : déplacés / introuvable ; corbeille absente → erreur, nouvel essai,
+  puis corbeille indiquée dans les réglages ; boîte POP3 ignorée ; tâche planifiée chaque minute).
+- **Bout en bout avec un vrai serveur mail** (GreenMail, IMAP + SMTP) : 2 e-mails envoyés, relevés par FreeScout
+  (2 tickets) ; le premier ticket mis à la corbeille puis « Vider la corbeille » → `refreshglobal:mail-trash` :
+  « 1 e-mail(s) moved to the mail server's trash ». Lecture directe du serveur ensuite : **INBOX : e2e-second**,
+  **Trash : e2e-first** ; le second ticket est intact dans FreeScout.
 
 ## 17. Rester à sa place dans la liste, suppression sur téléphone (1.5.1)
 

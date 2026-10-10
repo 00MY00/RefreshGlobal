@@ -194,4 +194,11 @@ return [
     'trash_nothing'                => 'La corbeille est déjà vide.',
     'keep_position'                => 'Rester à ma place dans la liste',
     'keep_position_help'           => 'Activé (par défaut) : après la suppression d’un ticket (depuis le ticket, ou de plusieurs à la fois depuis la liste), la liste « Toutes les boîtes » s’ouvre là où vous étiez, le ticket suivant à la place de celui supprimé : plus besoin de redescendre. Désactivé : la liste s’ouvre en haut.',
+    'server_trash'                 => 'Aussi sur le serveur mail',
+    'server_trash_help'            => 'Activé (par défaut) : quand un ticket est supprimé définitivement (Supprimer définitivement, Vider la corbeille, vidage automatique), ses e-mails sont aussi déplacés dans la corbeille du serveur mail (IMAP), dans la minute : ils restent récupérables depuis le webmail. Supprimer une boîte entière dans FreeScout ne touche jamais le serveur. Boîtes POP3 : impossible.',
+    'server_trash_folder'          => 'Corbeille du serveur',
+    'server_trash_folder_auto'     => 'automatique (Trash, Corbeille, Deleted Items…)',
+    'server_trash_folder_help'     => 'Laisser vide pour la trouver automatiquement. Sinon son nom exact sur le serveur, par exemple INBOX.Trash ou [Gmail]/Corbeille.',
+    'server_trash_status'          => 'E-mails : :pending en attente, :moved déplacés dans la corbeille du serveur, :not_found introuvables sur le serveur, :failed non déplacés.',
+    'server_trash_last_error'      => 'Dernière erreur : :error',
 ];

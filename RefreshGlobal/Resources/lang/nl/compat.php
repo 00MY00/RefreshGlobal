@@ -160,4 +160,22 @@ return [
         'effect' => 'Op de telefoon wordt „Definitief verwijderen” niet toegevoegd aan de „Ticketacties” van Refresh voor tickets in de prullenbak (de knop „Prullenbak legen” werkt nog). De rest werkt.',
         'action' => 'RefreshGlobal bijwerken naar een versie voor deze Refresh-versie en daarna php artisan refreshglobal:check uitvoeren.',
     ],
+    'hook_mail' => [
+        'check'  => 'Hook „:item” aangeroepen door :file',
+        'label'  => 'De hook „:item” wordt niet meer aangeroepen door :file.',
+        'effect' => 'De e-mails van definitief verwijderde tickets blijven op de mailserver (ze gaan niet naar de prullenbak). De rest werkt.',
+        'action' => 'RefreshGlobal bijwerken naar een versie voor deze FreeScout-/Refresh-versie en daarna php artisan refreshglobal:check uitvoeren.',
+    ],
+    'core_mail' => [
+        'check'  => 'FreeScout-code aanwezig: :item',
+        'label'  => 'Een klasse, methode of constante van FreeScout die de module gebruikt ontbreekt: :item.',
+        'effect' => 'De e-mails van definitief verwijderde tickets blijven op de mailserver (ze gaan niet naar de prullenbak). De rest werkt.',
+        'action' => 'RefreshGlobal bijwerken naar een versie voor deze FreeScout-/Refresh-versie en daarna php artisan refreshglobal:check uitvoeren.',
+    ],
+    'db_mail' => [
+        'check'  => 'Tabel en kolommen aanwezig: :item',
+        'label'  => 'Een kolom voor het automatisch legen van de prullenbak ontbreekt: :item.',
+        'effect' => 'De e-mails van definitief verwijderde tickets blijven op de mailserver (ze gaan niet naar de prullenbak). De rest werkt.',
+        'action' => 'RefreshGlobal bijwerken naar een versie voor deze FreeScout-versie en daarna php artisan refreshglobal:check uitvoeren.',
+    ],
 ];

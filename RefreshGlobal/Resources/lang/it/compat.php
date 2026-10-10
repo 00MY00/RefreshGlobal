@@ -160,4 +160,22 @@ return [
         'effect' => 'Sul telefono, «Elimina definitivamente» non viene aggiunto alle «Azioni del ticket» di Refresh per i ticket nel cestino (il pulsante «Svuota il cestino» funziona ancora). Il resto funziona.',
         'action' => 'Aggiornare RefreshGlobal a una versione prevista per questa versione di Refresh, poi eseguire php artisan refreshglobal:check.',
     ],
+    'hook_mail' => [
+        'check'  => 'Hook «:item» attivato da :file',
+        'label'  => 'L’hook «:item» non viene più attivato da :file.',
+        'effect' => 'Le e-mail dei ticket eliminati definitivamente restano sul server di posta (non vanno nel suo cestino). Il resto funziona.',
+        'action' => 'Aggiornare RefreshGlobal a una versione prevista per questa versione di FreeScout / Refresh, poi eseguire php artisan refreshglobal:check.',
+    ],
+    'core_mail' => [
+        'check'  => 'Codice FreeScout presente: :item',
+        'label'  => 'Manca una classe, un metodo o una costante di FreeScout usata dal modulo: :item.',
+        'effect' => 'Le e-mail dei ticket eliminati definitivamente restano sul server di posta (non vanno nel suo cestino). Il resto funziona.',
+        'action' => 'Aggiornare RefreshGlobal a una versione prevista per questa versione di FreeScout / Refresh, poi eseguire php artisan refreshglobal:check.',
+    ],
+    'db_mail' => [
+        'check'  => 'Tabella e colonne presenti: :item',
+        'label'  => 'Manca una colonna usata per svuotare automaticamente il cestino: :item.',
+        'effect' => 'Le e-mail dei ticket eliminati definitivamente restano sul server di posta (non vanno nel suo cestino). Il resto funziona.',
+        'action' => 'Aggiornare RefreshGlobal a una versione prevista per questa versione di FreeScout, poi eseguire php artisan refreshglobal:check.',
+    ],
 ];

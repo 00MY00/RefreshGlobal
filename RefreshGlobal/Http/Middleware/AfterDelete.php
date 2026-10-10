@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Modules\RefreshGlobal\Services\Compatibility\CompatibilityChecker;
 use Modules\RefreshGlobal\Services\GlobalTicketQuery;
 use Modules\RefreshGlobal\Services\MailboxAccess;
+use Modules\RefreshGlobal\Services\MailServerTrash;
 use Modules\RefreshGlobal\Services\Settings;
 
 /**
@@ -33,12 +34,33 @@ class AfterDelete
     public function handle($request, Closure $next)
     {
         $route = $request->route();
-        $action = (string) $request->input('action');        if (!$route || $route->getName() !== 'conversations.ajax' || !$request->isMethod('POST') || !auth()->check()
-            || !in_array($action, ['delete_conversation', 'delete_conversation_forever', 'bulk_delete_conversation'], true)
-        ) {
+        $action = (string) $request->input('action');
+        if (!$route || $route->getName() !== 'conversations.ajax' || !$request->isMethod('POST') || !auth()->check()) {
             return $next($request);
         }
 
+        // Deletions asked by the user that can remove tickets for good: their e-mails also go to the mail server's
+        // trash (Services/MailServerTrash.php; FreeScout's own "Empty trash" of a mailbox included)
+        $final = in_array($action, ['delete_conversation_forever', 'bulk_delete_conversation', 'empty_folder'], true)
+            || ($action === 'delete_conversation' && Settings::deletePermanently());
+        if ($final) {
+            MailServerTrash::arm();
+        }
+        try {
+            if (!in_array($action, ['delete_conversation', 'delete_conversation_forever', 'bulk_delete_conversation'], true)) {
+                return $next($request);
+            }
+
+            return $this->handleDelete($request, $next, $action);
+        } finally {
+            if ($final) {
+                MailServerTrash::disarm();
+            }
+        }
+    }
+
+    protected function handleDelete($request, Closure $next, $action)
+    {
         try {
             $permanent = Settings::deletePermanently();
             if ($action === 'bulk_delete_conversation') {

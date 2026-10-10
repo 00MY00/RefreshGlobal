@@ -160,4 +160,22 @@ return [
         'effect' => 'No celular, “Excluir definitivamente” não é adicionado às “Ações do ticket” do Refresh para os tickets da lixeira (o botão “Esvaziar a lixeira” continua funcionando). O resto funciona.',
         'action' => 'Atualizar o RefreshGlobal para uma versão feita para esta versão do Refresh e depois executar php artisan refreshglobal:check.',
     ],
+    'hook_mail' => [
+        'check'  => 'Hook “:item” disparado por :file',
+        'label'  => 'O hook “:item” não é mais disparado por :file.',
+        'effect' => 'Os e-mails dos tickets excluídos definitivamente ficam no servidor de e-mail (não vão para a lixeira dele). O resto funciona.',
+        'action' => 'Atualizar o RefreshGlobal para uma versão feita para esta versão do FreeScout / Refresh e depois executar php artisan refreshglobal:check.',
+    ],
+    'core_mail' => [
+        'check'  => 'Código do FreeScout presente: :item',
+        'label'  => 'Falta uma classe, método ou constante do FreeScout usada pelo módulo: :item.',
+        'effect' => 'Os e-mails dos tickets excluídos definitivamente ficam no servidor de e-mail (não vão para a lixeira dele). O resto funciona.',
+        'action' => 'Atualizar o RefreshGlobal para uma versão feita para esta versão do FreeScout / Refresh e depois executar php artisan refreshglobal:check.',
+    ],
+    'db_mail' => [
+        'check'  => 'Tabela e colunas presentes: :item',
+        'label'  => 'Falta uma coluna usada para esvaziar automaticamente a lixeira: :item.',
+        'effect' => 'Os e-mails dos tickets excluídos definitivamente ficam no servidor de e-mail (não vão para a lixeira dele). O resto funciona.',
+        'action' => 'Atualizar o RefreshGlobal para uma versão feita para esta versão do FreeScout e depois executar php artisan refreshglobal:check.',
+    ],
 ];

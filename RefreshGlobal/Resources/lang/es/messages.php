@@ -194,4 +194,11 @@ return [
     'trash_nothing'                => 'La papelera ya está vacía.',
     'keep_position'                => 'Mantener mi posición en la lista',
     'keep_position_help'           => 'Activado (por defecto): tras eliminar un ticket (desde el ticket, o varios a la vez desde la lista), la lista «Todos los buzones» se abre donde estaba, con el ticket siguiente en el lugar del eliminado: no hace falta volver a bajar. Desactivado: la lista se abre arriba.',
+    'server_trash'                 => 'También en el servidor de correo',
+    'server_trash_help'            => 'Activado (por defecto): cuando un ticket se elimina definitivamente (Eliminar definitivamente, Vaciar la papelera, vaciado automático), sus correos también se mueven a la papelera del servidor de correo (IMAP) en menos de un minuto: se pueden recuperar desde el webmail. Eliminar un buzón entero en FreeScout nunca toca el servidor. Buzones POP3: no es posible.',
+    'server_trash_folder'          => 'Papelera del servidor',
+    'server_trash_folder_auto'     => 'automática (Trash, Papelera, Deleted Items…)',
+    'server_trash_folder_help'     => 'Dejar vacío para encontrarla automáticamente. Si no, su nombre exacto en el servidor, por ejemplo INBOX.Trash o [Gmail]/Papelera.',
+    'server_trash_status'          => 'Correos: :pending en espera, :moved movidos a la papelera del servidor, :not_found no encontrados en el servidor, :failed no movidos.',
+    'server_trash_last_error'      => 'Último error: :error',
 ];

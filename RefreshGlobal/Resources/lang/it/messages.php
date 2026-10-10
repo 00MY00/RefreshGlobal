@@ -194,4 +194,11 @@ return [
     'trash_nothing'                => 'Il cestino è già vuoto.',
     'keep_position'                => 'Mantieni la mia posizione nella lista',
     'keep_position_help'           => 'Attivato (predefinito): dopo l’eliminazione di un ticket (dal ticket, o di più ticket insieme dalla lista), la lista «Tutte le caselle» si apre dove eri, con il ticket successivo al posto di quello eliminato: non serve scorrere di nuovo. Disattivato: la lista si apre in alto.',
+    'server_trash'                 => 'Anche sul server di posta',
+    'server_trash_help'            => 'Attivato (predefinito): quando un ticket viene eliminato definitivamente (Elimina definitivamente, Svuota il cestino, svuotamento automatico), le sue e-mail vengono spostate anche nel cestino del server di posta (IMAP) entro un minuto: si possono ancora recuperare dal webmail. Eliminare una casella intera in FreeScout non tocca mai il server. Caselle POP3: non possibile.',
+    'server_trash_folder'          => 'Cestino del server',
+    'server_trash_folder_auto'     => 'automatico (Trash, Cestino, Deleted Items…)',
+    'server_trash_folder_help'     => 'Lasciare vuoto per trovarlo automaticamente. Altrimenti il suo nome esatto sul server, ad esempio INBOX.Trash o [Gmail]/Cestino.',
+    'server_trash_status'          => 'E-mail: :pending in attesa, :moved spostate nel cestino del server, :not_found non trovate sul server, :failed non spostate.',
+    'server_trash_last_error'      => 'Ultimo errore: :error',
 ];

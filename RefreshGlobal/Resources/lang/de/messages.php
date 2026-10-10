@@ -194,4 +194,11 @@ return [
     'trash_nothing'                => 'Der Papierkorb ist bereits leer.',
     'keep_position'                => 'An meiner Stelle in der Liste bleiben',
     'keep_position_help'           => 'Ein (Standard): nach dem Löschen eines Tickets (im Ticket oder mehrerer auf einmal in der Liste) öffnet sich die Liste „Alle Postfächer“ dort, wo Sie waren, mit dem folgenden Ticket an der Stelle des gelöschten: kein Zurückscrollen nötig. Aus: die Liste öffnet sich oben.',
+    'server_trash'                 => 'Auch auf dem Mailserver',
+    'server_trash_help'            => 'Ein (Standard): wird ein Ticket endgültig gelöscht (Endgültig löschen, Papierkorb leeren, automatisches Leeren), werden seine E-Mails innerhalb einer Minute auch in den Papierkorb des Mailservers (IMAP) verschoben: sie lassen sich im Webmail wiederherstellen. Das Löschen eines ganzen Postfachs in FreeScout berührt den Server nie. POP3-Postfächer: nicht möglich.',
+    'server_trash_folder'          => 'Papierkorb des Servers',
+    'server_trash_folder_auto'     => 'automatisch (Trash, Papierkorb, Deleted Items…)',
+    'server_trash_folder_help'     => 'Leer lassen, um ihn automatisch zu finden. Sonst sein genauer Name auf dem Server, z. B. INBOX.Trash oder [Gmail]/Papierkorb.',
+    'server_trash_status'          => 'E-Mails: :pending wartend, :moved in den Papierkorb des Servers verschoben, :not_found auf dem Server nicht gefunden, :failed nicht verschoben.',
+    'server_trash_last_error'      => 'Letzter Fehler: :error',
 ];

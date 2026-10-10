@@ -72,6 +72,8 @@ return [
         'RG-HOOK-22' => ['hook' => 'meta refresh-l10n', 'family' => 'marker_l10n', 'refresh' => true, 'file' => 'Providers/RefreshServiceProvider.php', 'needle' => 'meta name="refresh-l10n"', 'severity' => 'warning', 'source' => 'Modules/Refresh/Providers/RefreshServiceProvider.php:77-86'],
         // Phone "Ticket actions" sheet of Refresh, completed with "Delete Forever" for tickets in the trash (Public/js/shell.js)
         'RG-HOOK-23' => ['hook' => '.rf-m-sheet-actions', 'family' => 'marker_mobile', 'refresh' => true, 'file' => 'Public/js/mobile.js', 'needle' => "'rf-m-sheet-actions'", 'severity' => 'warning', 'source' => 'Modules/Refresh/Public/js/mobile.js:86, 814-846'],
+        // E-mails of the tickets deleted for good -> mail server's trash (Services/MailServerTrash.php)
+        'RG-HOOK-24' => ['hook' => 'conversations.before_delete_forever', 'family' => 'hook_mail', 'file' => 'app/Conversation.php', 'needle' => "\\Eventy::action('conversations.before_delete_forever'", 'severity' => 'degraded', 'source' => 'app/Conversation.php:2163'],
         'RG-HOOK-07' => ['hook' => 'refresh.rail_items', 'refresh' => true, 'file' => 'Providers/RefreshServiceProvider.php', 'needle' => "'refresh.rail_items'", 'severity' => 'degraded', 'source' => 'Modules/Refresh/Providers/RefreshServiceProvider.php:711'],
     ],
 
@@ -96,6 +98,9 @@ return [
         'RG-CORE-12' => ['class' => 'App\Conversation', 'methods' => ['deleteForever'], 'constants' => ['App\Conversation::STATE_DELETED'], 'family' => 'core_delete', 'severity' => 'degraded', 'source' => 'app/Conversation.php:2156'],
         // "Empty the trash" (button and automatic emptying): FreeScout's own permanent deletion, its permission
         'RG-CORE-13' => ['class' => 'App\Conversation', 'methods' => ['deleteConversationsForever'], 'constants' => ['App\Conversation::STATE_DELETED', 'App\User::PERM_DELETE_CONVERSATIONS'], 'family' => 'core_trash', 'severity' => 'degraded', 'source' => 'app/Conversation.php:2161, app/User.php:89'],
+        // IMAP access of FreeScout, used to move the e-mails of deleted tickets to the server's trash
+        'RG-CORE-14' => ['class' => 'App\Misc\Mail', 'methods' => ['getMailboxClient', 'getImapFolder'], 'constants' => ['App\Mailbox::IN_PROTOCOL_IMAP', 'App\Thread::TYPE_CUSTOMER', 'App\Thread::TYPE_MESSAGE'], 'family' => 'core_mail', 'severity' => 'degraded', 'source' => 'app/Misc/Mail.php:808,1307, app/Mailbox.php:81,906'],
+        'RG-CORE-15' => ['classes' => ['Webklex\PHPIMAP\Client', 'Webklex\PHPIMAP\Message'], 'family' => 'core_mail', 'severity' => 'degraded', 'source' => 'overrides/webklex/php-imap/src/Client.php, Message.php:1038 (move)'],
         'RG-CORE-08' => ['classes' => ['ZipArchive', 'GuzzleHttp\Client', 'Symfony\Component\Process\Process', 'Symfony\Component\Process\PhpExecutableFinder'], 'severity' => 'degraded', 'source' => 'PHP zip extension (config/installer.php), vendor/guzzlehttp, vendor/symfony/process'],
     ],
 
@@ -115,6 +120,8 @@ return [
         'RG-DB-04' => ['table' => 'mailbox_user', 'columns' => ['mailbox_id', 'user_id'], 'severity' => 'blocking', 'source' => 'database/migrations/2018_06_29_041002_create_mailbox_user_table.php'],
         // "in the trash since" for the automatic emptying (set by Conversation::deleteToFolder(), app/Conversation.php:2125)
         'RG-DB-06' => ['table' => 'conversations', 'columns' => ['user_updated_at', 'updated_at'], 'family' => 'db_trash', 'severity' => 'degraded', 'source' => 'database/migrations/2018_07_11_010333_create_conversations_table.php:67'],
+        'RG-DB-07' => ['table' => 'threads', 'columns' => ['conversation_id', 'message_id', 'type'], 'family' => 'db_mail', 'severity' => 'degraded', 'source' => 'database/migrations (threads.message_id)'],
+        'RG-DB-08' => ['table' => 'refreshglobal_mail_deletions', 'columns' => ['mailbox_id', 'message_id', 'folder', 'status', 'attempts', 'error'], 'family' => 'db_mail', 'severity' => 'degraded', 'source' => 'Modules/RefreshGlobal/Database/Migrations/2026_10_10_000000_create_refreshglobal_mail_deletions_table.php'],
         'RG-DB-05' => ['table' => 'refreshglobal_saved_views', 'columns' => ['id', 'user_id', 'name', 'filters', 'is_default'], 'severity' => 'degraded', 'source' => 'Modules/RefreshGlobal/Database/Migrations'],
     ],
 ];

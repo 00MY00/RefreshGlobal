@@ -52,6 +52,11 @@ return [
     'trash_auto_days_default' => (int) env('REFRESHGLOBAL_TRASH_AUTO_DAYS', 0),
     'trash_auto_time' => env('REFRESHGLOBAL_TRASH_AUTO_TIME', '03:45'),
 
+    // Ticket deleted for good (by a user, or the automatic emptying): its e-mails are also moved to the trash folder of
+    // the mail server (IMAP), found automatically unless a folder name is given.
+    'server_trash_default' => (bool) env('REFRESHGLOBAL_SERVER_TRASH', true),
+    'server_trash_folder_default' => env('REFRESHGLOBAL_SERVER_TRASH_FOLDER', ''),
+
     // Mailbox badge (name and address) above each ticket on the "All mailboxes" list and the dashboard.
     'show_mailbox_default' => (bool) env('REFRESHGLOBAL_SHOW_MAILBOX', true),
 ];

@@ -160,4 +160,22 @@ return [
         'effect' => 'Auf dem Telefon wird „Endgültig löschen“ für Tickets im Papierkorb nicht zu den „Ticket-Aktionen“ von Refresh hinzugefügt (die Schaltfläche „Papierkorb leeren“ funktioniert weiterhin). Der Rest funktioniert.',
         'action' => 'RefreshGlobal auf eine Version für diese Refresh-Version aktualisieren, dann php artisan refreshglobal:check ausführen.',
     ],
+    'hook_mail' => [
+        'check'  => 'Hook „:item“ ausgelöst von :file',
+        'label'  => 'Der Hook „:item“ wird von :file nicht mehr ausgelöst.',
+        'effect' => 'Die E-Mails endgültig gelöschter Tickets bleiben auf dem Mailserver (sie werden nicht in seinen Papierkorb verschoben). Der Rest funktioniert.',
+        'action' => 'RefreshGlobal auf eine Version für diese FreeScout-/Refresh-Version aktualisieren, dann php artisan refreshglobal:check ausführen.',
+    ],
+    'core_mail' => [
+        'check'  => 'FreeScout-Code vorhanden: :item',
+        'label'  => 'Eine vom Modul verwendete Klasse, Methode oder Konstante von FreeScout fehlt: :item.',
+        'effect' => 'Die E-Mails endgültig gelöschter Tickets bleiben auf dem Mailserver (sie werden nicht in seinen Papierkorb verschoben). Der Rest funktioniert.',
+        'action' => 'RefreshGlobal auf eine Version für diese FreeScout-/Refresh-Version aktualisieren, dann php artisan refreshglobal:check ausführen.',
+    ],
+    'db_mail' => [
+        'check'  => 'Tabelle und Spalten vorhanden: :item',
+        'label'  => 'Eine für das automatische Leeren des Papierkorbs verwendete Spalte fehlt: :item.',
+        'effect' => 'Die E-Mails endgültig gelöschter Tickets bleiben auf dem Mailserver (sie werden nicht in seinen Papierkorb verschoben). Der Rest funktioniert.',
+        'action' => 'RefreshGlobal auf eine Version für diese FreeScout-Version aktualisieren, dann php artisan refreshglobal:check ausführen.',
+    ],
 ];

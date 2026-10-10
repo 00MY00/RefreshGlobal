@@ -191,6 +191,7 @@ Sans l'installeur, il n'y a ni sauvegarde automatique ni retour arrière.
 | Passer au ticket suivant | désactivé | après une suppression : désactivé = retour à « Toutes les boîtes » (derniers filtres), activé = ticket suivant de cette liste |
 | Rester à ma place dans la liste | activé | après une suppression (depuis le ticket ou depuis la liste), « Toutes les boîtes » s'ouvre là où l'on était, le ticket suivant à la place de celui supprimé |
 | Supprimer définitivement | désactivé | désactivé = corbeille de FreeScout (restaurable) ; activé = le ticket et ses e-mails sont effacés de FreeScout tout de suite (irréversible ; rien n'est touché sur le serveur de messagerie) |
+| Aussi sur le serveur mail | activé | quand un ticket est supprimé définitivement, ses e-mails sont déplacés dans la corbeille du serveur mail (IMAP) dans la minute, récupérables depuis le webmail ; corbeille du serveur trouvée automatiquement ou indiquée (« Corbeille du serveur ») |
 | Vider automatiquement (corbeille) | 0 jour = jamais | chaque jour à 03:45, les tickets dans la corbeille depuis plus de N jours sont supprimés définitivement avec leurs e-mails (toutes les boîtes ; serveur de messagerie non touché) |
 | Mise à jour automatique | désactivé | voir § 7 |
 
@@ -312,6 +313,7 @@ curl -fsSL https://raw.githubusercontent.com/00MY00/RefreshGlobal/main/install.s
 | RG-HOOK-21, RG-ROUTE-04, RG-CORE-12 | dégradé | suppression d'un ticket de FreeScout changée | la suppression garde le comportement de FreeScout ; mettre à jour RefreshGlobal |
 | RG-HOOK-22 | avertissement | dictionnaire des textes de Refresh changé | certains textes de Refresh sur téléphone gardent leur tournure d'origine |
 | RG-CORE-01…06 | bloquant | classe / méthode / constante de FreeScout absente | mettre à jour RefreshGlobal |
+| RG-HOOK-24, RG-CORE-14, 15, RG-DB-07, 08 | dégradé | suppression définitive ou accès IMAP de FreeScout changé, table du module absente | les e-mails des tickets supprimés restent sur le serveur mail ; `php artisan migrate`, sinon mettre à jour RefreshGlobal |
 | RG-CORE-13, RG-DB-06 | dégradé | suppression définitive ou date d'entrée dans la corbeille de FreeScout changée | « Vider la corbeille » du module indisponible (celui de chaque boîte de FreeScout fonctionne) ; mettre à jour RefreshGlobal |
 | RG-CORE-07, 08 | dégradé | classes nécessaires à la mise à jour automatique absentes | la liste fonctionne ; mise à jour automatique désactivée |
 | RG-ROUTE-01…03 | bloquant | route introuvable | `php artisan freescout:clear-cache`, sinon mettre à jour |

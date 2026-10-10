@@ -160,4 +160,22 @@ return [
         'effect' => 'En el teléfono, «Eliminar definitivamente» no se añade a las «Acciones del ticket» de Refresh para los tickets de la papelera (el botón «Vaciar la papelera» sigue funcionando). El resto funciona.',
         'action' => 'Actualizar RefreshGlobal a una versión prevista para esta versión de Refresh y ejecutar php artisan refreshglobal:check.',
     ],
+    'hook_mail' => [
+        'check'  => 'Hook «:item» lanzado por :file',
+        'label'  => 'El hook «:item» ya no se lanza en :file.',
+        'effect' => 'Los correos de los tickets eliminados definitivamente se quedan en el servidor de correo (no van a su papelera). El resto funciona.',
+        'action' => 'Actualizar RefreshGlobal a una versión prevista para esta versión de FreeScout / Refresh y ejecutar php artisan refreshglobal:check.',
+    ],
+    'core_mail' => [
+        'check'  => 'Código de FreeScout presente: :item',
+        'label'  => 'Falta una clase, método o constante de FreeScout usada por el módulo: :item.',
+        'effect' => 'Los correos de los tickets eliminados definitivamente se quedan en el servidor de correo (no van a su papelera). El resto funciona.',
+        'action' => 'Actualizar RefreshGlobal a una versión prevista para esta versión de FreeScout / Refresh y ejecutar php artisan refreshglobal:check.',
+    ],
+    'db_mail' => [
+        'check'  => 'Tabla y columnas presentes: :item',
+        'label'  => 'Falta una columna usada para vaciar automáticamente la papelera: :item.',
+        'effect' => 'Los correos de los tickets eliminados definitivamente se quedan en el servidor de correo (no van a su papelera). El resto funciona.',
+        'action' => 'Actualizar RefreshGlobal a una versión prevista para esta versión de FreeScout y ejecutar php artisan refreshglobal:check.',
+    ],
 ];

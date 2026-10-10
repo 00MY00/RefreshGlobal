@@ -164,4 +164,22 @@ return [
         'effect' => 'On phones, “Delete Forever” is not added to Refresh’s “Ticket actions” for tickets in the trash (the “Empty the trash” button still works). The rest works.',
         'action' => 'Update RefreshGlobal to a version made for this Refresh version, then run php artisan refreshglobal:check.',
     ],
+    'hook_mail' => [
+        'check'  => 'Hook ":item" fired by :file',
+        'label'  => 'The hook ":item" is no longer fired by :file.',
+        'effect' => 'E-mails of the tickets deleted for good stay on the mail server (they are not moved to its trash). The rest works.',
+        'action' => 'Update RefreshGlobal to a version made for this FreeScout / Refresh version, then run php artisan refreshglobal:check.',
+    ],
+    'core_mail' => [
+        'check'  => 'FreeScout code present: :item',
+        'label'  => 'A FreeScout class, method or constant used by the module is missing: :item.',
+        'effect' => 'E-mails of the tickets deleted for good stay on the mail server (they are not moved to its trash). The rest works.',
+        'action' => 'Update RefreshGlobal to a version made for this FreeScout / Refresh version, then run php artisan refreshglobal:check.',
+    ],
+    'db_mail' => [
+        'check'  => 'Table and columns present: :item',
+        'label'  => 'A column used for the automatic emptying of the trash is missing: :item.',
+        'effect' => 'E-mails of the tickets deleted for good stay on the mail server (they are not moved to its trash). The rest works.',
+        'action' => 'Update RefreshGlobal to a version made for this FreeScout version, then run php artisan refreshglobal:check.',
+    ],
 ];

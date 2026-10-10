@@ -38,6 +38,7 @@ class RefreshGlobalServiceProvider extends ServiceProvider
             \Modules\RefreshGlobal\Console\UpdateCommand::class,
             \Modules\RefreshGlobal\Console\SelfTestCommand::class,
             \Modules\RefreshGlobal\Console\TrashCommand::class,
+            \Modules\RefreshGlobal\Console\MailTrashCommand::class,
         ]);
     }
 
@@ -54,6 +55,12 @@ class RefreshGlobalServiceProvider extends ServiceProvider
         $this->registerShell();
         $this->registerSettings();
         $this->registerDashboard();
+
+        // Ticket deleted for good: its e-mails are queued for the mail server's trash (Services/MailServerTrash.php).
+        // FreeScout fires this action before removing the tickets (app/Conversation.php:2163).
+        \Eventy::addAction('conversations.before_delete_forever', function ($conversation_ids) {
+            \Modules\RefreshGlobal\Services\MailServerTrash::queue($conversation_ids);
+        }, 20, 1);
 
         // Deleting a ticket: where to go next, trash or permanent (Http\Middleware\AfterDelete). Added to the "web"
         // group like Refresh's own middlewares (RefreshServiceProvider.php:55-57); it acts on conversations.ajax only.
@@ -195,6 +202,10 @@ class RefreshGlobalServiceProvider extends ServiceProvider
                 $trash = (string) config('refreshglobal.trash_auto_time', '03:45');
                 $schedule->command('refreshglobal:trash --scheduled')
                     ->dailyAt(preg_match('/^\d{1,2}:\d{2}$/', $trash) ? $trash : '03:45')
+                    ->withoutOverlapping();
+                // e-mails of the tickets deleted for good -> mail server's trash (does nothing when the queue is empty)
+                $schedule->command('refreshglobal:mail-trash')
+                    ->everyMinute()
                     ->withoutOverlapping();
             } catch (\Exception $e) {
                 // no automatic update rather than a broken scheduler

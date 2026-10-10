@@ -2,6 +2,25 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.5.2] — 2026-10-10
+
+### Corrigé
+- **Suppression définitive : les e-mails restaient sur le serveur mail.** FreeScout ne fait que copier les e-mails :
+  il ne les efface jamais du serveur. Désormais, quand un ticket est supprimé définitivement par un utilisateur
+  (« Supprimer définitivement », suppression groupée de tickets déjà à la corbeille, « Vider la corbeille » de
+  FreeScout ou du module, vidage automatique), ses e-mails sont **déplacés dans la corbeille du serveur mail**
+  (IMAP), dans la minute : ils disparaissent de la boîte de réception mais restent récupérables depuis le webmail.
+  - Les e-mails sont notés au moment de la suppression (action `conversations.before_delete_forever` de
+    FreeScout), puis déplacés par la tâche `refreshglobal:mail-trash` (chaque minute) avec la connexion IMAP de
+    FreeScout : la suppression elle-même n'attend jamais le serveur mail ; en cas d'erreur, nouvel essai (5 fois).
+  - E-mails des clients cherchés dans les dossiers relevés par FreeScout ; réponses des agents dans le dossier
+    « Envoyés » de la boîte s'il est configuré.
+  - Corbeille du serveur trouvée automatiquement (Trash, Corbeille, Deleted Items, [Gmail]/Corbeille…) ou indiquée
+    dans les réglages. Boîtes POP3 : impossible (ignorées).
+  - Jamais pour les autres suppressions de FreeScout (suppression d'une boîte entière, e-mail non importable).
+  - Réglage « Aussi sur le serveur mail » (activé par défaut) et état de la file dans Gérer › Paramètres ›
+    RefreshGlobal › Corbeille. Contrôles RG-HOOK-24, RG-CORE-14, RG-CORE-15, RG-DB-07, RG-DB-08.
+
 ## [1.5.1] — 2026-10-10
 
 ### Ajouté

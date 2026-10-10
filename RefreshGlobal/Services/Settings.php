@@ -113,6 +113,34 @@ class Settings
         \App\Option::set(self::TRASH_AUTO_DAYS, max(0, min(self::TRASH_AUTO_DAYS_MAX, (int) $days)));
     }
 
+    /** Ticket deleted for good: its e-mails are also moved to the mail server's trash folder (Services/MailServerTrash). */
+    const SERVER_TRASH = 'refreshglobal.server_trash';
+    /** Trash folder of the mail server ('' = found automatically). */
+    const SERVER_TRASH_FOLDER = 'refreshglobal.server_trash_folder';
+
+    public static function serverTrash()
+    {
+        try {
+            return (bool) \App\Option::get(self::SERVER_TRASH, (bool) config('refreshglobal.server_trash_default', true), true, false);
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    public static function setServerTrash($on)
+    {
+        \App\Option::set(self::SERVER_TRASH, $on ? 1 : 0);
+    }
+
+    public static function serverTrashFolder()
+    {
+        try {
+            return mb_substr(trim((string) \App\Option::get(self::SERVER_TRASH_FOLDER, (string) config('refreshglobal.server_trash_folder_default', ''), true, false)), 0, 200);
+        } catch (\Exception $e) {
+            return '';
+        }
+    }
+
     /** Options shown in Manage › Settings › RefreshGlobal (saved by FreeScout itself) => current value. */
     public static function sectionValues()
     {
@@ -124,6 +152,8 @@ class Settings
             self::KEEP_POSITION           => self::keepPosition(),
             self::DELETE_PERMANENTLY      => self::deletePermanently(),
             self::TRASH_AUTO_DAYS         => self::trashAutoDays(),
+            self::SERVER_TRASH            => self::serverTrash(),
+            self::SERVER_TRASH_FOLDER     => self::serverTrashFolder(),
             Update\Updater::OPTION        => Update\Updater::enabled(),
         ];
     }

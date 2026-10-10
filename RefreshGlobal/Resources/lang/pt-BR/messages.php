@@ -194,4 +194,11 @@ return [
     'trash_nothing'                => 'A lixeira já está vazia.',
     'keep_position'                => 'Manter minha posição na lista',
     'keep_position_help'           => 'Ativado (padrão): depois de excluir um ticket (pelo ticket, ou vários de uma vez pela lista), a lista “Todas as caixas” abre onde você estava, com o ticket seguinte no lugar do excluído: não é preciso rolar de novo. Desativado: a lista abre no topo.',
+    'server_trash'                 => 'Também no servidor de e-mail',
+    'server_trash_help'            => 'Ativado (padrão): quando um ticket é excluído definitivamente (Excluir definitivamente, Esvaziar a lixeira, esvaziamento automático), seus e-mails também são movidos para a lixeira do servidor de e-mail (IMAP) em até um minuto: ainda podem ser recuperados pelo webmail. Excluir uma caixa inteira no FreeScout nunca altera o servidor. Caixas POP3: não é possível.',
+    'server_trash_folder'          => 'Lixeira do servidor',
+    'server_trash_folder_auto'     => 'automática (Trash, Lixeira, Deleted Items…)',
+    'server_trash_folder_help'     => 'Deixe vazio para encontrá-la automaticamente. Senão, o nome exato no servidor, por exemplo INBOX.Trash ou [Gmail]/Lixeira.',
+    'server_trash_status'          => 'E-mails: :pending aguardando, :moved movidos para a lixeira do servidor, :not_found não encontrados no servidor, :failed não movidos.',
+    'server_trash_last_error'      => 'Último erro: :error',
 ];

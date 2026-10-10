@@ -35,7 +35,7 @@ REPO_URL="${RG_REPO_URL:-https://github.com/00MY00/RefreshGlobal}"
 # When no release is published: archive of the current main branch (no SHA256SUMS for a branch)
 BRANCH_ZIP_URL="${RG_BRANCH_ZIP_URL:-${REPO_URL}/archive/refs/heads/main.zip}"
 
-SCRIPT_VERSION="1.5.1"
+SCRIPT_VERSION="1.5.2"
 MODULE_NAME="RefreshGlobal"
 MODULE_ALIAS="refreshglobal"
 MODULE_TABLE="refreshglobal_saved_views"
@@ -882,11 +882,11 @@ mode_uninstall() {
     artisan freescout:clear-cache
     step_ok
 
-    step "Suppression de la table du module (${MODULE_TABLE})"
+    step "Suppression des tables du module (${MODULE_TABLE}, refreshglobal_mail_deletions)"
     local drop=0
     if [ "$DROP_TABLES" = 1 ]; then
         drop=1
-    elif [ "$ASSUME_YES" = 0 ] && ask "Supprimer la table ${MODULE_TABLE} (vues enregistrées des utilisateurs) ?" n; then
+    elif [ "$ASSUME_YES" = 0 ] && ask "Supprimer les tables du module (vues enregistrées des utilisateurs, e-mails en attente pour la corbeille du serveur) ?" n; then
         drop=1
     fi
     if [ "$drop" = 1 ]; then

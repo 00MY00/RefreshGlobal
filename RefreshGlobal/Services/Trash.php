@@ -91,8 +91,14 @@ class Trash
         $ids = $rows->pluck('id')->map(function ($id) {
             return (int) $id;
         })->all();
-        foreach (array_chunk($ids, self::CHUNK) as $chunk) {
-            Conversation::deleteConversationsForever($chunk);
+        // asked by a user (button) or by the automatic emptying: the e-mails also go to the mail server's trash
+        MailServerTrash::arm();
+        try {
+            foreach (array_chunk($ids, self::CHUNK) as $chunk) {
+                Conversation::deleteConversationsForever($chunk);
+            }
+        } finally {
+            MailServerTrash::disarm();
         }
         foreach (\App\Mailbox::whereIn('id', $rows->pluck('mailbox_id')->unique()->all())->get() as $mailbox) {
             $mailbox->updateFoldersCounters();

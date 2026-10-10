@@ -160,4 +160,22 @@ return [
         'effect' => 'Sur téléphone, « Supprimer définitivement » n’est pas ajouté aux « Actions du ticket » de Refresh pour les tickets de la corbeille (le bouton « Vider la corbeille » fonctionne toujours). Le reste fonctionne.',
         'action' => 'Mettre à jour RefreshGlobal vers une version prévue pour cette version de Refresh, puis exécuter php artisan refreshglobal:check.',
     ],
+    'hook_mail' => [
+        'check'  => 'Hook « :item » déclenché par :file',
+        'label'  => 'Le hook « :item » n’est plus déclenché par :file.',
+        'effect' => 'Les e-mails des tickets supprimés définitivement restent sur le serveur mail (ils ne vont pas dans sa corbeille). Le reste fonctionne.',
+        'action' => 'Mettre à jour RefreshGlobal vers une version prévue pour cette version de FreeScout / Refresh, puis exécuter php artisan refreshglobal:check.',
+    ],
+    'core_mail' => [
+        'check'  => 'Code FreeScout présent : :item',
+        'label'  => 'Une classe, méthode ou constante de FreeScout utilisée par le module est absente : :item.',
+        'effect' => 'Les e-mails des tickets supprimés définitivement restent sur le serveur mail (ils ne vont pas dans sa corbeille). Le reste fonctionne.',
+        'action' => 'Mettre à jour RefreshGlobal vers une version prévue pour cette version de FreeScout / Refresh, puis exécuter php artisan refreshglobal:check.',
+    ],
+    'db_mail' => [
+        'check'  => 'Table et colonnes présentes : :item',
+        'label'  => 'Une colonne utilisée pour vider automatiquement la corbeille est absente : :item.',
+        'effect' => 'Les e-mails des tickets supprimés définitivement restent sur le serveur mail (ils ne vont pas dans sa corbeille). Le reste fonctionne.',
+        'action' => 'Mettre à jour RefreshGlobal vers une version prévue pour cette version de FreeScout, puis exécuter php artisan refreshglobal:check.',
+    ],
 ];
