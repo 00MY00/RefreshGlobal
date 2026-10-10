@@ -40,6 +40,9 @@ return [
     // After deleting a ticket: "list" = back to the "All mailboxes" page, "next" = next ticket of that list.
     'after_delete_default' => env('REFRESHGLOBAL_AFTER_DELETE', 'list'),
 
+    // After a deletion, back on the "All mailboxes" list at the same place in the list (no scrolling back down).
+    'keep_position_default' => (bool) env('REFRESHGLOBAL_KEEP_POSITION', true),
+
     // Deleting a ticket: false = to FreeScout's trash (can be restored), true = removed with its e-mails at once
     // (FreeScout only, the mail server is not touched).
     'delete_permanently_default' => (bool) env('REFRESHGLOBAL_DELETE_PERMANENTLY', false),

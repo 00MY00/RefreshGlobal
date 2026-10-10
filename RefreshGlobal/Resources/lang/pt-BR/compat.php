@@ -154,4 +154,10 @@ return [
         'effect' => 'O esvaziamento automático não consegue saber desde quando um ticket está na lixeira. O resto funciona.',
         'action' => 'Atualizar o RefreshGlobal para uma versão feita para esta versão do FreeScout e depois executar php artisan refreshglobal:check.',
     ],
+    'marker_mobile' => [
+        'check'  => 'Elemento do Refresh presente: :item (:file)',
+        'label'  => 'Elemento do Refresh não encontrado: :item (:file).',
+        'effect' => 'No celular, “Excluir definitivamente” não é adicionado às “Ações do ticket” do Refresh para os tickets da lixeira (o botão “Esvaziar a lixeira” continua funcionando). O resto funciona.',
+        'action' => 'Atualizar o RefreshGlobal para uma versão feita para esta versão do Refresh e depois executar php artisan refreshglobal:check.',
+    ],
 ];

@@ -189,6 +189,7 @@ Sans l'installeur, il n'y a ni sauvegarde automatique ni retour arrière.
 | Tableau de bord de toutes les boîtes | activé | « Mon tableau de bord » de Refresh couvre toutes les boîtes de l'utilisateur |
 | Boîte au-dessus de chaque ticket | activé | nom et adresse de la boîte au-dessus du sujet (liste et tableau de bord) |
 | Passer au ticket suivant | désactivé | après une suppression : désactivé = retour à « Toutes les boîtes » (derniers filtres), activé = ticket suivant de cette liste |
+| Rester à ma place dans la liste | activé | après une suppression (depuis le ticket ou depuis la liste), « Toutes les boîtes » s'ouvre là où l'on était, le ticket suivant à la place de celui supprimé |
 | Supprimer définitivement | désactivé | désactivé = corbeille de FreeScout (restaurable) ; activé = le ticket et ses e-mails sont effacés de FreeScout tout de suite (irréversible ; rien n'est touché sur le serveur de messagerie) |
 | Vider automatiquement (corbeille) | 0 jour = jamais | chaque jour à 03:45, les tickets dans la corbeille depuis plus de N jours sont supprimés définitivement avec leurs e-mails (toutes les boîtes ; serveur de messagerie non touché) |
 | Mise à jour automatique | désactivé | voir § 7 |

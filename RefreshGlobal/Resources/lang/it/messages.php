@@ -192,4 +192,6 @@ return [
     'trash_empty_confirm'          => 'Eliminare definitivamente i :count ticket nel cestino, con le loro e-mail? Non si può annullare.',
     'trash_emptied'                => 'Cestino svuotato: :count ticket eliminati definitivamente.',
     'trash_nothing'                => 'Il cestino è già vuoto.',
+    'keep_position'                => 'Mantieni la mia posizione nella lista',
+    'keep_position_help'           => 'Attivato (predefinito): dopo l’eliminazione di un ticket (dal ticket, o di più ticket insieme dalla lista), la lista «Tutte le caselle» si apre dove eri, con il ticket successivo al posto di quello eliminato: non serve scorrere di nuovo. Disattivato: la lista si apre in alto.',
 ];

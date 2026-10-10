@@ -59,6 +59,23 @@ class Settings
         \App\Option::set(self::DELETE_GOES_NEXT, $on ? 1 : 0);
     }
 
+    /** After a deletion, back on the "All mailboxes" list at the same place (no scrolling back down). On by default. */
+    const KEEP_POSITION = 'refreshglobal.keep_position';
+
+    public static function keepPosition()
+    {
+        try {
+            return (bool) \App\Option::get(self::KEEP_POSITION, (bool) config('refreshglobal.keep_position_default', true), true, false);
+        } catch (\Exception $e) {
+            return true;
+        }
+    }
+
+    public static function setKeepPosition($on)
+    {
+        \App\Option::set(self::KEEP_POSITION, $on ? 1 : 0);
+    }
+
     /** Mailbox badge above each ticket (name and address) on the "All mailboxes" list and the dashboard. */
     const SHOW_MAILBOX = 'refreshglobal.show_mailbox';
 
@@ -104,6 +121,7 @@ class Settings
             self::GLOBAL_DASHBOARD        => self::globalDashboard(),
             self::SHOW_MAILBOX            => self::showMailbox(),
             self::DELETE_GOES_NEXT        => self::deleteGoesNext(),
+            self::KEEP_POSITION           => self::keepPosition(),
             self::DELETE_PERMANENTLY      => self::deletePermanently(),
             self::TRASH_AUTO_DAYS         => self::trashAutoDays(),
             Update\Updater::OPTION        => Update\Updater::enabled(),

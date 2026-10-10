@@ -70,6 +70,8 @@ return [
         'RG-HOOK-21' => ['hook' => 'conversations.ajax delete_conversation(_forever)', 'family' => 'hook_delete', 'file' => 'app/Http/Controllers/ConversationsController.php', 'needle' => "case 'delete_conversation_forever':", 'severity' => 'degraded', 'source' => 'app/Http/Controllers/ConversationsController.php:1944,1966,2164'],
         // Refresh's dictionary of its phone strings (corrections of Resources/lang/refresh-fixes.php)
         'RG-HOOK-22' => ['hook' => 'meta refresh-l10n', 'family' => 'marker_l10n', 'refresh' => true, 'file' => 'Providers/RefreshServiceProvider.php', 'needle' => 'meta name="refresh-l10n"', 'severity' => 'warning', 'source' => 'Modules/Refresh/Providers/RefreshServiceProvider.php:77-86'],
+        // Phone "Ticket actions" sheet of Refresh, completed with "Delete Forever" for tickets in the trash (Public/js/shell.js)
+        'RG-HOOK-23' => ['hook' => '.rf-m-sheet-actions', 'family' => 'marker_mobile', 'refresh' => true, 'file' => 'Public/js/mobile.js', 'needle' => "'rf-m-sheet-actions'", 'severity' => 'warning', 'source' => 'Modules/Refresh/Public/js/mobile.js:86, 814-846'],
         'RG-HOOK-07' => ['hook' => 'refresh.rail_items', 'refresh' => true, 'file' => 'Providers/RefreshServiceProvider.php', 'needle' => "'refresh.rail_items'", 'severity' => 'degraded', 'source' => 'Modules/Refresh/Providers/RefreshServiceProvider.php:711'],
     ],
 

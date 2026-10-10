@@ -69,17 +69,113 @@
             });
         }
 
-        // Confirmation before deleting a saved view
         // Language switch: saved as soon as a language is chosen
         $(document).on('change', '.rg-language-select', function () {
             $(this).closest('form').trigger('submit');
         });
 
+        // Confirmation before deleting a saved view
         $(document).on('submit', 'form.rg-confirm', function (e) {
             var msg = $(this).attr('data-confirm');
             if (msg && !window.confirm(msg)) {
                 e.preventDefault();
             }
         });
+
+        if (state.attr('data-keep-position') === '1') {
+            keepPosition();
+        }
     });
+
+    /*
+     * Setting "Keep my place in the list after a deletion" (on by default).
+     * Leaving the list (opening a ticket, or the reload done by FreeScout after a bulk / swipe deletion) records the
+     * order of the tickets shown and where the ticket used as landmark was on screen (the opened ticket, otherwise
+     * the first visible one). Back on the list after a deletion (#rg-deleted=ID added by the module's redirect, or a
+     * reload) the landmark, or the ticket that followed it when it was deleted, is put back at the same place: no
+     * scrolling needed. The list scrolls inside .rf-list-scroll on a computer (Refresh) and in the window on a phone.
+     */
+    function keepPosition() {
+        var KEY = 'rg-list-position';
+        var store = {
+            get: function () { try { return JSON.parse(window.sessionStorage.getItem(KEY) || 'null'); } catch (e) { return null; } },
+            set: function (v) { try { window.sessionStorage.setItem(KEY, JSON.stringify(v)); } catch (e) { /* private mode */ } },
+            clear: function () { try { window.sessionStorage.removeItem(KEY); } catch (e) { /* private mode */ } }
+        };
+        var scroller = function () {
+            var s = document.querySelector('.rf-list-scroll');
+            return s && s.scrollHeight > s.clientHeight + 5 ? s : null; // null = the window scrolls
+        };
+        var viewTop = function (sc) { return sc ? sc.getBoundingClientRect().top : 0; };
+        var rows = function () { return Array.prototype.slice.call(document.querySelectorAll('tr.conv-row[data-conversation_id]')); };
+        var idOf = function (row) { return row.getAttribute('data-conversation_id'); };
+        var here = window.location.pathname + window.location.search;
+        var clickedAt = 0;
+
+        var save = function (anchor) {
+            var sc = scroller(), top = viewTop(sc), list = rows();
+            if (!anchor) {
+                anchor = list.filter(function (r) { return r.getBoundingClientRect().bottom > top + 1; })[0] || null;
+            }
+            store.set({
+                path: window.location.pathname,
+                key: here,
+                ids: list.map(idOf),
+                anchor: anchor ? idOf(anchor) : '',
+                offset: anchor ? anchor.getBoundingClientRect().top - top : 0,
+                scroll: sc ? sc.scrollTop : window.pageYOffset,
+                at: Date.now()
+            });
+        };
+        // opening a ticket: that ticket is the landmark (it is the one that may be deleted)
+        document.addEventListener('click', function (e) {
+            var row = e.target && e.target.closest ? e.target.closest('tr.conv-row[data-conversation_id]') : null;
+            if (row && !(e.target.closest('input, label, .conv-checkbox, .conv-star'))) {
+                save(row);
+                clickedAt = Date.now();
+            }
+        }, true);
+        // any other way of leaving (reload after a bulk / swipe deletion…): first visible ticket
+        window.addEventListener('pagehide', function () {
+            if (Date.now() - clickedAt > 3000) {
+                save(null);
+            }
+        });
+
+        var saved = store.get();
+        var deleted = /(?:^|[#&])rg-deleted=(\d+)/.exec(window.location.hash || '');
+        var nav = window.performance && performance.getEntriesByType ? (performance.getEntriesByType('navigation')[0] || {}).type : '';
+        if (!saved || saved.path !== window.location.pathname || Date.now() - saved.at > 30 * 60 * 1000) {
+            return;
+        }
+        // after the module's redirect (#rg-deleted), or the same list reloaded / reached with Back
+        if (!deleted && !((nav === 'reload' || nav === 'back_forward') && saved.key === here)) {
+            return;
+        }
+        if (deleted && window.history && history.replaceState) {
+            history.replaceState(null, '', here); // the marker is not kept in the address
+        }
+
+        var restore = function () {
+            var present = {};
+            rows().forEach(function (r) { present[idOf(r)] = r; });
+            var target = present[saved.anchor] || null;
+            var i = saved.ids.indexOf(saved.anchor);
+            // landmark deleted: the ticket that followed it, otherwise the one before
+            for (var j = i + 1; !target && i >= 0 && j < saved.ids.length; j++) { target = present[saved.ids[j]] || null; }
+            for (var k = i - 1; !target && k >= 0; k--) { target = present[saved.ids[k]] || null; }
+            var sc = scroller();
+            if (target) {
+                var delta = (target.getBoundingClientRect().top - viewTop(sc)) - saved.offset;
+                if (sc) { sc.scrollTop += delta; } else { window.scrollBy(0, delta); }
+            } else if (sc) {
+                sc.scrollTop = saved.scroll;
+            } else {
+                window.scrollTo(0, saved.scroll);
+            }
+        };
+        // after Refresh's scripts have laid the list out (cards, phone version)
+        setTimeout(restore, 150);
+        setTimeout(restore, 700);
+    }
 })(window.jQuery);

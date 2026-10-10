@@ -108,6 +108,10 @@ class AfterDelete
         $last = session(self::SESSION_KEY);
         $params = is_array($last) && isset($last['params']) && is_array($last['params']) ? $last['params'] : [];
         $list_url = route('refreshglobal.tickets', $params ?: ['reset' => 1]);
+        // marker read by Public/js/refreshglobal.js: the list opens at the place of the deleted ticket (setting on)
+        if ($conversation_id && Settings::keepPosition()) {
+            $list_url .= '#rg-deleted='.(int) $conversation_id;
+        }
 
         if (!Settings::deleteGoesNext() || !$conversation_id) {
             return function () use ($list_url) {

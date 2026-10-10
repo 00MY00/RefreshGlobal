@@ -198,4 +198,6 @@ return [
     'trash_empty_confirm'          => 'Delete for good the :count ticket(s) in the trash, with their e-mails? This cannot be undone.',
     'trash_emptied'                => 'Trash emptied: :count ticket(s) deleted for good.',
     'trash_nothing'                => 'The trash is already empty.',
+    'keep_position'                => 'Keep my place in the list',
+    'keep_position_help'           => 'On (default): after deleting a ticket (from the ticket, or several at once from the list), the “All mailboxes” list opens where you were, the ticket that followed in place of the deleted one: no need to scroll back down. Off: the list opens at the top.',
 ];

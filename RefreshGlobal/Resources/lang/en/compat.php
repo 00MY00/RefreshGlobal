@@ -158,4 +158,10 @@ return [
         'effect' => 'The automatic emptying of the trash cannot know since when a ticket is in the trash. The rest works.',
         'action' => 'Update RefreshGlobal to a version made for this FreeScout version, then run php artisan refreshglobal:check.',
     ],
+    'marker_mobile' => [
+        'check'  => 'Refresh element present: :item (:file)',
+        'label'  => 'Refresh element no longer found: :item (:file).',
+        'effect' => 'On phones, “Delete Forever” is not added to Refresh’s “Ticket actions” for tickets in the trash (the “Empty the trash” button still works). The rest works.',
+        'action' => 'Update RefreshGlobal to a version made for this Refresh version, then run php artisan refreshglobal:check.',
+    ],
 ];

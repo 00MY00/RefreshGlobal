@@ -192,4 +192,6 @@ return [
     'trash_empty_confirm'          => 'Die :count Ticket(s) im Papierkorb mit ihren E-Mails endgültig löschen? Das kann nicht rückgängig gemacht werden.',
     'trash_emptied'                => 'Papierkorb geleert: :count Ticket(s) endgültig gelöscht.',
     'trash_nothing'                => 'Der Papierkorb ist bereits leer.',
+    'keep_position'                => 'An meiner Stelle in der Liste bleiben',
+    'keep_position_help'           => 'Ein (Standard): nach dem Löschen eines Tickets (im Ticket oder mehrerer auf einmal in der Liste) öffnet sich die Liste „Alle Postfächer“ dort, wo Sie waren, mit dem folgenden Ticket an der Stelle des gelöschten: kein Zurückscrollen nötig. Aus: die Liste öffnet sich oben.',
 ];

@@ -154,4 +154,10 @@ return [
         'effect' => 'Het automatisch legen kan niet weten sinds wanneer een ticket in de prullenbak staat. De rest werkt.',
         'action' => 'RefreshGlobal bijwerken naar een versie voor deze FreeScout-versie en daarna php artisan refreshglobal:check uitvoeren.',
     ],
+    'marker_mobile' => [
+        'check'  => 'Refresh-element aanwezig: :item (:file)',
+        'label'  => 'Refresh-element niet meer gevonden: :item (:file).',
+        'effect' => 'Op de telefoon wordt „Definitief verwijderen” niet toegevoegd aan de „Ticketacties” van Refresh voor tickets in de prullenbak (de knop „Prullenbak legen” werkt nog). De rest werkt.',
+        'action' => 'RefreshGlobal bijwerken naar een versie voor deze Refresh-versie en daarna php artisan refreshglobal:check uitvoeren.',
+    ],
 ];

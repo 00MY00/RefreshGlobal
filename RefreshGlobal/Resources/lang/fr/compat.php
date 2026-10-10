@@ -154,4 +154,10 @@ return [
         'effect' => 'Le vidage automatique ne peut pas savoir depuis quand un ticket est dans la corbeille. Le reste fonctionne.',
         'action' => 'Mettre à jour RefreshGlobal vers une version prévue pour cette version de FreeScout, puis exécuter php artisan refreshglobal:check.',
     ],
+    'marker_mobile' => [
+        'check'  => 'Élément de Refresh présent : :item (:file)',
+        'label'  => 'Élément de Refresh introuvable : :item (:file).',
+        'effect' => 'Sur téléphone, « Supprimer définitivement » n’est pas ajouté aux « Actions du ticket » de Refresh pour les tickets de la corbeille (le bouton « Vider la corbeille » fonctionne toujours). Le reste fonctionne.',
+        'action' => 'Mettre à jour RefreshGlobal vers une version prévue pour cette version de Refresh, puis exécuter php artisan refreshglobal:check.',
+    ],
 ];

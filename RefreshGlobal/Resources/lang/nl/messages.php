@@ -192,4 +192,6 @@ return [
     'trash_empty_confirm'          => 'De :count ticket(s) in de prullenbak definitief verwijderen, met hun e-mails? Dit kan niet ongedaan worden gemaakt.',
     'trash_emptied'                => 'Prullenbak geleegd: :count ticket(s) definitief verwijderd.',
     'trash_nothing'                => 'De prullenbak is al leeg.',
+    'keep_position'                => 'Mijn plek in de lijst behouden',
+    'keep_position_help'           => 'Aan (standaard): na het verwijderen van een ticket (vanuit het ticket, of meerdere tegelijk vanuit de lijst) opent de lijst „Alle mailboxen” waar u was, met het volgende ticket op de plaats van het verwijderde: niet opnieuw naar beneden scrollen. Uit: de lijst opent bovenaan.',
 ];

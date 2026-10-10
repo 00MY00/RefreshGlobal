@@ -2,6 +2,18 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.5.1] — 2026-10-10
+
+### Ajouté
+- Réglage **« Rester à ma place dans la liste »** (activé par défaut) : après une suppression, la liste « Toutes les
+  boîtes » s'ouvre là où l'on était, le ticket suivant à la place de celui supprimé, au lieu de revenir en haut.
+  Fonctionne pour la suppression depuis le ticket (ordinateur et téléphone) et pour la suppression groupée ou par
+  glissement depuis la liste (rechargement de la page), y compris quand des tickets au-dessus disparaissent : la
+  position est recalée sur un ticket repère, pas sur un nombre de pixels.
+- Téléphone : **« Supprimer définitivement »** dans les « Actions du ticket » de Refresh pour un ticket de la
+  corbeille (Refresh ne proposait aucune suppression dans ce cas) ; l'entrée clique le bouton de FreeScout (sa
+  confirmation et ses droits). Contrôle RG-HOOK-23.
+
 ## [1.5.0] — 2026-10-09
 
 ### Ajouté

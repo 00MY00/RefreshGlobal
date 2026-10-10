@@ -192,4 +192,6 @@ return [
     'trash_empty_confirm'          => '¿Eliminar definitivamente los :count ticket(s) de la papelera, con sus correos? No se puede deshacer.',
     'trash_emptied'                => 'Papelera vaciada: :count ticket(s) eliminado(s) definitivamente.',
     'trash_nothing'                => 'La papelera ya está vacía.',
+    'keep_position'                => 'Mantener mi posición en la lista',
+    'keep_position_help'           => 'Activado (por defecto): tras eliminar un ticket (desde el ticket, o varios a la vez desde la lista), la lista «Todos los buzones» se abre donde estaba, con el ticket siguiente en el lugar del eliminado: no hace falta volver a bajar. Desactivado: la lista se abre arriba.',
 ];

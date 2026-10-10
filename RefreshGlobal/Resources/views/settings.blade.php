@@ -36,6 +36,8 @@
     <h3 class="subheader">{{ __('refreshglobal::messages.ticket_deletion') }}</h3>
     @include('refreshglobal::partials.switch', ['key' => $rg_s::DELETE_GOES_NEXT, 'label' => __('refreshglobal::messages.delete_goes_next'),
         'help' => __('refreshglobal::messages.delete_goes_next_help')])
+    @include('refreshglobal::partials.switch', ['key' => $rg_s::KEEP_POSITION, 'label' => __('refreshglobal::messages.keep_position'),
+        'help' => __('refreshglobal::messages.keep_position_help')])
     @include('refreshglobal::partials.switch', ['key' => $rg_s::DELETE_PERMANENTLY, 'label' => __('refreshglobal::messages.delete_permanently'),
         'help' => __('refreshglobal::messages.delete_permanently_help')])
 

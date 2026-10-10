@@ -154,4 +154,10 @@ return [
         'effect' => 'El vaciado automático no puede saber desde cuándo un ticket está en la papelera. El resto funciona.',
         'action' => 'Actualizar RefreshGlobal a una versión prevista para esta versión de FreeScout y ejecutar php artisan refreshglobal:check.',
     ],
+    'marker_mobile' => [
+        'check'  => 'Elemento de Refresh presente: :item (:file)',
+        'label'  => 'Elemento de Refresh no encontrado: :item (:file).',
+        'effect' => 'En el teléfono, «Eliminar definitivamente» no se añade a las «Acciones del ticket» de Refresh para los tickets de la papelera (el botón «Vaciar la papelera» sigue funcionando). El resto funciona.',
+        'action' => 'Actualizar RefreshGlobal a una versión prevista para esta versión de Refresh y ejecutar php artisan refreshglobal:check.',
+    ],
 ];

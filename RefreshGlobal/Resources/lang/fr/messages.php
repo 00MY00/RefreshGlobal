@@ -192,4 +192,6 @@ return [
     'trash_empty_confirm'          => 'Supprimer définitivement les :count ticket(s) de la corbeille, avec leurs e-mails ? C’est irréversible.',
     'trash_emptied'                => 'Corbeille vidée : :count ticket(s) supprimé(s) définitivement.',
     'trash_nothing'                => 'La corbeille est déjà vide.',
+    'keep_position'                => 'Rester à ma place dans la liste',
+    'keep_position_help'           => 'Activé (par défaut) : après la suppression d’un ticket (depuis le ticket, ou de plusieurs à la fois depuis la liste), la liste « Toutes les boîtes » s’ouvre là où vous étiez, le ticket suivant à la place de celui supprimé : plus besoin de redescendre. Désactivé : la liste s’ouvre en haut.',
 ];

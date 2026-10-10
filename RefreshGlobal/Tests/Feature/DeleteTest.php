@@ -14,6 +14,7 @@ class DeleteTest extends TestCase
         parent::setUp();
         Settings::setDeleteGoesNext(false);
         Settings::setDeletePermanently(false);
+        Settings::setKeepPosition(true);
     }
 
     protected function deleteTicket($conversation, $action = 'delete_conversation')
@@ -31,7 +32,8 @@ class DeleteTest extends TestCase
         $r = $this->deleteTicket($this->s['t_support_open']);
         $r->assertStatus(200);
         $this->assertSame('success', $r->json()['status']);
-        $this->assertSame(route('refreshglobal.tickets', $list), $r->json()['redirect_url']);
+        // marker read by the page script to come back at the place of the deleted ticket (setting on by default)
+        $this->assertSame(route('refreshglobal.tickets', $list).'#rg-deleted='.$this->s['t_support_open']->id, $r->json()['redirect_url']);
         // default: to FreeScout's trash
         $this->assertSame(Conversation::STATE_DELETED, (int) Conversation::find($this->s['t_support_open']->id)->state);
     }
@@ -39,7 +41,19 @@ class DeleteTest extends TestCase
     public function testWithoutListGoesToTheAllMailboxesPage()
     {
         $r = $this->deleteTicket($this->s['t_sales_open']);
-        $this->assertSame(route('refreshglobal.tickets', ['reset' => 1]), $r->json()['redirect_url']);
+        $this->assertSame(route('refreshglobal.tickets', ['reset' => 1]).'#rg-deleted='.$this->s['t_sales_open']->id, $r->json()['redirect_url']);
+    }
+
+    public function testKeepPositionSetting()
+    {
+        // the page tells its script whether to keep the place in the list
+        $this->seeIn($this->ticketsPage($this->s['admin']), 'data-keep-position="1"');
+
+        Settings::setKeepPosition(false);
+        $this->seeIn($this->ticketsPage($this->s['admin']), 'data-keep-position="0"');
+        $r = $this->deleteTicket($this->s['t_sales_open']);
+        $this->assertStringNotContainsString('#rg-deleted', $r->json()['redirect_url']);
+        Settings::setKeepPosition(true);
     }
 
     public function testNextTicketOfTheList()

@@ -1,4 +1,4 @@
-# Résultats des tests — RefreshGlobal 1.5.0
+# Résultats des tests — RefreshGlobal 1.5.1
 
 Date : 2026-10-09. Environnements jetables Docker : FreeScout 1.8.245 (dépôt officiel), PHP 8.2.34, Apache,
 MariaDB 10.11 ; Refresh 1.4.3 (dépôt officiel). Données de test uniquement (adresses `.test`).
@@ -206,6 +206,17 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
 - Navigateur : interface en anglais, choix « Français » dans le sélecteur → la page, la barre de Refresh et le
   tableau de bord passent en français ; `users.locale = fr` en base. Sélecteur visible en bas du panneau des vues
   (ordinateur) et du tiroir (téléphone).
+
+## 17. Rester à sa place dans la liste, suppression sur téléphone (1.5.1)
+
+- PHPUnit : **75 tests, 1094 assertions, 0 échec** (`testKeepPositionSetting`, redirection avec `#rg-deleted=ID`).
+- Navigateur (Chromium headless piloté par Puppeteer, 79 tickets de démonstration) :
+  - ordinateur, 15ᵉ ticket placé à 300 px, ouvert puis supprimé → retour : le ticket suivant à **300 px**, marqueur
+    retiré de l'adresse ;
+  - ordinateur, suppression groupée de 2 tickets situés au-dessus du ticket repère (à 4 px) → après rechargement,
+    repère toujours à **4 px** (même essai avec 2 tickets en dessous : 4 px) ;
+  - téléphone, « Supprimer » dans « Actions du ticket » → retour : le ticket suivant à **300 px** ;
+  - téléphone, ticket dans la corbeille : le menu contient « Supprimer pour toujours » (absent avant).
 
 ## 16. Vider la corbeille (1.5.0)
 

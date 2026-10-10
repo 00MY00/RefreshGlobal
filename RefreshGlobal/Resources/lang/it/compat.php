@@ -154,4 +154,10 @@ return [
         'effect' => 'Lo svuotamento automatico non può sapere da quando un ticket è nel cestino. Il resto funziona.',
         'action' => 'Aggiornare RefreshGlobal a una versione prevista per questa versione di FreeScout, poi eseguire php artisan refreshglobal:check.',
     ],
+    'marker_mobile' => [
+        'check'  => 'Elemento di Refresh presente: :item (:file)',
+        'label'  => 'Elemento di Refresh non più trovato: :item (:file).',
+        'effect' => 'Sul telefono, «Elimina definitivamente» non viene aggiunto alle «Azioni del ticket» di Refresh per i ticket nel cestino (il pulsante «Svuota il cestino» funziona ancora). Il resto funziona.',
+        'action' => 'Aggiornare RefreshGlobal a una versione prevista per questa versione di Refresh, poi eseguire php artisan refreshglobal:check.',
+    ],
 ];

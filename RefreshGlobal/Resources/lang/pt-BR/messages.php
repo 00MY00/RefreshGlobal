@@ -192,4 +192,6 @@ return [
     'trash_empty_confirm'          => 'Excluir definitivamente os :count ticket(s) da lixeira, com seus e-mails? Não pode ser desfeito.',
     'trash_emptied'                => 'Lixeira esvaziada: :count ticket(s) excluído(s) definitivamente.',
     'trash_nothing'                => 'A lixeira já está vazia.',
+    'keep_position'                => 'Manter minha posição na lista',
+    'keep_position_help'           => 'Ativado (padrão): depois de excluir um ticket (pelo ticket, ou vários de uma vez pela lista), a lista “Todas as caixas” abre onde você estava, com o ticket seguinte no lugar do excluído: não é preciso rolar de novo. Desativado: a lista abre no topo.',
 ];

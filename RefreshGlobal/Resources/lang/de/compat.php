@@ -154,4 +154,10 @@ return [
         'effect' => 'Das automatische Leeren kann nicht erkennen, seit wann ein Ticket im Papierkorb liegt. Der Rest funktioniert.',
         'action' => 'RefreshGlobal auf eine Version für diese FreeScout-Version aktualisieren, dann php artisan refreshglobal:check ausführen.',
     ],
+    'marker_mobile' => [
+        'check'  => 'Refresh-Element vorhanden: :item (:file)',
+        'label'  => 'Refresh-Element nicht mehr gefunden: :item (:file).',
+        'effect' => 'Auf dem Telefon wird „Endgültig löschen“ für Tickets im Papierkorb nicht zu den „Ticket-Aktionen“ von Refresh hinzugefügt (die Schaltfläche „Papierkorb leeren“ funktioniert weiterhin). Der Rest funktioniert.',
+        'action' => 'RefreshGlobal auf eine Version für diese Refresh-Version aktualisieren, dann php artisan refreshglobal:check ausführen.',
+    ],
 ];
