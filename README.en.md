@@ -102,6 +102,7 @@ Updates: `sudo git -C /opt/RefreshGlobal pull`, then the same command with `--up
 | Dashboard of all mailboxes | on | Refresh's "My dashboard" covers all the user's mailboxes |
 | Mailbox above each ticket | on | name and address of the mailbox above the subject (list and dashboard) |
 | Go to the next ticket | off | after a deletion: off = back to "All mailboxes" (last filters), on = next ticket of that list |
+| Automatic refresh | 30 seconds | the list and the dashboard refresh themselves when their tickets change (never while typing, selecting or with a menu open); 0 = off |
 | Keep my place in the list | on | after a deletion (from the ticket or from the list), "All mailboxes" opens where you were, the next ticket in place of the deleted one |
 | Delete permanently | off | off = FreeScout's trash (can be restored); on = the ticket and its e-mails are removed from FreeScout at once (cannot be undone; the mail server is not touched) |
 | Also on the mail server | on | when a ticket is deleted for good, its e-mails are moved to the mail server's trash folder (IMAP) within a minute, still restorable from the webmail; trash folder found automatically or set by hand |

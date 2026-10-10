@@ -32,6 +32,16 @@
         'help' => __('refreshglobal::messages.global_dashboard_help'), 'extra_help' => $rg_need_refresh, 'disabled' => !$rg_refresh])
     @include('refreshglobal::partials.switch', ['key' => $rg_s::SHOW_MAILBOX, 'label' => __('refreshglobal::messages.show_mailbox'),
         'help' => __('refreshglobal::messages.show_mailbox_help')])
+    <div class="form-group">
+        <label for="rg-auto-refresh" class="col-sm-2 control-label">{{ __('refreshglobal::messages.auto_refresh') }}</label>
+        <div class="col-sm-6">
+            <div class="input-group" style="max-width: 220px;">
+                <input type="number" id="rg-auto-refresh" name="settings[{{ $rg_s::AUTO_REFRESH }}]" value="{{ (int) ($settings[$rg_s::AUTO_REFRESH] ?? 0) }}" min="0" max="{{ $rg_s::AUTO_REFRESH_MAX }}" step="1" class="form-control">
+                <span class="input-group-addon">{{ __('refreshglobal::messages.auto_refresh_unit') }}</span>
+            </div>
+            <p class="form-help">{{ __('refreshglobal::messages.auto_refresh_help', ['min' => $rg_s::AUTO_REFRESH_MIN]) }}</p>
+        </div>
+    </div>
 
     <h3 class="subheader">{{ __('refreshglobal::messages.ticket_deletion') }}</h3>
     @include('refreshglobal::partials.switch', ['key' => $rg_s::DELETE_GOES_NEXT, 'label' => __('refreshglobal::messages.delete_goes_next'),

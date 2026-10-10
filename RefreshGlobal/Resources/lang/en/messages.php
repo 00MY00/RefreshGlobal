@@ -207,4 +207,7 @@ return [
     'server_trash_folder_help'     => 'Leave empty to find it automatically. Otherwise its exact name on the server, e.g. INBOX.Trash or [Gmail]/Trash.',
     'server_trash_status'          => 'E-mails: :pending waiting, :moved moved to the server’s trash, :not_found not found on the server, :failed not moved.',
     'server_trash_last_error'      => 'Last error: :error',
+    'auto_refresh'                 => 'Automatic refresh',
+    'auto_refresh_unit'            => 'seconds',
+    'auto_refresh_help'            => 'The “All mailboxes” list and the dashboard check every N seconds whether their tickets changed (new ticket, reply, status, deletion…) and refresh themselves, without losing your place — never while you are ticking tickets, typing or using a menu. 0 = off; at least :min seconds.',
 ];

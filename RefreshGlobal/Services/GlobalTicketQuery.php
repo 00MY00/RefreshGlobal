@@ -244,6 +244,19 @@ class GlobalTicketQuery
         return $this->query()->with(['mailbox', 'customer', 'user'])->paginate($per_page);
     }
 
+    /**
+     * Fingerprint of the list (automatic refresh): changes when a ticket of the list is added, removed or modified
+     * (FreeScout updates updated_at on every change: reply, status, assignee…). One aggregate query.
+     */
+    public function fingerprint()
+    {
+        $row = $this->base()->toBase()
+            ->selectRaw('COUNT(*) AS n, MAX(conversations.updated_at) AS u, MAX(conversations.id) AS i, SUM(conversations.id) AS s')
+            ->first();
+
+        return md5(implode('|', [(int) $row->n, (string) $row->u, (int) $row->i, (string) $row->s]));
+    }
+
     /** mailbox_id => number of tickets with the current filters except the mailbox filter (one grouped query). */
     public function countsByMailbox()
     {

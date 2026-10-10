@@ -141,6 +141,27 @@ class Settings
         }
     }
 
+    /** Automatic refresh of the "All mailboxes" list and of the dashboard: seconds between checks (0 = off). */
+    const AUTO_REFRESH = 'refreshglobal.auto_refresh';
+    const AUTO_REFRESH_MIN = 10;
+    const AUTO_REFRESH_MAX = 3600;
+
+    public static function autoRefresh()
+    {
+        try {
+            $s = (int) \App\Option::get(self::AUTO_REFRESH, (int) config('refreshglobal.auto_refresh_default', 30), true, false);
+        } catch (\Exception $e) {
+            $s = 0;
+        }
+
+        return $s <= 0 ? 0 : max(self::AUTO_REFRESH_MIN, min(self::AUTO_REFRESH_MAX, $s));
+    }
+
+    public static function setAutoRefresh($seconds)
+    {
+        \App\Option::set(self::AUTO_REFRESH, (int) $seconds);
+    }
+
     /** Options shown in Manage › Settings › RefreshGlobal (saved by FreeScout itself) => current value. */
     public static function sectionValues()
     {
@@ -150,6 +171,7 @@ class Settings
             self::SHOW_MAILBOX            => self::showMailbox(),
             self::DELETE_GOES_NEXT        => self::deleteGoesNext(),
             self::KEEP_POSITION           => self::keepPosition(),
+            self::AUTO_REFRESH            => self::autoRefresh(),
             self::DELETE_PERMANENTLY      => self::deletePermanently(),
             self::TRASH_AUTO_DAYS         => self::trashAutoDays(),
             self::SERVER_TRASH            => self::serverTrash(),

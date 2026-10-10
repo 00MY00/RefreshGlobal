@@ -201,4 +201,7 @@ return [
     'server_trash_folder_help'     => 'Leeg laten om hem automatisch te vinden. Anders de exacte naam op de server, bijvoorbeeld INBOX.Trash of [Gmail]/Trash.',
     'server_trash_status'          => 'E-mails: :pending wachtend, :moved naar de prullenbak van de server verplaatst, :not_found niet gevonden op de server, :failed niet verplaatst.',
     'server_trash_last_error'      => 'Laatste fout: :error',
+    'auto_refresh'                 => 'Automatisch vernieuwen',
+    'auto_refresh_unit'            => 'seconden',
+    'auto_refresh_help'            => 'De lijst „Alle mailboxen” en het dashboard controleren elke N seconden of hun tickets zijn gewijzigd (nieuw ticket, antwoord, status, verwijdering…) en vernieuwen zichzelf, zonder dat u uw plek kwijtraakt — nooit terwijl u tickets aanvinkt, typt of een menu gebruikt. 0 = uit; minstens :min seconden.',
 ];

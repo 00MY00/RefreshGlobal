@@ -201,4 +201,7 @@ return [
     'server_trash_folder_help'     => 'Dejar vacío para encontrarla automáticamente. Si no, su nombre exacto en el servidor, por ejemplo INBOX.Trash o [Gmail]/Papelera.',
     'server_trash_status'          => 'Correos: :pending en espera, :moved movidos a la papelera del servidor, :not_found no encontrados en el servidor, :failed no movidos.',
     'server_trash_last_error'      => 'Último error: :error',
+    'auto_refresh'                 => 'Actualización automática',
+    'auto_refresh_unit'            => 'segundos',
+    'auto_refresh_help'            => 'La lista «Todos los buzones» y el panel comprueban cada N segundos si sus tickets han cambiado (ticket nuevo, respuesta, estado, eliminación…) y se actualizan solos, sin perder su posición — nunca mientras marca tickets, escribe o usa un menú. 0 = desactivada; al menos :min segundos.',
 ];

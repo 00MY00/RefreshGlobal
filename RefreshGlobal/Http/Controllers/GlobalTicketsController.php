@@ -100,6 +100,8 @@ class GlobalTicketsController extends Controller
                 'filters'           => $filters,
                 // not "params": the native table reads a $params variable of its own (data-param_* attributes)
                 'rg_params'         => $params,
+                // fingerprint of this list when shown (automatic refresh compares with it)
+                'rg_fp'             => \Modules\RefreshGlobal\Services\Settings::autoRefresh() ? $query->fingerprint() : '',
                 'filters_count'     => GlobalTicketQuery::activeCount($filters),
                 'mailboxes'         => $access->mailboxes(),
                 'rg_users'          => $access->assignableUsers(),
@@ -118,6 +120,36 @@ class GlobalTicketsController extends Controller
                 'update_status'     => $user->isAdmin() ? \Modules\RefreshGlobal\Services\Update\Updater::status() : [],
             ])->render());
         });
+    }
+
+    /**
+     * Automatic refresh (GET /refresh-global/state, same parameters as the page): fingerprint of the list the page
+     * shows, with the same rights and filters. The page reloads itself when it changes (Public/js/refreshglobal.js,
+     * Public/js/shell.js for the dashboard). Small JSON answer, one aggregate query.
+     */
+    public function state(Request $request)
+    {
+        try {
+            $user = auth()->user();
+            $access = new MailboxAccess($user);
+            $input = $request->only(self::FILTER_PARAMS);
+            if ($request->filled('view')) {
+                $view = $this->savedViews($user) ? SavedView::findForUser($request->input('view'), $user) : null;
+                $input = $view ? (array) $view->filters : [];
+            }
+            $fp = (new GlobalTicketQuery($access, GlobalTicketQuery::normalize($input, $access)))->fingerprint();
+
+            return response()->json(['fp' => $fp])->header('Cache-Control', 'no-store');
+        } catch (\Throwable $e) {
+            // no refresh rather than an error on the page
+            return response()->json(['fp' => null], 200)->header('Cache-Control', 'no-store');
+        }
+    }
+
+    /** Address of the state of a list (parameters of the page, or the whole list). */
+    public static function stateUrl(array $params)
+    {
+        return route('refreshglobal.state', $params ?: ['reset' => 1]);
     }
 
     /** The user's saved views, or null when the table is missing (RG-DB-05: saved views disabled). */

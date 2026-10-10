@@ -201,4 +201,7 @@ return [
     'server_trash_folder_help'     => 'Lasciare vuoto per trovarlo automaticamente. Altrimenti il suo nome esatto sul server, ad esempio INBOX.Trash o [Gmail]/Cestino.',
     'server_trash_status'          => 'E-mail: :pending in attesa, :moved spostate nel cestino del server, :not_found non trovate sul server, :failed non spostate.',
     'server_trash_last_error'      => 'Ultimo errore: :error',
+    'auto_refresh'                 => 'Aggiornamento automatico',
+    'auto_refresh_unit'            => 'secondi',
+    'auto_refresh_help'            => 'La lista «Tutte le caselle» e la dashboard controllano ogni N secondi se i loro ticket sono cambiati (nuovo ticket, risposta, stato, eliminazione…) e si aggiornano da sole, senza perdere la posizione — mai mentre selezioni ticket, scrivi o usi un menu. 0 = disattivato; almeno :min secondi.',
 ];

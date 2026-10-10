@@ -201,4 +201,7 @@ return [
     'server_trash_folder_help'     => 'Laisser vide pour la trouver automatiquement. Sinon son nom exact sur le serveur, par exemple INBOX.Trash ou [Gmail]/Corbeille.',
     'server_trash_status'          => 'E-mails : :pending en attente, :moved déplacés dans la corbeille du serveur, :not_found introuvables sur le serveur, :failed non déplacés.',
     'server_trash_last_error'      => 'Dernière erreur : :error',
+    'auto_refresh'                 => 'Actualisation automatique',
+    'auto_refresh_unit'            => 'secondes',
+    'auto_refresh_help'            => 'La liste « Toutes les boîtes » et le tableau de bord vérifient toutes les N secondes si leurs tickets ont changé (nouveau ticket, réponse, statut, suppression…) et se mettent à jour seuls, sans perdre votre place — jamais pendant que vous cochez des tickets, tapez du texte ou utilisez un menu. 0 = désactivée ; au moins :min secondes.',
 ];

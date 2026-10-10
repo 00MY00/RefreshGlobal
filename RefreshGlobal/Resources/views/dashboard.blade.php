@@ -17,7 +17,7 @@
     $rg_unresolved = route('refreshglobal.tickets', ['rv' => 'unresolved']);
 @endphp
 <link href="{{ asset(\Module::getPublicPath('refreshglobal').'/css/refreshglobal.css') }}?v={{ \Modules\RefreshGlobal\Services\Compatibility\CompatibilityChecker::moduleVersion() }}" rel="stylesheet" type="text/css">
-<div class="rf-dash rg-dash">
+<div class="rf-dash rg-dash" data-refresh="{{ \Modules\RefreshGlobal\Services\Settings::autoRefresh() }}" data-fp="{{ $rg_fp ?? '' }}" data-state-url="{{ route('refreshglobal.state', ['reset' => 1]) }}">
     <div class="rf-tiles">
         @foreach ($tiles as $tile)
             <a href="{{ $tile['url'] }}" class="rf-tile rf-tile-{{ $tile['key'] }} @if (!$tile['count']) rf-tile-zero @endif">

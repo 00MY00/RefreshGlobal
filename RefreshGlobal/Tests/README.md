@@ -24,6 +24,7 @@ sudo -u www-data php artisan freescout:clear-cache # remet le cache de configura
 | `Feature/LanguageTest.php` | sélecteur de langue : affiché, change la langue du profil FreeScout (et de la session), langue inconnue refusée, pas de retour vers un autre site |
 | `Feature/TrashTest.php` | vider la corbeille : droits de FreeScout (admin, permission, boîtes, « seulement assignés »), seuls les tickets de la corbeille supprimés, vidage automatique après N jours (0 = jamais), tâche planifiée, réglage borné |
 | `Feature/MailServerTrashTest.php` | e-mails des tickets supprimés définitivement mis en file puis déplacés dans la corbeille du serveur (faux serveur IMAP) ; jamais pour la mise à la corbeille ni la suppression d'une boîte entière ; corbeille introuvable → nouvel essai ; POP3 ignoré |
+| `Feature/AutoRefreshTest.php` | actualisation automatique : empreinte de la liste inscrite dans la page et identique à `/refresh-global/state`, change pour un ticket des boîtes de l'utilisateur (pas pour les autres), filtres de la page appliqués, réglage borné, invités refusés |
 | `Feature/TranslationsTest.php` | chaque langue a toutes les clés et les mêmes paramètres que l'anglais |
 
 `Support/Fixtures.php` construit les données avec les modèles de FreeScout (adresses en `.test`).

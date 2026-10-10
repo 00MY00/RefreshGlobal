@@ -201,4 +201,7 @@ return [
     'server_trash_folder_help'     => 'Deixe vazio para encontrá-la automaticamente. Senão, o nome exato no servidor, por exemplo INBOX.Trash ou [Gmail]/Lixeira.',
     'server_trash_status'          => 'E-mails: :pending aguardando, :moved movidos para a lixeira do servidor, :not_found não encontrados no servidor, :failed não movidos.',
     'server_trash_last_error'      => 'Último erro: :error',
+    'auto_refresh'                 => 'Atualização automática',
+    'auto_refresh_unit'            => 'segundos',
+    'auto_refresh_help'            => 'A lista “Todas as caixas” e o painel verificam a cada N segundos se seus tickets mudaram (novo ticket, resposta, status, exclusão…) e se atualizam sozinhos, sem perder sua posição — nunca enquanto você marca tickets, digita ou usa um menu. 0 = desativada; no mínimo :min segundos.',
 ];

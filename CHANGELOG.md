@@ -2,6 +2,17 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.6.0] — 2026-10-10
+
+### Ajouté
+- **Actualisation automatique** de la liste « Toutes les boîtes » et du tableau de bord de toutes les boîtes : toutes
+  les N secondes (réglage, 30 par défaut, 0 = désactivée), la page demande au module l'« empreinte » de ce qu'elle
+  affiche (`GET /refresh-global/state`, mêmes filtres et mêmes droits ; une requête d'agrégat) et se recharge
+  d'elle-même quand un ticket a été ajouté, modifié ou supprimé — jamais pendant que l'utilisateur coche des tickets,
+  tape du texte, ou a un menu / une fenêtre / un panneau du téléphone ouvert. « Rester à ma place dans la liste »
+  remet la liste au même endroit. Le cache d'une minute du tableau de bord tient compte de cette empreinte : les
+  chiffres affichés après une actualisation sont toujours à jour.
+
 ## [1.5.3] — 2026-10-10
 
 ### Corrigé

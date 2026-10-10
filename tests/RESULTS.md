@@ -1,4 +1,4 @@
-# Résultats des tests — RefreshGlobal 1.5.3
+# Résultats des tests — RefreshGlobal 1.6.0
 
 Date : 2026-10-09. Environnements jetables Docker : FreeScout 1.8.245 (dépôt officiel), PHP 8.2.34, Apache,
 MariaDB 10.11 ; Refresh 1.4.3 (dépôt officiel). Données de test uniquement (adresses `.test`).
@@ -206,6 +206,15 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
 - Navigateur : interface en anglais, choix « Français » dans le sélecteur → la page, la barre de Refresh et le
   tableau de bord passent en français ; `users.locale = fr` en base. Sélecteur visible en bas du panneau des vues
   (ordinateur) et du tiroir (téléphone).
+
+## 19. Actualisation automatique (1.6.0)
+
+- PHPUnit : **89 tests, 1266 assertions, 0 échec** (nouveau `AutoRefreshTest`, 5 tests).
+- Navigateur (réglage 10 s, nouveaux tickets créés pendant l'essai) : liste avec un ticket coché → nouveau ticket
+  arrivé, **pas de rechargement** ; ticket décoché → **rechargement automatique**, nouveau ticket affiché ; tableau
+  de bord → rechargement automatique, tuile « Non résolu » **31 → 32** et nouveau ticket dans la liste.
+- CI GitHub de la 1.5.3 : **vert** (lint 7.1/8.2/8.4 avec shellcheck, tests du module) ; release v1.5.3 créée
+  automatiquement (`RefreshGlobal.zip`, `install.sh`, `module.json`, `SHA256SUMS`).
 
 ## 18. E-mails des tickets supprimés définitivement → corbeille du serveur mail (1.5.2)
 

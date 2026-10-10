@@ -40,6 +40,9 @@ return [
     // After deleting a ticket: "list" = back to the "All mailboxes" page, "next" = next ticket of that list.
     'after_delete_default' => env('REFRESHGLOBAL_AFTER_DELETE', 'list'),
 
+    // Automatic refresh of the "All mailboxes" list and of the dashboard: seconds between two checks (0 = off).
+    'auto_refresh_default' => (int) env('REFRESHGLOBAL_AUTO_REFRESH', 30),
+
     // After a deletion, back on the "All mailboxes" list at the same place in the list (no scrolling back down).
     'keep_position_default' => (bool) env('REFRESHGLOBAL_KEEP_POSITION', true),
 

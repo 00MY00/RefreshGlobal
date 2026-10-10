@@ -57,8 +57,10 @@ class GlobalDashboard
             return '';
         }
 
-        // one minute per user, mailboxes and language (the data holds translated labels)
-        $key = 'refreshglobal.dash.'.$user->id.'.'.app()->getLocale().'.'.md5(implode(',', $ids));
+        // one minute per user, mailboxes and language (the data holds translated labels), and per state of the tickets:
+        // after any change (new ticket, reply, status…) the figures are computed again, never served from the cache
+        $fp = (new GlobalTicketQuery($access, GlobalTicketQuery::normalize([], $access)))->fingerprint();
+        $key = 'refreshglobal.dash.'.$user->id.'.'.app()->getLocale().'.'.md5(implode(',', $ids)).'.'.$fp;
         $data = \Cache::remember($key, 1, function () use ($user, $mailboxes, $ids) {
             return self::data($user, $mailboxes, $ids);
         });
@@ -71,6 +73,7 @@ class GlobalDashboard
         \Modules\RefreshGlobal\Providers\RefreshGlobalServiceProvider::$show_mailbox_column = \Modules\RefreshGlobal\Providers\RefreshGlobalServiceProvider::mailboxColumnMode();
         try {
             return view('refreshglobal::dashboard', $data + [
+                'rg_fp'         => $fp,
                 'conversations' => $conversations,
                 'folder'        => \Modules\RefreshGlobal\Providers\RefreshGlobalServiceProvider::virtualFolder(),
             ])->render();

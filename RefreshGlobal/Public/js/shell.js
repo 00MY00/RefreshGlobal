@@ -8,6 +8,7 @@
  *   removed: Refresh's scripts still read their address) and "All mailboxes" takes their place.
  * - Confirmation of the module's destructive forms (data-rg-confirm), with or without Refresh.
  * - Phone: deletion in Refresh's "Ticket actions" sheet for tickets in the trash ("Delete Forever").
+ * - Automatic refresh of the "All mailboxes" list and of the dashboard when their tickets change.
  * Nothing of Refresh is modified; without Refresh (no .rf-rail / .rf-m-tabs) the Refresh parts do nothing.
  */
 (function ($) {
@@ -70,6 +71,70 @@
             }).observe(document.body, { childList: true });
         });
     }
+
+    // Automatic refresh of the "All mailboxes" list (#rg-state) and of the dashboard for all mailboxes (.rg-dash):
+    // every N seconds (setting, 0 = off) the page asks the module for the fingerprint of what it shows
+    // (GET /refresh-global/state, same filters and rights). When it changed, the page reloads itself, but only while
+    // the user is not doing something: no ticket ticked, no text being typed, no menu / dialog / phone sheet open,
+    // page visible; otherwise it waits for the next check. "Keep my place in the list" restores the position.
+    $(function () {
+        var el = document.querySelector('#rg-state[data-state-url], .rg-dash[data-state-url]');
+        var every = el ? parseInt(el.getAttribute('data-refresh'), 10) || 0 : 0;
+        if (!el || every < 10 || !window.fetch) {
+            return;
+        }
+        var url = el.getAttribute('data-state-url');
+        var known = el.getAttribute('data-fp') || null;
+        var changed = false, busy = false;
+        var idle = function () {
+            if (document.hidden) {
+                return false;
+            }
+            if (document.querySelector('.conv-checkbox:checked')) {
+                return false;
+            }
+            var a = document.activeElement;
+            if (a && (a.isContentEditable || /^(TEXTAREA|SELECT)$/.test(a.tagName) || (a.tagName === 'INPUT' && !/^(checkbox|radio|button|submit)$/.test(a.type)))) {
+                return false;
+            }
+            if (document.querySelector('.dropdown.open, .btn-group.open, .modal.in, .rf-m-sheet, .select2-container--open')) {
+                return false;
+            }
+            return !document.body.classList.contains('rf-m-overlay');
+        };
+        var check = function () {
+            if (busy || document.hidden) {
+                return;
+            }
+            busy = true;
+            window.fetch(url, { credentials: 'same-origin', cache: 'no-store', headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' } })
+                .then(function (r) { return r.ok ? r.json() : null; })
+                .then(function (d) {
+                    busy = false;
+                    if (!d || !d.fp) {
+                        return;
+                    }
+                    if (known === null) {
+                        known = d.fp;
+                        return;
+                    }
+                    if (d.fp !== known) {
+                        changed = true;
+                    }
+                    if (changed && idle()) {
+                        window.location.reload();
+                    }
+                })
+                .catch(function () { busy = false; });
+        };
+        setInterval(check, every * 1000);
+        // back on the tab: check at once
+        document.addEventListener('visibilitychange', function () {
+            if (!document.hidden) {
+                check();
+            }
+        });
+    });
 
     var config = function () {
         try {

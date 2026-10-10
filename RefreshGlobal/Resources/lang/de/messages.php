@@ -201,4 +201,7 @@ return [
     'server_trash_folder_help'     => 'Leer lassen, um ihn automatisch zu finden. Sonst sein genauer Name auf dem Server, z. B. INBOX.Trash oder [Gmail]/Papierkorb.',
     'server_trash_status'          => 'E-Mails: :pending wartend, :moved in den Papierkorb des Servers verschoben, :not_found auf dem Server nicht gefunden, :failed nicht verschoben.',
     'server_trash_last_error'      => 'Letzter Fehler: :error',
+    'auto_refresh'                 => 'Automatische Aktualisierung',
+    'auto_refresh_unit'            => 'Sekunden',
+    'auto_refresh_help'            => 'Die Liste „Alle Postfächer“ und das Dashboard prüfen alle N Sekunden, ob sich ihre Tickets geändert haben (neues Ticket, Antwort, Status, Löschung…), und aktualisieren sich selbst, ohne Ihre Stelle zu verlieren — nie, während Sie Tickets ankreuzen, tippen oder ein Menü benutzen. 0 = aus; mindestens :min Sekunden.',
 ];
