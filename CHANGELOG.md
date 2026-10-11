@@ -2,6 +2,15 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.7.1] — 2026-10-11
+
+### Ajouté
+- **Animation de chargement** pendant une action, comme dans le module Workflow Packs : le bouton cliqué affiche
+  l'icône tournante de FreeScout (`glyphicon-spin`) et les boutons sont désactivés pendant le traitement (pas de
+  double envoi). Pour toutes les actions du module : filtres, vues enregistrées, « Vider la corbeille », langue,
+  réglages (Enregistrer, Rechercher une mise à jour, Mettre à jour maintenant), diagnostic (Relancer les contrôles).
+  Rien ne tourne si une confirmation est annulée ; tout est remis en état avec le bouton « Retour » du navigateur.
+
 ## [1.7.0] — 2026-10-10
 
 ### Ajouté

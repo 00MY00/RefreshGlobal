@@ -31,6 +31,9 @@
 .rg-sync-btn.rg-busy .rg-sync-icon { animation: rg-spin 1s linear infinite; }
 .rg-sync-btn .rg-sync-icon { top: 2px; }
 .rg-sync-icon-only { padding-left: 10px; padding-right: 10px; }
+/* loading indicator of the module's buttons (Public/js/shell.js) */
+.rg-spinner { margin-right: 2px; }
+.rg-language .rg-spinner { margin-left: 6px; }
 .rg-view-actions .rg-m-sync { margin: 6px 0; }
 /* "Empty the trash" (bottom of the views panel / phone drawer) */
 .rg-trash { margin: 10px 0 4px; }

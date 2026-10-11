@@ -71,7 +71,13 @@
 
         // Language switch: saved as soon as a language is chosen
         $(document).on('change', '.rg-language-select', function () {
-            $(this).closest('form').trigger('submit');
+            var form = $(this).closest('form');
+            // a submission started by script fires no "submit" event: loading indicator here
+            if (!form.find('.rg-spinner').length) {
+                $('<i class="glyphicon glyphicon-refresh glyphicon-spin rg-spinner" aria-hidden="true"></i>').insertAfter(form.find('.rg-language-label'));
+            }
+            form.attr('aria-busy', 'true');
+            form[0].submit();
         });
 
         // Confirmation before deleting a saved view

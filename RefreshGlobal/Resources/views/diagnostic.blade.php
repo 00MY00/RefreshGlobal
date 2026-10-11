@@ -28,7 +28,7 @@
             PHP {{ $report['versions']['php'] }} · {{ $report['generated_at'] }}
         </p>
         <p class="rg-buttons">
-            <a class="btn btn-default btn-sm" href="{{ route('refreshglobal.diagnostic', ['refresh' => 1]) }}"><i class="glyphicon glyphicon-refresh"></i> {{ __('refreshglobal::messages.run_again') }}</a>
+            <a class="btn btn-default btn-sm" data-rg-busy href="{{ route('refreshglobal.diagnostic', ['refresh' => 1]) }}"><i class="glyphicon glyphicon-refresh"></i> {{ __('refreshglobal::messages.run_again') }}</a>
             <a class="btn btn-default btn-sm" href="{{ route('refreshglobal.tickets') }}"><i class="glyphicon glyphicon-inbox"></i> {{ __('refreshglobal::messages.open_page') }}</a>
             <a class="btn btn-default btn-sm" href="{{ route('settings', ['section' => 'refreshglobal']) }}"><i class="glyphicon glyphicon-cog"></i> {{ __('refreshglobal::messages.settings_link') }}</a>
         </p>

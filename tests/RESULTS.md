@@ -1,4 +1,4 @@
-# Résultats des tests — RefreshGlobal 1.7.0
+# Résultats des tests — RefreshGlobal 1.7.1
 
 Date : 2026-10-09. Environnements jetables Docker : FreeScout 1.8.245 (dépôt officiel), PHP 8.2.34, Apache,
 MariaDB 10.11 ; Refresh 1.4.3 (dépôt officiel). Données de test uniquement (adresses `.test`).
@@ -206,6 +206,13 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
 - Navigateur : interface en anglais, choix « Français » dans le sélecteur → la page, la barre de Refresh et le
   tableau de bord passent en français ; `users.locale = fr` en base. Sélecteur visible en bas du panneau des vues
   (ordinateur) et du tiroir (téléphone).
+
+## 21. Animation de chargement (1.7.1)
+
+- PHPUnit : **92 tests, 1334 assertions, 0 échec** (1 ignoré : SyncNow non installé).
+- Navigateur, réponses du serveur ralenties exprès (4 s) : « Rechercher une mise à jour » → icône tournante à la place
+  de la loupe, les deux boutons désactivés ; « Vider la corbeille » avec confirmation annulée → rien ne tourne, bouton
+  actif ; « Appliquer » des filtres → icône tournante, bouton désactivé.
 
 ## 20. Bouton « Relever les e-mails » avec SyncNow (1.7.0)
 

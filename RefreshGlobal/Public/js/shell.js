@@ -9,6 +9,7 @@
  * - Confirmation of the module's destructive forms (data-rg-confirm), with or without Refresh.
  * - Phone: deletion in Refresh's "Ticket actions" sheet for tickets in the trash ("Delete Forever").
  * - Automatic refresh of the "All mailboxes" list and of the dashboard when their tickets change.
+ * - Loading indicator on the module's buttons while an action runs.
  * Nothing of Refresh is modified; without Refresh (no .rf-rail / .rf-m-tabs) the Refresh parts do nothing.
  */
 (function ($) {
@@ -23,6 +24,68 @@
         if (msg && !window.confirm(msg)) {
             e.preventDefault();
         }
+    });
+
+    // Loading indicator while an action of the module runs (same as the Workflow Packs module): the clicked button gets
+    // FreeScout's turning icon (glyphicon-spin, public/css/style.css) and the buttons are disabled once the submission
+    // has started (a disabled button would not be sent), so nothing is sent twice. Only the module's forms: its own
+    // addresses (/refresh-global/…) and its section of Manage › Settings. Checked after every other handler: a
+    // cancelled confirmation shows nothing.
+    var SPINNER = '<i class="glyphicon glyphicon-refresh glyphicon-spin rg-spinner" aria-hidden="true"></i> ';
+    var moduleForm = function (form) {
+        var action = form.getAttribute('action') || '';
+        return action.indexOf('/refresh-global/') >= 0 || /\/app-settings\/refreshglobal\/?$/.test(window.location.pathname);
+    };
+    var busy = function (button) {
+        if (!button || button.querySelector('.rg-spinner')) {
+            return;
+        }
+        // the spinner takes the place of the button's own icon (put back by "pageshow" below)
+        var icon = button.querySelector('.glyphicon, .rf-i');
+        if (icon) {
+            icon.style.display = 'none';
+            icon.classList.add('rg-hidden-icon');
+        }
+        button.insertAdjacentHTML('afterbegin', SPINNER);
+    };
+    window.rgBusy = busy;
+    document.addEventListener('submit', function (e) {
+        var form = e.target;
+        if (!form || !form.getAttribute || form.getAttribute('data-rg-busy') === 'off' || !moduleForm(form)) {
+            return;
+        }
+        setTimeout(function () {
+            if (e.defaultPrevented) {
+                return;
+            }
+            var button = e.submitter || form.querySelector('[type=submit]');
+            busy(button);
+            form.setAttribute('aria-busy', 'true');
+            Array.prototype.forEach.call(form.querySelectorAll('[type=submit]'), function (b) { b.disabled = true; });
+            // a button outside the form (form="…" attribute)
+            if (button) {
+                button.disabled = true;
+            }
+        }, 0);
+    });
+    // links of the module that only reload the page (e.g. "Run the checks again")
+    document.addEventListener('click', function (e) {
+        var a = e.target && e.target.closest ? e.target.closest('a[data-rg-busy]') : null;
+        if (a && !e.defaultPrevented && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
+            busy(a);
+        }
+    });
+    // back to the page from the browser cache: clean
+    window.addEventListener('pageshow', function (e) {
+        if (!e.persisted) {
+            return;
+        }
+        Array.prototype.forEach.call(document.querySelectorAll('.rg-spinner'), function (s) { s.parentNode.removeChild(s); });
+        Array.prototype.forEach.call(document.querySelectorAll('.rg-hidden-icon'), function (i) { i.style.display = ''; i.classList.remove('rg-hidden-icon'); });
+        Array.prototype.forEach.call(document.querySelectorAll('form[aria-busy]'), function (f) {
+            f.removeAttribute('aria-busy');
+            Array.prototype.forEach.call(f.querySelectorAll('[type=submit]'), function (b) { b.disabled = false; });
+        });
     });
 
     // Phone, ticket page: Refresh's "Ticket actions" sheet (Modules/Refresh/Public/js/mobile.js:814-846) offers
