@@ -2,6 +2,34 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.8.1] — 2026-10-12
+
+### Corrigé
+- **Bouton « Filtres » caché sous le panneau des filtres** sur les écrans moyens (portable, écran 1080p zoomé à
+  125–150 %) : la barre d'outils débordait de la liste, le bouton passait sous le panneau (l'entonnoir sur
+  « FILTRES ») et on ne pouvait plus replier le panneau. La barre d'outils ne dépasse plus jamais de la liste.
+
+### Amélioré
+- **Affichage selon la place réellement disponible** (requêtes de conteneur CSS : elles suivent aussi le panneau des
+  vues replié ou non), page « Toutes les boîtes » seulement, ordinateur et tablette ; le téléphone garde la
+  présentation de Refresh :
+  - **panneau des filtres qui glisse** : quand la liste et le panneau ne tiennent pas côte à côte (liste sous
+    ~760 px), le panneau ne prend plus de place à la liste ; il s'ouvre **par-dessus** depuis la droite (bouton
+    « Filtres ») et se ferme avec ×, Échap ou un clic à côté. Sur un grand écran il reste à droite et se **replie
+    sur le côté** avec × (choix retenu, comme le bouton « Filtres » de Refresh) ;
+  - **barre « Filtres actifs »** au-dessus de la liste quand le panneau est replié ou fermé : une pastille par
+    filtre (recherche, boîtes, statuts, assigné, vue Refresh, dossier automatique) avec × pour l'enlever,
+    « Modifier » (ouvre le panneau) et « Effacer les filtres » ; le bouton « Filtres » est coloré quand un filtre est
+    actif ;
+  - **barre d'outils** compacte quand la liste est étroite (libellés « Trier par » masqués, « Exporter » en icône,
+    puis compteur « 1 - 30 sur N » masqué) ;
+  - **cartes plus lisibles** : la colonne de droite (priorité / agent / statut) se rétrécit avec la liste, le sujet
+    garde la place (à 1280 px : ~460 px de sujet au lieu de ~200) ; l'adresse de la boîte se masque (nom seul,
+    adresse dans l'info-bulle) quand la place manque ; vue **tableau** : colonnes client et priorité / agent /
+    statut rétrécies (colonne « Ticket » de ~90 à ~320 px à 1280 px).
+  - Téléphone : la pastille « boîte » de Refresh ne montre plus que le nom (l'adresse débordait de la carte).
+  - L'actualisation automatique attend que le panneau ouvert par-dessus la liste soit fermé.
+
 ## [1.8.0] — 2026-10-12
 
 ### Ajouté

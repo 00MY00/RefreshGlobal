@@ -88,6 +88,8 @@
             }
         });
 
+        filtersPanel();
+
         if (state.attr('data-keep-position') === '1') {
             keepPosition();
         }
@@ -96,6 +98,67 @@
             syncNow($(this));
         });
     });
+
+    /*
+     * Filters panel (Refresh skin). Wide enough: docked on the right, folded / unfolded by Refresh's own "Filters"
+     * button (its choice is remembered in its cookie rf_filters_closed). Not enough room (CSS container query in
+     * refreshglobal.css: the panel is then "position: absolute"): it opens OVER the list and closes with ×, Escape,
+     * or a click outside — nothing remembered, the list keeps its full width. Phones: Refresh's own phone filters.
+     */
+    function filtersPanel() {
+        var layout = $('.rg-list-layout');
+        var panel = layout.children('.rf-filters');
+        if (!panel.length) {
+            return;
+        }
+        var overlay = function () {
+            return !$('body').hasClass('rf-m') && window.getComputedStyle(panel[0]).position === 'absolute';
+        };
+        var open = function (yes) {
+            layout.toggleClass('rg-filters-open', yes);
+            $('.rf-toolbar .rf-toggle-filters').attr('aria-expanded', yes ? 'true' : 'false');
+            if (yes) {
+                setTimeout(function () { panel.find('.rf-f-q').trigger('focus'); }, 230);
+            }
+        };
+        // handler on the button itself: in overlay mode it stops Refresh's handler (delegated on the document),
+        // which would fold the docked panel and remember it
+        $('.rf-toolbar .rf-toggle-filters').on('click', function (e) {
+            if (overlay()) {
+                e.preventDefault();
+                e.stopPropagation();
+                open(!layout.hasClass('rg-filters-open'));
+            }
+        });
+        // × of the panel, "Edit" of the active filters bar
+        var toggle = function (show) {
+            if (overlay()) {
+                open(show);
+            } else if (layout.hasClass('rf-filters-closed') === show) {
+                $('.rf-toolbar .rf-toggle-filters').first().trigger('click');
+            }
+        };
+        panel.on('click', '.rg-filters-close', function () { toggle(false); });
+        $(document).on('click', '.rg-af-edit', function () { toggle(true); });
+        // closed by a click outside (select2's lists are drawn at the end of the page) or by Escape
+        $(document).on('mousedown touchstart', function (e) {
+            if (layout.hasClass('rg-filters-open') && overlay()
+                && !$(e.target).closest('.rf-filters, .rf-toggle-filters, .rg-af-edit, .select2-container, .select2-dropdown').length) {
+                open(false);
+            }
+        });
+        $(document).on('keydown', function (e) {
+            if ((e.key === 'Escape' || e.keyCode === 27) && layout.hasClass('rg-filters-open') && !document.querySelector('.select2-container--open')) {
+                open(false);
+            }
+        });
+        // back to a docked panel (window enlarged): the overlay state is dropped
+        $(window).on('resize', function () {
+            if (layout.hasClass('rg-filters-open') && !overlay()) {
+                layout.removeClass('rg-filters-open');
+            }
+        });
+    }
 
     /*
      * "Fetch e-mails now" with the SyncNow module (Services/SyncNow.php): for each IMAP mailbox of the list, one after

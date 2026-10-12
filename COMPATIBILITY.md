@@ -56,8 +56,9 @@ Chacun est contrôlé par `php artisan refreshglobal:check`.
   ramènent à la dernière vue Refresh, pas à la page globale (cookie `rf_last_view` de Refresh).
 - Dans les cartes, le menu **« Agent »** propose les agents de la première boîte (liste construite par Refresh) ;
   FreeScout refuse côté serveur une assignation impossible.
-- En **vue tableau** avec le panneau de filtres ouvert sur un écran étroit, la colonne du sujet est étroite (comme
-  dans Refresh, plus la colonne « Boîte »).
+- Vue tableau et cartes : colonnes rétrécies selon la largeur de la liste, panneau des filtres par-dessus la liste
+  quand la place manque (1.8.1, requêtes de conteneur CSS : Chrome / Edge 105+, Firefox 110+, Safari 16+ ; un
+  navigateur plus ancien garde la présentation de Refresh).
 - Le panneau de gauche reprend la structure du panneau des vues de Refresh, mais avec « Mes vues », « Boîtes » et
   « Statuts » : les vues partagées de Refresh (par boîte) n'y figurent pas.
 - Les **vues enregistrées** de RefreshGlobal sont personnelles (celles de Refresh sont partagées par boîte).

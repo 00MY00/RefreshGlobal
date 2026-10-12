@@ -20,6 +20,7 @@
 .rf-list-layout:not(.rf-layout-table) .rg-subject-mailbox,
 .rg-dash .rg-subject-mailbox { display: inline-block; margin: 0 6px 4px 0; max-width: 360px; }
 .rg-mailbox-email { opacity: .75; margin-left: 4px; }
+.rg-mailbox-email::after { content: attr(data-email); }
 /* automatic folder of Workflow Packs (Services/AutoFolders.php): badge of each ticket, entries of the views panel */
 .rg-folder-badge { margin: 0 6px 4px 0; max-width: 360px; color: var(--fd-text-2, #475569); background: var(--fd-bg, #fff); border-style: dashed; }
 .rg-folders .rf-v-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -133,4 +134,92 @@
     [data-rg-skin="native"] .table-conversations td.rg-col-mailbox { display: block; max-width: none; padding: 0 0 4px !important; border: 0 !important; }
     .rg-filters-row .rg-f { flex-basis: 100%; }
     .rg-heading-actions { width: 100%; }
+}
+
+/* ===== Layout of the "All mailboxes" page by the width really available (1.8.1) =====
+   Container queries: they follow the space left by the views panel and the filters panel, not only the screen.
+   Computer and tablet only (from 768 px): on phones, Refresh's own phone layout applies. */
+.rg-af-chip .rg-folder-svg { margin-right: 2px; }
+.rg-active-filters { display: none; }
+.rg-filters-close { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; margin-left: 10px; padding: 0; border: 1px solid var(--fd-input-border, #e2e8f0); border-radius: 5px; background: #fff; color: var(--fd-text-2, #475569); font-size: 18px; line-height: 1; cursor: pointer; }
+.rg-filters-close:hover { background: #f6f7fb; color: var(--fd-text, #0f172a); }
+.rg-filters-head-right { display: inline-flex; align-items: center; }
+.rf-toggle-filters.rg-has-filters { border-color: var(--fd-brand, #5b4ff5); color: var(--fd-brand, #5b4ff5); }
+
+@media (min-width: 768px) {
+    [data-rg-page="tickets"] .rg-list-layout { position: relative; container: rglayout / inline-size; }
+    [data-rg-page="tickets"] .rg-list-layout > .rf-list-main { container: rglist / inline-size; }
+
+    /* toolbar: never wider than the list (the "Filters" button used to slide under the filters panel) */
+    [data-rg-page="tickets"] .rg-list-layout .rf-toolbar { flex-wrap: wrap; row-gap: 8px; }
+    [data-rg-page="tickets"] .rg-list-layout .rf-toolbar-right { flex-wrap: wrap; justify-content: flex-end; row-gap: 8px; min-width: 0; }
+
+    /* active filters bar: shown when the panel is folded */
+    [data-rg-page="tickets"] .rg-list-layout.rf-filters-closed .rg-active-filters { display: flex; }
+    .rg-active-filters { flex: none; flex-wrap: wrap; align-items: center; gap: 6px 8px; padding: 8px 16px; border-bottom: 1px solid var(--fd-border, #e2e8f0); background: var(--fd-bg-soft, #f8fafc); font-size: 13px; }
+    .rg-af-title { color: var(--fd-text-2, #475569); font-weight: 600; margin-right: 2px; white-space: nowrap; }
+    .rg-af-title .rf-i { vertical-align: -2px; }
+    .rg-af-chip { display: inline-flex; align-items: center; gap: 4px; max-width: 100%; padding: 2px 4px 2px 10px; border: 1px solid var(--fd-border, #e2e8f0); border-radius: 12px; background: #fff; line-height: 20px; }
+    .rg-af-key { color: var(--fd-muted, #64748b); white-space: nowrap; }
+    .rg-af-key::after { content: " :"; }
+    .rg-af-val { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 260px; font-weight: 500; color: var(--fd-text, #0f172a); }
+    .rg-af-x { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; color: var(--fd-text-2, #475569) !important; text-decoration: none !important; font-size: 15px; font-weight: 600; }
+    .rg-af-x:hover { background: #eef1f6; }
+    .rg-af-edit { border: 0; background: none; padding: 2px 4px; color: var(--fd-brand, #5b4ff5); font-weight: 600; cursor: pointer; }
+    .rg-af-clear { color: var(--fd-text-2, #475569) !important; font-weight: 500; }
+}
+
+/* Not enough room for the list AND the docked filters panel (list under ~760 px): the panel no longer takes room from
+   the list, it slides in over it from the right ("Filters" button, closed by ×, Escape or a click outside) */
+@media (min-width: 768px) {
+    @container rglayout (max-width: 1080px) {
+        [data-rg-page="tickets"] .rg-list-layout > .rf-filters,
+        [data-rg-page="tickets"] .rg-list-layout.rf-filters-closed > .rf-filters {
+            display: flex !important; position: absolute; top: 0; right: 0; bottom: 0; z-index: 30; width: min(340px, 92%);
+            max-height: none; border-left: 1px solid var(--fd-border, #e2e8f0); box-shadow: -12px 0 32px rgba(15, 23, 42, .14);
+            transform: translateX(105%); visibility: hidden; transition: transform .22s ease, visibility 0s linear .22s;
+        }
+        [data-rg-page="tickets"] .rg-list-layout.rg-filters-open > .rf-filters { transform: none; visibility: visible; transition: transform .22s ease, visibility 0s; }
+        [data-rg-page="tickets"] .rg-list-layout .rg-active-filters { display: flex; }
+    }
+}
+
+/* Toolbar and cards by the width of the list */
+@media (min-width: 768px) {
+    @container rglist (max-width: 900px) {
+        [data-rg-page="tickets"] .rf-toolbar { gap: 10px; }
+        [data-rg-page="tickets"] .rf-toolbar-right { gap: 8px; }
+        [data-rg-page="tickets"] .rf-toolbar .rf-sort-label { display: none; }
+        [data-rg-page="tickets"] .rg-export .rg-btn-text { display: none; }
+        [data-rg-page="tickets"] .rg-export { padding: 0 9px; }
+        /* cards: narrower right column (priority / agent / status), the subject gets the room */
+        [data-rg-page="tickets"] .rg-list-layout:not(.rf-layout-table) .table-conversations colgroup col.rf-col-side { width: 210px !important; }
+        [data-rg-page="tickets"] .rg-list-layout:not(.rf-layout-table) .table-conversations td.rf-col-side { padding-left: 10px !important; }
+        /* mailbox above the ticket: the name only (the address stays in the tooltip) */
+        [data-rg-page="tickets"] .rg-subject-mailbox .rg-mailbox-email { display: none; }
+    }
+    /* table layout: Refresh's columns (customer 220 px, priority / agent / status 420 px) narrowed, the ticket keeps room */
+    @container rglist (max-width: 1100px) {
+        [data-rg-page="tickets"] .rf-layout-table .table-conversations colgroup col.conv-customer { width: 150px !important; }
+        [data-rg-page="tickets"] .rf-layout-table .table-conversations th.conv-customer,
+        [data-rg-page="tickets"] .rf-layout-table .table-conversations td.conv-customer { width: 150px !important; max-width: 150px !important; }
+        [data-rg-page="tickets"] .rf-layout-table .table-conversations colgroup col.rf-col-side { width: 270px !important; }
+        [data-rg-page="tickets"] .rf-layout-table .table-conversations colgroup col.rg-col-mailbox { width: 110px; }
+        [data-rg-page="tickets"] .rf-layout-table .rf-side > .rf-side-prio { width: 76px; }
+        [data-rg-page="tickets"] .rf-layout-table .rf-side > .rf-side-agent { width: 112px; overflow: hidden; }
+        [data-rg-page="tickets"] .rf-layout-table .rf-side > .rf-side-status { width: 82px; overflow: hidden; }
+    }
+    @container rglist (max-width: 700px) {
+        [data-rg-page="tickets"] .rf-range { display: none; }
+        [data-rg-page="tickets"] .rf-layout-dd .rf-sort-label { display: none; }
+        [data-rg-page="tickets"] .rg-list-layout:not(.rf-layout-table) .table-conversations colgroup col.rf-col-side { width: 170px !important; }
+        [data-rg-page="tickets"] .rf-layout-table .table-conversations colgroup col.conv-customer { width: 112px !important; }
+        [data-rg-page="tickets"] .rf-layout-table .table-conversations th.conv-customer,
+        [data-rg-page="tickets"] .rf-layout-table .table-conversations td.conv-customer { width: 112px !important; max-width: 112px !important; }
+        [data-rg-page="tickets"] .rf-layout-table .table-conversations colgroup col.rf-col-side { width: 200px !important; }
+        [data-rg-page="tickets"] .rf-layout-table .table-conversations colgroup col.rg-col-mailbox { width: 90px; }
+        [data-rg-page="tickets"] .rf-layout-table .rf-side > .rf-side-prio { width: 56px; overflow: hidden; }
+        [data-rg-page="tickets"] .rf-layout-table .rf-side > .rf-side-agent { width: 76px; }
+        [data-rg-page="tickets"] .rf-layout-table .rf-side > .rf-side-status { width: 68px; }
+    }
 }

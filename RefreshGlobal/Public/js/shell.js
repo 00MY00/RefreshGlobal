@@ -160,7 +160,7 @@
             if (a && (a.isContentEditable || /^(TEXTAREA|SELECT)$/.test(a.tagName) || (a.tagName === 'INPUT' && !/^(checkbox|radio|button|submit)$/.test(a.type)))) {
                 return false;
             }
-            if (document.querySelector('.dropdown.open, .btn-group.open, .modal.in, .rf-m-sheet, .select2-container--open')) {
+            if (document.querySelector('.dropdown.open, .btn-group.open, .modal.in, .rf-m-sheet, .select2-container--open, .rg-filters-open')) {
                 return false;
             }
             return !document.body.classList.contains('rf-m-overlay');

@@ -203,14 +203,15 @@
                         </div>
                         {{-- icon only (circular arrow, text in the tooltip): the toolbar has no room for one more label --}}
                         @include('refreshglobal::partials.syncnow_button', ['class' => 'rf-btn rg-sync-icon-only', 'label' => false])
-                        <a class="rf-btn rg-export" href="{{ $rg_export }}" title="{{ __('refreshglobal::messages.export_hint', ['max' => $export_max]) }}"><i class="rf-i rf-i-download"></i> {{ __('refreshglobal::messages.export') }}</a>
+                        <a class="rf-btn rg-export" href="{{ $rg_export }}" title="{{ __('refreshglobal::messages.export_hint', ['max' => $export_max]) }}"><i class="rf-i rf-i-download"></i><span class="rg-btn-text"> {{ __('refreshglobal::messages.export') }}</span></a>
                         <span class="rf-range">{{ __('refreshglobal::messages.range', ['from' => $rg_first, 'to' => $rg_last, 'total' => $conversations->total()]) }}</span>
                         <span class="rf-pager">
                             <a class="rf-pager-btn @if ($conversations->onFirstPage()) disabled @endif" href="{{ $conversations->onFirstPage() ? '#' : $conversations->previousPageUrl() }}" title="{{ __('refreshglobal::messages.previous_page') }}"><i class="rf-i rf-i-chevron-left rf-i-sm"></i></a><a class="rf-pager-btn @if (!$conversations->hasMorePages()) disabled @endif" href="{{ $conversations->hasMorePages() ? $conversations->nextPageUrl() : '#' }}" title="{{ __('refreshglobal::messages.next_page') }}"><i class="rf-i rf-i-chevron-right rf-i-sm"></i></a>
                         </span>
-                        <button type="button" class="rf-btn rf-toggle-filters"><i class="rf-i rf-i-filter"></i> {{ __('refreshglobal::messages.filters') }} @if ($filters_count)({{ $filters_count }})@endif</button>
+                        <button type="button" class="rf-btn rf-toggle-filters @if ($filters_count) rg-has-filters @endif" aria-controls="rg-filters"><i class="rf-i rf-i-filter"></i> {{ __('refreshglobal::messages.filters') }} @if ($filters_count)({{ $filters_count }})@endif</button>
                     </div>
                 </div>
+                @include('refreshglobal::partials.active_filters')
 
                 <div class="rf-list-scroll">
                     @include('conversations/conversations_table', ['folder' => $folder, 'conversations' => $conversations])

@@ -16,7 +16,11 @@
     @if ($rg_is_refresh)
         <div class="rf-filters-head">
             <span class="rf-filters-title">{{ __('refreshglobal::messages.filters') }}</span>
-            @if ($filters_count)<a href="{{ route('refreshglobal.tickets', ['reset' => 1]) }}" class="rf-filters-reset">{{ __('refreshglobal::messages.clear_filters') }}</a>@endif
+            <span class="rg-filters-head-right">
+                @if ($filters_count)<a href="{{ route('refreshglobal.tickets', ['reset' => 1]) }}" class="rf-filters-reset">{{ __('refreshglobal::messages.clear_filters') }}</a>@endif
+                {{-- fold the panel to the side (docked), or close it (open over the list on a narrow screen) --}}
+                <button type="button" class="rg-filters-close" title="{{ __('refreshglobal::messages.hide_filters') }}" aria-label="{{ __('refreshglobal::messages.hide_filters') }}">&times;</button>
+            </span>
         </div>
     @endif
     <div class="@if ($rg_is_refresh) rf-filters-body @else rg-filters-row @endif">

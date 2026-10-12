@@ -231,4 +231,7 @@ return [
     'delay_h'                      => ':n h',
     'delay_d'                      => ':n j',
     'folders_note'                 => 'Un ticket compte dans le dossier de son dernier e-mail classé par Workflow Packs ; une fois cet e-mail retiré par le nettoyage automatique, il n’y compte plus.',
+    'active_filters'               => 'Filtres actifs',
+    'hide_filters'                 => 'Masquer les filtres',
+    'edit_filters'                 => 'Modifier',
 ];

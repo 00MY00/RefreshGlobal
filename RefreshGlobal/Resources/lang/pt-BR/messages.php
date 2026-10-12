@@ -231,4 +231,7 @@ return [
     'delay_h'                      => ':n h',
     'delay_d'                      => ':n d',
     'folders_note'                 => 'Um ticket conta na pasta do seu último e-mail arquivado pelo Workflow Packs; quando a limpeza automática remove esse e-mail, ele deixa de contar.',
+    'active_filters'               => 'Filtros ativos',
+    'hide_filters'                 => 'Ocultar os filtros',
+    'edit_filters'                 => 'Alterar',
 ];

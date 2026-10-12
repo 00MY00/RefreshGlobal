@@ -237,4 +237,7 @@ return [
     'delay_h'                      => ':n h',
     'delay_d'                      => ':n d',
     'folders_note'                 => 'A ticket counts in the folder of its last e-mail filed by Workflow Packs; once the automatic clean-up removed that e-mail, it no longer counts.',
+    'active_filters'               => 'Active filters',
+    'hide_filters'                 => 'Hide the filters',
+    'edit_filters'                 => 'Edit',
 ];

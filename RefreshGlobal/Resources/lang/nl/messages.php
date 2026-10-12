@@ -231,4 +231,7 @@ return [
     'delay_h'                      => ':n u',
     'delay_d'                      => ':n d',
     'folders_note'                 => 'Een ticket telt in de map van zijn laatste door Workflow Packs opgeborgen e-mail; zodra het automatisch opruimen die e-mail heeft verwijderd, telt het daar niet meer.',
+    'active_filters'               => 'Actieve filters',
+    'hide_filters'                 => 'Filters verbergen',
+    'edit_filters'                 => 'Wijzigen',
 ];

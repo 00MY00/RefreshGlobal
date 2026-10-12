@@ -231,4 +231,7 @@ return [
     'delay_h'                      => ':n Std.',
     'delay_d'                      => ':n T.',
     'folders_note'                 => 'Ein Ticket zählt im Ordner seiner letzten von Workflow Packs einsortierten E-Mail; nachdem die automatische Bereinigung diese E-Mail entfernt hat, zählt es dort nicht mehr.',
+    'active_filters'               => 'Aktive Filter',
+    'hide_filters'                 => 'Filter ausblenden',
+    'edit_filters'                 => 'Ändern',
 ];

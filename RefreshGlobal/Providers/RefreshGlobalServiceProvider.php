@@ -344,7 +344,9 @@ class RefreshGlobalServiceProvider extends ServiceProvider
             $email = $conversation->relationLoaded('mailbox') && $conversation->mailbox ? (string) $conversation->mailbox->email : '';
             $text = e($name);
             if ($email !== '' && mb_strtolower($email) !== mb_strtolower($name)) {
-                $text .= ' <span class="rg-mailbox-email">'.e($email).'</span>';
+                // address drawn by CSS (attribute): Refresh's phone pills are built from the badge TEXT
+                // (Modules/Refresh/Public/js/mobile.js:592), they then show the name only and do not overflow the card
+                $text .= ' <span class="rg-mailbox-email" data-email="'.e($email).'"></span>';
             }
             echo '<span class="rf-badge rg-mailbox-badge rg-subject-mailbox" title="'.e(trim($name.' '.$email)).'">'.$text.'</span>';
         }, 0);

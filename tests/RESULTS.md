@@ -1,4 +1,4 @@
-# Résultats des tests — RefreshGlobal 1.8.0
+# Résultats des tests — RefreshGlobal 1.8.1
 
 Date : 2026-10-09. Environnements jetables Docker : FreeScout 1.8.245 (dépôt officiel), PHP 8.2.34, Apache,
 MariaDB 10.11 ; Refresh 1.4.3 (dépôt officiel). Données de test uniquement (adresses `.test`).
@@ -206,6 +206,21 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
 - Navigateur : interface en anglais, choix « Français » dans le sélecteur → la page, la barre de Refresh et le
   tableau de bord passent en français ; `users.locale = fr` en base. Sélecteur visible en bas du panneau des vues
   (ordinateur) et du tiroir (téléphone).
+
+## 23. Affichage selon la largeur (1.8.1)
+
+- Navigateur, liste filtrée (recherche + boîte + statut), sujets et noms de boîte longs, largeurs 1280 (zoom 150 %,
+  comme un écran 1080p à 150 %), 1024, 1440, 1920, 820 px et téléphone :
+  - bouton « Filtres » toujours **dans** la liste et visible, à toutes les largeurs ;
+  - 1280, 1024, 820 px : panneau **par-dessus** la liste (la liste garde 924 / 668 / 754 px), ouvert par
+    « Filtres » et « Modifier », fermé par Échap, ×, clic à côté ; barre « Filtres actifs » avec 3 pastilles ;
+  - 1440, 1920 px : panneau à droite ; × le replie sur le côté (liste 784 → 1084 px, 1264 → 1564 px), la barre
+    « Filtres actifs » apparaît, « Modifier » le rouvre ;
+  - sujet des cartes à 1280 px : **460 px** (≈ 200 avant) ; vue tableau à 1280 px : colonne « Ticket » **322 px**
+    (92 avant) ; sans filtre : pas de barre ; téléphone : présentation de Refresh, pastille « boîte » au nom seul ;
+    aucune erreur JavaScript.
+- PHPUnit : nouveau `LayoutTest` (barre et pastilles, liens qui n'enlèvent qu'un filtre, adresse de la boîte hors
+  du texte du badge).
 
 ## 22. Dossiers automatiques de Workflow Packs (1.8.0)
 
