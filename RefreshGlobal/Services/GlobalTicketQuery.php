@@ -14,6 +14,7 @@ use App\Conversation;
  *   assignee  string  '' any | 'me' | 'none' | user id
  *   q         string  subject, customer name, customer e-mail, ticket number
  *   rview     string  '' | a Refresh view (GlobalDashboard::VIEWS) with Refresh's own definition (URL parameter rv)
+ *   wfolder   string  '' | an automatic folder of Workflow Packs, sub-folders included (URL parameter wf, AutoFolders)
  *   sort      string  one of sorts()
  *   order     string  asc | desc
  */
@@ -41,6 +42,7 @@ class GlobalTicketQuery
             'assignee'  => '',
             'q'         => '',
             'rview'     => '',
+            'wfolder'   => '',
             'sort'      => 'updated',
             'order'     => 'desc',
         ];
@@ -106,6 +108,13 @@ class GlobalTicketQuery
             $f['rview'] = $rv;
         }
 
+        // automatic folder of Workflow Packs, only when its table is there
+        $wf = isset($input['wf']) ? $input['wf'] : ($input['wfolder'] ?? '');
+        $wf = AutoFolders::normalize($wf);
+        if ($wf !== '' && AutoFolders::available()) {
+            $f['wfolder'] = $wf;
+        }
+
         $sort = isset($input['sort']) && is_scalar($input['sort']) ? (string) $input['sort'] : '';
         $f['sort'] = array_key_exists($sort, self::sorts()) ? $sort : 'updated';
         $order = isset($input['order']) && is_scalar($input['order']) ? (string) $input['order'] : '';
@@ -133,6 +142,9 @@ class GlobalTicketQuery
         if (isset($f['rview']) && $f['rview'] !== '') {
             $params['rv'] = $f['rview'];
         }
+        if (isset($f['wfolder']) && $f['wfolder'] !== '') {
+            $params['wf'] = $f['wfolder'];
+        }
         if (isset($f['sort']) && $f['sort'] !== 'updated') {
             $params['sort'] = $f['sort'];
         }
@@ -152,7 +164,7 @@ class GlobalTicketQuery
                 $n++;
             }
         }
-        foreach (['assignee', 'q', 'rview'] as $k) {
+        foreach (['assignee', 'q', 'rview', 'wfolder'] as $k) {
             if (isset($f[$k]) && $f[$k] !== '') {
                 $n++;
             }
@@ -169,7 +181,7 @@ class GlobalTicketQuery
     /**
      * Rights + filters, no sort.
      *
-     * @param string[] $except filters to leave out ('mailboxes' or 'status', for the counters)
+     * @param string[] $except filters to leave out ('mailboxes', 'status' or 'wfolder', for the counters)
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function base(array $except = [])
@@ -224,6 +236,10 @@ class GlobalTicketQuery
             GlobalDashboard::applyView($query, $f['rview'], $ids, $user);
         }
 
+        if (!in_array('wfolder', $except, true) && $f['wfolder'] !== '' && AutoFolders::available()) {
+            AutoFolders::applyFilter($query, $f['wfolder']);
+        }
+
         return $query;
     }
 
@@ -267,6 +283,12 @@ class GlobalTicketQuery
     public function countsByStatus()
     {
         return $this->grouped('status', ['status']);
+    }
+
+    /** automatic folder of Workflow Packs => number of tickets with the current filters except the folder filter. */
+    public function countsByFolder()
+    {
+        return AutoFolders::available() ? AutoFolders::counts($this->base(['wfolder'])) : [];
     }
 
     protected function grouped($column, array $except)

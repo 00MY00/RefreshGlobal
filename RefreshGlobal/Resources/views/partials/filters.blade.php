@@ -9,6 +9,10 @@
         {{-- Refresh view chosen on the dashboard: kept while filtering, removable --}}
         <input type="hidden" name="rv" value="{{ $filters['rview'] }}">
     @endif
+    @if ($filters['wfolder'] !== '')
+        {{-- automatic folder of Workflow Packs chosen in the views panel: kept while filtering, removable --}}
+        <input type="hidden" name="wf" value="{{ $filters['wfolder'] }}">
+    @endif
     @if ($rg_is_refresh)
         <div class="rf-filters-head">
             <span class="rf-filters-title">{{ __('refreshglobal::messages.filters') }}</span>
@@ -21,6 +25,13 @@
                 <label>{{ __('refreshglobal::messages.refresh_view') }}</label>
                 <span class="rg-rview-chip">{{ \Modules\RefreshGlobal\Services\GlobalDashboard::viewLabel($filters['rview']) }}
                     <a href="{{ $rg_url([], ['rv', 'page']) }}" title="{{ __('refreshglobal::messages.remove') }}">&times;</a></span>
+            </div>
+        @endif
+        @if ($filters['wfolder'] !== '')
+            <div class="@if ($rg_is_refresh) rf-f @else form-group rg-f @endif rg-rview rg-wfolder">
+                <label>{{ __('refreshglobal::messages.auto_folder') }}</label>
+                <span class="rg-rview-chip">{!! \Modules\RefreshGlobal\Services\AutoFolders::icon() !!} {{ $rg_folder_label }}
+                    <a href="{{ $rg_url([], ['wf', 'page']) }}" title="{{ __('refreshglobal::messages.remove') }}">&times;</a></span>
             </div>
         @endif
         <div class="@if ($rg_is_refresh) rf-f @else form-group rg-f @endif">

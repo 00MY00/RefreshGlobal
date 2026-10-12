@@ -19,6 +19,8 @@ use App\Thread;
  *    in the folders FreeScout fetches (Mailbox::getInImapFolders(), app/Mailbox.php:906) — agent replies in the
  *    mailbox's "Sent" folder (imap_sent_folder) — and moves it to the server's trash folder (Message::move(), MOVE or
  *    COPY + delete). POP3 mailboxes: nothing can be moved (skipped).
+ *    Tickets whose e-mail the Workflow Packs module filed into a folder of the server ("INBOX.[WP] Factures"): that
+ *    folder, copied in the queue when the ticket is deleted (Services/AutoFolders.php), is searched too.
  */
 class MailServerTrash
 {
@@ -74,13 +76,16 @@ class MailServerTrash
         }
         try {
             $now = date('Y-m-d H:i:s');
+            $with_path = self::hasPathColumn();
             foreach (array_chunk($conversation_ids, 500) as $chunk) {
                 $rows = Thread::query()
                     ->join('conversations', 'conversations.id', '=', 'threads.conversation_id')
                     ->whereIn('threads.conversation_id', $chunk)
                     ->whereNotNull('threads.message_id')->where('threads.message_id', '!=', '')
                     ->whereIn('threads.type', [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE])
-                    ->get(['conversations.mailbox_id', 'threads.message_id', 'threads.type']);
+                    ->get(['conversations.mailbox_id', 'threads.conversation_id', 'threads.message_id', 'threads.type']);
+                // folder where Workflow Packs filed the ticket's e-mail: read now, its row goes with the ticket
+                $paths = $with_path ? AutoFolders::paths($chunk) : [];
                 $insert = [];
                 $seen = [];
                 foreach ($rows as $row) {
@@ -91,8 +96,13 @@ class MailServerTrash
                         continue;
                     }
                     $seen[$key] = true;
-                    $insert[] = ['mailbox_id' => (int) $row->mailbox_id, 'message_id' => mb_substr($id, 0, 998), 'folder' => $folder,
+                    $values = ['mailbox_id' => (int) $row->mailbox_id, 'message_id' => mb_substr($id, 0, 998), 'folder' => $folder,
                         'status' => 'pending', 'attempts' => 0, 'created_at' => $now, 'updated_at' => $now];
+                    if ($with_path) {
+                        $values['imap_path'] = $folder === 'in' && isset($paths[(int) $row->conversation_id])
+                            ? mb_substr($paths[(int) $row->conversation_id], 0, 191) : null;
+                    }
+                    $insert[] = $values;
                 }
                 foreach (array_chunk($insert, 200) as $part) {
                     \DB::table(self::TABLE)->insert($part);
@@ -101,6 +111,16 @@ class MailServerTrash
         } catch (\Throwable $e) {
             // never block FreeScout's deletion
             \Log::warning('[RefreshGlobal] [mail-trash] queue: '.$e->getMessage());
+        }
+    }
+
+    /** Column imap_path (migration of 1.8.0). */
+    protected static function hasPathColumn()
+    {
+        try {
+            return \Schema::hasColumn(self::TABLE, 'imap_path');
+        } catch (\Throwable $e) {
+            return false;
         }
     }
 
@@ -171,10 +191,23 @@ class MailServerTrash
                 $done['failed'] += count($rows);
                 continue;
             }
+            $extra = [];
             foreach ($rows as $row) {
                 try {
                     $found = false;
-                    foreach ($folders[$row->folder === 'sent' ? 'sent' : 'in'] as $folder) {
+                    $search = $folders[$row->folder === 'sent' ? 'sent' : 'in'];
+                    // folder of Workflow Packs (opened once per mailbox and run)
+                    $path = isset($row->imap_path) ? (string) $row->imap_path : '';
+                    if ($path !== '') {
+                        if (!array_key_exists($path, $extra)) {
+                            $f = self::folder($client, $path);
+                            $extra[$path] = $f && $f->path !== $trash->path ? $f : null;
+                        }
+                        if ($extra[$path]) {
+                            $search[] = $extra[$path];
+                        }
+                    }
+                    foreach ($search as $folder) {
                         foreach ($folder->query()->whereMessageId($row->message_id)->leaveUnread()->get() as $message) {
                             $message->move($trash->path);
                             $found = true;

@@ -184,4 +184,22 @@ return [
         'effect' => 'De knop „E-mails ophalen” wordt niet getoond; de pagina van SyncNow werkt nog. De rest werkt.',
         'action' => 'De geïnstalleerde SyncNow-versie controleren (getest: 1.3.0), RefreshGlobal bijwerken en daarna php artisan refreshglobal:check uitvoeren.',
     ],
+    'db_wp' => [
+        'check'  => 'Tabel en kolommen van Workflow Packs aanwezig: :item',
+        'label'  => 'Een tabel of kolom van Workflow Packs voor de automatische mappen ontbreekt: :item.',
+        'effect' => 'De automatische mappen (weergavepaneel, 📁-badge, overzicht) worden niet getoond. De rest werkt.',
+        'action' => 'Workflow Packs bijwerken (1.14.0 of nieuwer) en daarna php artisan refreshglobal:check uitvoeren.',
+    ],
+    'route_wp' => [
+        'check'  => 'Route van de module Workflow Packs aanwezig: :item',
+        'label'  => 'Een route van Workflow Packs voor het mappenoverzicht ontbreekt: :item.',
+        'effect' => 'De links naar de regels en de geschiedenis van Workflow Packs worden niet getoond. De rest werkt.',
+        'action' => 'Geïnstalleerde versie van Workflow Packs controleren (getest: 1.14.0), RefreshGlobal bijwerken en daarna php artisan refreshglobal:check uitvoeren.',
+    ],
+    'core_dates' => [
+        'check'  => 'FreeScout-code aanwezig: :item',
+        'label'  => 'Een FreeScout-methode om datums te tonen ontbreekt: :item.',
+        'effect' => 'Het mappenoverzicht toont ruwe datums. De rest werkt.',
+        'action' => 'RefreshGlobal bijwerken naar een versie voor deze FreeScout-versie en daarna php artisan refreshglobal:check uitvoeren.',
+    ],
 ];

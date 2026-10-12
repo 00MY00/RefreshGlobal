@@ -184,4 +184,22 @@ return [
         'effect' => 'O botão “Buscar e-mails” não é exibido; a página do SyncNow continua funcionando. O resto funciona.',
         'action' => 'Verificar a versão do SyncNow instalada (testada: 1.3.0), atualizar o RefreshGlobal e depois executar php artisan refreshglobal:check.',
     ],
+    'db_wp' => [
+        'check'  => 'Tabela e colunas do Workflow Packs presentes: :item',
+        'label'  => 'Falta uma tabela ou coluna do Workflow Packs usada para as pastas automáticas: :item.',
+        'effect' => 'As pastas automáticas (painel de visões, selo 📁, visão geral) não são exibidas. O resto funciona.',
+        'action' => 'Atualizar o Workflow Packs (1.14.0 ou mais recente) e executar php artisan refreshglobal:check.',
+    ],
+    'route_wp' => [
+        'check'  => 'Rota do módulo Workflow Packs presente: :item',
+        'label'  => 'Falta uma rota do Workflow Packs usada pela visão geral das pastas: :item.',
+        'effect' => 'Os links para as regras e o histórico do Workflow Packs não são exibidos. O resto funciona.',
+        'action' => 'Verificar a versão do Workflow Packs instalada (testada: 1.14.0), atualizar o RefreshGlobal e executar php artisan refreshglobal:check.',
+    ],
+    'core_dates' => [
+        'check'  => 'Código do FreeScout presente: :item',
+        'label'  => 'Falta um método do FreeScout usado para exibir datas: :item.',
+        'effect' => 'A visão geral das pastas exibe as datas sem formatação. O resto funciona.',
+        'action' => 'Atualizar o RefreshGlobal para uma versão feita para esta versão do FreeScout e executar php artisan refreshglobal:check.',
+    ],
 ];

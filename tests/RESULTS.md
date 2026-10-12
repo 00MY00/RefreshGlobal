@@ -1,4 +1,4 @@
-# Résultats des tests — RefreshGlobal 1.7.1
+# Résultats des tests — RefreshGlobal 1.8.0
 
 Date : 2026-10-09. Environnements jetables Docker : FreeScout 1.8.245 (dépôt officiel), PHP 8.2.34, Apache,
 MariaDB 10.11 ; Refresh 1.4.3 (dépôt officiel). Données de test uniquement (adresses `.test`).
@@ -206,6 +206,27 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
 - Navigateur : interface en anglais, choix « Français » dans le sélecteur → la page, la barre de Refresh et le
   tableau de bord passent en français ; `users.locale = fr` en base. Sélecteur visible en bas du panneau des vues
   (ordinateur) et du tiroir (téléphone).
+
+## 22. Dossiers automatiques de Workflow Packs (1.8.0)
+
+- PHPUnit **sans Workflow Packs** : **101 tests, 1488 assertions, 0 échec** (1 ignoré : SyncNow) ;
+  `refreshglobal:check` : RG-DB-09/10 et RG-ROUTE-07/08 « ignorés », état OK.
+- **Workflow Packs 1.14.0** installé depuis sa release publiée (`WorkflowPacks.zip`, SHA-256 vérifié) :
+  `refreshglobal:check` RG-DB-09/10, RG-ROUTE-07/08 OK, état OK ; PHPUnit **101 tests, 0 échec** (2 ignorés :
+  SyncNow, et le test « sans Workflow Packs »). Le test de suppression définitive vérifie, avec Workflow Packs actif,
+  que RefreshGlobal (priorité 20) lit le dossier avant que Workflow Packs efface sa ligne (priorité 1000).
+- Navigateur (14 tickets classés **par le code de Workflow Packs**, `TicketFolders::record`, un retiré par le
+  nettoyage, une règle « Newsletters : corbeille après 7 j ») : section « Dossiers automatiques » avec l'arbre
+  ([WP] Factures 9 › Clients 3, Fournisseurs 3 ; [WP] Newsletters 2 ; [WP] Support › Urgent 2) ; clic → liste
+  filtrée (9 tickets, titre « [WP] Factures · Toutes les boîtes », puce supprimable dans les filtres) ; badge
+  dossier sur chaque ticket (cartes, téléphone) ; « Vue d'ensemble » : 5 dossiers, boîtes, « corbeille du serveur
+  après 7 j », liens vers les règles et l'historique de Workflow Packs ; tiroir du téléphone ; style standard de
+  FreeScout (sans Refresh) ; aucune erreur JavaScript. Icône dossier en SVG (un émoji n'est pas dessiné sans police
+  d'émojis) ; retraits par classes CSS (les styles en ligne peuvent être bloqués par la CSP).
+- **Bout en bout, vrai serveur IMAP** (GreenMail) : e-mail relevé, déplacé dans `INBOX.[WP] Factures`, ticket
+  classé par Workflow Packs, ticket supprimé définitivement → file : `imap_path = INBOX.[WP] Factures` ;
+  `refreshglobal:mail-trash` : **1 e-mail déplacé** ; contrôle sur le serveur : `INBOX.[WP] Factures` vide,
+  `Trash` contient l'e-mail.
 
 ## 21. Animation de chargement (1.7.1)
 

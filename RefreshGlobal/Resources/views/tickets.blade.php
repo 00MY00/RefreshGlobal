@@ -32,7 +32,7 @@
     $rg_export = route('refreshglobal.export', $rg_params);
     $rg_title = $active_view ? $active_view->name : ($filters['rview'] !== ''
         ? \Modules\RefreshGlobal\Services\GlobalDashboard::viewLabel($filters['rview']).' · '.__('refreshglobal::messages.title')
-        : __('refreshglobal::messages.title'));
+        : ($filters['wfolder'] !== '' ? $rg_folder_label.' · '.__('refreshglobal::messages.title') : __('refreshglobal::messages.title')));
     $rg_first = $conversations->firstItem() ?: 0;
     $rg_last = $conversations->lastItem() ?: 0;
     $rg_sel = function ($list, $value) { return in_array((string) $value, array_map('strval', (array) $list), true) ? 'selected' : ''; };
@@ -92,6 +92,24 @@
                     @endforeach
                 </div>
             </div>
+            @if ($rg_folders)
+                {{-- Automatic folders of Workflow Packs (Services/AutoFolders.php): the list filtered on a folder, sub-folders included --}}
+                <div class="rf-views-sec rg-folders" data-sec="rg-folders">
+                    <button type="button" class="rf-views-sec-head">{{ __('refreshglobal::messages.auto_folders') }}<i class="rf-i rf-i-fd-chevron-down rf-i-sm"></i></button>
+                    {{-- Refresh hides the section heads in its phone drawer: same title, shown on phones only --}}
+                    <div class="rg-m-sectitle">{{ __('refreshglobal::messages.auto_folders') }}</div>
+                    <div class="rf-views-list">
+                        @foreach ($rg_folders as $node)
+                            <a href="{{ $rg_url(['wf' => $node['folder']], ['page']) }}" class="rf-v @if ($node['depth']) rg-folder-sub rg-depth-{{ min(5, $node['depth']) }} @endif @if ($filters['wfolder'] === $node['folder']) active @endif" data-label="{{ mb_strtolower($node['label']) }}" title="{{ $node['label'] }}">
+                                <i class="rg-folder-icon">{!! \Modules\RefreshGlobal\Services\AutoFolders::icon() !!}</i><span class="rf-v-label">{{ $node['name'] }}</span>@if ($node['count'])<span class="rf-v-count">{{ $node['count'] }}</span>@endif
+                            </a>
+                        @endforeach
+                        <a href="{{ route('refreshglobal.folders') }}" class="rf-v rg-folders-all" data-label="{{ mb_strtolower(__('refreshglobal::messages.folders_overview')) }}">
+                            <i class="rf-i rf-i-fd-views"></i><span class="rf-v-label">{{ __('refreshglobal::messages.folders_overview') }}</span>
+                        </a>
+                    </div>
+                </div>
+            @endif
             @include('refreshglobal::partials.view_actions')
         </div>
     @else
@@ -127,6 +145,17 @@
                 </li>
             @endforeach
         </ul>
+        @if ($rg_folders)
+            <div class="sidebar-title rg-sidebar-subtitle"><span class="sidebar-title-real">{{ __('refreshglobal::messages.auto_folders') }}</span></div>
+            <ul class="sidebar-menu rg-sidebar-menu rg-folders">
+                @foreach ($rg_folders as $node)
+                    <li class="@if ($node['depth']) rg-folder-sub rg-depth-{{ min(5, $node['depth']) }} @endif @if ($filters['wfolder'] === $node['folder']) active @endif">
+                        <a href="{{ $rg_url(['wf' => $node['folder']], ['page']) }}" title="{{ $node['label'] }}" @if (!$node['count']) class="no-active" @endif><i class="glyphicon glyphicon-folder-close"></i> <span class="folder-name">{{ $node['name'] }}</span>@if ($node['count'])<span class="active-count pull-right">{{ $node['count'] }}</span>@endif</a>
+                    </li>
+                @endforeach
+                <li><a href="{{ route('refreshglobal.folders') }}"><i class="glyphicon glyphicon-th-list"></i> <span class="folder-name">{{ __('refreshglobal::messages.folders_overview') }}</span></a></li>
+            </ul>
+        @endif
         @include('refreshglobal::partials.view_actions')
     @endif
 @endsection

@@ -6,6 +6,7 @@
 |---|---|---|---|
 | FreeScout | **1.8.245** (commit `f92cb04`, 2026-10-03) | `>= 1.8.0` et `< 1.9.0` | avertissement RG-ENV-01 |
 | Refresh | **1.4.3** (tag `v1.4.3`) | `>= 1.4.0` et `< 1.5.0` | avertissement RG-REF-02 |
+| Workflow Packs (facultatif) | **1.14.0** (release `v1.14.0`) | table `workflowpacks_ticket_folders` présente | sans elle : dossiers automatiques non affichés (RG-DB-09) |
 | Laravel (fourni par FreeScout) | 5.5.40 + surcharges FreeScout | — | — |
 | PHP | **8.2.34** (tests), syntaxe vérifiée sous **7.1.33** et **8.4.26** | `>= 7.1.0` (minimum de FreeScout) | l'installeur s'arrête |
 | Base de données | **MariaDB 10.11** | MySQL / MariaDB ; PostgreSQL pris en charge par le code (opérateur `ilike`, pas de fonction JSON) mais **non testé** | — |
@@ -32,6 +33,7 @@ Chacun est contrôlé par `php artisan refreshglobal:check`.
 | `refresh.rail_items` | point d'extension documenté de Refresh | icône remplacée par le lien générique du menu (RG-HOOK-07) |
 | Tableau de bord de toutes les boîtes (bloc `rf-dash` de Refresh, `Views::query`, `Dashboard::chart/delta/duration`) | balisage et classes internes de Refresh, formules recopiées de `Dashboard::stats()` | le tableau de bord de Refresh s'affiche tel quel (première boîte) (RG-HOOK-18…20, RG-CORE-09…11) |
 | Suppression d'un ticket (`conversations.ajax`, actions `delete_conversation*`) | noms d'actions internes de FreeScout | comportement de FreeScout (retour à la boîte, corbeille) (RG-HOOK-21, RG-ROUTE-04, RG-CORE-12) |
+| Dossiers automatiques (tables `workflowpacks_ticket_folders`, `workflowpacks_retention` de Workflow Packs) | schéma d'un module tiers, documenté par lui (`docs/api-dossiers.md`) | dossiers automatiques non affichés, le reste fonctionne (RG-DB-09/10, avertissement) |
 | Correction des textes français de Refresh (`<meta name="refresh-l10n">`) | balise interne de Refresh | textes d'origine de Refresh (RG-HOOK-22, avertissement) |
 
 ## Mise à jour automatique

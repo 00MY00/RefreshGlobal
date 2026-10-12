@@ -184,4 +184,22 @@ return [
         'effect' => 'Le bouton « Relever les e-mails » n’est pas affiché ; la page de SyncNow fonctionne toujours. Le reste fonctionne.',
         'action' => 'Vérifier la version de SyncNow installée (testée : 1.3.0), mettre à jour RefreshGlobal, puis exécuter php artisan refreshglobal:check.',
     ],
+    'db_wp' => [
+        'check'  => 'Table et colonnes de Workflow Packs présentes : :item',
+        'label'  => 'Une table ou colonne de Workflow Packs utilisée pour les dossiers automatiques est absente : :item.',
+        'effect' => 'Les dossiers automatiques (panneau des vues, badge 📁, vue d’ensemble) ne sont pas affichés. Le reste fonctionne.',
+        'action' => 'Mettre à jour Workflow Packs (1.14.0 ou plus récent), puis exécuter php artisan refreshglobal:check.',
+    ],
+    'route_wp' => [
+        'check'  => 'Route du module Workflow Packs présente : :item',
+        'label'  => 'Une route de Workflow Packs utilisée par la vue d’ensemble des dossiers est absente : :item.',
+        'effect' => 'Les liens vers les règles et l’historique de Workflow Packs ne sont pas affichés. Le reste fonctionne.',
+        'action' => 'Vérifier la version de Workflow Packs installée (testée : 1.14.0), mettre à jour RefreshGlobal, puis exécuter php artisan refreshglobal:check.',
+    ],
+    'core_dates' => [
+        'check'  => 'Code FreeScout présent : :item',
+        'label'  => 'Une méthode de FreeScout utilisée pour afficher les dates est absente : :item.',
+        'effect' => 'La vue d’ensemble des dossiers affiche les dates brutes. Le reste fonctionne.',
+        'action' => 'Mettre à jour RefreshGlobal vers une version prévue pour cette version de FreeScout, puis exécuter php artisan refreshglobal:check.',
+    ],
 ];

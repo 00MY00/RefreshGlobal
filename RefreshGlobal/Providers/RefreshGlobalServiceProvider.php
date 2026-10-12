@@ -14,6 +14,7 @@ use Illuminate\Support\ServiceProvider;
  *     refresh.rail_items (Modules/Refresh/Providers/RefreshServiceProvider.php:711) → same entry in Refresh's left bar
  *     conversations_table.col/th/td_before_conv_number
  *       (resources/views/conversations/conversations_table.blade.php:83,118,206) → "Mailbox" column, on its page only;
+ *     conversations_table.before_subject (same file:191)                     → mailbox and automatic folder badges;
  *     dashboard.before (resources/views/secure/dashboard.blade.php:8)          → Refresh's dashboard for all mailboxes;
  * - adds a middleware to the "web" group for the deletion of tickets (Http/Middleware/AfterDelete.php).
  */
@@ -26,6 +27,9 @@ class RefreshGlobalServiceProvider extends ServiceProvider
 
     /** Set by GlobalTicketsController: the hooks print the "Mailbox" column only on the module's page. */
     public static $show_mailbox_column = false;
+
+    /** Set by GlobalTicketsController: automatic folder of Workflow Packs of each ticket of the page [id => label]. */
+    public static $folder_badges = [];
 
     protected $defer = false;
 
@@ -344,6 +348,15 @@ class RefreshGlobalServiceProvider extends ServiceProvider
             }
             echo '<span class="rf-badge rg-mailbox-badge rg-subject-mailbox" title="'.e(trim($name.' '.$email)).'">'.$text.'</span>';
         }, 0);
+        // Automatic folder of Workflow Packs where the ticket's e-mail was filed on the mail server (Services/AutoFolders.php),
+        // right after the mailbox, in both layouts and on phones (class rf-badge)
+        \Eventy::addAction('conversations_table.before_subject', function ($conversation) {
+            if (!$conversation || !isset(self::$folder_badges[$conversation->id])) {
+                return;
+            }
+            $label = self::$folder_badges[$conversation->id];
+            echo '<span class="rf-badge rg-mailbox-badge rg-folder-badge" title="'.e(__('refreshglobal::messages.auto_folder').' : '.$label).'">'.\Modules\RefreshGlobal\Services\AutoFolders::icon().' '.e($label).'</span>';
+        }, 1);
     }
 
     /** Value of $show_mailbox_column for the module's lists: with or without the badge above each ticket. */

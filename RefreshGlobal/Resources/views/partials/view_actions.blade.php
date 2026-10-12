@@ -16,6 +16,7 @@
                 <input type="hidden" name="assignee" value="{{ $filters['assignee'] }}">
                 <input type="hidden" name="q" value="{{ $filters['q'] }}">
                 @if ($filters['rview'] !== '')<input type="hidden" name="rv" value="{{ $filters['rview'] }}">@endif
+                @if ($filters['wfolder'] !== '')<input type="hidden" name="wf" value="{{ $filters['wfolder'] }}">@endif
                 <input type="hidden" name="sort" value="{{ $filters['sort'] }}">
                 <input type="hidden" name="order" value="{{ $filters['order'] }}">
                 <label class="rg-label" for="rg-view-name">{{ __('refreshglobal::messages.view_name') }}</label>

@@ -17,6 +17,8 @@ Route::group([
     Route::get('/tickets', $users + ['uses' => 'GlobalTicketsController@index'])->name('refreshglobal.tickets');
     Route::get('/export', $users + ['uses' => 'ExportController@export'])->name('refreshglobal.export');
     Route::get('/state', $users + ['uses' => 'GlobalTicketsController@state'])->name('refreshglobal.state');
+    // automatic folders of Workflow Packs (when installed): overview
+    Route::get('/folders', $users + ['uses' => 'AutoFoldersController@index'])->name('refreshglobal.folders');
     Route::post('/language', $users + ['uses' => 'LanguageController@update'])->name('refreshglobal.language');
     // permission checked by the controller (admins, or users allowed to delete conversations)
     Route::post('/trash/empty', $users + ['uses' => 'TrashController@empty'])->name('refreshglobal.trash.empty');

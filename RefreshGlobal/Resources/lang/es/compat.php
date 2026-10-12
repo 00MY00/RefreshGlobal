@@ -184,4 +184,22 @@ return [
         'effect' => 'El botón «Recibir correos» no se muestra; la página de SyncNow sigue funcionando. El resto funciona.',
         'action' => 'Comprobar la versión de SyncNow instalada (probada: 1.3.0), actualizar RefreshGlobal y ejecutar php artisan refreshglobal:check.',
     ],
+    'db_wp' => [
+        'check'  => 'Tabla y columnas de Workflow Packs presentes: :item',
+        'label'  => 'Falta una tabla o columna de Workflow Packs usada para las carpetas automáticas: :item.',
+        'effect' => 'Las carpetas automáticas (panel de vistas, distintivo 📁, vista general) no se muestran. El resto funciona.',
+        'action' => 'Actualizar Workflow Packs (1.14.0 o posterior) y ejecutar php artisan refreshglobal:check.',
+    ],
+    'route_wp' => [
+        'check'  => 'Ruta del módulo Workflow Packs presente: :item',
+        'label'  => 'Falta una ruta de Workflow Packs usada por la vista general de carpetas: :item.',
+        'effect' => 'Los enlaces a las reglas y al historial de Workflow Packs no se muestran. El resto funciona.',
+        'action' => 'Comprobar la versión de Workflow Packs instalada (probada: 1.14.0), actualizar RefreshGlobal y ejecutar php artisan refreshglobal:check.',
+    ],
+    'core_dates' => [
+        'check'  => 'Código de FreeScout presente: :item',
+        'label'  => 'Falta un método de FreeScout usado para mostrar fechas: :item.',
+        'effect' => 'La vista general de carpetas muestra las fechas sin formato. El resto funciona.',
+        'action' => 'Actualizar RefreshGlobal a una versión prevista para esta versión de FreeScout y ejecutar php artisan refreshglobal:check.',
+    ],
 ];

@@ -20,6 +20,31 @@
 .rf-list-layout:not(.rf-layout-table) .rg-subject-mailbox,
 .rg-dash .rg-subject-mailbox { display: inline-block; margin: 0 6px 4px 0; max-width: 360px; }
 .rg-mailbox-email { opacity: .75; margin-left: 4px; }
+/* automatic folder of Workflow Packs (Services/AutoFolders.php): badge of each ticket, entries of the views panel */
+.rg-folder-badge { margin: 0 6px 4px 0; max-width: 360px; color: var(--fd-text-2, #475569); background: var(--fd-bg, #fff); border-style: dashed; }
+.rg-folders .rf-v-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* sub-folders: the icon is shifted (Refresh sets the padding of its entries with !important); classes, not inline
+   styles, which FreeScout's Content-Security-Policy may block */
+.rg-folders .rg-depth-1 .rg-folder-icon { margin-left: 16px; }
+.rg-folders .rg-depth-2 .rg-folder-icon { margin-left: 32px; }
+.rg-folders .rg-depth-3 .rg-folder-icon { margin-left: 48px; }
+.rg-folders .rg-depth-4 .rg-folder-icon { margin-left: 64px; }
+.rg-folders .rg-depth-5 .rg-folder-icon { margin-left: 80px; }
+.rg-folders .rg-folder-icon { width: 16px; text-align: center; font-style: normal; margin-right: 8px; flex: 0 0 auto; color: var(--fd-muted, #94a3b8); line-height: 1; }
+.rg-folder-svg { display: inline-block; vertical-align: -2px; }
+.rg-folders .rf-v.active .rg-folder-icon { color: inherit; }
+.rg-folders .rg-folders-all { font-size: 12px; }
+/* FreeScout's sidebar (no Refresh): the whole entry is shifted, its own padding is kept */
+.rg-sidebar-menu.rg-folders > li.rg-depth-1 { margin-left: 16px; }
+.rg-sidebar-menu.rg-folders > li.rg-depth-2 { margin-left: 32px; }
+.rg-sidebar-menu.rg-folders > li.rg-depth-3 { margin-left: 48px; }
+.rg-sidebar-menu.rg-folders > li.rg-depth-4,
+.rg-sidebar-menu.rg-folders > li.rg-depth-5 { margin-left: 64px; }
+/* overview page */
+.rg-folders-page { max-width: 1100px; padding-top: 16px; padding-bottom: 32px; }
+.rg-folders-table td, .rg-folders-table th { vertical-align: top; }
+.rg-folders-table .rg-folder-mb { display: inline-block; margin: 0 6px 4px 0; }
+.rg-folders-table .rg-depth { color: var(--fd-muted, #94a3b8); }
 .rf-list-layout:not(.rf-layout-table) .table-conversations colgroup col.rg-col-mailbox,
 .rg-dash .table-conversations colgroup col.rg-col-mailbox { width: 0 !important; }
 .rf-list-layout:not(.rf-layout-table) .table-conversations th.rg-col-mailbox,

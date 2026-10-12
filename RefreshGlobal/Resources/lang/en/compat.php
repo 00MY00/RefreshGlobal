@@ -188,4 +188,22 @@ return [
         'effect' => 'The “Fetch e-mails” button is not shown; SyncNow’s own page still works. The rest works.',
         'action' => 'Check the installed SyncNow version (tested: 1.3.0), update RefreshGlobal, then run php artisan refreshglobal:check.',
     ],
+    'db_wp' => [
+        'check'  => 'Workflow Packs table and columns present: :item',
+        'label'  => 'A Workflow Packs table or column used for the automatic folders is missing: :item.',
+        'effect' => 'The automatic folders (views panel, 📁 badge, overview) are not shown. The rest works.',
+        'action' => 'Update Workflow Packs (1.14.0 or newer), then run php artisan refreshglobal:check.',
+    ],
+    'route_wp' => [
+        'check'  => 'Workflow Packs module route present: :item',
+        'label'  => 'A Workflow Packs route used by the automatic folders overview is missing: :item.',
+        'effect' => 'The links to the rules and history of Workflow Packs are not shown. The rest works.',
+        'action' => 'Check the installed Workflow Packs version (tested: 1.14.0), update RefreshGlobal, then run php artisan refreshglobal:check.',
+    ],
+    'core_dates' => [
+        'check'  => 'FreeScout code present: :item',
+        'label'  => 'A FreeScout method used to show dates is missing: :item.',
+        'effect' => 'The automatic folders overview shows raw dates. The rest works.',
+        'action' => 'Update RefreshGlobal to a version made for this FreeScout version, then run php artisan refreshglobal:check.',
+    ],
 ];

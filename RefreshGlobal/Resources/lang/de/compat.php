@@ -184,4 +184,22 @@ return [
         'effect' => 'Die Schaltfläche „E-Mails abrufen“ wird nicht angezeigt; die Seite von SyncNow funktioniert weiterhin. Der Rest funktioniert.',
         'action' => 'Installierte SyncNow-Version prüfen (getestet: 1.3.0), RefreshGlobal aktualisieren, dann php artisan refreshglobal:check ausführen.',
     ],
+    'db_wp' => [
+        'check'  => 'Tabelle und Spalten von Workflow Packs vorhanden: :item',
+        'label'  => 'Eine Tabelle oder Spalte von Workflow Packs für die automatischen Ordner fehlt: :item.',
+        'effect' => 'Die automatischen Ordner (Ansichtenleiste, 📁-Badge, Übersicht) werden nicht angezeigt. Der Rest funktioniert.',
+        'action' => 'Workflow Packs aktualisieren (1.14.0 oder neuer), dann php artisan refreshglobal:check ausführen.',
+    ],
+    'route_wp' => [
+        'check'  => 'Route des Moduls Workflow Packs vorhanden: :item',
+        'label'  => 'Eine Route von Workflow Packs für die Ordnerübersicht fehlt: :item.',
+        'effect' => 'Die Links zu den Regeln und zum Verlauf von Workflow Packs werden nicht angezeigt. Der Rest funktioniert.',
+        'action' => 'Installierte Version von Workflow Packs prüfen (getestet: 1.14.0), RefreshGlobal aktualisieren, dann php artisan refreshglobal:check ausführen.',
+    ],
+    'core_dates' => [
+        'check'  => 'FreeScout-Code vorhanden: :item',
+        'label'  => 'Eine FreeScout-Methode zur Anzeige von Daten fehlt: :item.',
+        'effect' => 'Die Ordnerübersicht zeigt Rohdaten der Daten. Der Rest funktioniert.',
+        'action' => 'RefreshGlobal auf eine Version für diese FreeScout-Version aktualisieren, dann php artisan refreshglobal:check ausführen.',
+    ],
 ];

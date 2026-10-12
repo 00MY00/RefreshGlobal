@@ -55,6 +55,10 @@ Dans Gérer › Modules :
 - **Bouton « Relever les e-mails »** (flèche en cercle) si le module
   [SyncNow](https://github.com/rabsym/freescout-syncnow) est installé : relève tout de suite les boîtes IMAP de la
   liste, avec les droits et le délai de SyncNow.
+- **Dossiers automatiques** si le module [Workflow Packs](https://github.com/00MY00/WorkflowPacks) (1.14.0 ou plus
+  récent) est installé : section « Dossiers automatiques » dans le panneau des vues (arbre des dossiers de toutes
+  vos boîtes, avec le nombre de tickets, un clic filtre la liste), badge dossier sur chaque ticket et page « Vue
+  d'ensemble » (tickets et tickets ouverts par dossier et par boîte, dernier classement, nettoyage automatique).
 - Traductions : français, anglais, allemand, espagnol, italien, néerlandais, portugais (Brésil).
 - **Langue** : le module suit la langue de FreeScout, comme Refresh (Refresh n'a pas de choix de langue à lui) :
   celle du profil de l'utilisateur, sinon la langue par défaut (Gérer › Paramètres › Général). Un **sélecteur de

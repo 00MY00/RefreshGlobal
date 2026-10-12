@@ -17,7 +17,7 @@ use Modules\RefreshGlobal\Services\MailboxAccess;
 class GlobalTicketsController extends Controller
 {
     /** Filter parameters; a request without any of them can load the user's default view. */
-    const FILTER_PARAMS = ['mb', 'status', 'assignee', 'q', 'rv', 'sort', 'order', 'view'];
+    const FILTER_PARAMS = ['mb', 'status', 'assignee', 'q', 'rv', 'wf', 'sort', 'order', 'view'];
 
     public function home()
     {
@@ -44,6 +44,7 @@ class GlobalTicketsController extends Controller
                 'assignee' => 'nullable|string|max:20',
                 'q'        => 'nullable|string|max:'.GlobalTicketQuery::MAX_QUERY_LENGTH,
                 'rv'       => 'nullable|string|max:30',
+                'wf'       => 'nullable|string|max:'.\Modules\RefreshGlobal\Services\AutoFolders::MAX_LENGTH,
                 'sort'     => 'nullable|string|in:'.implode(',', array_keys(GlobalTicketQuery::sorts())),
                 'order'    => 'nullable|string|in:asc,desc',
                 'page'     => 'nullable|integer|min:1',
@@ -89,8 +90,14 @@ class GlobalTicketsController extends Controller
             // The "Mailbox" column of the native table is printed by the module's hooks on this page only
             RefreshGlobalServiceProvider::$show_mailbox_column = RefreshGlobalServiceProvider::mailboxColumnMode();
 
+            // Automatic folders of Workflow Packs (when it is installed): views panel + folder of each ticket (badge)
+            $auto_folders = self::autoFolders($access, $query, $conversations);
+
             // rendered here so that a rendering error is caught by safely() too
             return response(view('refreshglobal::tickets', [
+                'rg_folders'        => $auto_folders['tree'],
+                'rg_folder_label'   => $auto_folders['label'],
+
                 'skin'              => $report['skin'],
                 'report'            => $report,
                 'notices'           => Messages::failed($report, ['degraded', 'warning']),
@@ -146,6 +153,35 @@ class GlobalTicketsController extends Controller
             // no refresh rather than an error on the page
             return response()->json(['fp' => null], 200)->header('Cache-Control', 'no-store');
         }
+    }
+
+    /**
+     * Automatic folders of Workflow Packs (Services/AutoFolders.php): tree of the views panel, with the number of
+     * tickets of the list in each folder (the list's filters except the folder), label of the chosen folder, and the
+     * folder of each ticket of the page (badge printed by RefreshGlobalServiceProvider). Nothing when Workflow Packs is
+     * missing; an error only hides them.
+     */
+    protected static function autoFolders(MailboxAccess $access, GlobalTicketQuery $query, $conversations)
+    {
+        $out = ['tree' => [], 'label' => ''];
+        RefreshGlobalServiceProvider::$folder_badges = [];
+        if (!\Modules\RefreshGlobal\Services\AutoFolders::available()) {
+            return $out;
+        }
+        try {
+            $rights = new GlobalTicketQuery($access, GlobalTicketQuery::normalize([], $access));
+            $folders = \Modules\RefreshGlobal\Services\AutoFolders::folders($rights->base());
+            $out['tree'] = \Modules\RefreshGlobal\Services\AutoFolders::tree($folders, $query->countsByFolder());
+            $wf = $query->filters()['wfolder'];
+            $out['label'] = $wf !== '' ? \Modules\RefreshGlobal\Services\AutoFolders::labelOf($wf, $folders) : '';
+            RefreshGlobalServiceProvider::$folder_badges = \Modules\RefreshGlobal\Services\AutoFolders::labels(
+                $conversations->getCollection()->pluck('id')->all()
+            );
+        } catch (\Throwable $e) {
+            \Log::warning('[RefreshGlobal] [auto-folders] '.$e->getMessage());
+        }
+
+        return $out;
     }
 
     /** Address of the state of a list (parameters of the page, or the whole list). */

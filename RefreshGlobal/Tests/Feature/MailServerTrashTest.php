@@ -141,6 +141,22 @@ class MailServerTrashTest extends TestCase
         $this->assertSame(['moved', 'not_found', 'moved'], $this->queued()->pluck('status')->all());
     }
 
+    public function testEmailFiledByWorkflowPacksIsFoundInItsFolder()
+    {
+        $mailbox = $this->imapMailbox($this->s['support']);
+        $now = date('Y-m-d H:i:s');
+        \DB::table(MailServerTrash::TABLE)->insert(['mailbox_id' => $mailbox->id, 'message_id' => 'wp@example.test', 'folder' => 'in', 'imap_path' => 'INBOX.[WP] Factures',
+            'status' => 'pending', 'created_at' => $now, 'updated_at' => $now]);
+        \DB::table(MailServerTrash::TABLE)->insert(['mailbox_id' => $mailbox->id, 'message_id' => 'gone@example.test', 'folder' => 'in', 'imap_path' => 'INBOX.[WP] Removed',
+            'status' => 'pending', 'created_at' => $now, 'updated_at' => $now]);
+        list($server, $factory) = $this->fakeServer(['INBOX', 'INBOX.[WP] Factures', 'INBOX.Trash'], ['INBOX.[WP] Factures' => ['wp@example.test']]);
+        $done = MailServerTrash::process(null, $factory);
+
+        $this->assertSame(1, $done['moved']);
+        $this->assertSame(1, $done['not_found']); // its folder no longer exists on the server
+        $this->assertSame([['INBOX.[WP] Factures', 'wp@example.test', 'INBOX.Trash']], $server->moves);
+    }
+
     public function testTrashFolderSetByHandAndErrorsAreRetried()
     {
         $mailbox = $this->imapMailbox($this->s['support']);

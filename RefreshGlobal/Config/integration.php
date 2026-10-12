@@ -101,6 +101,8 @@ return [
         // IMAP access of FreeScout, used to move the e-mails of deleted tickets to the server's trash
         'RG-CORE-14' => ['class' => 'App\Misc\Mail', 'methods' => ['getMailboxClient', 'getImapFolder'], 'constants' => ['App\Mailbox::IN_PROTOCOL_IMAP', 'App\Thread::TYPE_CUSTOMER', 'App\Thread::TYPE_MESSAGE'], 'family' => 'core_mail', 'severity' => 'degraded', 'source' => 'app/Misc/Mail.php:808,1307, app/Mailbox.php:81,906'],
         'RG-CORE-15' => ['classes' => ['Webklex\PHPIMAP\Client', 'Webklex\PHPIMAP\Message'], 'family' => 'core_mail', 'severity' => 'degraded', 'source' => 'overrides/webklex/php-imap/src/Client.php, Message.php:1038 (move)'],
+        // Dates of the automatic folders overview ("3 hours ago", in the user's time zone)
+        'RG-CORE-16' => ['class' => 'App\User', 'methods' => ['dateFormat', 'dateDiffForHumans'], 'family' => 'core_dates', 'severity' => 'warning', 'source' => 'app/User.php:536,627'],
         'RG-CORE-08' => ['classes' => ['ZipArchive', 'GuzzleHttp\Client', 'Symfony\Component\Process\Process', 'Symfony\Component\Process\PhpExecutableFinder'], 'severity' => 'degraded', 'source' => 'PHP zip extension (config/installer.php), vendor/guzzlehttp, vendor/symfony/process'],
     ],
 
@@ -113,6 +115,9 @@ return [
         // Optional third-party module SyncNow (rabsym/freescout-syncnow 1.3.0): "Fetch e-mails now" button
         'RG-ROUTE-05' => ['route' => 'syncnow.force', 'module' => 'syncnow', 'family' => 'route_syncnow', 'severity' => 'warning', 'source' => 'Modules/SyncNow/Http/routes.php:54-57'],
         'RG-ROUTE-06' => ['route' => 'syncnow.status', 'module' => 'syncnow', 'family' => 'route_syncnow', 'severity' => 'warning', 'source' => 'Modules/SyncNow/Http/routes.php:64-67'],
+        // Optional module Workflow Packs (00MY00/WorkflowPacks 1.14.0): links of the automatic folders overview
+        'RG-ROUTE-07' => ['route' => 'workflowpacks.graph', 'module' => 'workflowpacks', 'family' => 'route_wp', 'severity' => 'warning', 'source' => 'Modules/WorkflowPacks/Http/routes.php:33'],
+        'RG-ROUTE-08' => ['route' => 'workflowpacks.history', 'module' => 'workflowpacks', 'family' => 'route_wp', 'severity' => 'warning', 'source' => 'Modules/WorkflowPacks/Http/routes.php:46'],
     ],
 
     // Tables / columns read. RG-DB-05 is the module's own table (saved views only).
@@ -125,6 +130,9 @@ return [
         'RG-DB-06' => ['table' => 'conversations', 'columns' => ['user_updated_at', 'updated_at'], 'family' => 'db_trash', 'severity' => 'degraded', 'source' => 'database/migrations/2018_07_11_010333_create_conversations_table.php:67'],
         'RG-DB-07' => ['table' => 'threads', 'columns' => ['conversation_id', 'message_id', 'type'], 'family' => 'db_mail', 'severity' => 'degraded', 'source' => 'database/migrations (threads.message_id)'],
         'RG-DB-08' => ['table' => 'refreshglobal_mail_deletions', 'columns' => ['mailbox_id', 'message_id', 'folder', 'status', 'attempts', 'error'], 'family' => 'db_mail', 'severity' => 'degraded', 'source' => 'Modules/RefreshGlobal/Database/Migrations/2026_10_10_000000_create_refreshglobal_mail_deletions_table.php'],
+        // Optional module Workflow Packs (1.14.0+, its docs/api-dossiers.md): automatic folders (Services/AutoFolders.php)
+        'RG-DB-09' => ['table' => 'workflowpacks_ticket_folders', 'columns' => ['conversation_id', 'mailbox_id', 'folder', 'label', 'path', 'state', 'filed_at', 'updated_at'], 'module' => 'workflowpacks', 'family' => 'db_wp', 'severity' => 'warning', 'source' => 'Modules/WorkflowPacks/Database/Migrations/2026_10_21_000000_create_workflowpacks_ticket_folders_table.php'],
+        'RG-DB-10' => ['table' => 'workflowpacks_retention', 'columns' => ['folder', 'number', 'metric', 'mode'], 'module' => 'workflowpacks', 'family' => 'db_wp', 'severity' => 'warning', 'source' => 'Modules/WorkflowPacks/Database/Migrations/2026_10_17_000000_create_workflowpacks_retention_table.php'],
         'RG-DB-05' => ['table' => 'refreshglobal_saved_views', 'columns' => ['id', 'user_id', 'name', 'filters', 'is_default'], 'severity' => 'degraded', 'source' => 'Modules/RefreshGlobal/Database/Migrations'],
     ],
 ];

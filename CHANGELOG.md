@@ -2,6 +2,32 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.8.0] — 2026-10-12
+
+### Ajouté
+- **Dossiers automatiques de [Workflow Packs](https://github.com/00MY00/WorkflowPacks)** (seulement si Workflow Packs
+  **1.14.0 ou plus récent** est installé et actif ; rien ne change sinon). Workflow Packs classe les e-mails dans
+  des dossiers du serveur mail (« [WP] Factures › Fournisseurs ») et garde le dossier actuel de chaque ticket ;
+  RefreshGlobal le lit (table `workflowpacks_ticket_folders`, lecture seule) pour garder une vue d'ensemble :
+  - section **« Dossiers automatiques »** dans le panneau des vues (et le tiroir sur téléphone) : un arbre des
+    dossiers de toutes vos boîtes, chacun avec le nombre de tickets de la liste affichée (sous-dossiers compris) ;
+    un clic filtre la liste sur ce dossier. Le filtre (`wf` dans l'adresse) se combine avec les autres, s'enregistre
+    dans une vue, suit l'export CSV et l'actualisation automatique ;
+  - **badge dossier** sur chaque ticket de la liste (à côté de la boîte), aussi sur téléphone ;
+  - page **« Vue d'ensemble »** (`/refresh-global/folders`) : par dossier, tickets, tickets ouverts, répartition par
+    boîte, dernier classement et nettoyage automatique réglé dans Workflow Packs ; liens vers les règles et
+    l'historique de Workflow Packs pour ceux qui y ont accès.
+  - Mêmes droits que la liste : chacun ne voit que les dossiers et les tickets de ses boîtes (et seulement ses
+    tickets avec « ne voir que les conversations assignées »). Un ticket dont l'e-mail a été retiré par le nettoyage
+    automatique de Workflow Packs n'est plus compté dans le dossier.
+- Contrôles RG-DB-09/10, RG-ROUTE-07/08 (ignorés sans Workflow Packs) et RG-CORE-16.
+
+### Corrigé
+- **Suppression définitive et dossiers de Workflow Packs** : l'e-mail d'un ticket que Workflow Packs avait déplacé
+  dans un de ses dossiers (« INBOX.[WP] Factures ») n'était pas trouvé dans les dossiers relevés par FreeScout, donc
+  pas déplacé dans la corbeille du serveur. Le dossier est maintenant noté au moment de la suppression (nouvelle
+  colonne `imap_path` de la file, migration du module) et l'e-mail y est cherché aussi.
+
 ## [1.7.1] — 2026-10-11
 
 ### Ajouté

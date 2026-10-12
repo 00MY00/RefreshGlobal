@@ -184,4 +184,22 @@ return [
         'effect' => 'Il pulsante «Scarica e-mail» non viene mostrato; la pagina di SyncNow funziona ancora. Il resto funziona.',
         'action' => 'Verificare la versione di SyncNow installata (testata: 1.3.0), aggiornare RefreshGlobal, poi eseguire php artisan refreshglobal:check.',
     ],
+    'db_wp' => [
+        'check'  => 'Tabella e colonne di Workflow Packs presenti: :item',
+        'label'  => 'Manca una tabella o colonna di Workflow Packs usata per le cartelle automatiche: :item.',
+        'effect' => 'Le cartelle automatiche (pannello delle viste, badge 📁, panoramica) non vengono mostrate. Il resto funziona.',
+        'action' => 'Aggiornare Workflow Packs (1.14.0 o successiva), poi eseguire php artisan refreshglobal:check.',
+    ],
+    'route_wp' => [
+        'check'  => 'Rotta del modulo Workflow Packs presente: :item',
+        'label'  => 'Manca una rotta di Workflow Packs usata dalla panoramica delle cartelle: :item.',
+        'effect' => 'I link alle regole e alla cronologia di Workflow Packs non vengono mostrati. Il resto funziona.',
+        'action' => 'Verificare la versione di Workflow Packs installata (testata: 1.14.0), aggiornare RefreshGlobal, poi eseguire php artisan refreshglobal:check.',
+    ],
+    'core_dates' => [
+        'check'  => 'Codice FreeScout presente: :item',
+        'label'  => 'Manca un metodo di FreeScout usato per mostrare le date: :item.',
+        'effect' => 'La panoramica delle cartelle mostra le date grezze. Il resto funziona.',
+        'action' => 'Aggiornare RefreshGlobal a una versione prevista per questa versione di FreeScout, poi eseguire php artisan refreshglobal:check.',
+    ],
 ];

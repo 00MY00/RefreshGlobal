@@ -28,6 +28,13 @@ abstract class TestCase extends \Illuminate\Foundation\Testing\TestCase
 
     protected function setUp(): void
     {
+        // tables of optional modules the tests need, created before the test transaction starts
+        if (!$this->app) {
+            $this->refreshApplication();
+        }
+        \Modules\RefreshGlobal\Tests\Support\WorkflowPacks::ensureTable();
+        \Modules\RefreshGlobal\Services\AutoFolders::reset();
+        \Modules\RefreshGlobal\Services\AutoFolders::$assumeActive = false;
         parent::setUp();
         // In a real request the HTTP kernel exists before the providers boot. In tests it is built later and resets the
         // "web" group (Illuminate\Foundation\Http\Kernel::__construct): the module's middleware is added again.
