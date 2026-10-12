@@ -257,5 +257,85 @@
         if (window.matchMedia && window.matchMedia('(max-width: 767px)').matches) {
             addTab();
         }
+
+        backToList(c);
     });
+
+    /*
+     * Back to "All mailboxes" from a ticket opened there. Refresh's breadcrumb (and its phone back arrow, which reads
+     * it: mobile.js:674) points to the last REFRESH view (cookie rf_last_view, only /mailbox/N/tickets/… addresses) or
+     * to "All tickets" of the ticket's mailbox. Here, per browser tab (sessionStorage):
+     *  - the "All mailboxes" page records the list to come back to (#rg-state: without the automatic folder);
+     *  - a ticket page then gets that list as the first item of the breadcrumb and of the phone back arrow (with the
+     *    marker #rg-back=<ticket>: the list opens at that ticket), and a landmark above Refresh's views panel:
+     *    "← All mailboxes (N)" and the ticket's mailbox (its counters are those of that mailbox only);
+     *  - another list (a Refresh view, a mailbox folder, a search, the dashboard) forgets it: Refresh's breadcrumb
+     *    is then left as it is.
+     */
+    function backToList(c) {
+        var KEY = 'rg-back';
+        var store = {
+            get: function () { try { return JSON.parse(window.sessionStorage.getItem(KEY) || 'null'); } catch (e) { return null; } },
+            set: function (v) { try { window.sessionStorage.setItem(KEY, JSON.stringify(v)); } catch (e) { /* private mode */ } },
+            clear: function () { try { window.sessionStorage.removeItem(KEY); } catch (e) { /* private mode */ } }
+        };
+        var state = document.getElementById('rg-state');
+        if (document.body.getAttribute('data-rg-page') === 'tickets' && state) {
+            store.set({
+                url: state.getAttribute('data-back-url') || c.url,
+                label: state.getAttribute('data-back-label') || c.label,
+                count: state.getAttribute('data-back-count') || '',
+                at: Date.now()
+            });
+            return;
+        }
+        if (!c.conversation) {
+            // another list of tickets than ours: Refresh's own way back applies again
+            if (document.querySelector('.table-conversations')) {
+                store.clear();
+            }
+            return;
+        }
+        var back = store.get();
+        if (!back || !back.url || Date.now() - back.at > 12 * 3600 * 1000) {
+            return;
+        }
+        var url = back.url.split('#')[0] + '#rg-back=' + c.conversation;
+        var tries = 0;
+        var apply = function () {
+            var crumb = $('.rf-crumb a').first();
+            var phone = $('a.rf-m-back').first();
+            var views = $('.sidebar-2col .rf-views').first();
+            if (crumb.length && !crumb.hasClass('rg-back')) {
+                crumb.attr('href', url).text(back.label).addClass('rg-back');
+            }
+            if (phone.length && !phone.hasClass('rg-back')) {
+                phone.attr('href', url).addClass('rg-back');
+            }
+            if (views.length && !views.find('.rg-conv-landmark').length) {
+                var mark = $('<div class="rg-conv-landmark"></div>');
+                var link = $('<a class="rf-v rg-conv-back"></a>').attr('href', url)
+                    .append('<i class="rf-i rf-i-chevron-left rf-i-sm"></i>')
+                    .append($('<span class="rf-v-label"></span>').text(back.label));
+                if (back.count !== '') {
+                    link.append($('<span class="rf-v-count"></span>').text(back.count));
+                }
+                mark.append(link);
+                if (c.mailbox) {
+                    mark.append($('<div class="rg-conv-mailbox"></div>').text(c.mailbox));
+                }
+                var search = views.children('.rf-views-search').first();
+                if (search.length) {
+                    mark.insertAfter(search);
+                } else {
+                    views.prepend(mark);
+                }
+            }
+            // Refresh builds the breadcrumb and the phone bar on the same "ready" event, maybe a little later
+            if (++tries < 30 && (!crumb.length || !views.length || (window.innerWidth < 768 && !phone.length))) {
+                setTimeout(apply, 100);
+            }
+        };
+        apply();
+    }
 })(window.jQuery);

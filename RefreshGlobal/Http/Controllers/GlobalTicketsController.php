@@ -93,8 +93,13 @@ class GlobalTicketsController extends Controller
             // Automatic folders of Workflow Packs (when it is installed): views panel + folder of each ticket (badge)
             $auto_folders = self::autoFolders($access, $query, $conversations);
 
+            // List a ticket opened from here goes back to (breadcrumb of the ticket page, Public/js/shell.js): this
+            // list without the automatic folder, at the same page when nothing was removed
+            $back = self::backTo($access, $filters, $params, $conversations, $active_view);
+
             // rendered here so that a rendering error is caught by safely() too
             return response(view('refreshglobal::tickets', [
+                'rg_back'           => $back,
                 'rg_folders'        => $auto_folders['tree'],
                 'rg_folder_label'   => $auto_folders['label'],
 
@@ -182,6 +187,35 @@ class GlobalTicketsController extends Controller
         }
 
         return $out;
+    }
+
+    /**
+     * List to come back to from a ticket opened here: address (without the automatic folder:
+     * AfterDelete::backParams()), its name (saved view, or "All mailboxes") and its number of tickets.
+     *
+     * @return array ['url', 'label', 'count']
+     */
+    protected static function backTo(MailboxAccess $access, array $filters, array $params, $conversations, $active_view)
+    {
+        $in_folder = $filters['wfolder'] !== '';
+        $back = \Modules\RefreshGlobal\Http\Middleware\AfterDelete::backParams($params, $filters);
+        if (!$in_folder && $conversations->currentPage() > 1) {
+            $back['page'] = $conversations->currentPage();
+        }
+        $count = $conversations->total();
+        if ($in_folder) {
+            try {
+                $count = (new GlobalTicketQuery($access, array_merge($filters, ['wfolder' => ''])))->base()->count();
+            } catch (\Throwable $e) {
+                $count = null;
+            }
+        }
+
+        return [
+            'url'   => route('refreshglobal.tickets', $back ?: ['reset' => 1]),
+            'label' => $active_view && isset($back['view']) ? $active_view->name : __('refreshglobal::messages.title'),
+            'count' => $count,
+        ];
     }
 
     /** Address of the state of a list (parameters of the page, or the whole list). */

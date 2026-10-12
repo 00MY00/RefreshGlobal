@@ -240,4 +240,7 @@ return [
     'active_filters'               => 'Active filters',
     'hide_filters'                 => 'Hide the filters',
     'edit_filters'                 => 'Edit',
+    'in_folder'                    => 'Automatic folder :folder — :count ticket(s)',
+    'leave_folder'                 => 'Leave the folder',
+    'conv_mailbox'                 => 'Mailbox: :name',
 ];

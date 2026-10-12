@@ -202,4 +202,10 @@ return [
         'effect' => 'La panoramica delle cartelle mostra le date grezze. Il resto funziona.',
         'action' => 'Aggiornare RefreshGlobal a una versione prevista per questa versione di FreeScout, poi eseguire php artisan refreshglobal:check.',
     ],
+    'marker_crumb' => [
+        'check'  => 'Elemento di Refresh presente: :item (:file)',
+        'label'  => 'Elemento di Refresh non più trovato: :item (:file).',
+        'effect' => 'Un ticket aperto da «Tutte le caselle» torna con Refresh (la sua ultima vista) invece che a «Tutte le caselle». Il resto funziona.',
+        'action' => 'Aggiornare RefreshGlobal a una versione prevista per questa versione di Refresh, poi eseguire php artisan refreshglobal:check.',
+    ],
 ];

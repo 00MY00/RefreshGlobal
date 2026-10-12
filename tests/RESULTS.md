@@ -1,4 +1,4 @@
-# Résultats des tests — RefreshGlobal 1.8.1
+# Résultats des tests — RefreshGlobal 1.8.2
 
 Date : 2026-10-09. Environnements jetables Docker : FreeScout 1.8.245 (dépôt officiel), PHP 8.2.34, Apache,
 MariaDB 10.11 ; Refresh 1.4.3 (dépôt officiel). Données de test uniquement (adresses `.test`).
@@ -206,6 +206,19 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
 - Navigateur : interface en anglais, choix « Français » dans le sélecteur → la page, la barre de Refresh et le
   tableau de bord passent en français ; `users.locale = fr` en base. Sélecteur visible en bas du panneau des vues
   (ordinateur) et du tiroir (téléphone).
+
+## 24. Retour à « Toutes les boîtes » depuis un ticket, bandeau du dossier (1.8.2)
+
+- Navigateur (Refresh + Workflow Packs 1.14.0, tickets classés par son code) : liste du dossier « [WP] Factures » →
+  bandeau « Dossier automatique [WP] Factures — 9 ticket(s) » avec « Quitter le dossier » (lien sans `wf`) ; ouverture
+  du 3e ticket → fil d'Ariane « Toutes les boîtes › 3 » vers la liste **sans le dossier** (`#rg-back=<ticket>`),
+  repère « ← Toutes les boîtes 40 / Boîte : Support » au-dessus du panneau des vues ; clic sur le fil d'Ariane →
+  liste sans dossier, ouverte **à la ligne du ticket** ; téléphone : flèche retour vers la même liste ; après une vue
+  Refresh, le fil d'Ariane de Refresh revient (`/mailbox/N/tickets/all`), sans repère ; aucune erreur JavaScript.
+- `refreshglobal:check` : RG-HOOK-25/26/27 OK, état OK.
+- PHPUnit : **107 tests, 0 échec** (2 ignorés : SyncNow ; « sans Workflow Packs » car il est installé) ; nouveaux
+  tests : bandeau, liste de retour sans le dossier, suppression → liste sans le dossier, repère de la page du ticket
+  (boîte visible seulement si l'utilisateur y a accès).
 
 ## 23. Affichage selon la largeur (1.8.1)
 

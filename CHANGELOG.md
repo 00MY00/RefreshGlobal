@@ -2,6 +2,27 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.8.2] — 2026-10-12
+
+### Ajouté
+- **Retour à « Toutes les boîtes » depuis un ticket.** Le fil d'Ariane de Refresh (et la flèche retour du téléphone,
+  qui le lit) menait à la dernière vue Refresh d'**une** boîte, ou à « Tous les tickets » de la boîte du ticket. Pour
+  un ticket ouvert depuis « Toutes les boîtes », son premier élément devient « Toutes les boîtes » (ou le nom de la
+  vue enregistrée) et ramène à la liste d'origine, **à l'endroit du ticket ouvert** (aussi après avoir répondu ou être
+  passé au ticket suivant). Mémoire par onglet du navigateur ; ouvrir une autre liste (vue Refresh, boîte, recherche,
+  tableau de bord) redonne le fil d'Ariane normal de Refresh. Contrôles RG-HOOK-25…27 (avertissement).
+- **Repère au-dessus du panneau des vues sur la page du ticket** : « ← Toutes les boîtes (N) » et « Boîte : <nom> ».
+  Ce panneau est celui de Refresh pour la boîte du ticket : ses nombres ne concernent que cette boîte (≈ 50 au lieu
+  de ≈ 800), ce qui donnait l'impression d'être « enfermé » ailleurs.
+- **Bandeau « Dossier automatique … — N ticket(s) »** au-dessus de la liste quand un dossier de Workflow Packs est
+  choisi, toujours visible, avec **« Quitter le dossier »** (les autres filtres sont gardés).
+
+### Modifié
+- Le retour à la liste (après la suppression d'un ticket, fil d'Ariane du ticket) se fait **sans le dossier
+  automatique** : on ne reste plus « bloqué » dans un dossier. Une vue enregistrée qui contient un dossier est
+  remplacée par ses filtres sans le dossier. Le réglage « passer au ticket suivant » cherche toujours le suivant dans
+  la liste affichée.
+
 ## [1.8.1] — 2026-10-12
 
 ### Corrigé

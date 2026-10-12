@@ -303,7 +303,8 @@
         });
 
         var saved = store.get();
-        var deleted = /(?:^|[#&])rg-deleted=(\d+)/.exec(window.location.hash || '');
+        // #rg-deleted: back after deleting a ticket; #rg-back: back from a ticket with its breadcrumb (Public/js/shell.js)
+        var deleted = /(?:^|[#&])rg-(?:deleted|back)=(\d+)/.exec(window.location.hash || '');
         var nav = window.performance && performance.getEntriesByType ? (performance.getEntriesByType('navigation')[0] || {}).type : '';
         if (!saved || saved.path !== window.location.pathname || Date.now() - saved.at > 30 * 60 * 1000) {
             return;

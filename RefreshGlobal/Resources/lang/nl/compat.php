@@ -202,4 +202,10 @@ return [
         'effect' => 'Het mappenoverzicht toont ruwe datums. De rest werkt.',
         'action' => 'RefreshGlobal bijwerken naar een versie voor deze FreeScout-versie en daarna php artisan refreshglobal:check uitvoeren.',
     ],
+    'marker_crumb' => [
+        'check'  => 'Refresh-element aanwezig: :item (:file)',
+        'label'  => 'Refresh-element niet meer gevonden: :item (:file).',
+        'effect' => 'Een ticket geopend vanuit „Alle mailboxen” gaat terug via Refresh (laatste weergave) in plaats van naar „Alle mailboxen”. De rest werkt.',
+        'action' => 'RefreshGlobal bijwerken naar een versie voor deze Refresh-versie en daarna php artisan refreshglobal:check uitvoeren.',
+    ],
 ];

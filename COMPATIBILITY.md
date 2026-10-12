@@ -34,6 +34,7 @@ Chacun est contrôlé par `php artisan refreshglobal:check`.
 | Tableau de bord de toutes les boîtes (bloc `rf-dash` de Refresh, `Views::query`, `Dashboard::chart/delta/duration`) | balisage et classes internes de Refresh, formules recopiées de `Dashboard::stats()` | le tableau de bord de Refresh s'affiche tel quel (première boîte) (RG-HOOK-18…20, RG-CORE-09…11) |
 | Suppression d'un ticket (`conversations.ajax`, actions `delete_conversation*`) | noms d'actions internes de FreeScout | comportement de FreeScout (retour à la boîte, corbeille) (RG-HOOK-21, RG-ROUTE-04, RG-CORE-12) |
 | Dossiers automatiques (tables `workflowpacks_ticket_folders`, `workflowpacks_retention` de Workflow Packs) | schéma d'un module tiers, documenté par lui (`docs/api-dossiers.md`) | dossiers automatiques non affichés, le reste fonctionne (RG-DB-09/10, avertissement) |
+| Fil d'Ariane de la page d'un ticket (`.rf-crumb`), flèche retour du téléphone qui le lit, recherche du panneau des vues | éléments internes des scripts et vues de Refresh | retour de Refresh (sa dernière vue) au lieu de « Toutes les boîtes » ; le reste fonctionne (RG-HOOK-25…27, avertissement) |
 | Correction des textes français de Refresh (`<meta name="refresh-l10n">`) | balise interne de Refresh | textes d'origine de Refresh (RG-HOOK-22, avertissement) |
 
 ## Mise à jour automatique
@@ -52,8 +53,10 @@ Chacun est contrôlé par `php artisan refreshglobal:check`.
 
 - La **recherche de la barre du haut** de Refresh cherche toujours dans « Tous les tickets » de la première boîte ;
   utiliser la recherche du panneau de filtres de la page.
-- Après l'ouverture d'un ticket depuis la page globale, le **fil d'Ariane** et le **« ticket suivant »** de Refresh
-  ramènent à la dernière vue Refresh, pas à la page globale (cookie `rf_last_view` de Refresh).
+- Après l'ouverture d'un ticket depuis la page globale, le **fil d'Ariane** (et la flèche retour du téléphone) ramène
+  à « Toutes les boîtes » (1.8.2) ; le **« ticket suivant »** de Refresh reste celui de sa dernière vue (cookie
+  `rf_last_view` de Refresh). Le panneau des vues de la page du ticket est celui de Refresh pour la boîte du ticket
+  (nombres de cette boîte seulement), avec un repère « ← Toutes les boîtes ».
 - Dans les cartes, le menu **« Agent »** propose les agents de la première boîte (liste construite par Refresh) ;
   FreeScout refuse côté serveur une assignation impossible.
 - Vue tableau et cartes : colonnes rétrécies selon la largeur de la liste, panneau des filtres par-dessus la liste

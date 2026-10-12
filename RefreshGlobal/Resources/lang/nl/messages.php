@@ -234,4 +234,7 @@ return [
     'active_filters'               => 'Actieve filters',
     'hide_filters'                 => 'Filters verbergen',
     'edit_filters'                 => 'Wijzigen',
+    'in_folder'                    => 'Automatische map :folder — :count ticket(s)',
+    'leave_folder'                 => 'Map verlaten',
+    'conv_mailbox'                 => 'Mailbox: :name',
 ];

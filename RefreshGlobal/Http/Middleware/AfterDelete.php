@@ -102,6 +102,21 @@ class AfterDelete
         session([self::SESSION_KEY => ['params' => $params, 'filters' => $filters]]);
     }
 
+    /**
+     * Parameters of the list to come back to (after a deletion, back link of a ticket): the same list WITHOUT the
+     * automatic folder of Workflow Packs (the user is not kept inside a folder). A saved view holding a folder is
+     * replaced by its filters without the folder; without a folder the parameters are kept as they are (page too).
+     */
+    public static function backParams(array $params, array $filters)
+    {
+        if (($filters['wfolder'] ?? '') === '') {
+            return $params;
+        }
+        $filters['wfolder'] = '';
+
+        return GlobalTicketQuery::toQueryParams($filters);
+    }
+
     /** Successful JSON answer of the controller (with a redirect_url when $redirect). */
     protected function succeeded($response, $redirect = false)
     {
@@ -129,6 +144,8 @@ class AfterDelete
     {
         $last = session(self::SESSION_KEY);
         $params = is_array($last) && isset($last['params']) && is_array($last['params']) ? $last['params'] : [];
+        // back to the list without the automatic folder (the next ticket below is still looked for in the list shown)
+        $params = self::backParams($params, is_array($last) && isset($last['filters']) ? (array) $last['filters'] : []);
         $list_url = route('refreshglobal.tickets', $params ?: ['reset' => 1]);
         // marker read by Public/js/refreshglobal.js: the list opens at the place of the deleted ticket (setting on)
         if ($conversation_id && Settings::keepPosition()) {

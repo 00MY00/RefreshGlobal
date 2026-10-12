@@ -166,7 +166,8 @@
         @include('refreshglobal::partials.notices')
     </div>
     <span id="rg-state" hidden data-base="{{ $rg_url([], ['page']) }}" data-sort="{{ $filters['sort'] }}" data-order="{{ $filters['order'] }}" data-keep-position="{{ \Modules\RefreshGlobal\Services\Settings::keepPosition() ? 1 : 0 }}"
-        data-refresh="{{ \Modules\RefreshGlobal\Services\Settings::autoRefresh() }}" data-fp="{{ $rg_fp }}" data-state-url="{{ \Modules\RefreshGlobal\Http\Controllers\GlobalTicketsController::stateUrl($rg_params) }}"></span>
+        data-refresh="{{ \Modules\RefreshGlobal\Services\Settings::autoRefresh() }}" data-fp="{{ $rg_fp }}"
+        data-back-url="{{ $rg_back['url'] }}" data-back-label="{{ $rg_back['label'] }}" data-back-count="{{ $rg_back['count'] }}" data-state-url="{{ \Modules\RefreshGlobal\Http\Controllers\GlobalTicketsController::stateUrl($rg_params) }}"></span>
 
     @if ($skin === 'refresh')
         {{-- View bar (moved into Refresh's top bar by its script) --}}
@@ -211,6 +212,7 @@
                         <button type="button" class="rf-btn rf-toggle-filters @if ($filters_count) rg-has-filters @endif" aria-controls="rg-filters"><i class="rf-i rf-i-filter"></i> {{ __('refreshglobal::messages.filters') }} @if ($filters_count)({{ $filters_count }})@endif</button>
                     </div>
                 </div>
+                @include('refreshglobal::partials.folder_banner')
                 @include('refreshglobal::partials.active_filters')
 
                 <div class="rf-list-scroll">
@@ -229,6 +231,7 @@
                 <a class="btn btn-default btn-sm rg-export" href="{{ $rg_export }}" title="{{ __('refreshglobal::messages.export_hint', ['max' => $export_max]) }}"><i class="glyphicon glyphicon-download-alt"></i> {{ __('refreshglobal::messages.export') }}</a>
             </span>
         </div>
+        @include('refreshglobal::partials.folder_banner')
         @include('refreshglobal::partials.filters', ['form_class' => 'rg-filters-native'])
         @include('conversations/conversations_table', ['folder' => $folder, 'conversations' => $conversations])
         @if ($conversations->hasPages())

@@ -206,4 +206,10 @@ return [
         'effect' => 'The automatic folders overview shows raw dates. The rest works.',
         'action' => 'Update RefreshGlobal to a version made for this FreeScout version, then run php artisan refreshglobal:check.',
     ],
+    'marker_crumb' => [
+        'check'  => 'Refresh element present: :item (:file)',
+        'label'  => 'Refresh element no longer found: :item (:file).',
+        'effect' => 'A ticket opened from “All mailboxes” has Refresh’s own way back (its last view) instead of “All mailboxes”. The rest works.',
+        'action' => 'Update RefreshGlobal to a version made for this Refresh version, then run php artisan refreshglobal:check.',
+    ],
 ];

@@ -219,6 +219,51 @@ class AutoFoldersTest extends TestCase
         $this->assertSame('INBOX.[WP] '.$this->f.'.Fournisseurs', $row->imap_path);
     }
 
+    public function testFolderBannerAndBackWithoutTheFolder()
+    {
+        $this->on();
+        $mb = [$this->s['support']->id, $this->s['sales']->id];
+        $page = $this->ticketsPage($this->s['admin'], ['mb' => $mb, 'wf' => $this->f]);
+        // banner with the way out of the folder (the other filters are kept)
+        $this->seeIn($page, 'class="rg-folder-banner"');
+        $this->seeIn($page, '<strong>[WP] '.$this->f.'</strong>');
+        $this->seeIn($page, 'class="rg-folder-banner-exit" href="'.e(route('refreshglobal.tickets', ['mb' => $mb])).'"');
+        // list a ticket opened here goes back to: the same filters, without the folder; its number of tickets
+        $this->seeIn($page, 'data-back-url="'.e(route('refreshglobal.tickets', ['mb' => $mb])).'"');
+        $this->seeIn($page, 'data-back-label="'.e(__('refreshglobal::messages.title')).'"');
+        $all = (new \Modules\RefreshGlobal\Services\GlobalTicketQuery(new \Modules\RefreshGlobal\Services\MailboxAccess($this->s['admin']), ['mailboxes' => $mb]))->base()->count();
+        $this->seeIn($page, 'data-back-count="'.$all.'"');
+        // no folder: no banner, back to the same list
+        $page = $this->ticketsPage($this->s['admin'], ['mb' => $mb]);
+        $this->dontSeeIn($page, 'class="rg-folder-banner"');
+        $this->seeIn($page, 'data-back-url="'.e(route('refreshglobal.tickets', ['mb' => $mb])).'"');
+    }
+
+    public function testDeletionLeavesTheFolder()
+    {
+        $this->on();
+        \Modules\RefreshGlobal\Services\Settings::setDeleteGoesNext(false);
+        \Modules\RefreshGlobal\Services\Settings::setDeletePermanently(false);
+        \Modules\RefreshGlobal\Services\Settings::setKeepPosition(true);
+        $this->ticketsPage($this->s['admin'], ['status' => [Conversation::STATUS_ACTIVE], 'wf' => $this->f])->assertStatus(200);
+        $r = $this->actingAs($this->s['admin'])->post(route('conversations.ajax'), ['action' => 'delete_conversation', 'conversation_id' => $this->s['t_sales_open']->id]);
+        $this->assertSame('success', $r->json()['status']);
+        $this->assertSame(route('refreshglobal.tickets', ['status' => [Conversation::STATUS_ACTIVE]]).'#rg-deleted='.$this->s['t_sales_open']->id, $r->json()['redirect_url']);
+    }
+
+    public function testTicketLandmark()
+    {
+        // ticket of a mailbox the user can see: its id and its mailbox (landmark above Refresh's views panel)
+        $P = '\Modules\RefreshGlobal\Providers\RefreshGlobalServiceProvider';
+        $this->assertSame([
+            'conversation' => (int) $this->s['t_support_open']->id,
+            'mailbox'      => __('refreshglobal::messages.conv_mailbox', ['name' => $this->s['support']->name]),
+        ], $P::ticketLandmark($this->s['t_support_open']->id, $this->s['bob']));
+        // Bob can not see the billing mailbox: nothing about it
+        $this->assertSame([], $P::ticketLandmark($this->s['t_billing_other']->id, $this->s['bob']));
+        $this->assertSame([], $P::ticketLandmark(0, $this->s['bob']));
+    }
+
     protected function rightsBase($user)
     {
         $access = new \Modules\RefreshGlobal\Services\MailboxAccess($user);

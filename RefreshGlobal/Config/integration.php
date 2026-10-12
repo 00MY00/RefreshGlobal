@@ -74,6 +74,11 @@ return [
         'RG-HOOK-23' => ['hook' => '.rf-m-sheet-actions', 'family' => 'marker_mobile', 'refresh' => true, 'file' => 'Public/js/mobile.js', 'needle' => "'rf-m-sheet-actions'", 'severity' => 'warning', 'source' => 'Modules/Refresh/Public/js/mobile.js:86, 814-846'],
         // E-mails of the tickets deleted for good -> mail server's trash (Services/MailServerTrash.php)
         'RG-HOOK-24' => ['hook' => 'conversations.before_delete_forever', 'family' => 'hook_mail', 'file' => 'app/Conversation.php', 'needle' => "\\Eventy::action('conversations.before_delete_forever'", 'severity' => 'degraded', 'source' => 'app/Conversation.php:2163'],
+        // Back to "All mailboxes" from a ticket (Public/js/shell.js backToList()): Refresh's breadcrumb, its phone back arrow
+        // that reads it, its views panel
+        'RG-HOOK-25' => ['hook' => '.rf-crumb', 'family' => 'marker_crumb', 'refresh' => true, 'file' => 'Providers/RefreshServiceProvider.php', 'needle' => "\$('<div class=\"rf-crumb\"></div>')", 'severity' => 'warning', 'source' => 'Modules/Refresh/Providers/RefreshServiceProvider.php:737-748, 940-944'],
+        'RG-HOOK-26' => ['hook' => '.rf-m-back', 'family' => 'marker_crumb', 'refresh' => true, 'file' => 'Public/js/mobile.js', 'needle' => "\$('.rf-crumb a').first().attr('href')", 'severity' => 'warning', 'source' => 'Modules/Refresh/Public/js/mobile.js:674-676'],
+        'RG-HOOK-27' => ['hook' => '.rf-views-search', 'family' => 'marker_crumb', 'refresh' => true, 'file' => 'Resources/views/core/mailboxes/sidebar_menu_view.blade.php', 'needle' => 'class="rf-views-search"', 'severity' => 'warning', 'source' => 'Modules/Refresh/Resources/views/core/mailboxes/sidebar_menu_view.blade.php:30'],
         'RG-HOOK-07' => ['hook' => 'refresh.rail_items', 'refresh' => true, 'file' => 'Providers/RefreshServiceProvider.php', 'needle' => "'refresh.rail_items'", 'severity' => 'degraded', 'source' => 'Modules/Refresh/Providers/RefreshServiceProvider.php:711'],
     ],
 

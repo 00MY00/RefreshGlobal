@@ -223,3 +223,17 @@
         [data-rg-page="tickets"] .rf-layout-table .rf-side > .rf-side-status { width: 68px; }
     }
 }
+
+/* Automatic folder chosen: banner always shown above the list, with the way out (1.8.2) */
+.rg-folder-banner { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 9px 16px; border-bottom: 1px solid #c7d2fe; background: #eef2ff; color: #312e81; font-size: 14px; line-height: 20px; }
+.rg-folder-banner .rg-folder-svg { width: 16px; height: 16px; color: #4f46e5; }
+.rg-folder-banner-text { flex: 1 1 auto; min-width: 0; }
+.rg-folder-banner-exit { flex: none; padding: 3px 10px; border: 1px solid #a5b4fc; border-radius: 5px; background: #fff; color: #3730a3 !important; font-weight: 600; text-decoration: none !important; white-space: nowrap; }
+.rg-folder-banner-exit:hover { background: #e0e7ff; }
+[data-rg-skin="native"] .rg-folder-banner { margin: 0 0 10px; border: 1px solid #c7d2fe; border-radius: 4px; }
+
+/* Ticket opened from "All mailboxes": landmark above Refresh's views panel (Public/js/shell.js, backToList()) */
+.rg-conv-landmark { padding: 4px 0 10px; margin-bottom: 6px; border-bottom: 1px solid var(--fd-border, #e2e8f0); }
+.rg-conv-landmark .rg-conv-back { font-weight: 600 !important; color: var(--fd-brand, #5b4ff5) !important; }
+.rg-conv-landmark .rg-conv-back .rf-i { color: inherit; }
+.rg-conv-mailbox { padding: 4px 12px 0 16px; font-size: 12px; color: var(--fd-muted, #64748b); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

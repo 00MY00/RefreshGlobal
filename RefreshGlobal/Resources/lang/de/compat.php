@@ -202,4 +202,10 @@ return [
         'effect' => 'Die Ordnerübersicht zeigt Rohdaten der Daten. Der Rest funktioniert.',
         'action' => 'RefreshGlobal auf eine Version für diese FreeScout-Version aktualisieren, dann php artisan refreshglobal:check ausführen.',
     ],
+    'marker_crumb' => [
+        'check'  => 'Refresh-Element vorhanden: :item (:file)',
+        'label'  => 'Refresh-Element nicht mehr gefunden: :item (:file).',
+        'effect' => 'Ein aus „Alle Postfächer“ geöffnetes Ticket führt mit Refresh zurück (letzte Ansicht) statt zu „Alle Postfächer“. Der Rest funktioniert.',
+        'action' => 'RefreshGlobal auf eine Version für diese Refresh-Version aktualisieren, dann php artisan refreshglobal:check ausführen.',
+    ],
 ];

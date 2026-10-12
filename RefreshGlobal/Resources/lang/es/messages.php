@@ -234,4 +234,7 @@ return [
     'active_filters'               => 'Filtros activos',
     'hide_filters'                 => 'Ocultar los filtros',
     'edit_filters'                 => 'Modificar',
+    'in_folder'                    => 'Carpeta automática :folder — :count ticket(s)',
+    'leave_folder'                 => 'Salir de la carpeta',
+    'conv_mailbox'                 => 'Buzón: :name',
 ];

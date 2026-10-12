@@ -202,4 +202,10 @@ return [
         'effect' => 'La vue d’ensemble des dossiers affiche les dates brutes. Le reste fonctionne.',
         'action' => 'Mettre à jour RefreshGlobal vers une version prévue pour cette version de FreeScout, puis exécuter php artisan refreshglobal:check.',
     ],
+    'marker_crumb' => [
+        'check'  => 'Élément de Refresh présent : :item (:file)',
+        'label'  => 'Élément de Refresh introuvable : :item (:file).',
+        'effect' => 'Un ticket ouvert depuis « Toutes les boîtes » garde le retour de Refresh (sa dernière vue) au lieu de « Toutes les boîtes ». Le reste fonctionne.',
+        'action' => 'Mettre à jour RefreshGlobal vers une version prévue pour cette version de Refresh, puis exécuter php artisan refreshglobal:check.',
+    ],
 ];

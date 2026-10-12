@@ -202,4 +202,10 @@ return [
         'effect' => 'La vista general de carpetas muestra las fechas sin formato. El resto funciona.',
         'action' => 'Actualizar RefreshGlobal a una versión prevista para esta versión de FreeScout y ejecutar php artisan refreshglobal:check.',
     ],
+    'marker_crumb' => [
+        'check'  => 'Elemento de Refresh presente: :item (:file)',
+        'label'  => 'Elemento de Refresh no encontrado: :item (:file).',
+        'effect' => 'Un ticket abierto desde «Todos los buzones» vuelve con Refresh (su última vista) en lugar de «Todos los buzones». El resto funciona.',
+        'action' => 'Actualizar RefreshGlobal a una versión prevista para esta versión de Refresh y ejecutar php artisan refreshglobal:check.',
+    ],
 ];

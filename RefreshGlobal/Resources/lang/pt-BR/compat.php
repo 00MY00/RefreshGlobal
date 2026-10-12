@@ -202,4 +202,10 @@ return [
         'effect' => 'A visão geral das pastas exibe as datas sem formatação. O resto funciona.',
         'action' => 'Atualizar o RefreshGlobal para uma versão feita para esta versão do FreeScout e executar php artisan refreshglobal:check.',
     ],
+    'marker_crumb' => [
+        'check'  => 'Elemento do Refresh presente: :item (:file)',
+        'label'  => 'Elemento do Refresh não encontrado: :item (:file).',
+        'effect' => 'Um ticket aberto em “Todas as caixas” volta pelo Refresh (sua última visão) em vez de “Todas as caixas”. O resto funciona.',
+        'action' => 'Atualizar o RefreshGlobal para uma versão feita para esta versão do Refresh e executar php artisan refreshglobal:check.',
+    ],
 ];

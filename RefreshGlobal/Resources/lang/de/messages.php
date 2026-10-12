@@ -234,4 +234,7 @@ return [
     'active_filters'               => 'Aktive Filter',
     'hide_filters'                 => 'Filter ausblenden',
     'edit_filters'                 => 'Ändern',
+    'in_folder'                    => 'Automatischer Ordner :folder — :count Ticket(s)',
+    'leave_folder'                 => 'Ordner verlassen',
+    'conv_mailbox'                 => 'Postfach: :name',
 ];

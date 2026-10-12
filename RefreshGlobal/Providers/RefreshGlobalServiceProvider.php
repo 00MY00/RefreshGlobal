@@ -162,6 +162,11 @@ class RefreshGlobalServiceProvider extends ServiceProvider
                     'active'  => self::isModulePage(),
                     'replace' => \Modules\RefreshGlobal\Services\Settings::replaceRefreshTickets(),
                 ];
+                // Ticket page: name of its mailbox, for the landmark shown above Refresh's views panel when the
+                // ticket was opened from "All mailboxes" (Public/js/shell.js, backToList())
+                if (\Route::is('conversations.view')) {
+                    $config += self::ticketLandmark(request()->route('id'), auth()->user());
+                }
                 echo '<meta name="refreshglobal" content="'.e(json_encode($config, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)).'">'."\n";
             } catch (\Exception $e) {
                 // optional
@@ -359,6 +364,26 @@ class RefreshGlobalServiceProvider extends ServiceProvider
             $label = self::$folder_badges[$conversation->id];
             echo '<span class="rf-badge rg-mailbox-badge rg-folder-badge" title="'.e(__('refreshglobal::messages.auto_folder').' : '.$label).'">'.\Modules\RefreshGlobal\Services\AutoFolders::icon().' '.e($label).'</span>';
         }, 1);
+    }
+
+    /**
+     * Ticket page: its id and the name of its mailbox ("Mailbox: Support"), for the landmark above Refresh's views
+     * panel (Public/js/shell.js backToList()); nothing when the user can not see that mailbox.
+     *
+     * @return array ['conversation' => id, 'mailbox' => text] or []
+     */
+    public static function ticketLandmark($conversation_id, $user)
+    {
+        $conversation = \App\Conversation::find((int) $conversation_id);
+        if (!$conversation || !$conversation->mailbox || !$user
+            || !in_array((int) $conversation->mailbox_id, (new \Modules\RefreshGlobal\Services\MailboxAccess($user))->allowedIds(), true)) {
+            return [];
+        }
+
+        return [
+            'conversation' => (int) $conversation->id,
+            'mailbox'      => __('refreshglobal::messages.conv_mailbox', ['name' => $conversation->mailbox->name]),
+        ];
     }
 
     /** Value of $show_mailbox_column for the module's lists: with or without the badge above each ticket. */
