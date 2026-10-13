@@ -93,7 +93,7 @@ return [
             'App\Conversation::STATUS_ACTIVE', 'App\Conversation::STATUS_PENDING', 'App\Conversation::STATUS_CLOSED',
             'App\Conversation::STATUS_SPAM', 'App\Conversation::STATE_PUBLISHED',
         ], 'source' => 'app/Conversation.php:78-81,131'],
-        // Automatic update only (degraded: the list works without them)
+        // Settings of the module (FreeScout's options table; degraded: the defaults apply)
         'RG-CORE-07' => ['class' => 'App\Option', 'methods' => ['get', 'set'], 'severity' => 'degraded', 'source' => 'app/Option.php:35,75'],
         // Dashboard for all mailboxes (degraded: Refresh's own dashboard is shown instead)
         'RG-CORE-09' => ['class' => 'Modules\Refresh\Services\Views', 'methods' => ['query', 'labels'], 'refresh' => true, 'family' => 'core_refresh', 'severity' => 'degraded', 'source' => 'Modules/Refresh/Services/Views.php:89,99'],
@@ -108,7 +108,6 @@ return [
         'RG-CORE-15' => ['classes' => ['Webklex\PHPIMAP\Client', 'Webklex\PHPIMAP\Message'], 'family' => 'core_mail', 'severity' => 'degraded', 'source' => 'overrides/webklex/php-imap/src/Client.php, Message.php:1038 (move)'],
         // Dates of the automatic folders overview ("3 hours ago", in the user's time zone)
         'RG-CORE-16' => ['class' => 'App\User', 'methods' => ['dateFormat', 'dateDiffForHumans'], 'family' => 'core_dates', 'severity' => 'warning', 'source' => 'app/User.php:536,627'],
-        'RG-CORE-08' => ['classes' => ['ZipArchive', 'GuzzleHttp\Client', 'Symfony\Component\Process\Process', 'Symfony\Component\Process\PhpExecutableFinder'], 'severity' => 'degraded', 'source' => 'PHP zip extension (config/installer.php), vendor/guzzlehttp, vendor/symfony/process'],
     ],
 
     // Named routes the module links to.
@@ -123,6 +122,9 @@ return [
         // Optional module Workflow Packs (00MY00/WorkflowPacks 1.14.0): links of the automatic folders overview
         'RG-ROUTE-07' => ['route' => 'workflowpacks.graph', 'module' => 'workflowpacks', 'family' => 'route_wp', 'severity' => 'warning', 'source' => 'Modules/WorkflowPacks/Http/routes.php:33'],
         'RG-ROUTE-08' => ['route' => 'workflowpacks.history', 'module' => 'workflowpacks', 'family' => 'route_wp', 'severity' => 'warning', 'source' => 'Modules/WorkflowPacks/Http/routes.php:46'],
+        // Updates (Services/Updates.php): FreeScout's Modules page, or the optional UpdateGuard module (00MY00/UpdateGuard 1.0.0)
+        'RG-ROUTE-09' => ['route' => 'modules', 'family' => 'route_updates', 'severity' => 'warning', 'source' => 'routes/web.php:111'],
+        'RG-ROUTE-10' => ['route' => 'updateguard.module', 'module' => 'updateguard', 'family' => 'route_updates', 'severity' => 'warning', 'source' => 'Modules/UpdateGuard/Http/routes.php:19'],
     ],
 
     // Tables / columns read. RG-DB-05 is the module's own table (saved views only).

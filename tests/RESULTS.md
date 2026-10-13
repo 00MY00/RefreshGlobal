@@ -1,4 +1,4 @@
-# Résultats des tests — RefreshGlobal 1.8.2
+# Résultats des tests — RefreshGlobal 1.9.0
 
 Date : 2026-10-09. Environnements jetables Docker : FreeScout 1.8.245 (dépôt officiel), PHP 8.2.34, Apache,
 MariaDB 10.11 ; Refresh 1.4.3 (dépôt officiel). Données de test uniquement (adresses `.test`).
@@ -206,6 +206,19 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
 - Navigateur : interface en anglais, choix « Français » dans le sélecteur → la page, la barre de Refresh et le
   tableau de bord passent en français ; `users.locale = fr` en base. Sélecteur visible en bas du panneau des vues
   (ordinateur) et du tiroir (téléphone).
+
+## 25. Mises à jour par FreeScout ou UpdateGuard (1.9.0)
+
+- Instance neuve **sans UpdateGuard** : `refreshglobal:check` RG-ROUTE-09 OK (page Modules), RG-ROUTE-10 ignoré, état OK ;
+  `refreshglobal:health --json` → `{"status":"ok", … "checks": files, environment, assets, views, hooks, classes,
+  routes, database, page : ok}`, code 0 ; plus de commande `refreshglobal:update`. Réglages et diagnostic : « se met à
+  jour sur la page Modules de FreeScout », lien `/modules/list`, conseil UpdateGuard avec son lien ; plus aucun bouton
+  de l'ancienne mise à jour. PHPUnit : **104 tests, 0 échec** (1 ignoré : SyncNow).
+- **UpdateGuard 1.0.0** installé depuis sa release (SHA-256 vérifié) : RG-ROUTE-10 OK ; `updateguard:health
+  RefreshGlobal` → « ✓ Healthy », **Native health check: PASS [refreshglobal:health]**, validation générique PASS
+  (module.json, ServiceProvider, espace de noms, autoload, 18 vues, routes, démarrage de Laravel, 13 routes du module) ;
+  `updateguard:check RefreshGlobal` réussi. Réglages et diagnostic : « mis à jour par le module UpdateGuard », lien
+  vers sa page de RefreshGlobal. PHPUnit : **104 tests, 0 échec**.
 
 ## 24. Retour à « Toutes les boîtes » depuis un ticket, bandeau du dossier (1.8.2)
 

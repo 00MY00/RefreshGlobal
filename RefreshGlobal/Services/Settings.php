@@ -176,7 +176,6 @@ class Settings
             self::TRASH_AUTO_DAYS         => self::trashAutoDays(),
             self::SERVER_TRASH            => self::serverTrash(),
             self::SERVER_TRASH_FOLDER     => self::serverTrashFolder(),
-            Update\Updater::OPTION        => Update\Updater::enabled(),
         ];
     }
 

@@ -2,6 +2,37 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.9.0] — 2026-10-13
+
+### Modifié
+- **Mises à jour par FreeScout ou par [UpdateGuard](https://github.com/00MY00/UpdateGuard)** : RefreshGlobal n'a plus de
+  système de mise à jour à lui. Son `module.json` déclare les clés standard de FreeScout (`latestVersionUrl` →
+  `version.txt` de la dernière release, `latestVersionZipUrl` → `RefreshGlobal.zip`, `SHA256SUMS` à côté) :
+  - **sans UpdateGuard** : le bouton « Mettre à jour » de **Gérer › Modules** apparaît quand une nouvelle version est
+    publiée (comme pour les autres modules ; sans sauvegarde ni retour arrière) ; les réglages et la page de
+    diagnostic **conseillent d'installer UpdateGuard** ;
+  - **avec UpdateGuard** actif : il met RefreshGlobal à jour en sécurité (SHA-256, sauvegarde, contrôle de santé,
+    retour arrière automatique, mises à jour automatiques si autorisées) ; les réglages et le diagnostic renvoient à
+    sa page de RefreshGlobal.
+- Retirés : la mise à jour automatique du module (case, « Rechercher une mise à jour », « Mettre à jour maintenant »,
+  tâches planifiées, commande `refreshglobal:update`, réglages `REFRESHGLOBAL_UPDATE_URL` / `…_AUTO_UPDATE_TIME`) et
+  le contrôle RG-CORE-08. Les deux options qu'elle laissait sont effacées par une migration ; ses anciennes
+  sauvegardes (`storage/app/refreshglobal/backups/`) restent en place et peuvent être supprimées à la main.
+  `install.sh --auto-update` n'a plus d'effet et conseille UpdateGuard.
+
+### Ajouté
+- Commande **`php artisan refreshglobal:health [--json]`** (`healthCommand` de `module.json`), lancée par UpdateGuard
+  après une mise à jour : fichiers du module, contrôles de compatibilité groupés (classes, vues, routes, hooks,
+  ressources, base de données) et affichage réel de la page pour un administrateur. Code 0 = sain.
+- `module.json` : `"updateGuard": {"migrations": "backward-compatible"}` (les migrations du module ajoutent des tables
+  ou des colonnes facultatives : la version précédente fonctionne avec) ; la release publie `version.txt`.
+- Contrôles RG-ROUTE-09 (page Modules de FreeScout) et RG-ROUTE-10 (UpdateGuard, ignoré s'il est absent).
+
+### Compatibilité
+- Une installation en 1.8.x **reçoit encore cette version par son ancienne mise à jour automatique** (même release,
+  même `SHA256SUMS`) : `refreshglobal:check` et `refreshglobal:selftest`, qu'elle lance après l'installation, sont
+  conservés.
+
 ## [1.8.2] — 2026-10-12
 
 ### Ajouté

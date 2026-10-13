@@ -39,7 +39,7 @@ class RefreshGlobalServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../Config/integration.php', 'refreshglobal_integration');
         $this->commands([
             \Modules\RefreshGlobal\Console\CheckCompatibilityCommand::class,
-            \Modules\RefreshGlobal\Console\UpdateCommand::class,
+            \Modules\RefreshGlobal\Console\HealthCommand::class,
             \Modules\RefreshGlobal\Console\SelfTestCommand::class,
             \Modules\RefreshGlobal\Console\TrashCommand::class,
             \Modules\RefreshGlobal\Console\MailTrashCommand::class,
@@ -191,22 +191,14 @@ class RefreshGlobalServiceProvider extends ServiceProvider
     }
 
     /**
-     * Daily update run through FreeScout's scheduler (filter "schedule", app/Console/Kernel.php:190; FreeScout's
-     * cron runs "php artisan schedule:run" every minute). It checks for a new version every day and installs it
-     * only when the automatic update is on (php artisan refreshglobal:update --enable, or the diagnostic page).
+     * Tasks run through FreeScout's scheduler (filter "schedule", app/Console/Kernel.php:190; FreeScout's cron runs
+     * "php artisan schedule:run" every minute). Updates are not one of them since 1.9.0: FreeScout's Modules page or
+     * the UpdateGuard module update RefreshGlobal (Services/Updates.php).
      */
     protected function registerSchedule()
     {
         \Eventy::addFilter('schedule', function ($schedule) {
             try {
-                $time = (string) config('refreshglobal.auto_update_time', '03:30');
-                $schedule->command('refreshglobal:update --scheduled')
-                    ->dailyAt(preg_match('/^\d{1,2}:\d{2}$/', $time) ? $time : '03:30')
-                    ->withoutOverlapping();
-                // "Update now" button (settings / diagnostic page): picked up within a minute
-                $schedule->command('refreshglobal:update --requested')
-                    ->everyMinute()
-                    ->withoutOverlapping();
                 // automatic emptying of the trash (does nothing while the setting is 0 days)
                 $trash = (string) config('refreshglobal.trash_auto_time', '03:45');
                 $schedule->command('refreshglobal:trash --scheduled')
@@ -217,7 +209,7 @@ class RefreshGlobalServiceProvider extends ServiceProvider
                     ->everyMinute()
                     ->withoutOverlapping();
             } catch (\Exception $e) {
-                // no automatic update rather than a broken scheduler
+                // no scheduled task rather than a broken scheduler
             }
 
             return $schedule;

@@ -132,16 +132,15 @@ pagination côté serveur et le tri transformé en liens (`Public/js/refreshglob
 
 ---
 
-### 1.7 Mise à jour des modules et tâches planifiées (RefreshGlobal 1.1.0)
+### 1.7 Mise à jour des modules et tâches planifiées (RefreshGlobal 1.1.0 ; mise à jour revue en 1.9.0)
 
 | Élément | Fichier:ligne | Constat / utilisation |
 |---|---|---|
-| filtre **`schedule`** | `app/Console/Kernel.php:190` | un module peut ajouter une tâche au planificateur (cron `schedule:run` de FreeScout) → **utilisé** : `refreshglobal:update --scheduled` chaque jour |
+| filtre **`schedule`** | `app/Console/Kernel.php:190` | un module peut ajouter une tâche au planificateur (cron `schedule:run` de FreeScout) → **utilisé** : vidage de la corbeille, e-mails vers la corbeille du serveur (plus de mise à jour depuis 1.9.0) |
 | `freescout:module-update` | `app/Console/Commands/ModuleUpdate.php:17, 107` | met à jour les modules non officiels dont `module.json` déclare `latestVersionUrl` |
 | `App\Module::updateModule()` | `app/Module.php` (bouton « Mettre à jour » de Gérer › Modules) | télécharge `latestVersionZipUrl`, remplace les fichiers, lance `freescout:module-install` ; en cas d'échec, désactive le module — **aucun retour à l'ancienne version** |
-| → choix | `module.json` | **pas de `latestVersionUrl` / `latestVersionZipUrl`** : seul l'outil du module (avec retour arrière) met RefreshGlobal à jour |
-| `App\Option::get/set` | `app/Option.php:75, 35` | réglage « mise à jour automatique » (`refreshglobal.auto_update`) |
-| `Helper::setGuzzleDefaultOptions()` | `app/Misc/Helper.php:3018` | délais et proxy de FreeScout pour les téléchargements |
+| → choix (1.9.0) | `module.json` | **`latestVersionUrl` / `latestVersionZipUrl` déclarés** (`version.txt`, `RefreshGlobal.zip` de la dernière release) : bouton « Mettre à jour » de Gérer › Modules, ou module **UpdateGuard** (00MY00/UpdateGuard 1.0.0 : `healthCommand` = `refreshglobal:health`, `SHA256SUMS` à côté du ZIP, `"updateGuard": {"migrations": "backward-compatible"}` ; README « For module developers ») ; `Services/Updates.php` dit lequel des deux est actif (route `modules` `routes/web.php:111`, route `updateguard.module` `Modules/UpdateGuard/Http/routes.php:19`) (RG-ROUTE-09, 10) |
+| `App\Option::get/set` | `app/Option.php:75, 35` | réglages du module (Gérer › Paramètres › RefreshGlobal) |
 | filtres **`settings.sections`**, **`settings.section_settings`**, **`settings.view`** | `app/Http/Controllers/SettingsController.php:267, 250` ; `resources/views/settings/view.blade.php:27` | section **Gérer › Paramètres › RefreshGlobal** (même méthode que Refresh, `RefreshServiceProvider.php:91-116`) ; l'enregistrement est fait par FreeScout (`SettingsController::processSave`, `:288-379`, options), RG-HOOK-15…17 |
 | image de la carte du module | `resources/views/modules/partials/module_card.blade.php:2-3` (champ `img` de `module.json`) | `../modules/refreshglobal/img/module.svg`, même forme que Refresh |
 

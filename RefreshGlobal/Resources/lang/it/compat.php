@@ -208,4 +208,10 @@ return [
         'effect' => 'Un ticket aperto da «Tutte le caselle» torna con Refresh (la sua ultima vista) invece che a «Tutte le caselle». Il resto funziona.',
         'action' => 'Aggiornare RefreshGlobal a una versione prevista per questa versione di Refresh, poi eseguire php artisan refreshglobal:check.',
     ],
+    'route_updates' => [
+        'check'  => 'Rotta usata per gli aggiornamenti presente: :item',
+        'label'  => 'Manca una rotta usata per indicare dove aggiornare il modulo: :item.',
+        'effect' => 'Il link alla pagina di aggiornamento di RefreshGlobal non viene mostrato; gli aggiornamenti restano possibili da Gestisci › Moduli (o UpdateGuard). Il resto funziona.',
+        'action' => 'Aggiornare RefreshGlobal a una versione prevista per questa versione di FreeScout / UpdateGuard, poi eseguire php artisan refreshglobal:check.',
+    ],
 ];

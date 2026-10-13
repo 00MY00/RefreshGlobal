@@ -37,17 +37,18 @@ Chacun est contrôlé par `php artisan refreshglobal:check`.
 | Fil d'Ariane de la page d'un ticket (`.rf-crumb`), flèche retour du téléphone qui le lit, recherche du panneau des vues | éléments internes des scripts et vues de Refresh | retour de Refresh (sa dernière vue) au lieu de « Toutes les boîtes » ; le reste fonctionne (RG-HOOK-25…27, avertissement) |
 | Correction des textes français de Refresh (`<meta name="refresh-l10n">`) | balise interne de Refresh | textes d'origine de Refresh (RG-HOOK-22, avertissement) |
 
-## Mise à jour automatique
+## Mises à jour
 
-- Passe par le planificateur de FreeScout (filtre `schedule`, `app/Console/Kernel.php:190`) : il faut le cron
-  `* * * * * php /var/www/html/artisan schedule:run` (installé par le script officiel de FreeScout). Sans lui,
-  utiliser `php artisan refreshglobal:update` à la main.
-- Nécessite l'extension PHP zip, Guzzle et Symfony Process (fournis avec FreeScout) : contrôle RG-CORE-08 ; sinon
-  la liste fonctionne, seule la mise à jour automatique est indisponible.
-- Le module n'annonce pas ses versions au bouton « Mettre à jour » de FreeScout (pas de `latestVersionUrl`), car ce
-  bouton ne sait pas revenir en arrière.
-- Le retour arrière restaure les fichiers du module, ses vues enregistrées et annule ses nouvelles migrations ; il
-  ne touche à aucune autre table. Sauvegardes : `storage/app/refreshglobal/backups/` (les 3 dernières).
+- Depuis 1.9.0, pas de mise à jour propre au module : `module.json` déclare `latestVersionUrl` (`version.txt` de la
+  dernière release) et `latestVersionZipUrl` (`RefreshGlobal.zip`, `SHA256SUMS` à côté).
+- Sans UpdateGuard : bouton « Mettre à jour » de Gérer › Modules (`app/Http/Controllers/ModulesController.php:150-195`,
+  `app/Module.php:415-519`) — remplace les fichiers et lance `freescout:module-install`, **sans sauvegarde ni retour
+  arrière** ; FreeScout désactive le module si l'activation échoue.
+- Avec [UpdateGuard](https://github.com/00MY00/UpdateGuard) 1.0.0 : niveau « Full Safe Update » (SHA-256 + contrôle
+  de santé natif `refreshglobal:health`) ; `"updateGuard": {"migrations": "backward-compatible"}` déclaré (migrations
+  additives : tables et colonnes facultatives).
+- Les installations en 1.8.x reçoivent encore les nouvelles versions par leur ancienne mise à jour automatique (même
+  release, même `SHA256SUMS`) ; elle lance `refreshglobal:check` et `refreshglobal:selftest`, toujours présents.
 
 ## Écarts connus par rapport au style de Refresh
 

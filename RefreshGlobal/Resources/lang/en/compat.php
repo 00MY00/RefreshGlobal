@@ -212,4 +212,10 @@ return [
         'effect' => 'A ticket opened from “All mailboxes” has Refresh’s own way back (its last view) instead of “All mailboxes”. The rest works.',
         'action' => 'Update RefreshGlobal to a version made for this Refresh version, then run php artisan refreshglobal:check.',
     ],
+    'route_updates' => [
+        'check'  => 'Route used for the updates present: :item',
+        'label'  => 'A route used to show where to update the module is missing: :item.',
+        'effect' => 'The link to the page where RefreshGlobal is updated is not shown; updates still work from Manage › Modules (or UpdateGuard). The rest works.',
+        'action' => 'Update RefreshGlobal to a version made for this FreeScout / UpdateGuard version, then run php artisan refreshglobal:check.',
+    ],
 ];

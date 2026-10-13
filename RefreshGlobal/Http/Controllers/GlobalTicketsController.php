@@ -131,7 +131,6 @@ class GlobalTicketsController extends Controller
                 'dropped_mailboxes' => $active_view ? (int) $filters['dropped_mailboxes'] : 0,
                 'ignored_params'    => $ignored_params,
                 'export_max'        => (int) config('refreshglobal.export_max_rows', 5000),
-                'update_status'     => $user->isAdmin() ? \Modules\RefreshGlobal\Services\Update\Updater::status() : [],
             ])->render());
         });
     }

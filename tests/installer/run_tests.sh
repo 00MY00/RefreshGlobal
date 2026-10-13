@@ -141,55 +141,12 @@ page() {
 
 db() { docker exec "$1-db" mariadb -ufreescout -pdb-test-password -N -B freescout -e "$2"; }
 
-release_dir() {
-    # release_dir NAME VERSION [VARIANT] [badsum] -> $WORK/rel-NAME with RefreshGlobal.zip, module.json, SHA256SUMS
-    local name=$1 version=$2 variant=${3:-} badsum=${4:-} rel="$WORK/rel-$1"
-    build_zip "$version" "$variant"
-    rm -rf "$rel"; mkdir -p "$rel"
-    cp "$WORK/RefreshGlobal-${version}.zip" "$rel/RefreshGlobal.zip"
-    cp "$WORK/zip-${version}/RefreshGlobal/module.json" "$rel/module.json"
-    (cd "$rel" && sha256sum RefreshGlobal.zip module.json >SHA256SUMS)
-    if [ -n "$badsum" ]; then
-        sed -i "s/^[0-9a-f]\{64\}  RefreshGlobal.zip/$(printf '0%.0s' $(seq 1 64))  RefreshGlobal.zip/" "$rel/SHA256SUMS"
-    fi
-}
-
-branch_dir() {
-    # branch_dir VERSION -> $WORK/branch-VERSION with main.zip (GitHub branch layout: RefreshGlobal-main/RefreshGlobal/)
-    # and module.json (what raw.githubusercontent.com serves for the branch); no SHA256SUMS, like a branch
-    local version=$1 dir="$WORK/branch-$1"
-    build_zip "$version"
-    rm -rf "$dir"; mkdir -p "$dir/RefreshGlobal-main"
-    cp -R "$WORK/zip-${version}/RefreshGlobal" "$dir/RefreshGlobal-main/RefreshGlobal"
-    cp "$dir/RefreshGlobal-main/RefreshGlobal/module.json" "$dir/module.json"
-    if command -v zip >/dev/null 2>&1; then
-        (cd "$dir" && zip -qr main.zip RefreshGlobal-main)
-    else
-        (cd "$dir" && python3 -m zipfile -c main.zip RefreshGlobal-main)
-    fi
-}
-
-use_release() {
-    # use_release INSTANCE NAME: the module reads its releases from /opt/rel-NAME (REFRESHGLOBAL_UPDATE_URL)
-    docker exec "$1-app" rm -rf "/opt/rel-$2"
-    docker cp "$WORK/rel-$2" "$1-app:/opt/rel-$2"
-    docker exec "$1-app" bash -c "cd /var/www/html && sed -i '/^REFRESHGLOBAL_UPDATE_URL=/d' .env && echo 'REFRESHGLOBAL_UPDATE_URL=file:///opt/rel-$2' >>.env \
-        && sudo -u www-data php artisan freescout:clear-cache >/dev/null"
-}
-
-rg_update() {
-    # rg_update INSTANCE args… -> output in $WORK/out.txt, exit code in $RC
-    local name=$1; shift
-    RC=0
-    docker exec "$name-app" bash -c "cd /var/www/html && sudo -u www-data php artisan refreshglobal:update $*" >"$WORK/out.txt" 2>&1 || RC=$?
-    log "    refreshglobal:update $* -> exit $RC"
-}
-
 installed_version() { docker exec "$1-app" sed -n 's/.*"version": "\([^"]*\)".*/\1/p' /var/www/html/Modules/RefreshGlobal/module.json; }
 
 # ------------------------------------------------------------------------------------------------ scenarios ----
 s_auto_update() {
-    local s="Mise à jour automatique avec retour arrière"
+    # 1.9.0: no updater of its own (FreeScout's Modules page or the UpdateGuard module): --auto-update only advises
+    local s="Mises à jour : page Modules de FreeScout ou UpdateGuard"
     local base
     base="$(sed -n 's/.*"version": "\([^"]*\)".*/\1/p' "$ROOT/RefreshGlobal/module.json")"
     new_instance rgi4 1
@@ -197,82 +154,23 @@ s_auto_update() {
     docker cp "$WORK/RefreshGlobal-${base}.zip" rgi4-app:/tmp/RefreshGlobal-base.zip
     docker cp "$ROOT/install.sh" rgi4-app:/tmp/install.sh
     RC=0; docker exec -e NO_COLOR=1 rgi4-app bash /tmp/install.sh --source=/tmp/RefreshGlobal-base.zip --yes --auto-update=on >"$WORK/out.txt" 2>&1 || RC=$?
-    [ "$RC" = 0 ] && out_has "Mise à jour automatique quotidienne activée" && record "$s" "install.sh --auto-update=on" PASS || record "$s" "install.sh --auto-update=on" FAIL "exit $RC"
-    db rgi4 "insert into refreshglobal_saved_views (user_id,name,filters,is_default,created_at,updated_at) values (1,'Vue conservée','{\"mailboxes\":[]}',0,now(),now())"
-    release_dir good 9.0.1
-    release_dir blocking 9.0.2 blocking
-    release_dir crash 9.0.3 crash
-    release_dir migration 9.0.4 migration
-    release_dir badsum 9.0.5 "" badsum
-
-    use_release rgi4 good
-    rg_update rgi4 --check
-    out_has "update available" && record "$s" "--check : nouvelle version détectée" PASS || record "$s" "--check" FAIL "$(tail -c 200 "$WORK/out.txt")"
-    rg_update rgi4
-    [ "$RC" = 0 ] && [ "$(installed_version rgi4)" = 9.0.1 ] && record "$s" "bonne version : installée (9.0.1)" PASS || record "$s" "bonne version installée" FAIL "exit $RC — $(tail -c 300 "$WORK/out.txt")"
-    [ "$(page rgi4-app /refresh-global/tickets)" = 200 ] && record "$s" "page = 200 après mise à jour" PASS || record "$s" "page 200" FAIL
-    [ "$(db rgi4 "select count(*) from refreshglobal_saved_views where name='Vue conservée'")" = 1 ] && record "$s" "vues enregistrées conservées" PASS || record "$s" "vues conservées" FAIL
-
-    use_release rgi4 blocking
-    rg_update rgi4
-    [ "$RC" = 3 ] && [ "$(installed_version rgi4)" = 9.0.1 ] && record "$s" "version bloquante : retour automatique à 9.0.1 (code 3)" PASS || record "$s" "version bloquante annulée" FAIL "exit $RC v$(installed_version rgi4) — $(tail -c 300 "$WORK/out.txt")"
-    [ "$(page rgi4-app /refresh-global/tickets)" = 200 ] && docker exec rgi4-app grep -q 'data-rg-page="tickets"' /tmp/page.html && record "$s" "page de nouveau affichée après le retour arrière" PASS || record "$s" "page après retour arrière" FAIL
-    docker exec rgi4-app grep -q 'mise à jour automatique\|automatic update to RefreshGlobal 9.0.2' /tmp/page.html && record "$s" "bandeau d'avertissement pour l'administrateur" PASS || record "$s" "bandeau admin" FAIL
-    rg_update rgi4
-    out_has "not retried automatically" && record "$s" "version annulée non retentée automatiquement" PASS || record "$s" "pas de nouvel essai" FAIL
-
-    use_release rgi4 crash
-    rg_update rgi4
-    [ "$RC" = 3 ] && [ "$(installed_version rgi4)" = 9.0.1 ] && record "$s" "version qui plante PHP : retour automatique" PASS || record "$s" "plantage annulé" FAIL "exit $RC v$(installed_version rgi4) — $(tail -c 300 "$WORK/out.txt")"
-    [ "$(page rgi4-app /)" = 200 ] && record "$s" "FreeScout fonctionne (tableau de bord 200)" PASS || record "$s" "FreeScout OK" FAIL
-
-    use_release rgi4 migration
-    rg_update rgi4
-    [ "$RC" = 3 ] && [ -z "$(db rgi4 "show tables like 'refreshglobal_update_test'")" ] && record "$s" "nouvelle table annulée (migration défaite)" PASS || record "$s" "migration défaite" FAIL "exit $RC — $(tail -c 300 "$WORK/out.txt")"
-
-    use_release rgi4 badsum
-    rg_update rgi4
-    [ "$RC" = 1 ] && [ "$(installed_version rgi4)" = 9.0.1 ] && out_has "checksum mismatch" && record "$s" "empreinte SHA-256 fausse : refusée, rien modifié" PASS || record "$s" "empreinte refusée" FAIL "exit $RC"
-
-    rg_update rgi4 --disable
-    use_release rgi4 good
-    release_dir good2 9.0.6
-    use_release rgi4 good2
-    rg_update rgi4 --scheduled
-    [ "$(installed_version rgi4)" = 9.0.1 ] && out_has "update available" && record "$s" "désactivée : la tâche quotidienne vérifie sans installer" PASS || record "$s" "désactivée" FAIL
-    docker exec rgi4-app bash -c "cd /var/www/html && sudo -u www-data php -r 'require \"vendor/autoload.php\"; \$a = require \"bootstrap/app.php\"; \$a->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap(); foreach (\$a->make(Illuminate\Console\Scheduling\Schedule::class)->events() as \$e) { echo \$e->command, \" \", \$e->expression, PHP_EOL; }'" >"$WORK/out.txt" 2>&1 || true
-    out_has "refreshglobal:update --scheduled" && record "$s" "tâche quotidienne enregistrée dans le planificateur de FreeScout" PASS || record "$s" "tâche planifiée" FAIL "$(tail -c 300 "$WORK/out.txt")"
-
-    # "Update now" button: the request is picked up by the per-minute scheduled task (even with the daily update off)
-    rg_update rgi4 --requested
-    [ "$(installed_version rgi4)" = 9.0.1 ] && record "$s" "« Mettre à jour maintenant » : rien sans demande" PASS || record "$s" "rien sans demande" FAIL
-    db rgi4 "delete from options where name='refreshglobal.update_requested'; insert into options (name, value) values ('refreshglobal.update_requested', '2026-01-01T00:00:00+00:00')"
-    rg_update rgi4 --requested
-    [ "$RC" = 0 ] && [ "$(installed_version rgi4)" = 9.0.6 ] && record "$s" "« Mettre à jour maintenant » : mise à jour faite par la tâche planifiée (9.0.6)" PASS || record "$s" "mise à jour demandée" FAIL "exit $RC v$(installed_version rgi4) — $(tail -c 300 "$WORK/out.txt")"
-    [ -z "$(db rgi4 "select value from options where name='refreshglobal.update_requested'")" ] && record "$s" "demande effacée après exécution" PASS || record "$s" "demande effacée" FAIL
-
-    # install.sh --update with a blocking version: automatic rollback too
-    docker cp "$WORK/rel-blocking/RefreshGlobal.zip" rgi4-app:/tmp/RefreshGlobal-blocking.zip
-    RC=0; docker exec -e NO_COLOR=1 rgi4-app bash /tmp/install.sh --update --source=/tmp/RefreshGlobal-blocking.zip --yes >"$WORK/out.txt" 2>&1 || RC=$?
-    [ "$RC" = 4 ] && [ "$(installed_version rgi4)" = 9.0.6 ] && out_has "retour automatique à la version 9.0.6" && record "$s" "install.sh --update bloquant : retour automatique" PASS || record "$s" "install.sh retour automatique" FAIL "exit $RC v$(installed_version rgi4)"
-
-    # no release published (GitHub repository with tags only): current version of the main branch
-    branch_dir 9.0.7
-    docker exec rgi4-app bash -c "rm -rf /opt/branch /opt/rel-empty && mkdir -p /opt/rel-empty"
-    docker cp "$WORK/branch-9.0.7" rgi4-app:/opt/branch
-    docker exec rgi4-app bash -c "cd /var/www/html && sed -i '/^REFRESHGLOBAL_UPDATE/d' .env \
-        && printf 'REFRESHGLOBAL_UPDATE_URL=file:///opt/rel-empty\nREFRESHGLOBAL_UPDATE_BRANCH_MANIFEST=file:///opt/branch/module.json\nREFRESHGLOBAL_UPDATE_BRANCH_ZIP=file:///opt/branch/main.zip\n' >>.env \
-        && sudo -u www-data php artisan freescout:clear-cache >/dev/null"
-    rg_update rgi4
-    [ "$RC" = 0 ] && [ "$(installed_version rgi4)" = 9.0.7 ] && out_has "No published release" && record "$s" "sans release : version de la branche main installée (9.0.7)" PASS || record "$s" "branche main" FAIL "exit $RC v$(installed_version rgi4) — $(tail -c 300 "$WORK/out.txt")"
-    [ "$(page rgi4-app /refresh-global/tickets)" = 200 ] && record "$s" "page = 200 après mise à jour depuis main" PASS || record "$s" "page après main" FAIL
-
-    # install.sh without a release: main branch too
-    branch_dir 9.0.8
-    docker cp "$WORK/branch-9.0.8/main.zip" rgi4-app:/tmp/main-9.0.8.zip
-    RC=0; docker exec -e NO_COLOR=1 -e RG_REPO_URL=file:///opt/no-such-repo -e RG_BRANCH_ZIP_URL=file:///tmp/main-9.0.8.zip rgi4-app \
-        bash /tmp/install.sh --update --yes >"$WORK/out.txt" 2>&1 || RC=$?
-    [ "$RC" = 0 ] && [ "$(installed_version rgi4)" = 9.0.8 ] && out_has "Aucune release publiée" && record "$s" "install.sh sans release : branche main (9.0.8)" PASS || record "$s" "install.sh branche main" FAIL "exit $RC v$(installed_version rgi4) — $(tail -c 300 "$WORK/out.txt")"
+    if [ "$RC" = 0 ] && out_has "n'a plus d'effet" && out_has "https://github.com/00MY00/UpdateGuard"; then
+        record "$s" "install.sh --auto-update=on : installé, UpdateGuard conseillé" PASS
+    else
+        record "$s" "--auto-update=on" FAIL "exit $RC"
+    fi
+    if [ "$(installed_version rgi4)" = "$base" ]; then record "$s" "version installée ($base)" PASS; else record "$s" "version installée" FAIL; fi
+    RC=0; docker exec rgi4-app bash -c "cd /var/www/html && sudo -u www-data php artisan refreshglobal:health --json" >"$WORK/out.txt" 2>&1 || RC=$?
+    if [ "$RC" = 0 ] && out_has '"status":"ok"'; then
+        record "$s" "refreshglobal:health --json : sain (lu par UpdateGuard)" PASS
+    else
+        record "$s" "refreshglobal:health" FAIL "exit $RC — $(tail -c 300 "$WORK/out.txt")"
+    fi
+    if docker exec rgi4-app grep -q '"latestVersionZipUrl"' /var/www/html/Modules/RefreshGlobal/module.json; then
+        record "$s" "module.json : latestVersionUrl / latestVersionZipUrl (page Modules de FreeScout)" PASS
+    else
+        record "$s" "module.json" FAIL
+    fi
 }
 
 s_existing_refresh() {

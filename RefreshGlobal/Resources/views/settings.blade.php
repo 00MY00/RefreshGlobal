@@ -95,10 +95,6 @@
         </div>
     </div>
 
-    <h3 class="subheader">{{ __('refreshglobal::messages.auto_update') }}</h3>
-    @include('refreshglobal::partials.switch', ['key' => \Modules\RefreshGlobal\Services\Update\Updater::OPTION, 'label' => __('refreshglobal::messages.auto_update'),
-        'help' => __('refreshglobal::messages.auto_update_help', ['time' => (string) config('refreshglobal.auto_update_time', '03:30')])])
-
     <div class="form-group">
         <div class="col-sm-6 col-sm-offset-2">
             <button type="submit" class="btn btn-primary">{{ __('refreshglobal::messages.save') }}</button>
@@ -113,10 +109,11 @@
 </form>
 
 <div class="form-horizontal margin-bottom">
+    <h3 class="subheader">{{ __('refreshglobal::messages.updates_title') }}</h3>
     <div class="form-group">
         <label class="col-sm-2 control-label">RefreshGlobal</label>
         <div class="col-sm-8 form-control-static">
-            @include('refreshglobal::partials.update_state', ['back' => 'settings', 'small' => false])
+            @include('refreshglobal::partials.updates', ['small' => false])
         </div>
     </div>
 </div>

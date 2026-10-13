@@ -49,7 +49,9 @@ Dans Gérer › Modules :
 - Sur téléphone (avec Refresh) : **onglet « Toutes les boîtes »** dans la barre du bas.
 - **Option « Remplacer l'entrée Tickets de Refresh »** : l'entrée « Tickets » de Refresh est masquée dans la barre de
   gauche et la barre du bas, « Toutes les boîtes » prend sa place.
-- **Mise à jour automatique** (facultative) avec **retour arrière automatique** si la nouvelle version ne fonctionne pas.
+- **Mises à jour** par la page **Modules** de FreeScout, ou en sécurité par le module
+  [UpdateGuard](https://github.com/00MY00/UpdateGuard) (conseillé : SHA-256, sauvegarde, contrôle de santé, retour
+  arrière automatique).
 - **Diagnostic de compatibilité** : `php artisan refreshglobal:check` et page d'administration, avec des messages
   explicites (codes `RG-xxx`) après une mise à jour de FreeScout ou de Refresh.
 - **Bouton « Relever les e-mails »** (flèche en cercle) si le module
@@ -201,7 +203,6 @@ Sans l'installeur, il n'y a ni sauvegarde automatique ni retour arrière.
 | Supprimer définitivement | désactivé | désactivé = corbeille de FreeScout (restaurable) ; activé = le ticket et ses e-mails sont effacés de FreeScout tout de suite (irréversible ; rien n'est touché sur le serveur de messagerie) |
 | Aussi sur le serveur mail | activé | quand un ticket est supprimé définitivement, ses e-mails sont déplacés dans la corbeille du serveur mail (IMAP) dans la minute, récupérables depuis le webmail ; corbeille du serveur trouvée automatiquement ou indiquée (« Corbeille du serveur ») |
 | Vider automatiquement (corbeille) | 0 jour = jamais | chaque jour à 03:45, les tickets dans la corbeille depuis plus de N jours sont supprimés définitivement avec leurs e-mails (toutes les boîtes ; serveur de messagerie non touché) |
-| Mise à jour automatique | désactivé | voir § 7 |
 
 **Vider la corbeille maintenant** : bouton « Vider la corbeille (N) » dans ces réglages et en bas du panneau des vues
 de « Toutes les boîtes » (aussi sur téléphone), avec confirmation. Mêmes règles que le « Vider la corbeille » de
@@ -241,39 +242,21 @@ curl -fsSL https://raw.githubusercontent.com/00MY00/RefreshGlobal/main/install.s
 
 (`--version=1.2.3` pour une version précise.)
 
-**D'où vient la nouvelle version** : de la dernière *release* GitHub (archive + `SHA256SUMS`). **S'il n'y a aucune
-release publiée**, le module et `install.sh` prennent la **version actuelle de la branche `main`** : un simple
-`git push` suffit alors. Pour une branche, il n'existe pas de fichier d'empreinte : l'intégrité repose sur HTTPS
-(l'empreinte de l'archive est notée dans le journal), et les contrôles après installation avec retour arrière
-automatique restent en place. Dès qu'une release existe, c'est elle qui est utilisée.
+**Depuis la 1.9.0, RefreshGlobal n'a plus de mise à jour à lui** : son `module.json` déclare les clés standard de
+FreeScout (`latestVersionUrl` : `version.txt` de la dernière release, `latestVersionZipUrl` : `RefreshGlobal.zip`,
+avec `SHA256SUMS` à côté). **Gérer › Paramètres › RefreshGlobal** et la page de diagnostic indiquent qui le met à
+jour :
 
-### Mise à jour automatique (avec retour arrière)
+- **Avec le module [UpdateGuard](https://github.com/00MY00/UpdateGuard) (conseillé)** : il vérifie l'empreinte
+  SHA-256, prépare la nouvelle version à part, sauvegarde l'ancienne, l'installe, lance le contrôle de santé du module
+  (`php artisan refreshglobal:health`), **revient automatiquement en arrière** si quelque chose ne va pas, et peut
+  faire les mises à jour automatiquement (réglage d'UpdateGuard). Menu **Gérer › UpdateGuard**.
+- **Sans UpdateGuard** : comme les autres modules, le bouton **« Mettre à jour »** de **Gérer › Modules** apparaît
+  quand une nouvelle version est publiée. Ce bouton de FreeScout ne fait **ni sauvegarde ni retour arrière** : si la
+  nouvelle version ne fonctionnait pas, FreeScout désactiverait le module.
+- `install.sh --update` (ci-dessus) reste disponible, avec sa sauvegarde et son retour arrière.
 
-Désactivée par défaut. Une fois activée, le module vérifie chaque jour (à 03:30) s'il existe une nouvelle version
-publiée sur GitHub et l'installe en sécurité :
-
-1. téléchargement de l'archive et vérification de son empreinte SHA-256 (refusée si elle ne correspond pas ; sans
-   release : archive de la branche `main`, sans fichier d'empreinte) ;
-2. sauvegarde du module, des vues enregistrées et de la liste de ses migrations ;
-3. installation (comme Gérer › Modules) puis contrôles : `refreshglobal:check` et affichage réel de la page pour un
-   administrateur (`refreshglobal:selftest`) ;
-4. **si quelque chose ne va pas** (installation en erreur, état bloquant ou plus mauvais qu'avant, page qui ne
-   s'affiche pas) : **retour automatique à la version précédente** (fichiers, vues enregistrées, nouvelles tables
-   annulées). Cette version n'est plus retentée automatiquement, et un bandeau prévient les administrateurs.
-
-Activer ou désactiver :
-- **Gérer › Paramètres › RefreshGlobal** (administrateurs) : case « Mise à jour automatique », versions installée et
-  disponible, dernier résultat, et bouton **« Mettre à jour maintenant »** (la mise à jour sécurisée est lancée dans
-  la minute par le planificateur, jamais pendant le chargement de la page) ;
-- **page de diagnostic** (`/refresh-global/diagnostic`) : mêmes boutons ;
-- ou `cd /var/www/html && sudo -u www-data php artisan refreshglobal:update --enable` (`--disable`) ;
-- ou à l'installation : `… | sudo bash -s -- --auto-update=on`.
-
-Elle passe par le cron de FreeScout (`php artisan schedule:run`, installé par le script officiel). Mise à jour à la
-main avec les mêmes garanties : `sudo -u www-data php artisan refreshglobal:update` (`--check` pour seulement
-vérifier). Heure : `REFRESHGLOBAL_AUTO_UPDATE_TIME=03:30` dans le `.env`. Le bouton « Mettre à jour » de Gérer ›
-Modules n'est volontairement pas utilisé (il ne sait pas revenir en arrière). `install.sh --update` revient lui
-aussi automatiquement à la version précédente si la nouvelle est bloquante (`--no-auto-rollback` pour l'empêcher).
+Contrôle de santé à la main : `cd /var/www/html && sudo -u www-data php artisan refreshglobal:health` (`--json`).
 
 **Après chaque mise à jour de Refresh ou de FreeScout** :
 
@@ -323,7 +306,7 @@ curl -fsSL https://raw.githubusercontent.com/00MY00/RefreshGlobal/main/install.s
 | RG-CORE-01…06 | bloquant | classe / méthode / constante de FreeScout absente | mettre à jour RefreshGlobal |
 | RG-HOOK-24, RG-CORE-14, 15, RG-DB-07, 08 | dégradé | suppression définitive ou accès IMAP de FreeScout changé, table du module absente | les e-mails des tickets supprimés restent sur le serveur mail ; `php artisan migrate`, sinon mettre à jour RefreshGlobal |
 | RG-CORE-13, RG-DB-06 | dégradé | suppression définitive ou date d'entrée dans la corbeille de FreeScout changée | « Vider la corbeille » du module indisponible (celui de chaque boîte de FreeScout fonctionne) ; mettre à jour RefreshGlobal |
-| RG-CORE-07, 08 | dégradé | classes nécessaires à la mise à jour automatique absentes | la liste fonctionne ; mise à jour automatique désactivée |
+| RG-CORE-07 | dégradé | options de FreeScout illisibles | les réglages du module prennent leurs valeurs par défaut |
 | RG-ROUTE-01…03 | bloquant | route introuvable | `php artisan freescout:clear-cache`, sinon mettre à jour |
 | RG-DB-01…04 | bloquant | table ou colonne de FreeScout absente | `php artisan migrate` |
 | RG-DB-05 | dégradé | table des vues enregistrées absente | `php artisan migrate` (les vues enregistrées sont désactivées en attendant) |

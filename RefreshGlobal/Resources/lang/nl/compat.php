@@ -208,4 +208,10 @@ return [
         'effect' => 'Een ticket geopend vanuit „Alle mailboxen” gaat terug via Refresh (laatste weergave) in plaats van naar „Alle mailboxen”. De rest werkt.',
         'action' => 'RefreshGlobal bijwerken naar een versie voor deze Refresh-versie en daarna php artisan refreshglobal:check uitvoeren.',
     ],
+    'route_updates' => [
+        'check'  => 'Route voor de updates aanwezig: :item',
+        'label'  => 'Een route die aangeeft waar de module wordt bijgewerkt ontbreekt: :item.',
+        'effect' => 'De link naar de updatepagina van RefreshGlobal wordt niet getoond; updates blijven mogelijk via Beheren › Modules (of UpdateGuard). De rest werkt.',
+        'action' => 'RefreshGlobal bijwerken naar een versie voor deze FreeScout- / UpdateGuard-versie en daarna php artisan refreshglobal:check uitvoeren.',
+    ],
 ];

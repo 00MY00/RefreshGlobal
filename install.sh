@@ -35,7 +35,7 @@ REPO_URL="${RG_REPO_URL:-https://github.com/00MY00/RefreshGlobal}"
 # When no release is published: archive of the current main branch (no SHA256SUMS for a branch)
 BRANCH_ZIP_URL="${RG_BRANCH_ZIP_URL:-${REPO_URL}/archive/refs/heads/main.zip}"
 
-SCRIPT_VERSION="1.8.2"
+SCRIPT_VERSION="1.9.0"
 MODULE_NAME="RefreshGlobal"
 MODULE_ALIAS="refreshglobal"
 MODULE_TABLE="refreshglobal_saved_views"
@@ -239,7 +239,8 @@ Options :
   --drop-tables         avec --uninstall : supprimer la table du module sans le demander
   --remove-files        avec --uninstall : supprimer les fichiers du module sans le demander
   --force               réinstaller même si la même version est déjà installée
-  --auto-update=on|off  activer / désactiver la mise à jour automatique quotidienne du module (avec retour arrière)
+  --auto-update=on|off  (depuis 1.9.0, sans effet) les mises à jour passent par Gérer › Modules de FreeScout ;
+                        mises à jour sûres et automatiques : module UpdateGuard (https://github.com/00MY00/UpdateGuard)
   --no-auto-rollback    ne pas revenir automatiquement à l'ancienne version si la nouvelle est bloquante
   --dry-run             afficher toutes les actions sans rien exécuter
   --yes                 mode non interactif (répond oui ; garde les tables à la désinstallation sauf --drop-tables)
@@ -838,16 +839,12 @@ auto_rollback() {
     exit 4
 }
 
-# --auto-update=on|off : réglage enregistré par le module (php artisan refreshglobal:update --enable / --disable).
+# --auto-update=on|off : sans effet depuis 1.9.0 (RefreshGlobal n'a plus de mise à jour à lui). Les mises à jour se
+# font par Gérer › Modules de FreeScout, ou par le module UpdateGuard (sauvegarde, contrôle de santé, retour arrière).
 apply_auto_update() {
     [ -n "$AUTO_UPDATE" ] || return 0
-    if [ "$AUTO_UPDATE" = on ]; then
-        artisan refreshglobal:update --enable
-        info "Mise à jour automatique quotidienne activée (retour arrière automatique si la nouvelle version ne fonctionne pas)."
-    else
-        artisan refreshglobal:update --disable
-        info "Mise à jour automatique désactivée."
-    fi
+    warn "--auto-update n'a plus d'effet : RefreshGlobal se met à jour par Gérer › Modules de FreeScout."
+    info "Pour des mises à jour sûres et automatiques, installez le module UpdateGuard : https://github.com/00MY00/UpdateGuard"
 }
 
 # Page rendue pour un administrateur (commande présente à partir de RefreshGlobal 1.1.0).

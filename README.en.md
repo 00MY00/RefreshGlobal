@@ -26,8 +26,9 @@ otherwise it uses FreeScout's standard look.
   filtered on the matching Refresh view.
 - **Deleting a ticket**: back to "All mailboxes" with the last filters (or the next ticket of that list); trash
   (default) or permanent deletion.
-- With Refresh: **"All mailboxes" phone tab**, option to replace Refresh's "Tickets" entry, automatic update with
-  rollback.
+- With Refresh: **"All mailboxes" phone tab**, option to replace Refresh's "Tickets" entry.
+- **Updates** from FreeScout's **Modules** page, or safely with the [UpdateGuard](https://github.com/00MY00/UpdateGuard)
+  module (recommended: SHA-256, backup, health check, automatic rollback).
 - **Counters** per mailbox and per status (grouped queries).
 - **CSV export** of the filtered list (UTF-8 with BOM for Excel, capped number of rows).
 - **Personal saved views**: save filters, rename, set a default view, delete.
@@ -113,7 +114,6 @@ Updates: `sudo git -C /opt/RefreshGlobal pull`, then the same command with `--up
 | Delete permanently | off | off = FreeScout's trash (can be restored); on = the ticket and its e-mails are removed from FreeScout at once (cannot be undone; the mail server is not touched) |
 | Also on the mail server | on | when a ticket is deleted for good, its e-mails are moved to the mail server's trash folder (IMAP) within a minute, still restorable from the webmail; trash folder found automatically or set by hand |
 | Empty automatically (trash) | 0 days = never | every day at 03:45, tickets in the trash for more than N days are deleted for good with their e-mails (all mailboxes; mail server untouched) |
-| Automatic update | off | daily safe update with automatic rollback |
 
 **Empty the trash now**: "Empty the trash (N)" button in these settings and at the bottom of the "All mailboxes" views
 panel (phones too), with confirmation; same rules as FreeScout's own "Empty trash" (admins or users allowed to delete
@@ -131,10 +131,16 @@ With Refresh in French, the module also corrects two of Refresh's phone strings 
 curl -fsSL https://raw.githubusercontent.com/00MY00/RefreshGlobal/main/install.sh | sudo bash -s -- --update
 ```
 
-New versions come from the latest GitHub *release* (archive + `SHA256SUMS`). **When no release is published**, the
-module and `install.sh` use the **current version of the `main` branch** (a `git push` is enough); there is no
-checksum file for a branch, so integrity relies on HTTPS, and the post-install checks with automatic rollback still
-apply. As soon as a release exists, it is used instead.
+**Since 1.9.0 RefreshGlobal has no updater of its own**: its `module.json` declares FreeScout's standard keys
+(`latestVersionUrl`: `version.txt` of the latest release, `latestVersionZipUrl`: `RefreshGlobal.zip`, with
+`SHA256SUMS` next to them).
+
+- **With the [UpdateGuard](https://github.com/00MY00/UpdateGuard) module (recommended)**: SHA-256 check, staging,
+  backup, the module's health check (`php artisan refreshglobal:health`), **automatic rollback**, optional automatic
+  updates (Manage › UpdateGuard).
+- **Without it**: like any other module, an **"Update"** button shows up in **Manage › Modules** when a new version is
+  published (no backup, no rollback).
+- `install.sh --update` (above) is still available, with its own backup and rollback.
 
 After every Refresh or FreeScout update: 1. `php artisan refreshglobal:check`, 2. read the report, 3. fix the failed
 items (usually: install the RefreshGlobal release made for the new version).

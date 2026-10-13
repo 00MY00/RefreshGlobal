@@ -208,4 +208,10 @@ return [
         'effect' => 'Ein aus „Alle Postfächer“ geöffnetes Ticket führt mit Refresh zurück (letzte Ansicht) statt zu „Alle Postfächer“. Der Rest funktioniert.',
         'action' => 'RefreshGlobal auf eine Version für diese Refresh-Version aktualisieren, dann php artisan refreshglobal:check ausführen.',
     ],
+    'route_updates' => [
+        'check'  => 'Für Aktualisierungen verwendete Route vorhanden: :item',
+        'label'  => 'Eine Route, die zeigt, wo das Modul aktualisiert wird, fehlt: :item.',
+        'effect' => 'Der Link zur Aktualisierungsseite von RefreshGlobal wird nicht angezeigt; Aktualisierungen bleiben über Verwalten › Module (oder UpdateGuard) möglich. Der Rest funktioniert.',
+        'action' => 'RefreshGlobal auf eine Version für diese FreeScout- / UpdateGuard-Version aktualisieren, dann php artisan refreshglobal:check ausführen.',
+    ],
 ];

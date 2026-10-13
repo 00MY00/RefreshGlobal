@@ -55,20 +55,11 @@
             </div>
         </div>
 
-        {{-- Automatic update --}}
+        {{-- Updates: FreeScout's Modules page or the UpdateGuard module (Services/Updates.php) --}}
         <div class="panel panel-default rg-update">
             <div class="panel-body">
-                <h4 class="rg-update-title">{{ __('refreshglobal::messages.auto_update') }}
-                    <span class="label {{ $update_enabled ? 'label-success' : 'label-default' }}">{{ $update_enabled ? __('refreshglobal::messages.on') : __('refreshglobal::messages.off') }}</span>
-                </h4>
-                <p class="rg-muted">{{ __('refreshglobal::messages.auto_update_help', ['time' => $update_time]) }}</p>
-                <form method="post" action="{{ route('refreshglobal.auto_update') }}" class="rg-form">
-                    {{ csrf_field() }}
-                    <input type="hidden" name="enabled" value="{{ $update_enabled ? 0 : 1 }}">
-                    <button type="submit" class="btn btn-sm {{ $update_enabled ? 'btn-default' : 'btn-primary' }}">{{ $update_enabled ? __('refreshglobal::messages.turn_off') : __('refreshglobal::messages.turn_on') }}</button>
-                </form>
-                @include('refreshglobal::partials.update_state', ['back' => '', 'small' => true])
-                <p class="rg-muted">{{ __('refreshglobal::messages.update_cli') }} <code>sudo -u www-data php artisan refreshglobal:update</code></p>
+                <h4 class="rg-update-title">{{ __('refreshglobal::messages.updates_title') }}</h4>
+                @include('refreshglobal::partials.updates', ['small' => true])
             </div>
         </div>
 

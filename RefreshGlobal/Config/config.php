@@ -20,16 +20,6 @@ return [
     // Maximum number of saved views per user.
     'max_saved_views' => (int) env('REFRESHGLOBAL_MAX_SAVED_VIEWS', 50),
 
-    // Automatic update: where the releases are (module.json, RefreshGlobal.zip, SHA256SUMS), time of the daily run
-    // (application time zone) and default state before anyone turns it on or off (off: an administrator decides).
-    'update_url' => env('REFRESHGLOBAL_UPDATE_URL', 'https://github.com/00MY00/RefreshGlobal/releases/latest/download'),
-    // When no release is published there (404): current version of the main branch (module.json + archive of the
-    // branch). No SHA256SUMS for a branch: HTTPS only. Empty values = no fallback.
-    'update_branch_manifest' => env('REFRESHGLOBAL_UPDATE_BRANCH_MANIFEST', 'https://raw.githubusercontent.com/00MY00/RefreshGlobal/main/RefreshGlobal/module.json'),
-    'update_branch_zip' => env('REFRESHGLOBAL_UPDATE_BRANCH_ZIP', 'https://github.com/00MY00/RefreshGlobal/archive/refs/heads/main.zip'),
-    'auto_update_time' => env('REFRESHGLOBAL_AUTO_UPDATE_TIME', '03:30'),
-    'auto_update_default' => (bool) env('REFRESHGLOBAL_AUTO_UPDATE', false),
-
     // With Refresh: hide its "Tickets" entry (left bar, phone tab bar) and keep only "All mailboxes" (default before
     // an administrator changes it on the diagnostic page).
     'replace_refresh_tickets_default' => (bool) env('REFRESHGLOBAL_REPLACE_REFRESH_TICKETS', false),
