@@ -219,6 +219,15 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
   (module.json, ServiceProvider, espace de noms, autoload, 18 vues, routes, démarrage de Laravel, 13 routes du module) ;
   `updateguard:check RefreshGlobal` réussi. Réglages et diagnostic : « mis à jour par le module UpdateGuard », lien
   vers sa page de RefreshGlobal. PHPUnit : **104 tests, 0 échec**.
+- **Après publication de la release v1.9.0** (CI verte, `version.txt` = 1.9.0), mises à jour réelles depuis GitHub :
+  - **1.8.2 → 1.9.0 par l'ancienne mise à jour du module** (`refreshglobal:update` de la 1.8.2) : « RefreshGlobal
+    updated 1.8.2 → 1.9.0 (state: ok) », sans retour arrière ; ensuite plus de `refreshglobal:update`,
+    `refreshglobal:health` sain, les 2 options de l'ancienne mise à jour effacées par la migration ;
+  - **page Modules de FreeScout** (version installée ramenée à 1.8.99) : carte RefreshGlobal « A new version is
+    available: 1.9.0 … Update Now » ;
+  - **UpdateGuard 1.0.0** (`updateguard:update RefreshGlobal`, 1.8.99 → 1.9.0) : mise à jour détectée, archive
+    téléchargée, **SHA-256 vérifié**, extraction et contrôle en zone d'attente, sauvegarde, fichiers installés,
+    **contrôle de santé natif réussi** (`refreshglobal:health`), observation de 10 minutes ; version 1.9.0 installée.
 
 ## 24. Retour à « Toutes les boîtes » depuis un ticket, bandeau du dossier (1.8.2)
 
