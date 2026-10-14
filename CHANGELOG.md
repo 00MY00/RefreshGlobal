@@ -2,6 +2,19 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.9.1] — 2026-10-14
+
+### Corrigé
+- **Téléphone : sélection par appui long** sur « Toutes les boîtes ». Un appui long sélectionnait le ticket puis le
+  désélectionnait au relâchement, et le mode sélection se refermait : impossible d'agir sur un ou plusieurs tickets.
+  Cause : le script téléphone de Refresh (`Modules/Refresh/Public/js/mobile.js:260-298`) coche le ticket après 500 ms,
+  puis n'ignore le « clic » envoyé au relâchement que s'il arrive moins de 800 ms après ce moment ; un appui volontaire
+  de plus de ~1,3 s voyait ce clic traité comme un toucher en mode sélection, qui décochait le ticket (même défaut sur
+  la liste de Refresh). Désormais, quand la case du ticket a changé pendant que le doigt était posé, le clic qui suit
+  est ignoré, quelle que soit la durée de l'appui ; les touchers courts gardent le comportement de Refresh (ouvrir le
+  ticket, ou cocher / décocher en mode sélection). Plus de sélection de texte ni de menu du téléphone sur la carte
+  pendant l'appui long.
+
 ## [1.9.0] — 2026-10-13
 
 ### Modifié

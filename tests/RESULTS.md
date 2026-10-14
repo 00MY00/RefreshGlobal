@@ -1,4 +1,4 @@
-# Résultats des tests — RefreshGlobal 1.9.0
+# Résultats des tests — RefreshGlobal 1.9.1
 
 Date : 2026-10-09. Environnements jetables Docker : FreeScout 1.8.245 (dépôt officiel), PHP 8.2.34, Apache,
 MariaDB 10.11 ; Refresh 1.4.3 (dépôt officiel). Données de test uniquement (adresses `.test`).
@@ -206,6 +206,16 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
 - Navigateur : interface en anglais, choix « Français » dans le sélecteur → la page, la barre de Refresh et le
   tableau de bord passent en français ; `users.locale = fr` en base. Sélecteur visible en bas du panneau des vues
   (ordinateur) et du tiroir (téléphone).
+
+## 26. Téléphone : sélection par appui long (1.9.1)
+
+- Reproduction (navigateur en mode téléphone, vrais évènements tactiles, chaque changement de case tracé avec sa pile
+  d'appels) : appui 0,9 s → ticket coché ; appui **1,8 s** → coché à 0,5 s puis **décoché par le clic du relâchement**
+  (gestionnaire de clic de `mobile.js` de Refresh), mode sélection refermé — sur « Toutes les boîtes » et de la même
+  façon sur la liste de Refresh.
+- Après correction, sur « Toutes les boîtes » : appui 1,8 s → 1 sélectionné ; toucher d'un 2e → 2 ; appui 1,8 s d'un
+  3e → 3 ; toucher du 1er → décoché (2) ; appui 0,9 s → 3 ; touchers → 0, mode sélection quitté ; appui long puis
+  toucher rapide d'un autre → 2 ; toucher normal hors sélection → le ticket s'ouvre ; aucune erreur JavaScript.
 
 ## 25. Mises à jour par FreeScout ou UpdateGuard (1.9.0)
 

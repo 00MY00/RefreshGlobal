@@ -237,3 +237,8 @@
 .rg-conv-landmark .rg-conv-back { font-weight: 600 !important; color: var(--fd-brand, #5b4ff5) !important; }
 .rg-conv-landmark .rg-conv-back .rf-i { color: inherit; }
 .rg-conv-mailbox { padding: 4px 12px 0 16px; font-size: 12px; color: var(--fd-muted, #64748b); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Phone: a long-press on a card selects the ticket (Refresh); no text selection nor link menu of the phone over it */
+@media (max-width: 767px) {
+    [data-rg-page="tickets"] .table-conversations tr.conv-row { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+}

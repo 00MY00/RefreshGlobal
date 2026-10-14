@@ -89,6 +89,7 @@
         });
 
         filtersPanel();
+        longPressGuard();
 
         if (state.attr('data-keep-position') === '1') {
             keepPosition();
@@ -98,6 +99,52 @@
             syncNow($(this));
         });
     });
+
+    /*
+     * Phone: selecting tickets with a long-press. Refresh's cards (Modules/Refresh/Public/js/mobile.js:260-298) check the
+     * ticket after 500 ms of pressing, then ignore the "click" sent when the finger is lifted only if it comes within
+     * 800 ms of THAT moment. A deliberate press of more than ~1.3 s gets its click handled as a tap in selection mode:
+     * the ticket is unchecked at once and the selection is lost. Here: when the checkbox of the pressed card changed
+     * while the finger was down (a long-press selected it), the click that follows the release is dropped before any
+     * other handler (capture phase), whatever the length of the press. Short taps are left to Refresh (open the ticket,
+     * or check / uncheck it in selection mode).
+     */
+    function longPressGuard() {
+        if (!('ontouchstart' in window) || !document.addEventListener) {
+            return;
+        }
+        var press = null;
+        var dropUntil = 0;
+        var rowOf = function (target) {
+            return target && target.closest ? target.closest('tr.conv-row') : null;
+        };
+        var stateOf = function (row) {
+            var cb = row ? row.querySelector('.conv-checkbox') : null;
+            return cb ? cb.checked : null;
+        };
+        document.addEventListener('touchstart', function (e) {
+            var row = rowOf(e.target);
+            // a new touch: the click of an earlier long-press will not come any more (some phones send none)
+            dropUntil = 0;
+            press = row && e.touches.length === 1 ? { row: row, checked: stateOf(row) } : null;
+        }, { capture: true, passive: true });
+        document.addEventListener('touchend', function () {
+            if (press && stateOf(press.row) !== press.checked) {
+                dropUntil = Date.now() + 1500;
+            }
+            press = null;
+        }, { capture: true, passive: true });
+        document.addEventListener('touchcancel', function () {
+            press = null;
+        }, { capture: true, passive: true });
+        document.addEventListener('click', function (e) {
+            if (dropUntil && Date.now() < dropUntil && rowOf(e.target)) {
+                dropUntil = 0;
+                e.preventDefault();
+                e.stopImmediatePropagation();
+            }
+        }, true);
+    }
 
     /*
      * Filters panel (Refresh skin). Wide enough: docked on the right, folded / unfolded by Refresh's own "Filters"
