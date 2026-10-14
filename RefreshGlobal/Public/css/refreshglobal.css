@@ -242,3 +242,6 @@
 @media (max-width: 767px) {
     [data-rg-page="tickets"] .table-conversations tr.conv-row { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
 }
+
+/* ?rg_debug=touch: touch log of the "All mailboxes" page (Public/js/refreshglobal.js touchDebug()) */
+.rg-touch-debug { position: fixed; left: 4px; right: 4px; top: 4px; z-index: 100000; max-height: 38vh; overflow: auto; margin: 0; padding: 6px 8px; border-radius: 6px; background: rgba(15, 23, 42, .88); color: #e2e8f0; font: 11px/1.35 monospace; white-space: pre-wrap; pointer-events: none; }

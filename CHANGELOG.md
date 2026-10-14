@@ -2,6 +2,21 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.9.2] — 2026-10-14
+
+### Corrigé
+- **Téléphone : sélection par appui long, protection renforcée.** La 1.9.1 ignorait seulement le clic du relâchement.
+  Un vrai téléphone peut aussi décocher le ticket autrement : l'appui long natif de FreeScout (`taphold`,
+  `public/js/main.js` `conversationsTableInit()`) relancé par les évènements souris que certains téléphones envoient
+  après un toucher (`mousedown` / `mouseup` / `click`). Désormais, dès qu'un appui long a coché un ticket, **tout autre
+  changement de sa case** pendant le même appui, ou dans les 1,5 s qui suivent le relâchement (avant le toucher
+  suivant), est annulé, quelle qu'en soit la source ; la carte garde sa couleur de sélection.
+
+### Ajouté
+- **Journal tactile** pour le dépannage : `…/refresh-global/tickets?rg_debug=touch` affiche en haut de la page ce que
+  le téléphone envoie (touchers, menu contextuel, évènements souris, clics, changements de case, annulations) ;
+  `?rg_debug=off` l'arrête (mémorisé pour l'onglet seulement).
+
 ## [1.9.1] — 2026-10-14
 
 ### Corrigé

@@ -1,4 +1,4 @@
-# Résultats des tests — RefreshGlobal 1.9.1
+# Résultats des tests — RefreshGlobal 1.9.2
 
 Date : 2026-10-09. Environnements jetables Docker : FreeScout 1.8.245 (dépôt officiel), PHP 8.2.34, Apache,
 MariaDB 10.11 ; Refresh 1.4.3 (dépôt officiel). Données de test uniquement (adresses `.test`).
@@ -206,6 +206,19 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
 - Navigateur : interface en anglais, choix « Français » dans le sélecteur → la page, la barre de Refresh et le
   tableau de bord passent en français ; `users.locale = fr` en base. Sélecteur visible en bas du panneau des vues
   (ordinateur) et du tiroir (téléphone).
+
+## 27. UpdateGuard 1.2.0 et sélection par appui long renforcée (1.9.2)
+
+- **UpdateGuard 1.2.0** (release) avec RefreshGlobal **1.9.0** (release) : détection « 1.9.0 → 1.9.1 », niveau
+  **✓ Full Safe Update** ; mise à jour manuelle : archive téléchargée, **SHA-256 vérifié**, zone d'attente, sauvegarde,
+  installation, **contrôle de santé natif réussi**, version marquée stable ; **restauration** de 1.9.0 (sauvegarde de
+  1.9.1 d'abord, santé OK) ; **mise à jour automatique** par le planificateur (`updateguard:run`) 1.9.0 → 1.9.1, santé
+  OK ; module abîmé (fichier retiré) → « × Failed » avec le fichier manquant, puis « ✓ Healthy » une fois remis.
+  Page « Toutes les boîtes » rendue après chaque étape.
+- Téléphone : appui long puis appui long natif de FreeScout (`taphold`) pendant l'appui et après le relâchement →
+  changement **annulé** (« UNDONE … -> true »), ticket toujours sélectionné ; toucher ultérieur → décoché normalement ;
+  scénario complet de sélection (appuis 1,8 s / 0,9 s, touchers, compteur, sortie du mode, ouverture d'un ticket) : OK ;
+  journal `?rg_debug=touch` affiché (touchstart, évènements souris émulés, clic ignoré, annulation).
 
 ## 26. Téléphone : sélection par appui long (1.9.1)
 

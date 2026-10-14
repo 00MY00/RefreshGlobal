@@ -102,49 +102,139 @@
 
     /*
      * Phone: selecting tickets with a long-press. Refresh's cards (Modules/Refresh/Public/js/mobile.js:260-298) check the
-     * ticket after 500 ms of pressing, then ignore the "click" sent when the finger is lifted only if it comes within
-     * 800 ms of THAT moment. A deliberate press of more than ~1.3 s gets its click handled as a tap in selection mode:
-     * the ticket is unchecked at once and the selection is lost. Here: when the checkbox of the pressed card changed
-     * while the finger was down (a long-press selected it), the click that follows the release is dropped before any
-     * other handler (capture phase), whatever the length of the press. Short taps are left to Refresh (open the ticket,
-     * or check / uncheck it in selection mode).
+     * ticket after 500 ms of pressing; other handlers can then toggle the same checkbox back:
+     *  - Refresh itself, on the "click" sent when the finger is lifted, when it comes more than 800 ms after the
+     *    selection (a deliberate press of more than ~1.3 s): handled as a tap in selection mode;
+     *  - FreeScout's own long-press (taphold, 700 ms, public/js/main.js conversationsTableInit()), restarted by the mouse
+     *    events some phones send after a touch;
+     *  - any other click / tap the phone sends after a long-press.
+     * Whatever the source: once a long-press has changed the checkbox of the pressed card, any other change of that
+     * checkbox during the same press, or within 1.5 s after it (before the next touch), is undone, and the click that
+     * follows the release is dropped before any other handler (capture phase). Short taps are left to Refresh (open the
+     * ticket, or check / uncheck it in selection mode).
+     * Diagnostic: ?rg_debug=touch shows on the page what the phone sends (?rg_debug=off to stop).
      */
     function longPressGuard() {
         if (!('ontouchstart' in window) || !document.addEventListener) {
             return;
         }
-        var press = null;
+        var LOCK_MS = 1500;
+        var press = null;   // finger down on a card: {row, first: checkbox state set by the long-press, or null}
+        var lock = null;    // after the release: {row, state, until}
         var dropUntil = 0;
+        var reverting = false;
+        var log = touchDebug();
         var rowOf = function (target) {
             return target && target.closest ? target.closest('tr.conv-row') : null;
         };
-        var stateOf = function (row) {
-            var cb = row ? row.querySelector('.conv-checkbox') : null;
-            return cb ? cb.checked : null;
+        var idOf = function (row) {
+            return row ? row.getAttribute('data-conversation_id') : '-';
+        };
+        var release = function (how) {
+            if (press && press.first !== null) {
+                lock = { row: press.row, state: press.first, until: Date.now() + LOCK_MS };
+                dropUntil = lock.until;
+            }
+            log(how + ' #' + (press ? idOf(press.row) : '-') + (lock ? ' lock=' + lock.state : ''));
+            press = null;
         };
         document.addEventListener('touchstart', function (e) {
             var row = rowOf(e.target);
-            // a new touch: the click of an earlier long-press will not come any more (some phones send none)
+            // a new touch: the selection of the previous long-press is final
             dropUntil = 0;
-            press = row && e.touches.length === 1 ? { row: row, checked: stateOf(row) } : null;
+            lock = null;
+            press = row && e.touches.length === 1 ? { row: row, first: null } : null;
+            log('touchstart #' + idOf(row));
         }, { capture: true, passive: true });
-        document.addEventListener('touchend', function () {
-            if (press && stateOf(press.row) !== press.checked) {
-                dropUntil = Date.now() + 1500;
-            }
-            press = null;
-        }, { capture: true, passive: true });
-        document.addEventListener('touchcancel', function () {
-            press = null;
-        }, { capture: true, passive: true });
+        document.addEventListener('touchend', function () { release('touchend'); }, { capture: true, passive: true });
+        document.addEventListener('touchcancel', function () { release('touchcancel'); }, { capture: true, passive: true });
         document.addEventListener('click', function (e) {
-            if (dropUntil && Date.now() < dropUntil && rowOf(e.target)) {
+            var row = rowOf(e.target);
+            if (dropUntil && Date.now() < dropUntil && row) {
                 dropUntil = 0;
                 e.preventDefault();
                 e.stopImmediatePropagation();
+                log('click #' + idOf(row) + ' DROPPED');
+                return;
             }
+            log('click #' + idOf(row) + (e.isTrusted ? '' : ' (script)'));
         }, true);
+        var undo = function (cb, row, state, why) {
+            if (cb.checked !== state) {
+                reverting = true;
+                cb.checked = state;
+                $(cb).trigger('change');
+                reverting = false;
+                log('UNDONE ' + why + ' #' + idOf(row) + ' -> ' + state);
+            }
+            // the handler that toggled the checkbox may toggle the card's class right after
+            setTimeout(function () { $(row).toggleClass('selected', cb.checked); }, 0);
+        };
+        // checkboxes are changed by jQuery (.prop + trigger("change")): a jQuery handler sees every change
+        $(document).on('change', '.conv-checkbox', function () {
+            if (reverting) {
+                return;
+            }
+            var cb = this;
+            var row = rowOf(cb);
+            log('checkbox #' + idOf(row) + ' ' + (cb.checked ? 'checked' : 'unchecked') + (press ? ' (finger down)' : ''));
+            if (press && press.row === row) {
+                if (press.first === null) {
+                    press.first = cb.checked; // the long-press selection
+                } else {
+                    undo(cb, row, press.first, 'second change during the press');
+                }
+                return;
+            }
+            if (lock && lock.row === row && Date.now() < lock.until) {
+                undo(cb, row, lock.state, 'change after the long-press');
+            }
+        });
+        if (log.on) {
+            document.addEventListener('contextmenu', function (e) { log('contextmenu #' + idOf(rowOf(e.target)) + (e.defaultPrevented ? ' (prevented)' : '')); }, true);
+            document.addEventListener('mousedown', function (e) { log('mousedown #' + idOf(rowOf(e.target))); }, true);
+            document.addEventListener('mouseup', function (e) { log('mouseup #' + idOf(rowOf(e.target))); }, true);
+            $(document).on('taphold', 'tr.conv-row', function () { log('taphold (FreeScout) #' + idOf(this)); });
+        }
     }
+
+    /*
+     * ?rg_debug=touch: a box at the top of the page lists the touch events, clicks and checkbox changes (for a phone
+     * where the selection misbehaves); kept for the tab (sessionStorage) until ?rg_debug=off. Returns log(text).
+     */
+    function touchDebug() {
+        var KEY = 'rg-debug-touch';
+        var m = /[?&]rg_debug=(touch|off)\b/.exec(window.location.search);
+        try {
+            if (m) {
+                if (m[1] === 'off') { window.sessionStorage.removeItem(KEY); } else { window.sessionStorage.setItem(KEY, '1'); }
+            }
+        } catch (e) { /* private mode */ }
+        var on = false;
+        try { on = window.sessionStorage.getItem(KEY) === '1'; } catch (e) { on = !!(m && m[1] === 'touch'); }
+        if (!on) {
+            var none = function () {};
+            none.on = false;
+            return none;
+        }
+        var box = document.createElement('pre');
+        box.className = 'rg-touch-debug';
+        box.textContent = 'RefreshGlobal ' + (document.querySelector('meta[name="rg-version"]') || { content: '' }).content
+            + ' — touch log (?rg_debug=off to stop)\n' + navigator.userAgent + '\n';
+        document.body.appendChild(box);
+        var t0 = Date.now();
+        var log = function (text) {
+            box.textContent += ((Date.now() - t0) / 1000).toFixed(2) + 's ' + text + '\n';
+            var lines = box.textContent.split('\n');
+            if (lines.length > 60) {
+                box.textContent = lines.slice(0, 2).concat(lines.slice(-58)).join('\n');
+            }
+            box.scrollTop = box.scrollHeight;
+        };
+        log.on = true;
+        return log;
+    }
+
 
     /*
      * Filters panel (Refresh skin). Wide enough: docked on the right, folded / unfolded by Refresh's own "Filters"
