@@ -43,6 +43,8 @@ otherwise it uses FreeScout's standard look.
   is installed: "Automatic folders" section in the views panel (tree of the folders of all your mailboxes, with
   their number of tickets; a click filters the list), a folder badge on each ticket and an "Overview" page (tickets
   and open tickets per folder and per mailbox, last filing, automatic clean-up).
+- **Address to send from** on "Send an e-mail" / "New ticket": every address of your mailboxes and their aliases;
+  another mailbox opens its form with what you typed; suggested address from the list or the last one used.
 - Languages: English, French, German, Spanish, Italian, Dutch, Brazilian Portuguese.
 - **Language**: the module follows FreeScout's language, like Refresh (which has no language choice of its own): the
   user's profile language, otherwise the default one. A **language switch** at the bottom of the views panel (and

@@ -2,6 +2,27 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.10.0] — 2026-10-14
+
+### Ajouté
+- **Choix de l'adresse d'envoi** sur « Envoyer un e-mail » et « Nouveau ticket » (formulaire de création de FreeScout,
+  refait par Refresh ; aussi sans Refresh et sur téléphone). FreeScout lie ce formulaire à une seule boîte et
+  n'affiche un champ « De » que si cette boîte a des alias avec « réponse depuis les alias » activé. Désormais :
+  - champ **« De »** (e-mail) avec **toutes les adresses autorisées** : l'adresse de chaque boîte de l'utilisateur
+    (sauf archivées) et les **alias** de ces boîtes, groupés par boîte ; champ **« Boîte »** pour un ticket (adresses
+    des boîtes) ;
+  - un alias de la même boîte s'applique tout de suite (envoyé comme `from_alias`, que FreeScout utilise même si
+    « réponse depuis les alias » est désactivé) ; l'adresse d'une **autre boîte** ouvre le formulaire de cette boîte
+    **en gardant ce qui est déjà saisi** (destinataires, objet, message, contact, type, priorité) ;
+  - **adresse proposée** : la boîte sur laquelle « Toutes les boîtes » est filtrée, sinon la **dernière adresse
+    utilisée** (ce navigateur), sinon la boîte du formulaire ; ouvert depuis une boîte ou un ticket, cette boîte est
+    gardée ;
+  - les réponses dans un ticket restent liées à la boîte du ticket (et à ses alias, fonction de FreeScout).
+- **Sécurité** : FreeScout appliquait n'importe quel `from_alias` envoyé avec un message sans vérifier qu'il appartient à
+  la boîte (une requête forgée pouvait envoyer depuis n'importe quelle adresse). Un alias qui n'est ni l'adresse ni un
+  alias de la boîte du ticket est maintenant retiré avant l'envoi (`Http/Middleware/CheckFromAlias.php`).
+- Contrôles RG-HOOK-28/29, RG-CORE-17, RG-ROUTE-11 (avertissement).
+
 ## [1.9.2] — 2026-10-14
 
 ### Corrigé

@@ -167,7 +167,7 @@
     </div>
     <span id="rg-state" hidden data-base="{{ $rg_url([], ['page']) }}" data-sort="{{ $filters['sort'] }}" data-order="{{ $filters['order'] }}" data-keep-position="{{ \Modules\RefreshGlobal\Services\Settings::keepPosition() ? 1 : 0 }}"
         data-refresh="{{ \Modules\RefreshGlobal\Services\Settings::autoRefresh() }}" data-fp="{{ $rg_fp }}"
-        data-back-url="{{ $rg_back['url'] }}" data-back-label="{{ $rg_back['label'] }}" data-back-count="{{ $rg_back['count'] }}" data-state-url="{{ \Modules\RefreshGlobal\Http\Controllers\GlobalTicketsController::stateUrl($rg_params) }}"></span>
+        data-mailbox="{{ $rg_single_mb }}" data-back-url="{{ $rg_back['url'] }}" data-back-label="{{ $rg_back['label'] }}" data-back-count="{{ $rg_back['count'] }}" data-state-url="{{ \Modules\RefreshGlobal\Http\Controllers\GlobalTicketsController::stateUrl($rg_params) }}"></span>
 
     @if ($skin === 'refresh')
         {{-- View bar (moved into Refresh's top bar by its script) --}}

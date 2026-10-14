@@ -79,6 +79,9 @@ return [
         'RG-HOOK-25' => ['hook' => '.rf-crumb', 'family' => 'marker_crumb', 'refresh' => true, 'file' => 'Providers/RefreshServiceProvider.php', 'needle' => "\$('<div class=\"rf-crumb\"></div>')", 'severity' => 'warning', 'source' => 'Modules/Refresh/Providers/RefreshServiceProvider.php:737-748, 940-944'],
         'RG-HOOK-26' => ['hook' => '.rf-m-back', 'family' => 'marker_crumb', 'refresh' => true, 'file' => 'Public/js/mobile.js', 'needle' => "\$('.rf-crumb a').first().attr('href')", 'severity' => 'warning', 'source' => 'Modules/Refresh/Public/js/mobile.js:674-676'],
         'RG-HOOK-27' => ['hook' => '.rf-views-search', 'family' => 'marker_crumb', 'refresh' => true, 'file' => 'Resources/views/core/mailboxes/sidebar_menu_view.blade.php', 'needle' => 'class="rf-views-search"', 'severity' => 'warning', 'source' => 'Modules/Refresh/Resources/views/core/mailboxes/sidebar_menu_view.blade.php:30'],
+        // Address to send from on "Send an e-mail" / "New ticket" (Services/SendFrom.php, Public/js/shell.js sendFrom())
+        'RG-HOOK-28' => ['hook' => 'from_alias of a new message', 'family' => 'sendfrom', 'file' => 'app/Http/Controllers/ConversationsController.php', 'needle' => '$thread->from = $request->from_alias;', 'severity' => 'warning', 'source' => 'app/Http/Controllers/ConversationsController.php:1195-1197'],
+        'RG-HOOK-29' => ['hook' => '.rf-nf (fields of the New ticket / Send an e-mail page)', 'family' => 'sendfrom', 'refresh' => true, 'file' => 'Public/js/new.js', 'needle' => 'var field = function (label, required, content, cls)', 'severity' => 'warning', 'source' => 'Modules/Refresh/Public/js/new.js:218-225'],
         'RG-HOOK-07' => ['hook' => 'refresh.rail_items', 'refresh' => true, 'file' => 'Providers/RefreshServiceProvider.php', 'needle' => "'refresh.rail_items'", 'severity' => 'degraded', 'source' => 'Modules/Refresh/Providers/RefreshServiceProvider.php:711'],
     ],
 
@@ -108,6 +111,7 @@ return [
         'RG-CORE-15' => ['classes' => ['Webklex\PHPIMAP\Client', 'Webklex\PHPIMAP\Message'], 'family' => 'core_mail', 'severity' => 'degraded', 'source' => 'overrides/webklex/php-imap/src/Client.php, Message.php:1038 (move)'],
         // Dates of the automatic folders overview ("3 hours ago", in the user's time zone)
         'RG-CORE-16' => ['class' => 'App\User', 'methods' => ['dateFormat', 'dateDiffForHumans'], 'family' => 'core_dates', 'severity' => 'warning', 'source' => 'app/User.php:536,627'],
+        'RG-CORE-17' => ['class' => 'App\Mailbox', 'methods' => ['getAliases', 'isArchived'], 'family' => 'sendfrom', 'severity' => 'warning', 'source' => 'app/Mailbox.php:793, 434'],
     ],
 
     // Named routes the module links to.
@@ -125,6 +129,7 @@ return [
         // Updates (Services/Updates.php): FreeScout's Modules page, or the optional UpdateGuard module (00MY00/UpdateGuard 1.0.0)
         'RG-ROUTE-09' => ['route' => 'modules', 'family' => 'route_updates', 'severity' => 'warning', 'source' => 'routes/web.php:111'],
         'RG-ROUTE-10' => ['route' => 'updateguard.module', 'module' => 'updateguard', 'family' => 'route_updates', 'severity' => 'warning', 'source' => 'Modules/UpdateGuard/Http/routes.php:19'],
+        'RG-ROUTE-11' => ['route' => 'conversations.create', 'family' => 'sendfrom', 'severity' => 'warning', 'source' => 'routes/web.php:66'],
     ],
 
     // Tables / columns read. RG-DB-05 is the module's own table (saved views only).

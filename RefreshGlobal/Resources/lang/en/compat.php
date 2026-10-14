@@ -218,4 +218,10 @@ return [
         'effect' => 'The link to the page where RefreshGlobal is updated is not shown; updates still work from Manage › Modules (or UpdateGuard). The rest works.',
         'action' => 'Update RefreshGlobal to a version made for this FreeScout / UpdateGuard version, then run php artisan refreshglobal:check.',
     ],
+    'sendfrom' => [
+        'check'  => 'Element used to choose the address to send from: :item',
+        'label'  => 'An element used to choose the address to send from is missing: :item.',
+        'effect' => 'On “Send an e-mail” / “New ticket”, the address is the form’s mailbox only, as in FreeScout. The rest works.',
+        'action' => 'Update RefreshGlobal to a version made for this FreeScout / Refresh version, then run php artisan refreshglobal:check.',
+    ],
 ];

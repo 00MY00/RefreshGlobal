@@ -211,4 +211,8 @@ return [
     'updates_open_modules'         => 'Modulseite öffnen',
     'updates_advice_title'         => 'Tipp:',
     'updates_advice'               => 'Installieren Sie das Modul UpdateGuard für sichere Aktualisierungen Ihrer Module (SHA-256-Prüfung, Sicherung, Zustandsprüfung, automatische Rückkehr, falls die neue Version nicht funktioniert, wahlweise automatische Aktualisierungen). Die Schaltfläche von FreeScout sichert nicht und kehrt nicht zurück.',
+    'send_from'                    => 'Von',
+    'send_from_mailbox'            => 'Postfach',
+    'send_from_help'               => 'Absenderadresse: alle Ihre Postfächer und deren Aliase. Ein anderes Postfach öffnet sein Formular mit dem bereits Eingegebenen.',
+    'send_from_switching'          => 'Postfach wird geöffnet…',
 ];

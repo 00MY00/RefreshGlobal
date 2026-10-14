@@ -338,4 +338,232 @@
         };
         apply();
     }
+    /*
+     * "Send an e-mail" / "New ticket" (FreeScout's create form, rebuilt by Refresh's new.js): the address to send from,
+     * among ALL the addresses allowed to the user (<meta name="refreshglobal-from">, Services/SendFrom.php): the address
+     * of each of his mailboxes and, for an e-mail, the aliases of these mailboxes.
+     *  - an address of the form's mailbox: applied at once (alias = FreeScout's "from_alias", added to the form when the
+     *    mailbox shows no "From" field of its own);
+     *  - an address of another mailbox: the form of that mailbox opens, with what was already typed (recipients,
+     *    subject, message, contact, type, priority) carried over through sessionStorage.
+     * Default when the form opens: the mailbox "All mailboxes" was filtered on, else the last address used (this
+     * browser), else the form's own mailbox; opened from a mailbox or a ticket, that mailbox is kept.
+     */
+    var rgStore = function (kind) {
+        var s = null;
+        try { s = window[kind]; } catch (e) { s = null; }
+        return {
+            get: function (k) { try { return JSON.parse(s.getItem(k) || 'null'); } catch (e) { return null; } },
+            set: function (k, v) { try { s.setItem(k, JSON.stringify(v)); } catch (e) { /* private mode */ } },
+            del: function (k) { try { s.removeItem(k); } catch (e) { /* private mode */ } }
+        };
+    };
+
+    $(function () {
+        // "All mailboxes": the mailbox the list is filtered on, for the next "Send an e-mail" / "New ticket"
+        var state = document.getElementById('rg-state');
+        if (document.body.getAttribute('data-rg-page') === 'tickets' && state) {
+            rgStore('sessionStorage').set('rg-new-context', { mailbox: parseInt(state.getAttribute('data-mailbox') || '0', 10) || 0, at: Date.now() });
+        }
+        sendFrom();
+    });
+
+    function sendFrom() {
+        var meta = document.querySelector('meta[name="refreshglobal-from"]');
+        var form = $('#form-create');
+        if (!meta || !form.length || !window.URL) {
+            return;
+        }
+        var cfg;
+        try { cfg = JSON.parse(meta.getAttribute('content')); } catch (e) { return; }
+        var local = rgStore('localStorage');
+        var session = rgStore('sessionStorage');
+        var here = new URL(window.location.href);
+        var ticket = here.searchParams.get('rf_mode') === 'ticket';
+        var current = parseInt(cfg.mailbox, 10);
+        var list = $.grep(cfg.addresses || [], function (a) { return !ticket || !a.alias; });
+        var low = function (s) { return String(s || '').toLowerCase(); };
+        var find = function (mailbox, email) {
+            return $.grep(list, function (a) {
+                return a.mailbox === mailbox && (email ? low(a.email) === low(email) : !a.alias);
+            })[0] || null;
+        };
+        var open = function (addr, replace) {
+            var url = new URL(cfg.urls[addr.mailbox], window.location.href);
+            here.searchParams.forEach(function (v, k) {
+                if (k !== 'rg_from') { url.searchParams.set(k, v); }
+            });
+            url.searchParams.set('rg_from', addr.email);
+            if (replace) { window.location.replace(url.toString()); } else { window.location.href = url.toString(); }
+        };
+
+        // 1. default address when the form opens (not after a choice in the field)
+        var chosen = here.searchParams.get('rg_from');
+        if (!chosen) {
+            var ref = '';
+            try { ref = document.referrer ? new URL(document.referrer).pathname : ''; } catch (e) { ref = ''; }
+            var target = null;
+            var fromList = /\/refresh-global\//.test(ref);
+            if (fromList) {
+                var ctx = session.get('rg-new-context');
+                if (ctx && ctx.mailbox) { target = find(ctx.mailbox); }
+            }
+            var keep = !fromList && /\/(mailbox|conversation)\/\d+/.test(ref);
+            if (!target && !keep) {
+                var last = local.get('rg-last-from');
+                if (last) { target = find(parseInt(last.mailbox, 10), last.email) || find(parseInt(last.mailbox, 10)); }
+            }
+            if (target && target.mailbox !== current) {
+                open(target, true);
+                return;
+            }
+            chosen = target ? target.email : '';
+        }
+        var selected = find(current, chosen) || find(current);
+        if (!selected) {
+            return;
+        }
+
+        // 2. the field
+        var nativeSel = form.find('select[name="from_alias"]').first();
+        var apply = function (addr) {
+            var value = addr.alias ? addr.email : '';
+            if (nativeSel.length) {
+                if (!nativeSel.find('option').filter(function () { return this.value === value; }).length) {
+                    nativeSel.append($('<option></option>').val(value).text(addr.email));
+                }
+                nativeSel.val(value);
+            } else if (!ticket) {
+                var hidden = form.find('input[name="from_alias"]');
+                if (!hidden.length) { hidden = $('<input type="hidden" name="from_alias">').appendTo(form); }
+                hidden.val(value);
+            }
+        };
+        var remember = function (addr) { local.set('rg-last-from', { mailbox: addr.mailbox, email: addr.email }); };
+        var refresh = $('body').hasClass('rf-new-page') || !!window.rfNewData;
+        var select = $('<select class="rg-from-select"></select>').addClass(refresh ? 'rf-select' : 'form-control')
+            .attr({ title: cfg.labels.help, 'aria-label': ticket ? cfg.labels.mailbox : cfg.labels.from });
+        var groups = {};
+        $.each(list, function (i, a) {
+            var text = ticket ? a.name + ' (' + a.email + ')' : a.email + (a.alias && a.label ? ' (' + a.label + ')' : '');
+            var opt = $('<option></option>').val(String(i)).text(text).prop('selected', a === selected);
+            if (ticket) {
+                select.append(opt);
+            } else {
+                if (!groups[a.mailbox]) { groups[a.mailbox] = $('<optgroup></optgroup>').attr('label', a.name).appendTo(select); }
+                groups[a.mailbox].append(opt);
+            }
+        });
+        select.on('change', function () {
+            var addr = list[parseInt(this.value, 10)];
+            if (!addr) { return; }
+            remember(addr);
+            if (addr.mailbox === current) {
+                selected = addr;
+                apply(addr);
+                return;
+            }
+            saveDraft();
+            select.prop('disabled', true).after($('<span class="rg-from-switching"></span>').text(' ' + cfg.labels.switching));
+            open(addr, false);
+        });
+        apply(selected);
+        // the address really used: remembered when the form is sent
+        document.addEventListener('click', function (e) {
+            if (e.target && e.target.closest && e.target.closest('#form-create .rf-nw-submit, #form-create .btn-send-text, #form-create .btn-send-menu, #form-create button[type="submit"]')) {
+                remember(selected);
+            }
+        }, true);
+
+        var tries = 0;
+        var place = function () {
+            var nw = form.find('.rf-nw').first();
+            // phone with Refresh: FreeScout's form kept, in app style (Modules/Refresh/Public/js/mobile.js initNew())
+            var phoneLayout = $('body').hasClass('rf-m-new');
+            if (refresh && !nw.length && !phoneLayout && ++tries < 40) {
+                setTimeout(place, 100);
+                return;
+            }
+            if (nw.length) {
+                // Refresh: its "From" field (e-mail), or a new first field (ticket)
+                var own = nw.children('.rf-nf').filter(function () { return $(this).find('select[name="from_alias"], .rf-nw-from').length > 0; }).first();
+                if (own.length) {
+                    own.addClass('rg-nf-from').find('.rf-nf-input').prepend(select);
+                    own.find('select[name="from_alias"], .rf-nw-from').hide();
+                } else {
+                    $('<div class="rf-nf rg-nf-from"></div>')
+                        .append($('<label class="rf-nf-label"></label>').text(ticket ? cfg.labels.mailbox : cfg.labels.from))
+                        .append($('<div class="rf-nf-input"></div>').append(select))
+                        .insertBefore(nw.children('.rf-nf').first());
+                }
+            } else if (phoneLayout && !ticket && form.find('.rf-m-nfrom').length) {
+                // its read-only "From" line becomes the choice
+                var line = form.find('.rf-m-nfrom').first().addClass('rg-from-group');
+                line.find('.rf-m-nfromval').hide().after(select);
+                nativeSel.closest('.form-group').hide();
+            } else {
+                // FreeScout's own form (and the phone layout of a ticket, which has no "From" line)
+                nativeSel.closest('.form-group').hide();
+                $('<div class="form-group rg-from-group"></div>')
+                    .append($('<label class="col-sm-2 control-label"></label>').text(ticket ? cfg.labels.mailbox : cfg.labels.from))
+                    .append($('<div class="col-sm-9"></div>').append(select))
+                    .insertBefore(form.find('#field-to').first());
+            }
+            restoreDraft();
+        };
+        place();
+
+        function recipients(sel) {
+            return $(sel).find('option:selected').map(function () { return { v: this.value, t: $(this).text() }; }).get();
+        }
+        function bodyHtml() {
+            var b = $('#body');
+            try { if (b.next('.note-editor').length && $.fn.summernote) { return b.summernote('code'); } } catch (e) { /* plain textarea */ }
+            return b.val();
+        }
+        function saveDraft() {
+            var d = {
+                at: Date.now(), subject: $('#subject').val(), body: bodyHtml(),
+                to: recipients('#to'), cc: recipients('#cc'), bcc: recipients('#bcc'), fields: {}
+            };
+            $.each(['rf_contact_name', 'rf_contact_email', 'rf_contact_phone', 'rf_type', 'rf_priority', 'status', 'user_id'], function (i, n) {
+                var el = form.find('[name="' + n + '"]').first();
+                if (el.length && el.val() !== null && el.val() !== '') { d.fields[n] = el.val(); }
+            });
+            session.set('rg-new-draft', d);
+        }
+        function restoreDraft() {
+            var d = session.get('rg-new-draft');
+            if (!d || Date.now() - d.at > 10 * 60 * 1000) {
+                session.del('rg-new-draft');
+                return;
+            }
+            var wait = 0;
+            var fill = function () {
+                // after FreeScout's editor and recipient fields are ready
+                if (!$('#body').next('.note-editor').length && ++wait < 50) {
+                    setTimeout(fill, 100);
+                    return;
+                }
+                session.del('rg-new-draft');
+                if (d.subject) { $('#subject').val(d.subject); }
+                if (d.body) {
+                    try { $('#body').summernote('code', d.body); } catch (e) { $('#body').val(d.body); }
+                }
+                $.each({ '#to': d.to, '#cc': d.cc, '#bcc': d.bcc }, function (sel, items) {
+                    var s = $(sel);
+                    if (!s.length || !items || !items.length) { return; }
+                    $.each(items, function (i, it) {
+                        if (!s.find('option').filter(function () { return this.value === it.v; }).length) {
+                            s.append(new window.Option(it.t, it.v, true, true));
+                        }
+                    });
+                    s.val($.map(items, function (it) { return it.v; })).trigger('change');
+                    if (sel !== '#to') { s.closest('.form-group, .rf-nf').show(); }
+                });
+                $.each(d.fields || {}, function (n, v) { form.find('[name="' + n + '"]').first().val(v).trigger('change'); });
+            };
+            fill();
+        }
+    }
 })(window.jQuery);

@@ -211,4 +211,8 @@ return [
     'updates_open_modules'         => 'Apri la pagina Moduli',
     'updates_advice_title'         => 'Consiglio:',
     'updates_advice'               => 'installa il modulo UpdateGuard per aggiornare i tuoi moduli in sicurezza (controllo SHA-256, backup, controllo di salute, ritorno automatico se la nuova versione non funziona, aggiornamenti automatici facoltativi). Il pulsante di FreeScout non fa backup né ritorno.',
+    'send_from'                    => 'Da',
+    'send_from_mailbox'            => 'Casella',
+    'send_from_help'               => 'Indirizzo di invio: tutte le tue caselle e i loro alias. Un’altra casella apre il suo modulo con ciò che hai già scritto.',
+    'send_from_switching'          => 'apertura della casella…',
 ];

@@ -1,4 +1,4 @@
-# Résultats des tests — RefreshGlobal 1.9.2
+# Résultats des tests — RefreshGlobal 1.10.0
 
 Date : 2026-10-09. Environnements jetables Docker : FreeScout 1.8.245 (dépôt officiel), PHP 8.2.34, Apache,
 MariaDB 10.11 ; Refresh 1.4.3 (dépôt officiel). Données de test uniquement (adresses `.test`).
@@ -207,6 +207,18 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
   tableau de bord passent en français ; `users.locale = fr` en base. Sélecteur visible en bas du panneau des vues
   (ordinateur) et du tiroir (téléphone).
 
+## 28. Adresse d'envoi au choix (1.10.0)
+
+- `refreshglobal:check` : RG-HOOK-28/29, RG-CORE-17, RG-ROUTE-11 OK, état OK.
+- Navigateur (boîte Support avec alias `help@` (Help desk) et `info@`, « réponse depuis les alias » **désactivé**) :
+  depuis « Toutes les boîtes » filtrée sur Sales, « Nouveau › E-mail » s'ouvre **sur Sales** (champ « De », 5 adresses
+  groupées Billing / Sales / Support) ; destinataire, objet et message saisis, choix de `help@` → formulaire de
+  **Support**, saisie **reprise**, `from_alias = help@example.test` ; **envoi** → ticket créé dans Support, message
+  `from = help@example.test` (base de données) ; « Nouveau ticket » ouvert depuis le tableau de bord → dernière boîte
+  utilisée (Support), champ « Boîte » sans alias ; téléphone : « DE » (e-mail) et « BOÎTE » (ticket) visibles,
+  changement de boîte en gardant l'objet ; aucune erreur JavaScript.
+- PHPUnit : nouveau `SendFromTest` (adresses et droits, alias étranger retiré, middleware dans le groupe `web`,
+  données de la page).
 ## 27. UpdateGuard 1.2.0 et sélection par appui long renforcée (1.9.2)
 
 - **UpdateGuard 1.2.0** (release) avec RefreshGlobal **1.9.0** (release) : détection « 1.9.0 → 1.9.1 », niveau

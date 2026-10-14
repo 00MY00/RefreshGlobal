@@ -40,8 +40,10 @@ abstract class TestCase extends \Illuminate\Foundation\Testing\TestCase
         // "web" group (Illuminate\Foundation\Http\Kernel::__construct): the module's middleware is added again.
         $this->app->make(\Illuminate\Contracts\Http\Kernel::class);
         $router = $this->app['router'];
-        if (!in_array(\Modules\RefreshGlobal\Http\Middleware\AfterDelete::class, $router->getMiddlewareGroups()['web'] ?? [], true)) {
-            $router->pushMiddlewareToGroup('web', \Modules\RefreshGlobal\Http\Middleware\AfterDelete::class);
+        foreach ([\Modules\RefreshGlobal\Http\Middleware\AfterDelete::class, \Modules\RefreshGlobal\Http\Middleware\CheckFromAlias::class] as $middleware) {
+            if (!in_array($middleware, $router->getMiddlewareGroups()['web'] ?? [], true)) {
+                $router->pushMiddlewareToGroup('web', $middleware);
+            }
         }
         $prefix = 'RGT'.Fixtures::uid();
         $this->s = Fixtures::scenario($prefix);

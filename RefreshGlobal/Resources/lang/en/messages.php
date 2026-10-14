@@ -217,4 +217,8 @@ return [
     'updates_open_modules'         => 'Open the Modules page',
     'updates_advice_title'         => 'Advice:',
     'updates_advice'               => 'install the UpdateGuard module for safe updates of your modules (SHA-256 check, backup, health check, automatic rollback if the new version does not work, optional automatic updates). FreeScout’s own button has no backup and no rollback.',
+    'send_from'                    => 'From',
+    'send_from_mailbox'            => 'Mailbox',
+    'send_from_help'               => 'Address to send from: all your mailboxes and their aliases. Another mailbox opens its form with what you typed.',
+    'send_from_switching'          => 'opening that mailbox…',
 ];

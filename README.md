@@ -61,6 +61,9 @@ Dans Gérer › Modules :
   récent) est installé : section « Dossiers automatiques » dans le panneau des vues (arbre des dossiers de toutes
   vos boîtes, avec le nombre de tickets, un clic filtre la liste), badge dossier sur chaque ticket et page « Vue
   d'ensemble » (tickets et tickets ouverts par dossier et par boîte, dernier classement, nettoyage automatique).
+- **Adresse d'envoi au choix** sur « Envoyer un e-mail » / « Nouveau ticket » : toutes les adresses de vos boîtes et
+  leurs alias ; une autre boîte ouvre son formulaire en gardant ce qui est saisi ; adresse proposée selon la liste
+  ou la dernière utilisée.
 - Traductions : français, anglais, allemand, espagnol, italien, néerlandais, portugais (Brésil).
 - **Langue** : le module suit la langue de FreeScout, comme Refresh (Refresh n'a pas de choix de langue à lui) :
   celle du profil de l'utilisateur, sinon la langue par défaut (Gérer › Paramètres › Général). Un **sélecteur de

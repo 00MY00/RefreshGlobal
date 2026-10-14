@@ -214,4 +214,10 @@ return [
         'effect' => 'El enlace a la página donde se actualiza RefreshGlobal no se muestra; las actualizaciones siguen siendo posibles desde Administrar › Módulos (o UpdateGuard). El resto funciona.',
         'action' => 'Actualizar RefreshGlobal a una versión prevista para esta versión de FreeScout / UpdateGuard y ejecutar php artisan refreshglobal:check.',
     ],
+    'sendfrom' => [
+        'check'  => 'Elemento usado para elegir la dirección de envío: :item',
+        'label'  => 'Falta un elemento usado para elegir la dirección de envío: :item.',
+        'effect' => 'En «Enviar un correo» / «Nuevo ticket», la dirección es solo la del buzón del formulario, como en FreeScout. El resto funciona.',
+        'action' => 'Actualizar RefreshGlobal a una versión prevista para esta versión de FreeScout / Refresh y ejecutar php artisan refreshglobal:check.',
+    ],
 ];

@@ -214,4 +214,10 @@ return [
         'effect' => 'De link naar de updatepagina van RefreshGlobal wordt niet getoond; updates blijven mogelijk via Beheren › Modules (of UpdateGuard). De rest werkt.',
         'action' => 'RefreshGlobal bijwerken naar een versie voor deze FreeScout- / UpdateGuard-versie en daarna php artisan refreshglobal:check uitvoeren.',
     ],
+    'sendfrom' => [
+        'check'  => 'Element voor de keuze van het afzenderadres: :item',
+        'label'  => 'Een element voor de keuze van het afzenderadres ontbreekt: :item.',
+        'effect' => 'Bij „E-mail verzenden” / „Nieuw ticket” is het adres alleen dat van de mailbox van het formulier, zoals in FreeScout. De rest werkt.',
+        'action' => 'RefreshGlobal bijwerken naar een versie voor deze FreeScout- / Refresh-versie en daarna php artisan refreshglobal:check uitvoeren.',
+    ],
 ];

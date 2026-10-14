@@ -69,6 +69,8 @@ class RefreshGlobalServiceProvider extends ServiceProvider
         // Deleting a ticket: where to go next, trash or permanent (Http\Middleware\AfterDelete). Added to the "web"
         // group like Refresh's own middlewares (RefreshServiceProvider.php:55-57); it acts on conversations.ajax only.
         $this->app['router']->pushMiddlewareToGroup('web', \Modules\RefreshGlobal\Http\Middleware\AfterDelete::class);
+        // "from_alias" of a message checked against the addresses of its mailbox (Http\Middleware\CheckFromAlias)
+        $this->app['router']->pushMiddlewareToGroup('web', \Modules\RefreshGlobal\Http\Middleware\CheckFromAlias::class);
     }
 
     /** Dashboard HTML before Refresh's own filter runs (see registerDashboard()). */
@@ -170,6 +172,23 @@ class RefreshGlobalServiceProvider extends ServiceProvider
                 echo '<meta name="refreshglobal" content="'.e(json_encode($config, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)).'">'."\n";
             } catch (\Exception $e) {
                 // optional
+            }
+        });
+        // "Send an e-mail" / "New ticket" (FreeScout's create form): addresses the user may send from, all his mailboxes
+        // (Services/SendFrom.php), read by Public/js/shell.js sendFrom(); with or without Refresh
+        \Eventy::addAction('layout.head', function () {
+            try {
+                if (!auth()->check() || !\Route::is('conversations.create')) {
+                    return;
+                }
+                $config = \Modules\RefreshGlobal\Services\SendFrom::pageConfig(auth()->user(), (int) request()->route('mailbox_id'));
+                if (!$config) {
+                    return;
+                }
+                echo '<meta name="refreshglobal-from" content="'.e(json_encode($config, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)).'">'."
+";
+            } catch (\Throwable $e) {
+                // optional: the form keeps FreeScout's own address
             }
         });
         // After Refresh's dictionary (its "layout.head" action, default priority 20): corrections of wrong strings

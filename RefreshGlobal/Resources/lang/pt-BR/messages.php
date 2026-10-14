@@ -211,4 +211,8 @@ return [
     'updates_open_modules'         => 'Abrir a página Módulos',
     'updates_advice_title'         => 'Dica:',
     'updates_advice'               => 'instale o módulo UpdateGuard para atualizar seus módulos com segurança (verificação SHA-256, backup, verificação de saúde, reversão automática se a nova versão não funcionar, atualizações automáticas opcionais). O botão do FreeScout não faz backup nem reversão.',
+    'send_from'                    => 'De',
+    'send_from_mailbox'            => 'Caixa',
+    'send_from_help'               => 'Endereço de envio: todas as suas caixas e seus aliases. Outra caixa abre seu formulário com o que você já digitou.',
+    'send_from_switching'          => 'abrindo essa caixa…',
 ];

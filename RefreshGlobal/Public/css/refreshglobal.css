@@ -245,3 +245,11 @@
 
 /* ?rg_debug=touch: touch log of the "All mailboxes" page (Public/js/refreshglobal.js touchDebug()) */
 .rg-touch-debug { position: fixed; left: 4px; right: 4px; top: 4px; z-index: 100000; max-height: 38vh; overflow: auto; margin: 0; padding: 6px 8px; border-radius: 6px; background: rgba(15, 23, 42, .88); color: #e2e8f0; font: 11px/1.35 monospace; white-space: pre-wrap; pointer-events: none; }
+
+/* "Send an e-mail" / "New ticket": address to send from (Public/js/shell.js sendFrom()) */
+.rg-from-select { max-width: 100%; }
+.rf-nw .rg-from-select { width: 100%; }
+.rg-from-switching { color: var(--fd-muted, #64748b); font-size: 13px; }
+@media (max-width: 767px) {
+    .rg-from-group .rg-from-select { width: 100%; font-size: 16px; height: 40px; }
+}

@@ -211,4 +211,8 @@ return [
     'updates_open_modules'         => 'Pagina Modules openen',
     'updates_advice_title'         => 'Tip:',
     'updates_advice'               => 'installeer de module UpdateGuard voor veilige updates van uw modules (SHA-256-controle, back-up, gezondheidscontrole, automatisch terugzetten als de nieuwe versie niet werkt, optioneel automatische updates). De knop van FreeScout maakt geen back-up en zet niets terug.',
+    'send_from'                    => 'Van',
+    'send_from_mailbox'            => 'Mailbox',
+    'send_from_help'               => 'Afzenderadres: al uw mailboxen en hun aliassen. Een andere mailbox opent zijn formulier met wat u al hebt getypt.',
+    'send_from_switching'          => 'mailbox wordt geopend…',
 ];
