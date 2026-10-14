@@ -2,6 +2,29 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.12.0] — 2026-10-14
+
+Nouvelle publication sous un **nouveau numéro de version** : des changements avaient été publiés sans que la release
+soit renommée. Le système de mise à jour (Gérer › Modules de FreeScout, UpdateGuard) ne propose une mise à jour que
+si le numéro de version change ; une installation déjà en 1.11.0 n'aurait donc pas reçu ces changements. Désormais,
+**chaque changement publié reçoit un nouveau numéro de version**.
+
+### Changements apportés (depuis 1.10.0)
+- **Spams laissés sur le serveur mail** (réglage « Ne pas importer les spams », activé par défaut) ; désactivé, les
+  spams sont importés avec le tag `classified_spam`.
+- **Tags de provenance des e-mails** en anglais (`inbox`, `spam`, `trash`, `sent`, `drafts`, `archive`,
+  `folder:<nom>`, noms de l'administrateur) : badges sur les tickets, section « Tags d'e-mail » du panneau, filtre de
+  la liste, réglage d'affichage, bouton « Recalculer les tags » (commande `refreshglobal:mail-tags`), API pour les
+  autres modules (`docs/api-tags.md`) et copie dans le module Tags s'il est installé.
+- **Détails / texte brut** de chaque message : bouton « i » (outils de Refresh) ou menu du message ; en-têtes tels que
+  reçus, message en texte brut, bouton Copier, lien vers la source originale de FreeScout.
+- **Repère « ← Toutes les boîtes (N) »** en haut du panneau sur toutes les vues Refresh d'une boîte et sur chaque
+  ticket (aussi dans le tiroir du téléphone) : on ne reste plus « enfermé » dans une boîte.
+- Feuille de style du module chargée sur toutes les pages (tickets, vues Refresh).
+- Page de la release GitHub : elle reprend désormais la section du CHANGELOG de la version.
+
+Détail complet : section 1.11.0 ci-dessous.
+
 ## [1.11.0] — 2026-10-14
 
 ### Ajouté

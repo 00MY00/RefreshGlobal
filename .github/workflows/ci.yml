@@ -102,8 +102,14 @@ jobs:
           test "v${v}" = "${GITHUB_REF_NAME}"
       - name: Build archive
         run: bash tools/build-release.sh
+      - name: Release notes from the CHANGELOG
+        run: |
+          v="${GITHUB_REF_NAME#v}"
+          awk -v v="$v" 'index($0, "## [" v "]") == 1 { on = 1; next } /^## \[/ { on = 0 } on' CHANGELOG.md > dist/release-notes.md
+          test -s dist/release-notes.md
       - uses: softprops/action-gh-release@v2
         with:
+          body_path: dist/release-notes.md
           files: |
             dist/RefreshGlobal.zip
             dist/install.sh
