@@ -110,6 +110,20 @@
                     </div>
                 </div>
             @endif
+            @if ($rg_mail_tags)
+                {{-- Origin tags of the e-mails (Services/MailTags.php): the list filtered on a tag --}}
+                <div class="rf-views-sec rg-mail-tags" data-sec="rg-mail-tags">
+                    <button type="button" class="rf-views-sec-head">{{ __('refreshglobal::messages.mail_tags') }}<i class="rf-i rf-i-fd-chevron-down rf-i-sm"></i></button>
+                    <div class="rg-m-sectitle">{{ __('refreshglobal::messages.mail_tags') }}</div>
+                    <div class="rf-views-list">
+                        @foreach ($rg_mail_tags as $rg_tag => $rg_n)
+                            <a href="{{ $rg_url(['mt' => $rg_tag], ['page']) }}" class="rf-v @if ($filters['mailtag'] === $rg_tag) active @endif" data-label="{{ $rg_tag }}" title="{{ $rg_tag }}">
+                                <i class="rg-tag-icon @if ($rg_tag === \Modules\RefreshGlobal\Services\MailTags::SPAM) rg-tag-icon-spam @endif">#</i><span class="rf-v-label">{{ $rg_tag }}</span><span class="rf-v-count">{{ $rg_n }}</span>
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
             @include('refreshglobal::partials.view_actions')
         </div>
     @else
@@ -154,6 +168,16 @@
                     </li>
                 @endforeach
                 <li><a href="{{ route('refreshglobal.folders') }}"><i class="glyphicon glyphicon-th-list"></i> <span class="folder-name">{{ __('refreshglobal::messages.folders_overview') }}</span></a></li>
+            </ul>
+        @endif
+        @if ($rg_mail_tags)
+            <div class="sidebar-title rg-sidebar-subtitle"><span class="sidebar-title-real">{{ __('refreshglobal::messages.mail_tags') }}</span></div>
+            <ul class="sidebar-menu rg-sidebar-menu rg-mail-tags">
+                @foreach ($rg_mail_tags as $rg_tag => $rg_n)
+                    <li class="@if ($filters['mailtag'] === $rg_tag) active @endif">
+                        <a href="{{ $rg_url(['mt' => $rg_tag], ['page']) }}" title="{{ $rg_tag }}"><i class="glyphicon glyphicon-tag"></i> <span class="folder-name">{{ $rg_tag }}</span><span class="active-count pull-right">{{ $rg_n }}</span></a>
+                    </li>
+                @endforeach
             </ul>
         @endif
         @include('refreshglobal::partials.view_actions')

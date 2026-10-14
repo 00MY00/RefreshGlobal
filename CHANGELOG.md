@@ -2,6 +2,37 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.11.0] — 2026-10-14
+
+### Ajouté
+- **Spams laissés sur le serveur mail** (réglage « Ne pas importer les spams », **activé par défaut**) : à la relève,
+  un e-mail que le serveur mail a marqué comme spam (`X-Spam-Flag: YES`, `X-Spam-Status: Yes`, `X-Spam: yes`, SCL
+  Exchange ≥ 5) ou relevé dans un dossier de spams (Spam, Junk, Courrier indésirable…) ne devient pas un ticket ; il
+  reste dans la boîte sur le serveur (marqué lu par FreeScout). Désactivé : il est importé avec le tag
+  `classified_spam`.
+- **Tags de provenance des e-mails** (réglage, activé par défaut) : chaque e-mail relevé reçoit le tag du dossier du
+  serveur d'où il vient, **en anglais** quelle que soit la langue du serveur (`inbox`, `spam`, `trash`, `sent`,
+  `drafts`, `archive`, `folder:<nom>` pour les autres ; noms supplémentaires « Nom du dossier = tag » dans les
+  réglages). Un tag par e-mail, regroupés sur le ticket :
+  - affichés (réglage « Afficher les tags ») sur les tickets de « Toutes les boîtes », sous l'objet du ticket, et dans
+    une section **« Tags d'e-mail »** du panneau des vues avec le nombre de tickets ; **filtre** de la liste (`mt`,
+    combinable, enregistrable dans une vue) ;
+  - **« Recalculer les tags »** (réglages) : les e-mails déjà dans FreeScout sont tagués en lisant chaque dossier des
+    boîtes IMAP (en arrière-plan, commande `refreshglobal:mail-tags`) ;
+  - **pour les autres modules** (Workflow Packs…) : filtres `refreshglobal.mail_tags` / `refreshglobal.thread_mail_tags`,
+    action `refreshglobal.mail_tagged`, table `refreshglobal_mail_tags` (`docs/api-tags.md`) ; copiés aussi dans le
+    module officiel **Tags** quand il est installé (règles Workflows, recherche de FreeScout).
+- **Détails / texte brut d'un message** : bouton « i » sur chaque message du ticket (outils de Refresh ; menu du
+  message sans Refresh) : expéditeur, destinataires, date, Message-ID, boîte, dossier du serveur et tags ; onglet
+  **« Texte brut »** (en-têtes de l'e-mail tels que reçus + message en texte brut, bouton Copier) ; lien vers la
+  source originale de FreeScout (relue sur le serveur mail). Refresh masquait la fenêtre « Original » de FreeScout.
+- **Repère « ← Toutes les boîtes (N) »** en haut du panneau des vues sur **toutes** les vues Refresh d'une boîte
+  (`/mailbox/N/tickets/…`) et sur chaque ticket, aussi dans le tiroir du téléphone, avec « Boîte : nom » : on ne reste
+  plus « enfermé » dans une boîte. Il ramène à la dernière liste « Toutes les boîtes » (sinon à la liste complète).
+- La feuille de style du module est chargée sur toutes les pages (filtre `stylesheets` de FreeScout) : tags, fenêtre de
+  détails et repère s'affichent aussi sur la page du ticket et les vues Refresh.
+- Contrôles RG-HOOK-30…35, RG-CORE-18 (module Tags, ignoré s'il est absent), RG-DB-11.
+
 ## [1.10.0] — 2026-10-14
 
 ### Ajouté

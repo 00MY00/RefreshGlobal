@@ -253,3 +253,40 @@
 @media (max-width: 767px) {
     .rg-from-group .rg-from-select { width: 100%; font-size: 16px; height: 40px; }
 }
+
+/* Origin tags of the e-mails (Services/MailTags.php): badges, panel, ticket page */
+.rg-mail-tag { display: inline-block; margin: 0 4px 4px 0; padding: 0 7px; border-radius: 9px; font-size: 11.5px; line-height: 18px;
+    color: #334155; background: #eef2f7; border: 1px solid #dbe2ea; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.rg-mail-tag::before { content: "#"; opacity: .55; margin-right: 1px; }
+.rg-mail-tag-spam { color: #b91c1c; background: #fef2f2; border-color: #fecaca; }
+.rg-conv-tags { display: inline-block; margin-left: 8px; vertical-align: middle; }
+.rg-mail-tags .rg-tag-icon { width: 16px; text-align: center; font-style: normal; font-weight: 700; color: var(--fd-muted, #94a3b8); margin-right: 8px; flex: 0 0 auto; }
+.rg-mail-tags .rg-tag-icon-spam { color: #dc2626; }
+.rg-mail-tags .rf-v-label { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; }
+
+/* Details / raw text of a message (Public/js/shell.js) */
+.rg-th-details .rg-td-i { display: inline-flex; align-items: center; justify-content: center; width: 15px; height: 15px; border: 1.5px solid currentColor;
+    border-radius: 50%; font: italic 700 10px/1 Georgia, serif; }
+.rg-td-modal { position: fixed; inset: 0; z-index: 100001; background: rgba(15, 23, 42, .45); display: flex; align-items: flex-start; justify-content: center; padding: 6vh 12px; }
+.rg-td-dialog { width: min(860px, 100%); max-height: 88vh; display: flex; flex-direction: column; background: #fff; border-radius: 8px; box-shadow: 0 20px 50px rgba(15, 23, 42, .3); }
+.rg-td-head { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--fd-border, #e2e8f0); font-weight: 600; }
+.rg-td-close { border: 0; background: none; font-size: 22px; line-height: 1; color: var(--fd-text-2, #475569); cursor: pointer; }
+.rg-td-body { padding: 12px 16px 16px; overflow: auto; }
+.rg-td-body .preview-iframe { width: 100%; min-height: 50vh; border: 1px solid var(--fd-border, #e2e8f0); }
+.rg-td-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--fd-border, #e2e8f0); margin-bottom: 12px; }
+.rg-td-tab { border: 0; background: none; padding: 8px 12px; margin-bottom: -1px; border-bottom: 2px solid transparent; color: var(--fd-text-2, #475569); font-weight: 500; cursor: pointer; }
+.rg-td-tab.active { border-bottom-color: var(--fd-brand, #5b4ff5); color: var(--fd-text, #0f172a); }
+.rg-td-pane { display: none; }
+.rg-td-pane.active { display: block; }
+.rg-td-table { width: 100%; font-size: 13px; }
+.rg-td-table th { width: 150px; padding: 5px 10px 5px 0; vertical-align: top; color: var(--fd-muted, #64748b); font-weight: 500; }
+.rg-td-table td { padding: 5px 0; word-break: break-word; }
+.rg-td-mono, .rg-td-raw { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; }
+.rg-td-raw { max-height: 55vh; overflow: auto; white-space: pre-wrap; word-break: break-word; background: #f8fafc; border: 1px solid var(--fd-border, #e2e8f0); border-radius: 6px; padding: 10px; }
+.rg-td-help { color: var(--fd-muted, #64748b); font-size: 12px; }
+.rg-td-original { margin: 12px 0 0; font-size: 13px; }
+@media (max-width: 767px) {
+    .rg-td-modal { padding: 0; }
+    .rg-td-dialog { max-height: 100vh; height: 100%; border-radius: 0; }
+    .rg-td-table th { width: 110px; }
+}

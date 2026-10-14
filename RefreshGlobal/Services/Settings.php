@@ -162,6 +162,54 @@ class Settings
         \App\Option::set(self::AUTO_REFRESH, (int) $seconds);
     }
 
+    /**
+     * Origin tags of the fetched e-mails (Services/MailTags.php): the whole feature on / off (on by default), spam
+     * left on the mail server instead of becoming tickets (on by default), tags shown on the tickets (on by default),
+     * extra folder names ("Folder name = tag", one per line).
+     */
+    const MAIL_TAGS = 'refreshglobal.mail_tags';
+    const SKIP_SPAM = 'refreshglobal.skip_spam';
+    const SHOW_MAIL_TAGS = 'refreshglobal.show_mail_tags';
+    const MAIL_TAGS_FOLDERS = 'refreshglobal.mail_tags_folders';
+
+    public static function mailTags()
+    {
+        return self::flag(self::MAIL_TAGS, (bool) config('refreshglobal.mail_tags_default', true));
+    }
+
+    public static function skipSpam()
+    {
+        return self::flag(self::SKIP_SPAM, (bool) config('refreshglobal.skip_spam_default', true));
+    }
+
+    public static function showMailTags()
+    {
+        return self::flag(self::SHOW_MAIL_TAGS, (bool) config('refreshglobal.show_mail_tags_default', true));
+    }
+
+    public static function mailTagsFolders()
+    {
+        try {
+            return mb_substr((string) \App\Option::get(self::MAIL_TAGS_FOLDERS, '', true, false), 0, 5000);
+        } catch (\Exception $e) {
+            return '';
+        }
+    }
+
+    public static function setFlag($key, $on)
+    {
+        \App\Option::set($key, $on ? 1 : 0);
+    }
+
+    protected static function flag($key, $default)
+    {
+        try {
+            return (bool) \App\Option::get($key, $default, true, false);
+        } catch (\Exception $e) {
+            return $default;
+        }
+    }
+
     /** Options shown in Manage › Settings › RefreshGlobal (saved by FreeScout itself) => current value. */
     public static function sectionValues()
     {
@@ -176,6 +224,10 @@ class Settings
             self::TRASH_AUTO_DAYS         => self::trashAutoDays(),
             self::SERVER_TRASH            => self::serverTrash(),
             self::SERVER_TRASH_FOLDER     => self::serverTrashFolder(),
+            self::MAIL_TAGS               => self::mailTags(),
+            self::SKIP_SPAM               => self::skipSpam(),
+            self::SHOW_MAIL_TAGS          => self::showMailTags(),
+            self::MAIL_TAGS_FOLDERS       => self::mailTagsFolders(),
         ];
     }
 

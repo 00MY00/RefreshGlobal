@@ -95,11 +95,56 @@
         </div>
     </div>
 
+    {{-- Origin tags of the fetched e-mails and spam left on the mail server (Services/MailTags.php) --}}
+    @php
+        $rg_tags_on = \Modules\RefreshGlobal\Services\MailTags::tableExists();
+        $rg_recalc = \Modules\RefreshGlobal\Services\MailTags::recalcStatus();
+        $rg_tags_module = \Modules\RefreshGlobal\Services\MailTags::tagsModule();
+    @endphp
+    <h3 class="subheader">{{ __('refreshglobal::messages.mail_tags_title') }}</h3>
+    @include('refreshglobal::partials.switch', ['key' => $rg_s::MAIL_TAGS, 'label' => __('refreshglobal::messages.mail_tags_on'),
+        'help' => __('refreshglobal::messages.mail_tags_on_help'),
+        'extra_help' => $rg_tags_module ? __('refreshglobal::messages.mail_tags_module_on') : __('refreshglobal::messages.mail_tags_module_off')])
+    @include('refreshglobal::partials.switch', ['key' => $rg_s::SKIP_SPAM, 'label' => __('refreshglobal::messages.skip_spam'),
+        'help' => __('refreshglobal::messages.skip_spam_help')])
+    @include('refreshglobal::partials.switch', ['key' => $rg_s::SHOW_MAIL_TAGS, 'label' => __('refreshglobal::messages.show_mail_tags'),
+        'help' => __('refreshglobal::messages.show_mail_tags_help')])
+    <div class="form-group">
+        <label for="rg-mail-tags-folders" class="col-sm-2 control-label">{{ __('refreshglobal::messages.mail_tags_folders') }}</label>
+        <div class="col-sm-6">
+            <textarea id="rg-mail-tags-folders" name="settings[{{ $rg_s::MAIL_TAGS_FOLDERS }}]" rows="3" maxlength="5000" class="form-control" placeholder="Mes pourriels = spam&#10;Clients = customers">{{ $settings[$rg_s::MAIL_TAGS_FOLDERS] ?? '' }}</textarea>
+            <p class="form-help">{{ __('refreshglobal::messages.mail_tags_folders_help') }}</p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">{{ __('refreshglobal::messages.mail_tags_recalc') }}</label>
+        <div class="col-sm-6">
+            {{-- submits the separate form below (forms can not be nested) --}}
+            <button type="submit" form="rg-mail-tags-form" class="btn btn-default" @if (!$rg_tags_on || in_array($rg_recalc['state'], ['requested', 'running'], true)) disabled @endif>
+                <i class="glyphicon glyphicon-tags"></i> {{ __('refreshglobal::messages.mail_tags_recalc') }}
+            </button>
+            <p class="form-help">{{ __('refreshglobal::messages.mail_tags_recalc_help') }}</p>
+            @if ($rg_recalc['state'] === 'requested' || $rg_recalc['state'] === 'running')
+                <p class="form-help text-warning">{{ __('refreshglobal::messages.mail_tags_recalc_'.$rg_recalc['state']) }}</p>
+            @elseif ($rg_recalc['state'] === 'done' || $rg_recalc['state'] === 'failed')
+                <p class="form-help @if ($rg_recalc['state'] === 'failed') text-danger @endif">{{ __('refreshglobal::messages.mail_tags_recalc_done', [
+                    'tagged' => (int) ($rg_recalc['tagged'] ?? 0), 'seen' => (int) ($rg_recalc['seen'] ?? 0),
+                    'time' => !empty($rg_recalc['finished_at']) ? \Carbon\Carbon::parse($rg_recalc['finished_at'])->format('Y-m-d H:i') : '',
+                ]) }}@if (!empty($rg_recalc['error'])) — {{ $rg_recalc['error'] }}@endif</p>
+            @endif
+        </div>
+    </div>
+
     <div class="form-group">
         <div class="col-sm-6 col-sm-offset-2">
             <button type="submit" class="btn btn-primary">{{ __('refreshglobal::messages.save') }}</button>
         </div>
     </div>
+</form>
+
+{{-- "Recalculate the tags" (button above): queued for FreeScout's scheduler --}}
+<form id="rg-mail-tags-form" method="POST" action="{{ route('refreshglobal.mail_tags.recalc') }}">
+    {{ csrf_field() }}
 </form>
 
 {{-- "Empty the trash now" (button above, in the settings form); confirmation asked by Public/js/shell.js --}}

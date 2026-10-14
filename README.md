@@ -64,6 +64,10 @@ Dans Gérer › Modules :
 - **Adresse d'envoi au choix** sur « Envoyer un e-mail » / « Nouveau ticket » : toutes les adresses de vos boîtes et
   leurs alias ; une autre boîte ouvre son formulaire en gardant ce qui est saisi ; adresse proposée selon la liste
   ou la dernière utilisée.
+- **Spams laissés sur le serveur** (par défaut) et **tags de provenance** des e-mails en anglais (`inbox`, `spam`,
+  `trash`, `sent`, `folder:<nom>`, `classified_spam`…) : affichés, filtrables, recalculables, lisibles par les autres
+  modules et copiés dans le module Tags s'il est installé ([docs/api-tags.md](docs/api-tags.md)).
+- **Détails / texte brut** de chaque message (en-têtes, Message-ID, dossier du serveur, tags).
 - Traductions : français, anglais, allemand, espagnol, italien, néerlandais, portugais (Brésil).
 - **Langue** : le module suit la langue de FreeScout, comme Refresh (Refresh n'a pas de choix de langue à lui) :
   celle du profil de l'utilisateur, sinon la langue par défaut (Gérer › Paramètres › Général). Un **sélecteur de

@@ -1,4 +1,4 @@
-# Résultats des tests — RefreshGlobal 1.10.0
+# Résultats des tests — RefreshGlobal 1.11.0
 
 Date : 2026-10-09. Environnements jetables Docker : FreeScout 1.8.245 (dépôt officiel), PHP 8.2.34, Apache,
 MariaDB 10.11 ; Refresh 1.4.3 (dépôt officiel). Données de test uniquement (adresses `.test`).
@@ -206,6 +206,23 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
 - Navigateur : interface en anglais, choix « Français » dans le sélecteur → la page, la barre de Refresh et le
   tableau de bord passent en français ; `users.locale = fr` en base. Sélecteur visible en bas du panneau des vues
   (ordinateur) et du tiroir (téléphone).
+
+## 29. Spams, tags de provenance, détails / texte brut, repère sur les vues Refresh (1.11.0)
+
+- `refreshglobal:check` : RG-HOOK-30…35, RG-DB-11 OK, RG-CORE-18 ignoré (module Tags absent), état OK.
+- PHPUnit : **117 tests, 0 échec** (1 ignoré : SyncNow) ; nouveau `MailTagsTest`.
+- **Vrai serveur IMAP (GreenMail)**, boîte relevant INBOX et Junk :
+  - par défaut : e-mail normal → ticket tagué `inbox` ; e-mail `X-Spam-Flag: YES` et e-mail du dossier Junk → **pas
+    de ticket** (« should_save_thread returned false ») et **toujours sur le serveur** (INBOX / Junk) ;
+  - réglage désactivé : spams importés avec `classified_spam, inbox` (en-tête) et `classified_spam, spam` (Junk) ;
+  - « Recalculer les tags » après copie d'un e-mail dans `INBOX.[WP] Factures` sur le serveur : 6 e-mails lus,
+    **1 tag ajouté** → ticket `folder:wp-factures, inbox`.
+- Navigateur : filtre `classified_spam` (4 tickets), section « Tags d'e-mail » (classified_spam 4, folder:wp-factures 1,
+  inbox 3, spam 2), badges ; page du ticket : tags sous l'objet, bouton « i » ; fenêtre **Détails** (type, de, à,
+  date, boîte, Message-ID, dossier du serveur, tags), **Texte brut** (en-têtes reçus + texte), source originale de
+  FreeScout, Échap ; téléphone : bouton visible ; **vue Refresh d'une boîte** : repère « ← All mailboxes 4 / Mailbox:
+  Billing » en haut du panneau, vers la dernière liste ; tiroir du téléphone : repère visible ; aucune erreur
+  JavaScript.
 
 ## 28. Adresse d'envoi au choix (1.10.0)
 

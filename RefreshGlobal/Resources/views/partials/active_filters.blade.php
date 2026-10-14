@@ -35,6 +35,9 @@
         if ($filters['rview'] !== '') {
             $rg_chips[] = [__('refreshglobal::messages.refresh_view'), \Modules\RefreshGlobal\Services\GlobalDashboard::viewLabel($filters['rview']), $rg_url([], ['rv', 'page']), ''];
         }
+        if ($filters['mailtag'] !== '') {
+            $rg_chips[] = [__('refreshglobal::messages.mail_tag'), $filters['mailtag'], $rg_url([], ['mt', 'page']), ''];
+        }
         if ($filters['wfolder'] !== '') {
             $rg_chips[] = [__('refreshglobal::messages.auto_folder'), $rg_folder_label, $rg_url([], ['wf', 'page']), 'folder'];
         }

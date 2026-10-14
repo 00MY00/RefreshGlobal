@@ -224,4 +224,10 @@ return [
         'effect' => 'On “Send an e-mail” / “New ticket”, the address is the form’s mailbox only, as in FreeScout. The rest works.',
         'action' => 'Update RefreshGlobal to a version made for this FreeScout / Refresh version, then run php artisan refreshglobal:check.',
     ],
+    'mailtags' => [
+        'check'  => 'Element used for the e-mail tags present: :item',
+        'label'  => 'An element used for the e-mail tags is missing: :item.',
+        'effect' => 'The e-mails are imported without origin tags, and spam is imported as before. The rest works.',
+        'action' => 'Update RefreshGlobal to a version made for this FreeScout version, then run php artisan refreshglobal:check.',
+    ],
 ];

@@ -17,7 +17,7 @@ use Modules\RefreshGlobal\Services\MailboxAccess;
 class GlobalTicketsController extends Controller
 {
     /** Filter parameters; a request without any of them can load the user's default view. */
-    const FILTER_PARAMS = ['mb', 'status', 'assignee', 'q', 'rv', 'wf', 'sort', 'order', 'view'];
+    const FILTER_PARAMS = ['mb', 'status', 'assignee', 'q', 'rv', 'wf', 'mt', 'sort', 'order', 'view'];
 
     public function home()
     {
@@ -45,6 +45,7 @@ class GlobalTicketsController extends Controller
                 'q'        => 'nullable|string|max:'.GlobalTicketQuery::MAX_QUERY_LENGTH,
                 'rv'       => 'nullable|string|max:30',
                 'wf'       => 'nullable|string|max:'.\Modules\RefreshGlobal\Services\AutoFolders::MAX_LENGTH,
+                'mt'       => 'nullable|string|max:100',
                 'sort'     => 'nullable|string|in:'.implode(',', array_keys(GlobalTicketQuery::sorts())),
                 'order'    => 'nullable|string|in:asc,desc',
                 'page'     => 'nullable|integer|min:1',
@@ -97,9 +98,13 @@ class GlobalTicketsController extends Controller
             // list without the automatic folder, at the same page when nothing was removed
             $back = self::backTo($access, $filters, $params, $conversations, $active_view);
 
+            // origin tags of the e-mails (Services/MailTags.php): panel counts and badge of each ticket, when shown
+            $mail_tags = self::mailTags($query, $conversations);
+
             // rendered here so that a rendering error is caught by safely() too
             return response(view('refreshglobal::tickets', [
                 'rg_back'           => $back,
+                'rg_mail_tags'      => $mail_tags,
                 'rg_folders'        => $auto_folders['tree'],
                 'rg_folder_label'   => $auto_folders['label'],
 
@@ -215,6 +220,24 @@ class GlobalTicketsController extends Controller
             'label' => $active_view && isset($back['view']) ? $active_view->name : __('refreshglobal::messages.title'),
             'count' => $count,
         ];
+    }
+
+    /** Origin tags: [tag => tickets of the list] for the panel; badges of the page (RefreshGlobalServiceProvider). */
+    protected static function mailTags(GlobalTicketQuery $query, $conversations)
+    {
+        RefreshGlobalServiceProvider::$mail_tag_badges = [];
+        if (!\Modules\RefreshGlobal\Services\MailTags::enabled() || !\Modules\RefreshGlobal\Services\Settings::showMailTags()) {
+            return [];
+        }
+        try {
+            RefreshGlobalServiceProvider::$mail_tag_badges = \Modules\RefreshGlobal\Services\MailTags::forConversations($conversations->getCollection()->pluck('id')->all());
+
+            return $query->countsByMailTag();
+        } catch (\Throwable $e) {
+            \Log::warning('[RefreshGlobal] [mail-tags] '.$e->getMessage());
+
+            return [];
+        }
     }
 
     /** Address of the state of a list (parameters of the page, or the whole list). */

@@ -82,6 +82,14 @@ return [
         // Address to send from on "Send an e-mail" / "New ticket" (Services/SendFrom.php, Public/js/shell.js sendFrom())
         'RG-HOOK-28' => ['hook' => 'from_alias of a new message', 'family' => 'sendfrom', 'file' => 'app/Http/Controllers/ConversationsController.php', 'needle' => '$thread->from = $request->from_alias;', 'severity' => 'warning', 'source' => 'app/Http/Controllers/ConversationsController.php:1195-1197'],
         'RG-HOOK-29' => ['hook' => '.rf-nf (fields of the New ticket / Send an e-mail page)', 'family' => 'sendfrom', 'refresh' => true, 'file' => 'Public/js/new.js', 'needle' => 'var field = function (label, required, content, cls)', 'severity' => 'warning', 'source' => 'Modules/Refresh/Public/js/new.js:218-225'],
+        // Origin tags of the fetched e-mails and spam left on the server (Services/MailTags.php)
+        'RG-HOOK-30' => ['hook' => 'fetch_emails.should_save_thread', 'family' => 'mailtags', 'file' => 'app/Console/Commands/FetchEmails.php', 'needle' => "\Eventy::filter('fetch_emails.should_save_thread'", 'severity' => 'warning', 'source' => 'app/Console/Commands/FetchEmails.php:1051, 1091'],
+        'RG-HOOK-31' => ['hook' => 'fetch_emails.mailbox_to_save_message', 'family' => 'mailtags', 'file' => 'app/Console/Commands/FetchEmails.php', 'needle' => "\Eventy::filter('fetch_emails.mailbox_to_save_message'", 'severity' => 'warning', 'source' => 'app/Console/Commands/FetchEmails.php:380'],
+        'RG-HOOK-32' => ['hook' => 'conversation.created_by_customer', 'family' => 'mailtags', 'file' => 'app/Console/Commands/FetchEmails.php', 'needle' => "\Eventy::action('conversation.created_by_customer'", 'severity' => 'warning', 'source' => 'app/Console/Commands/FetchEmails.php:1384, 1387'],
+        // "Details / raw text" of a message: FreeScout's message menu, and Refresh's tools of each message
+        'RG-HOOK-33' => ['hook' => 'thread.menu.append', 'file' => 'resources/views/conversations/partials/thread.blade.php', 'needle' => "@action('thread.menu.append', \$thread)", 'severity' => 'warning', 'source' => 'resources/views/conversations/partials/thread.blade.php:337'],
+        'RG-HOOK-34' => ['hook' => '.rf-th-tools', 'family' => 'marker', 'refresh' => true, 'file' => 'Providers/RefreshServiceProvider.php', 'needle' => "$('<div class=\"rf-th-tools\"></div>')", 'severity' => 'warning', 'source' => 'Modules/Refresh/Providers/RefreshServiceProvider.php:1722-1743'],
+        'RG-HOOK-35' => ['hook' => 'stylesheets', 'file' => 'resources/views/layouts/app.blade.php', 'needle' => "\Eventy::filter('stylesheets'", 'severity' => 'warning', 'source' => 'resources/views/layouts/app.blade.php:33'],
         'RG-HOOK-07' => ['hook' => 'refresh.rail_items', 'refresh' => true, 'file' => 'Providers/RefreshServiceProvider.php', 'needle' => "'refresh.rail_items'", 'severity' => 'degraded', 'source' => 'Modules/Refresh/Providers/RefreshServiceProvider.php:711'],
     ],
 
@@ -112,6 +120,8 @@ return [
         // Dates of the automatic folders overview ("3 hours ago", in the user's time zone)
         'RG-CORE-16' => ['class' => 'App\User', 'methods' => ['dateFormat', 'dateDiffForHumans'], 'family' => 'core_dates', 'severity' => 'warning', 'source' => 'app/User.php:536,627'],
         'RG-CORE-17' => ['class' => 'App\Mailbox', 'methods' => ['getAliases', 'isArchived'], 'family' => 'sendfrom', 'severity' => 'warning', 'source' => 'app/Mailbox.php:793, 434'],
+        // optional official Tags module: the origin tags are copied there (Services/MailTags.php mirror())
+        'RG-CORE-18' => ['class' => 'Modules\Tags\Entities\Tag', 'methods' => ['attachByName'], 'module' => 'tags', 'family' => 'mailtags', 'severity' => 'warning', 'source' => 'Modules/Tags (used as by Modules/Refresh/Http/Controllers/NewTicketController.php:192)'],
     ],
 
     // Named routes the module links to.
@@ -145,6 +155,7 @@ return [
         // Optional module Workflow Packs (1.14.0+, its docs/api-dossiers.md): automatic folders (Services/AutoFolders.php)
         'RG-DB-09' => ['table' => 'workflowpacks_ticket_folders', 'columns' => ['conversation_id', 'mailbox_id', 'folder', 'label', 'path', 'state', 'filed_at', 'updated_at'], 'module' => 'workflowpacks', 'family' => 'db_wp', 'severity' => 'warning', 'source' => 'Modules/WorkflowPacks/Database/Migrations/2026_10_21_000000_create_workflowpacks_ticket_folders_table.php'],
         'RG-DB-10' => ['table' => 'workflowpacks_retention', 'columns' => ['folder', 'number', 'metric', 'mode'], 'module' => 'workflowpacks', 'family' => 'db_wp', 'severity' => 'warning', 'source' => 'Modules/WorkflowPacks/Database/Migrations/2026_10_17_000000_create_workflowpacks_retention_table.php'],
+        'RG-DB-11' => ['table' => 'refreshglobal_mail_tags', 'columns' => ['conversation_id', 'thread_id', 'mailbox_id', 'tag', 'folder'], 'family' => 'mailtags', 'severity' => 'warning', 'source' => 'Modules/RefreshGlobal/Database/Migrations/2026_10_14_000000_create_refreshglobal_mail_tags_table.php'],
         'RG-DB-05' => ['table' => 'refreshglobal_saved_views', 'columns' => ['id', 'user_id', 'name', 'filters', 'is_default'], 'severity' => 'degraded', 'source' => 'Modules/RefreshGlobal/Database/Migrations'],
     ],
 ];

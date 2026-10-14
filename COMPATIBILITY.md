@@ -36,6 +36,9 @@ Chacun est contrôlé par `php artisan refreshglobal:check`.
 | Dossiers automatiques (tables `workflowpacks_ticket_folders`, `workflowpacks_retention` de Workflow Packs) | schéma d'un module tiers, documenté par lui (`docs/api-dossiers.md`) | dossiers automatiques non affichés, le reste fonctionne (RG-DB-09/10, avertissement) |
 | Fil d'Ariane de la page d'un ticket (`.rf-crumb`), flèche retour du téléphone qui le lit, recherche du panneau des vues | éléments internes des scripts et vues de Refresh | retour de Refresh (sa dernière vue) au lieu de « Toutes les boîtes » ; le reste fonctionne (RG-HOOK-25…27, avertissement) |
 | Adresse d'envoi (`from_alias` de FreeScout, champs `.rf-nf` de la page « Nouveau » de Refresh, ligne « De » du téléphone `.rf-m-nfrom`) | code et structure internes de FreeScout et de Refresh | champ d'adresse absent : la boîte du formulaire comme dans FreeScout ; le reste fonctionne (RG-HOOK-28/29, RG-CORE-17, RG-ROUTE-11, avertissement) |
+| Relève des e-mails (`fetch_emails.should_save_thread`, `fetch_emails.mailbox_to_save_message`, `conversation.created_by_customer` de `FetchEmails.php`) | hooks internes de la relève de FreeScout | e-mails importés sans tags, spams importés comme avant ; le reste fonctionne (RG-HOOK-30…32, avertissement) |
+| Détails d'un message (`thread.menu.append`, outils `.rf-th-tools` de Refresh) | menu et script internes | bouton « Détails » absent ; le reste fonctionne (RG-HOOK-33/34) |
+| Feuille de style sur toutes les pages (filtre `stylesheets`, `layouts/app.blade.php:33`) | hook de FreeScout | tags, fenêtre de détails et repère sans mise en forme hors des pages du module (RG-HOOK-35) |
 | Correction des textes français de Refresh (`<meta name="refresh-l10n">`) | balise interne de Refresh | textes d'origine de Refresh (RG-HOOK-22, avertissement) |
 
 ## Mises à jour

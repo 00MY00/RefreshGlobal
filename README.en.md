@@ -45,6 +45,10 @@ otherwise it uses FreeScout's standard look.
   and open tickets per folder and per mailbox, last filing, automatic clean-up).
 - **Address to send from** on "Send an e-mail" / "New ticket": every address of your mailboxes and their aliases;
   another mailbox opens its form with what you typed; suggested address from the list or the last one used.
+- **Spam left on the mail server** (default) and **origin tags** of the e-mails in English (`inbox`, `spam`, `trash`,
+  `sent`, `folder:<name>`, `classified_spam`…): shown, filterable, recalculable, readable by other modules and copied
+  into the Tags module when installed ([docs/api-tags.md](docs/api-tags.md)).
+- **Details / raw text** of each message (headers, Message-ID, mail server folder, tags).
 - Languages: English, French, German, Spanish, Italian, Dutch, Brazilian Portuguese.
 - **Language**: the module follows FreeScout's language, like Refresh (which has no language choice of its own): the
   user's profile language, otherwise the default one. A **language switch** at the bottom of the views panel (and

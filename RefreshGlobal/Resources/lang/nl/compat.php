@@ -220,4 +220,10 @@ return [
         'effect' => 'Bij „E-mail verzenden” / „Nieuw ticket” is het adres alleen dat van de mailbox van het formulier, zoals in FreeScout. De rest werkt.',
         'action' => 'RefreshGlobal bijwerken naar een versie voor deze FreeScout- / Refresh-versie en daarna php artisan refreshglobal:check uitvoeren.',
     ],
+    'mailtags' => [
+        'check'  => 'Element voor de e-mailtags aanwezig: :item',
+        'label'  => 'Een element voor de e-mailtags ontbreekt: :item.',
+        'effect' => 'E-mails worden zonder herkomsttags geïmporteerd en spam wordt zoals voorheen geïmporteerd. De rest werkt.',
+        'action' => 'RefreshGlobal bijwerken naar een versie voor deze FreeScout-versie en daarna php artisan refreshglobal:check uitvoeren.',
+    ],
 ];

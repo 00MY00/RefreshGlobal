@@ -13,6 +13,9 @@
         {{-- automatic folder of Workflow Packs chosen in the views panel: kept while filtering, removable --}}
         <input type="hidden" name="wf" value="{{ $filters['wfolder'] }}">
     @endif
+    @if ($filters['mailtag'] !== '')
+        <input type="hidden" name="mt" value="{{ $filters['mailtag'] }}">
+    @endif
     @if ($rg_is_refresh)
         <div class="rf-filters-head">
             <span class="rf-filters-title">{{ __('refreshglobal::messages.filters') }}</span>

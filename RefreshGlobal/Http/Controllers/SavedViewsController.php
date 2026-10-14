@@ -27,6 +27,7 @@ class SavedViewsController extends Controller
                 'assignee'   => 'nullable|string|max:20',
                 'q'          => 'nullable|string|max:'.GlobalTicketQuery::MAX_QUERY_LENGTH,
                 'wf'         => 'nullable|string|max:'.\Modules\RefreshGlobal\Services\AutoFolders::MAX_LENGTH,
+                'mt'         => 'nullable|string|max:100',
                 'sort'       => 'nullable|string|max:20',
                 'order'      => 'nullable|string|in:asc,desc',
             ]);

@@ -15,6 +15,7 @@ use App\Conversation;
  *   q         string  subject, customer name, customer e-mail, ticket number
  *   rview     string  '' | a Refresh view (GlobalDashboard::VIEWS) with Refresh's own definition (URL parameter rv)
  *   wfolder   string  '' | an automatic folder of Workflow Packs, sub-folders included (URL parameter wf, AutoFolders)
+ *   mailtag   string  '' | an origin tag of the e-mails (URL parameter mt, MailTags: "inbox", "classified_spam"…)
  *   sort      string  one of sorts()
  *   order     string  asc | desc
  */
@@ -43,6 +44,7 @@ class GlobalTicketQuery
             'q'         => '',
             'rview'     => '',
             'wfolder'   => '',
+            'mailtag'   => '',
             'sort'      => 'updated',
             'order'     => 'desc',
         ];
@@ -115,6 +117,13 @@ class GlobalTicketQuery
             $f['wfolder'] = $wf;
         }
 
+        // origin tag of the e-mails, only when the feature is on
+        $mt = isset($input['mt']) ? $input['mt'] : ($input['mailtag'] ?? '');
+        $mt = is_scalar($mt) ? trim((string) $mt) : '';
+        if ($mt !== '' && preg_match('/^[a-z0-9_:\-]{1,100}$/', $mt) && MailTags::enabled()) {
+            $f['mailtag'] = $mt;
+        }
+
         $sort = isset($input['sort']) && is_scalar($input['sort']) ? (string) $input['sort'] : '';
         $f['sort'] = array_key_exists($sort, self::sorts()) ? $sort : 'updated';
         $order = isset($input['order']) && is_scalar($input['order']) ? (string) $input['order'] : '';
@@ -145,6 +154,9 @@ class GlobalTicketQuery
         if (isset($f['wfolder']) && $f['wfolder'] !== '') {
             $params['wf'] = $f['wfolder'];
         }
+        if (isset($f['mailtag']) && $f['mailtag'] !== '') {
+            $params['mt'] = $f['mailtag'];
+        }
         if (isset($f['sort']) && $f['sort'] !== 'updated') {
             $params['sort'] = $f['sort'];
         }
@@ -164,7 +176,7 @@ class GlobalTicketQuery
                 $n++;
             }
         }
-        foreach (['assignee', 'q', 'rview', 'wfolder'] as $k) {
+        foreach (['assignee', 'q', 'rview', 'wfolder', 'mailtag'] as $k) {
             if (isset($f[$k]) && $f[$k] !== '') {
                 $n++;
             }
@@ -240,6 +252,10 @@ class GlobalTicketQuery
             AutoFolders::applyFilter($query, $f['wfolder']);
         }
 
+        if (!in_array('mailtag', $except, true) && $f['mailtag'] !== '' && MailTags::tableExists()) {
+            MailTags::applyFilter($query, $f['mailtag']);
+        }
+
         return $query;
     }
 
@@ -289,6 +305,12 @@ class GlobalTicketQuery
     public function countsByFolder()
     {
         return AutoFolders::available() ? AutoFolders::counts($this->base(['wfolder'])) : [];
+    }
+
+    /** origin tag of the e-mails => number of tickets with the current filters except the tag filter. */
+    public function countsByMailTag()
+    {
+        return MailTags::enabled() ? MailTags::counts($this->base(['mailtag'])) : [];
     }
 
     protected function grouped($column, array $except)

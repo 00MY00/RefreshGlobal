@@ -220,4 +220,10 @@ return [
         'effect' => 'Sur « Envoyer un e-mail » / « Nouveau ticket », l’adresse est seulement celle de la boîte du formulaire, comme dans FreeScout. Le reste fonctionne.',
         'action' => 'Mettre à jour RefreshGlobal vers une version prévue pour cette version de FreeScout / Refresh, puis exécuter php artisan refreshglobal:check.',
     ],
+    'mailtags' => [
+        'check'  => 'Élément utilisé pour les tags d’e-mail présent : :item',
+        'label'  => 'Un élément utilisé pour les tags d’e-mail est absent : :item.',
+        'effect' => 'Les e-mails sont importés sans tags de provenance, et les spams sont importés comme avant. Le reste fonctionne.',
+        'action' => 'Mettre à jour RefreshGlobal vers une version prévue pour cette version de FreeScout, puis exécuter php artisan refreshglobal:check.',
+    ],
 ];

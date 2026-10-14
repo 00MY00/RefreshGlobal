@@ -266,11 +266,13 @@
      * it: mobile.js:674) points to the last REFRESH view (cookie rf_last_view, only /mailbox/N/tickets/… addresses) or
      * to "All tickets" of the ticket's mailbox. Here, per browser tab (sessionStorage):
      *  - the "All mailboxes" page records the list to come back to (#rg-state: without the automatic folder);
-     *  - a ticket page then gets that list as the first item of the breadcrumb and of the phone back arrow (with the
-     *    marker #rg-back=<ticket>: the list opens at that ticket), and a landmark above Refresh's views panel:
-     *    "← All mailboxes (N)" and the ticket's mailbox (its counters are those of that mailbox only);
-     *  - another list (a Refresh view, a mailbox folder, a search, the dashboard) forgets it: Refresh's breadcrumb
-     *    is then left as it is.
+     *  - a ticket page opened from it gets that list as the first item of the breadcrumb and of the phone back arrow
+     *    (with the marker #rg-back=<ticket>: the list opens at that ticket);
+     *  - every ticket page and every Refresh view of ONE mailbox gets a landmark at the top of Refresh's views panel
+     *    (and of the phone drawer): "← All mailboxes (N)", to that list (or the whole list), and the mailbox the
+     *    panel's counters belong to;
+     *  - after another list (a Refresh view, a mailbox folder, a search, the dashboard), Refresh's breadcrumb is left as
+     *    it is for the tickets opened from it (the landmark stays).
      */
     function backToList(c) {
         var KEY = 'rg-back';
@@ -285,40 +287,49 @@
                 url: state.getAttribute('data-back-url') || c.url,
                 label: state.getAttribute('data-back-label') || c.label,
                 count: state.getAttribute('data-back-count') || '',
+                fromList: true,
                 at: Date.now()
             });
             return;
         }
-        if (!c.conversation) {
-            // another list of tickets than ours: Refresh's own way back applies again
-            if (document.querySelector('.table-conversations')) {
-                store.clear();
-            }
-            return;
-        }
+        // another list of tickets than ours (a Refresh view, a mailbox folder, a search, the dashboard): Refresh's own
+        // breadcrumb applies again for the tickets opened from it; the list is kept for the landmark below
         var back = store.get();
-        if (!back || !back.url || Date.now() - back.at > 12 * 3600 * 1000) {
+        if (back && (!back.url || Date.now() - back.at > 12 * 3600 * 1000)) {
+            back = null;
+        }
+        if (back && !c.conversation && document.querySelector('.table-conversations')) {
+            back.fromList = false;
+            store.set(back);
+        }
+        if (!c.conversation && !c.mailboxView) {
             return;
         }
-        var url = back.url.split('#')[0] + '#rg-back=' + c.conversation;
+        // landmark at the top of Refresh's views panel (and of the phone drawer): the way back to "All mailboxes",
+        // to the list last shown there if any, and the mailbox the panel's counters belong to
+        var target = back ? back.url.split('#')[0] + (c.conversation ? '#rg-back=' + c.conversation : '') : c.url;
+        var label = back ? back.label : c.label;
+        var count = back && back.count !== '' ? back.count : (c.total !== undefined && c.total !== '' ? String(c.total) : '');
+        // ticket opened from "All mailboxes": Refresh's breadcrumb and phone back arrow lead there too
+        var crumbs = !!(c.conversation && back && back.fromList !== false);
         var tries = 0;
         var apply = function () {
             var crumb = $('.rf-crumb a').first();
             var phone = $('a.rf-m-back').first();
             var views = $('.sidebar-2col .rf-views').first();
-            if (crumb.length && !crumb.hasClass('rg-back')) {
-                crumb.attr('href', url).text(back.label).addClass('rg-back');
+            if (crumbs && crumb.length && !crumb.hasClass('rg-back')) {
+                crumb.attr('href', target).text(label).addClass('rg-back');
             }
-            if (phone.length && !phone.hasClass('rg-back')) {
-                phone.attr('href', url).addClass('rg-back');
+            if (crumbs && phone.length && !phone.hasClass('rg-back')) {
+                phone.attr('href', target).addClass('rg-back');
             }
             if (views.length && !views.find('.rg-conv-landmark').length) {
                 var mark = $('<div class="rg-conv-landmark"></div>');
-                var link = $('<a class="rf-v rg-conv-back"></a>').attr('href', url)
+                var link = $('<a class="rf-v rg-conv-back"></a>').attr('href', target)
                     .append('<i class="rf-i rf-i-chevron-left rf-i-sm"></i>')
-                    .append($('<span class="rf-v-label"></span>').text(back.label));
-                if (back.count !== '') {
-                    link.append($('<span class="rf-v-count"></span>').text(back.count));
+                    .append($('<span class="rf-v-label"></span>').text(label));
+                if (count !== '') {
+                    link.append($('<span class="rf-v-count"></span>').text(count));
                 }
                 mark.append(link);
                 if (c.mailbox) {
@@ -330,9 +341,11 @@
                 } else {
                     views.prepend(mark);
                 }
+                // the entry at the bottom of the panel (mailbox.after_sidebar_buttons) is no longer needed
+                views.find('.rg-views-entry').hide();
             }
-            // Refresh builds the breadcrumb and the phone bar on the same "ready" event, maybe a little later
-            if (++tries < 30 && (!crumb.length || !views.length || (window.innerWidth < 768 && !phone.length))) {
+            // Refresh builds the breadcrumb, the panel and the phone bar on the same "ready" event, maybe a little later
+            if (++tries < 30 && ((crumbs && !crumb.length) || !views.length || (crumbs && window.innerWidth < 768 && !phone.length))) {
                 setTimeout(apply, 100);
             }
         };
@@ -566,4 +579,100 @@
             fill();
         }
     }
+    /*
+     * Ticket page: "Details / raw text" of each message (Http/Controllers/ThreadDetailsController.php). Refresh hides
+     * FreeScout's message menu (and its "Show original"): a button is added to Refresh's tools of each message
+     * (.rf-th-tools, built by Refresh's provider script); without Refresh the entry is in FreeScout's own menu
+     * ("thread.menu.append"). The window: Details / Raw text tabs, copy, and FreeScout's own original source.
+     */
+    $(function () {
+        var meta = document.querySelector('meta[name="refreshglobal-thread"]');
+        if (!meta) {
+            return;
+        }
+        var cfg;
+        try { cfg = JSON.parse(meta.getAttribute('content')); } catch (e) { return; }
+        var urlOf = function (id) { return cfg.url.replace('999999999', String(id)); };
+
+        // Refresh's tools of each message (built after "ready", and again when messages are added)
+        var addButtons = function () {
+            $('#conv-layout-main .thread').each(function () {
+                var th = $(this);
+                var tools = th.children('.rf-th-tools');
+                var id = th.attr('data-thread_id');
+                if (!tools.length || !id || th.hasClass('thread-type-note') || tools.find('.rg-th-details').length) {
+                    return;
+                }
+                tools.append($('<button type="button" class="rf-th-tool rg-th-details rg-td-open"><span class="rg-td-i" aria-hidden="true">i</span></button>')
+                    .attr({ title: cfg.label, 'aria-label': cfg.label, 'data-url': urlOf(id) }));
+            });
+        };
+        var tries = 0;
+        var poll = function () {
+            addButtons();
+            if (++tries < 20) { setTimeout(poll, 300); }
+        };
+        poll();
+        if (window.MutationObserver) {
+            var main = document.getElementById('conv-layout-main');
+            if (main) { new MutationObserver(function () { addButtons(); }).observe(main, { childList: true, subtree: true }); }
+        }
+
+        var box = null;
+        var close = function () {
+            if (box) { box.remove(); box = null; }
+            $(document).off('keydown.rgtd');
+        };
+        var open = function (url) {
+            close();
+            box = $('<div class="rg-td-modal" role="dialog" aria-modal="true"></div>').attr('aria-label', cfg.label);
+            var dlg = $('<div class="rg-td-dialog"></div>');
+            var head = $('<div class="rg-td-head"></div>').append($('<span class="rg-td-title"></span>').text(cfg.label),
+                $('<button type="button" class="rg-td-close">&times;</button>').attr({ title: cfg.close, 'aria-label': cfg.close }));
+            var bodyEl = $('<div class="rg-td-body"><i class="glyphicon glyphicon-refresh glyphicon-spin"></i></div>');
+            box.append(dlg.append(head, bodyEl)).appendTo('body');
+            box.on('click', function (e) { if (e.target === box[0]) { close(); } });
+            head.find('.rg-td-close').on('click', close);
+            $(document).on('keydown.rgtd', function (e) { if (e.key === 'Escape' || e.keyCode === 27) { close(); } });
+            $.ajax({ url: url, dataType: 'html' }).done(function (html) {
+                bodyEl.html(html);
+            }).fail(function () {
+                bodyEl.empty().append($('<p class="text-danger"></p>').text(cfg.error));
+            });
+        };
+        $(document).on('click', '.rg-td-open', function (e) {
+            e.preventDefault();
+            open($(this).attr('data-url'));
+        });
+        $(document).on('click', '.rg-td-tab', function () {
+            var t = $(this);
+            var root = t.closest('.rg-td');
+            root.find('.rg-td-tab').removeClass('active');
+            t.addClass('active');
+            root.find('.rg-td-pane').removeClass('active').filter('[data-pane="' + t.attr('data-tab') + '"]').addClass('active');
+        });
+        $(document).on('click', '.rg-td-copy', function () {
+            var btn = $(this);
+            var text = btn.closest('.rg-td-pane').find('.rg-td-raw').text();
+            var done = function () { btn.text(cfg.copied); };
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(done, function () {});
+            } else {
+                var ta = $('<textarea></textarea>').val(text).appendTo('body').select();
+                try { document.execCommand('copy'); done(); } catch (er) { /* no clipboard */ }
+                ta.remove();
+            }
+        });
+        // FreeScout's own original source (its window's HTML, with its tabs), in the same window
+        $(document).on('click', '.rg-td-original-link', function (e) {
+            e.preventDefault();
+            var target = $(this).closest('.rg-td-body');
+            target.html('<i class="glyphicon glyphicon-refresh glyphicon-spin"></i>');
+            $.ajax({ url: $(this).attr('data-url'), dataType: 'html' }).done(function (html) {
+                target.html(html);
+            }).fail(function () {
+                target.empty().append($('<p class="text-danger"></p>').text(cfg.error));
+            });
+        });
+    });
 })(window.jQuery);

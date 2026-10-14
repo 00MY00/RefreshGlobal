@@ -19,6 +19,8 @@ Route::group([
     Route::get('/state', $users + ['uses' => 'GlobalTicketsController@state'])->name('refreshglobal.state');
     // automatic folders of Workflow Packs (when installed): overview
     Route::get('/folders', $users + ['uses' => 'AutoFoldersController@index'])->name('refreshglobal.folders');
+    // details and raw text of a message (permission checked by the controller: the user can view the ticket)
+    Route::get('/thread/{id}/details', $users + ['uses' => 'ThreadDetailsController@show'])->where('id', '[0-9]+')->name('refreshglobal.thread_details');
     Route::post('/language', $users + ['uses' => 'LanguageController@update'])->name('refreshglobal.language');
     // permission checked by the controller (admins, or users allowed to delete conversations)
     Route::post('/trash/empty', $users + ['uses' => 'TrashController@empty'])->name('refreshglobal.trash.empty');
@@ -29,5 +31,6 @@ Route::group([
     Route::delete('/views/{id}', $users + ['uses' => 'SavedViewsController@destroy'])->name('refreshglobal.views.destroy');
 
     Route::get('/diagnostic', $admins + ['uses' => 'DiagnosticController@index'])->name('refreshglobal.diagnostic');
+    Route::post('/mail-tags/recalc', $admins + ['uses' => 'MailTagsController@recalc'])->name('refreshglobal.mail_tags.recalc');
     Route::post('/navigation', $admins + ['uses' => 'DiagnosticController@navigation'])->name('refreshglobal.navigation');
 });

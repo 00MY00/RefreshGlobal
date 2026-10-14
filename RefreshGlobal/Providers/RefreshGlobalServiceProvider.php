@@ -31,6 +31,9 @@ class RefreshGlobalServiceProvider extends ServiceProvider
     /** Set by GlobalTicketsController: automatic folder of Workflow Packs of each ticket of the page [id => label]. */
     public static $folder_badges = [];
 
+    /** Set by GlobalTicketsController: origin tags of the e-mails of each ticket of the page [id => [tag, …]]. */
+    public static $mail_tag_badges = [];
+
     protected $defer = false;
 
     public function register()
@@ -40,6 +43,7 @@ class RefreshGlobalServiceProvider extends ServiceProvider
         $this->commands([
             \Modules\RefreshGlobal\Console\CheckCompatibilityCommand::class,
             \Modules\RefreshGlobal\Console\HealthCommand::class,
+            \Modules\RefreshGlobal\Console\MailTagsCommand::class,
             \Modules\RefreshGlobal\Console\SelfTestCommand::class,
             \Modules\RefreshGlobal\Console\TrashCommand::class,
             \Modules\RefreshGlobal\Console\MailTrashCommand::class,
@@ -59,6 +63,7 @@ class RefreshGlobalServiceProvider extends ServiceProvider
         $this->registerShell();
         $this->registerSettings();
         $this->registerDashboard();
+        $this->registerMailTags();
 
         // Ticket deleted for good: its e-mails are queued for the mail server's trash (Services/MailServerTrash.php).
         // FreeScout fires this action before removing the tickets (app/Conversation.php:2163).
@@ -71,6 +76,81 @@ class RefreshGlobalServiceProvider extends ServiceProvider
         $this->app['router']->pushMiddlewareToGroup('web', \Modules\RefreshGlobal\Http\Middleware\AfterDelete::class);
         // "from_alias" of a message checked against the addresses of its mailbox (Http\Middleware\CheckFromAlias)
         $this->app['router']->pushMiddlewareToGroup('web', \Modules\RefreshGlobal\Http\Middleware\CheckFromAlias::class);
+    }
+
+    /**
+     * Origin tags of the fetched e-mails and spam left on the mail server (Services/MailTags.php). FreeScout's fetching
+     * (app/Console/Commands/FetchEmails.php): filter "fetch_emails.mailbox_to_save_message" (:380, the folder of each
+     * message), filter "fetch_emails.should_save_thread" (:1051, :1091, skip a spam), actions
+     * "conversation.created_by_customer" / "conversation.customer_replied" (:1384, :1387, the saved thread). Read API for
+     * other modules: filters "refreshglobal.mail_tags" and "refreshglobal.thread_mail_tags" (docs/api-tags.md).
+     */
+    protected function registerMailTags()
+    {
+        $T = '\Modules\RefreshGlobal\Services\MailTags';
+        \Eventy::addFilter('fetch_emails.mailbox_to_save_message', function ($mailbox, $folder = null) use ($T) {
+            return $T::onFolder($mailbox, $folder);
+        }, 1000, 2);
+        \Eventy::addFilter('fetch_emails.should_save_thread', function ($result, $data = []) use ($T) {
+            return $T::shouldSave($result, $data);
+        }, 1000, 2);
+        foreach (['conversation.created_by_customer', 'conversation.customer_replied'] as $action) {
+            \Eventy::addAction($action, function ($conversation, $thread = null) use ($T) {
+                try {
+                    $T::onThreadSaved($conversation, $thread);
+                } catch (\Throwable $e) {
+                    \Log::warning('[RefreshGlobal] [mail-tags] '.$e->getMessage());
+                }
+            }, 20, 2);
+        }
+        \Eventy::addAction('conversations.before_delete_forever', function ($ids) use ($T) {
+            $T::forget($ids);
+        }, 1000, 1);
+        // ticket page: tags of its e-mails under the subject (resources/views/conversations/view.blade.php, action
+        // "conversation.after_subject"), and "Details / raw text" in FreeScout's message menu (thread.blade.php:337,
+        // "thread.menu.append"); with Refresh, whose menu is hidden, the same window opens from its message tools
+        // (Public/js/shell.js threadDetails())
+        \Eventy::addAction('conversation.after_subject', function ($conversation, $mailbox = null) use ($T) {
+            try {
+                if ($conversation && \Modules\RefreshGlobal\Services\Settings::showMailTags() && $T::enabled()) {
+                    $tags = $T::forConversations([$conversation->id])[$conversation->id] ?? [];
+                    if ($tags) {
+                        echo '<span class="rg-conv-tags">'.self::mailTagBadges($tags).'</span>';
+                    }
+                }
+            } catch (\Throwable $e) {
+                // optional
+            }
+        }, 30, 2);
+        \Eventy::addAction('thread.menu.append', function ($thread) {
+            try {
+                if ($thread && !$thread->isNote()) {
+                    echo '<li><a href="#" class="rg-td-open" data-url="'.e(route('refreshglobal.thread_details', ['id' => $thread->id])).'" role="button">'
+                        .e(__('refreshglobal::messages.td_menu')).'</a></li>';
+                }
+            } catch (\Throwable $e) {
+                // optional
+            }
+        }, 20, 1);
+        \Eventy::addAction('layout.head', function () {
+            try {
+                if (auth()->check() && \Route::is('conversations.view')) {
+                    $c = ['url' => route('refreshglobal.thread_details', ['id' => 999999999]), 'label' => __('refreshglobal::messages.td_menu'),
+                        'close' => __('refreshglobal::messages.td_close'), 'copied' => __('refreshglobal::messages.td_copied'), 'error' => __('refreshglobal::messages.td_error')];
+                    echo '<meta name="refreshglobal-thread" content="'.e(json_encode($c, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)).'">'."
+";
+                }
+            } catch (\Throwable $e) {
+                // optional
+            }
+        });
+        // read API (no dependency: the default value comes back when RefreshGlobal is missing)
+        \Eventy::addFilter('refreshglobal.mail_tags', function ($default, $ids = []) use ($T) {
+            return $T::forConversations((array) $ids) + (array) $default;
+        }, 20, 2);
+        \Eventy::addFilter('refreshglobal.thread_mail_tags', function ($default, $ids = []) use ($T) {
+            return $T::forThreads((array) $ids) + (array) $default;
+        }, 20, 2);
     }
 
     /** Dashboard HTML before Refresh's own filter runs (see registerDashboard()). */
@@ -152,6 +232,13 @@ class RefreshGlobalServiceProvider extends ServiceProvider
 
             return $scripts;
         });
+        // the module's styles on every page (FreeScout's bundle, layouts/app.blade.php:33): ticket page (tags, details
+        // window, landmark), Refresh's views, new e-mail form; its rules only apply to the module's own elements (.rg-*)
+        \Eventy::addFilter('stylesheets', function ($styles) {
+            $styles[] = \Module::getPublicPath(self::ALIAS).'/css/refreshglobal.css';
+
+            return $styles;
+        });
         \Eventy::addAction('layout.head', function () {
             try {
                 if (!auth()->check() || !self::refreshViewsPanel()) {
@@ -168,6 +255,14 @@ class RefreshGlobalServiceProvider extends ServiceProvider
                 // ticket was opened from "All mailboxes" (Public/js/shell.js, backToList())
                 if (\Route::is('conversations.view')) {
                     $config += self::ticketLandmark(request()->route('id'), auth()->user());
+                }
+                // Refresh's views of ONE mailbox (and FreeScout's mailbox folders): the same landmark at the top of the views
+                // panel, the way back to "All mailboxes" (Modules/Refresh/Http/routes.php:5)
+                if (\Route::is('refresh.tickets') || \Route::is('mailboxes.view') || \Route::is('mailboxes.view.folder')) {
+                    $config += self::mailboxLandmark(request()->route('mailbox_id') ?: request()->route('id'), auth()->user());
+                }
+                if (!empty($config['mailbox'])) {
+                    $config['total'] = self::allMailboxesTotal(auth()->user());
                 }
                 echo '<meta name="refreshglobal" content="'.e(json_encode($config, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)).'">'."\n";
             } catch (\Exception $e) {
@@ -225,6 +320,10 @@ class RefreshGlobalServiceProvider extends ServiceProvider
                     ->withoutOverlapping();
                 // e-mails of the tickets deleted for good -> mail server's trash (does nothing when the queue is empty)
                 $schedule->command('refreshglobal:mail-trash')
+                    ->everyMinute()
+                    ->withoutOverlapping();
+                // "Recalculate the tags" (settings page): picked up within a minute (does nothing otherwise)
+                $schedule->command('refreshglobal:mail-tags --requested')
                     ->everyMinute()
                     ->withoutOverlapping();
             } catch (\Exception $e) {
@@ -375,6 +474,13 @@ class RefreshGlobalServiceProvider extends ServiceProvider
             $label = self::$folder_badges[$conversation->id];
             echo '<span class="rf-badge rg-mailbox-badge rg-folder-badge" title="'.e(__('refreshglobal::messages.auto_folder').' : '.$label).'">'.\Modules\RefreshGlobal\Services\AutoFolders::icon().' '.e($label).'</span>';
         }, 1);
+        // Origin tags of the ticket's e-mails (Services/MailTags.php), setting "show the tags"
+        \Eventy::addAction('conversations_table.before_subject', function ($conversation) {
+            if (!$conversation || empty(self::$mail_tag_badges[$conversation->id])) {
+                return;
+            }
+            echo self::mailTagBadges(self::$mail_tag_badges[$conversation->id]);
+        }, 2);
     }
 
     /**
@@ -395,6 +501,43 @@ class RefreshGlobalServiceProvider extends ServiceProvider
             'conversation' => (int) $conversation->id,
             'mailbox'      => __('refreshglobal::messages.conv_mailbox', ['name' => $conversation->mailbox->name]),
         ];
+    }
+
+    /** Badges of origin tags ("classified_spam" in red). */
+    public static function mailTagBadges(array $tags)
+    {
+        $html = '';
+        foreach ($tags as $tag) {
+            $html .= '<span class="rf-badge rg-mail-tag'.($tag === \Modules\RefreshGlobal\Services\MailTags::SPAM ? ' rg-mail-tag-spam' : '').'" title="'
+                .e(__('refreshglobal::messages.mail_tag').' : '.$tag).'">'.e($tag).'</span>';
+        }
+
+        return $html;
+    }
+
+    /** Mailbox view: ['mailboxView' => true, 'mailbox' => "Mailbox: Support"], or [] when the user can not see it. */
+    public static function mailboxLandmark($mailbox_id, $user)
+    {
+        $mailbox = \App\Mailbox::find((int) $mailbox_id);
+        if (!$mailbox || !$user || !in_array((int) $mailbox->id, (new \Modules\RefreshGlobal\Services\MailboxAccess($user))->allowedIds(), true)) {
+            return [];
+        }
+
+        return ['mailboxView' => true, 'mailbox' => __('refreshglobal::messages.conv_mailbox', ['name' => $mailbox->name])];
+    }
+
+    /** Number of tickets of "All mailboxes" (whole list, the user's rights), kept one minute. */
+    public static function allMailboxesTotal($user)
+    {
+        try {
+            return (int) \Cache::remember('refreshglobal.total.'.$user->id, 1, function () use ($user) {
+                $access = new \Modules\RefreshGlobal\Services\MailboxAccess($user);
+
+                return (new \Modules\RefreshGlobal\Services\GlobalTicketQuery($access, \Modules\RefreshGlobal\Services\GlobalTicketQuery::normalize([], $access)))->base()->count();
+            });
+        } catch (\Throwable $e) {
+            return '';
+        }
     }
 
     /** Value of $show_mailbox_column for the module's lists: with or without the badge above each ticket. */
