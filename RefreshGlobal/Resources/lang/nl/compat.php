@@ -202,6 +202,12 @@ return [
         'effect' => 'Het mappenoverzicht toont ruwe datums. De rest werkt.',
         'action' => 'RefreshGlobal bijwerken naar een versie voor deze FreeScout-versie en daarna php artisan refreshglobal:check uitvoeren.',
     ],
+    'hook_back' => [
+        'check'  => 'FreeScout-antwoord aanwezig: :item (:file)',
+        'label'  => 'Het antwoord van de FreeScout-acties op een ticket is gewijzigd: :item (:file).',
+        'effect' => 'Na het sluiten van het laatste actieve ticket van een mailbox (of een andere actie die het ticket verlaat) toont FreeScout de lijst van de mailbox in plaats van terug te gaan naar „Alle mailboxen”. De rest werkt.',
+        'action' => 'RefreshGlobal bijwerken naar een versie voor deze FreeScout-versie en daarna php artisan refreshglobal:check uitvoeren.',
+    ],
     'marker_crumb' => [
         'check'  => 'Refresh-element aanwezig: :item (:file)',
         'label'  => 'Refresh-element niet meer gevonden: :item (:file).',

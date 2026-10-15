@@ -312,6 +312,28 @@
         var count = back && back.count !== '' ? back.count : (c.total !== undefined && c.total !== '' ? String(c.total) : '');
         // ticket opened from "All mailboxes": Refresh's breadcrumb and phone back arrow lead there too
         var crumbs = !!(c.conversation && back && back.fromList !== false);
+        // ...and when FreeScout leaves the ticket after an action for the ticket's mailbox folder (closing the last
+        // active ticket of the folder: urlNext() shows the folder, app/Conversation.php:953-964; "after send: folder";
+        // moved…), the agent goes back to that list instead: the redirect_url of the answer of conversations.ajax is
+        // changed before FreeScout's or Refresh's callback opens it. Another ticket (next one) is opened as before.
+        if (crumbs && $.ajaxPrefilter) {
+            $.ajaxPrefilter(function (options) {
+                if (!/\/conversation\/ajax(?:[?#]|$)/.test(options.url || '')) {
+                    return;
+                }
+                var parse = (options.converters && options.converters['text json']) || JSON.parse;
+                options.converters = $.extend({}, options.converters, {
+                    'text json': function (text) {
+                        var r = parse(text);
+                        if (r && r.status === 'success' && typeof r.redirect_url === 'string' && r.redirect_url !== ''
+                            && !/\/conversation\/\d+|\/refresh-global\//.test(r.redirect_url)) {
+                            r.redirect_url = target;
+                        }
+                        return r;
+                    }
+                });
+            });
+        }
         var tries = 0;
         var apply = function () {
             var crumb = $('.rf-crumb a').first();

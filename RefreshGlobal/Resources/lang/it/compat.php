@@ -202,6 +202,12 @@ return [
         'effect' => 'La panoramica delle cartelle mostra le date grezze. Il resto funziona.',
         'action' => 'Aggiornare RefreshGlobal a una versione prevista per questa versione di FreeScout, poi eseguire php artisan refreshglobal:check.',
     ],
+    'hook_back' => [
+        'check'  => 'Risposta di FreeScout presente: :item (:file)',
+        'label'  => 'La risposta delle azioni di FreeScout su un ticket è cambiata: :item (:file).',
+        'effect' => 'Dopo la chiusura dell’ultimo ticket attivo di una casella (o un’altra azione che lascia il ticket), FreeScout mostra l’elenco della casella invece di tornare a «Tutte le caselle». Il resto funziona.',
+        'action' => 'Aggiornare RefreshGlobal a una versione prevista per questa versione di FreeScout, poi eseguire php artisan refreshglobal:check.',
+    ],
     'marker_crumb' => [
         'check'  => 'Elemento di Refresh presente: :item (:file)',
         'label'  => 'Elemento di Refresh non più trovato: :item (:file).',

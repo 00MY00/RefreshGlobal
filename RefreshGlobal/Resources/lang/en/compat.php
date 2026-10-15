@@ -206,6 +206,12 @@ return [
         'effect' => 'The automatic folders overview shows raw dates. The rest works.',
         'action' => 'Update RefreshGlobal to a version made for this FreeScout version, then run php artisan refreshglobal:check.',
     ],
+    'hook_back' => [
+        'check'  => 'FreeScout answer present: :item (:file)',
+        'label'  => 'The answer of FreeScout’s actions on a ticket has changed: :item (:file).',
+        'effect' => 'After closing the last active ticket of a mailbox (or another action leaving the ticket), FreeScout shows the mailbox’s list instead of going back to “All mailboxes”. The rest works.',
+        'action' => 'Update RefreshGlobal to a version made for this FreeScout version, then run php artisan refreshglobal:check.',
+    ],
     'marker_crumb' => [
         'check'  => 'Refresh element present: :item (:file)',
         'label'  => 'Refresh element no longer found: :item (:file).',

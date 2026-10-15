@@ -1,4 +1,4 @@
-# Résultats des tests — RefreshGlobal 1.12.0
+# Résultats des tests — RefreshGlobal 1.13.0
 
 Date : 2026-10-09. Environnements jetables Docker : FreeScout 1.8.245 (dépôt officiel), PHP 8.2.34, Apache,
 MariaDB 10.11 ; Refresh 1.4.3 (dépôt officiel). Données de test uniquement (adresses `.test`).
@@ -223,6 +223,20 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
   FreeScout, Échap ; téléphone : bouton visible ; **vue Refresh d'une boîte** : repère « ← All mailboxes 4 / Mailbox:
   Billing » en haut du panneau, vers la dernière liste ; tiroir du téléphone : repère visible ; aucune erreur
   JavaScript.
+
+## 30. Retour à « Toutes les boîtes » après la fermeture d'un ticket (1.13.0)
+
+- Reproduit sur une instance neuve (FreeScout 1.8.245, Refresh 1.4.3, données de démonstration), script
+  `closenext.js` (Chromium headless, bureau 1440 px et téléphone 390 px) : liste « Toutes les boîtes » filtrée sur
+  « Actif », ouverture d'un ticket, puis « Fermer » de Refresh trois fois de suite.
+- Avant (1.12.0) : tant qu'un ticket actif restait dans la boîte, le ticket suivant gardait le retour ; à la
+  fermeture du dernier, FreeScout affichait `/mailbox/1/tickets/unassigned` et le ticket ouvert ensuite revenait à
+  « Non assignés » (Refresh) au lieu de « Toutes les boîtes » — **reproduit**.
+- Après (1.13.0) : bureau et téléphone, **10 vérifications OK sur 10** : chaque ticket suivant garde le retour
+  « Toutes les boîtes » (fil d’Ariane, flèche du téléphone, repère du panneau) ; à la fermeture du dernier ticket
+  actif de la boîte, on revient directement à `/refresh-global/tickets?status[]=1` (au lieu de la liste de la boîte) et
+  le ticket ouvert ensuite garde le retour ; aucune erreur JavaScript. `refreshglobal:check` : RG-HOOK-36 OK.
+- PHPUnit : **117 tests, 1681 assertions, 0 échec** (1 ignoré : SyncNow absent).
 
 ## 28. Adresse d'envoi au choix (1.10.0)
 

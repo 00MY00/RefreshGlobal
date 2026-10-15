@@ -89,6 +89,9 @@ return [
         // "Details / raw text" of a message: FreeScout's message menu, and Refresh's tools of each message
         'RG-HOOK-33' => ['hook' => 'thread.menu.append', 'file' => 'resources/views/conversations/partials/thread.blade.php', 'needle' => "@action('thread.menu.append', \$thread)", 'severity' => 'warning', 'source' => 'resources/views/conversations/partials/thread.blade.php:337'],
         'RG-HOOK-34' => ['hook' => '.rf-th-tools', 'family' => 'marker', 'refresh' => true, 'file' => 'Providers/RefreshServiceProvider.php', 'needle' => "$('<div class=\"rf-th-tools\"></div>')", 'severity' => 'warning', 'source' => 'Modules/Refresh/Providers/RefreshServiceProvider.php:1722-1743'],
+        // Way back to "All mailboxes" after an action on a ticket (Public/js/shell.js backToList()): FreeScout's answer
+        // to conversations.ajax gives the address to open next (redirect_url, getRedirectUrl(): next ticket or folder)
+        'RG-HOOK-36' => ['hook' => 'conversations.ajax redirect_url', 'family' => 'hook_back', 'file' => 'app/Http/Controllers/ConversationsController.php', 'needle' => "\$response['redirect_url'] = \$this->getRedirectUrl(", 'severity' => 'warning', 'source' => 'app/Http/Controllers/ConversationsController.php:627,686,2814-2852, app/Conversation.php:953-964'],
         'RG-HOOK-35' => ['hook' => 'stylesheets', 'file' => 'resources/views/layouts/app.blade.php', 'needle' => "\Eventy::filter('stylesheets'", 'severity' => 'warning', 'source' => 'resources/views/layouts/app.blade.php:33'],
         'RG-HOOK-07' => ['hook' => 'refresh.rail_items', 'refresh' => true, 'file' => 'Providers/RefreshServiceProvider.php', 'needle' => "'refresh.rail_items'", 'severity' => 'degraded', 'source' => 'Modules/Refresh/Providers/RefreshServiceProvider.php:711'],
     ],

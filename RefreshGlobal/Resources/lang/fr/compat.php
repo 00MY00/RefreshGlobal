@@ -202,6 +202,12 @@ return [
         'effect' => 'La vue d’ensemble des dossiers affiche les dates brutes. Le reste fonctionne.',
         'action' => 'Mettre à jour RefreshGlobal vers une version prévue pour cette version de FreeScout, puis exécuter php artisan refreshglobal:check.',
     ],
+    'hook_back' => [
+        'check'  => 'Réponse de FreeScout présente : :item (:file)',
+        'label'  => 'La réponse des actions de FreeScout sur un ticket a changé : :item (:file).',
+        'effect' => 'Après la fermeture du dernier ticket actif d’une boîte (ou une autre action qui quitte le ticket), FreeScout affiche la liste de la boîte au lieu de revenir à « Toutes les boîtes ». Le reste fonctionne.',
+        'action' => 'Mettre à jour RefreshGlobal vers une version prévue pour cette version de FreeScout, puis exécuter php artisan refreshglobal:check.',
+    ],
     'marker_crumb' => [
         'check'  => 'Élément de Refresh présent : :item (:file)',
         'label'  => 'Élément de Refresh introuvable : :item (:file).',

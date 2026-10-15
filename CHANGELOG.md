@@ -2,6 +2,19 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.13.0] — 2026-10-15
+
+### Corrigé
+- **Le retour à « Toutes les boîtes » ne disparaît plus après le traitement d'un ticket.** Un ticket ouvert depuis
+  « Toutes les boîtes » puis fermé (bouton « Fermer » de Refresh, statut « Fermé ») : FreeScout ouvre le ticket actif
+  suivant de la boîte, et le fil d'Ariane / la flèche retour du téléphone y ramenaient bien à la liste ; mais quand il
+  n'y avait plus de ticket actif dans la boîte, FreeScout affichait la liste de cette boîte (vue Refresh) et le retour
+  à « Toutes les boîtes » était perdu pour les tickets suivants. Désormais, quand FreeScout quitte le ticket pour la
+  liste d'une boîte après une action (fermeture du dernier ticket actif, réglage « Après l'envoi : dossier »,
+  assignation à un autre agent, déplacement…), on revient à la liste « Toutes les boîtes » d'où le ticket a été ouvert
+  (mêmes filtres, à la place du ticket). Le passage au ticket suivant est inchangé.
+- Contrôle RG-HOOK-36 (réponse `redirect_url` des actions de FreeScout sur un ticket).
+
 ## [1.12.0] — 2026-10-14
 
 Nouvelle publication sous un **nouveau numéro de version** : des changements avaient été publiés sans que la release

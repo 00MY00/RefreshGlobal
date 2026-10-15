@@ -59,7 +59,8 @@ Chacun est contrôlé par `php artisan refreshglobal:check`.
 - La **recherche de la barre du haut** de Refresh cherche toujours dans « Tous les tickets » de la première boîte ;
   utiliser la recherche du panneau de filtres de la page.
 - Après l'ouverture d'un ticket depuis la page globale, le **fil d'Ariane** (et la flèche retour du téléphone) ramène
-  à « Toutes les boîtes » (1.8.2) ; le **« ticket suivant »** de Refresh reste celui de sa dernière vue (cookie
+  à « Toutes les boîtes » (1.8.2), aussi après la fermeture du ticket (ticket suivant, ou retour à la liste
+  « Toutes les boîtes » quand la boîte n'a plus de ticket actif, 1.13.0) ; le **« ticket suivant »** de Refresh reste celui de sa dernière vue (cookie
   `rf_last_view` de Refresh). Le panneau des vues de la page du ticket est celui de Refresh pour la boîte du ticket
   (nombres de cette boîte seulement), avec un repère « ← Toutes les boîtes ».
 - Dans les cartes, le menu **« Agent »** propose les agents de la première boîte (liste construite par Refresh) ;
