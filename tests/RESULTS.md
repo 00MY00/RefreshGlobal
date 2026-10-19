@@ -1,4 +1,4 @@
-# Résultats des tests — RefreshGlobal 1.15.0
+# Résultats des tests — RefreshGlobal 1.15.1
 
 Date : 2026-10-09. Environnements jetables Docker : FreeScout 1.8.245 (dépôt officiel), PHP 8.2.34, Apache,
 MariaDB 10.11 ; Refresh 1.4.3 (dépôt officiel). Données de test uniquement (adresses `.test`).
@@ -277,6 +277,21 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
   nouvelle » ouvre le formulaire, nom « Team open tickets (copy) » ; page « Vues enregistrées » (tableau, journal
   admin) ; à 390 px : cartes, pas de défilement horizontal (liste et page de gestion) ; aucune erreur JavaScript.
 - Non-régression avec Refresh 1.6.0 : `layout.js` (5 largeurs), `closenext.js`, `select.js`, `dash114.js` OK.
+
+## 33. Titre de ticket sur téléphone, feuille regroupée, labels (1.15.1)
+
+- Reproduit (Chromium headless, 412 px) avec Workflow Packs actif et des tickets classés dans « [WP] Achats et
+  licences › Livraisons » : après « Fermer », le ticket suivant affichait son sujet en largeur 0 (une lettre par ligne).
+- Cause 1 : `.conv-subjwrap` de Refresh en `display: flex` sans retour à la ligne + badge de dossier non rétrécissable.
+  Cause 2 : dans la feuille regroupée par FreeScout, les règles du module après le premier `@container` étaient
+  imbriquées dans `@media (min-width: 768px)` (vérifié dans le CSSOM : « @media (min-width: 768px) > @media
+  (max-width: 767px) »), donc jamais appliquées sur téléphone.
+- Après : sujet 249 px puis badge sur la ligne suivante, `flex-wrap: wrap` appliqué ; mise en page de la liste à 1024,
+  1280, 1440, 1920 et 820 px inchangée (`layout.js` OK).
+- Labels (`labels.js`, 7 pages × ordinateur et téléphone) : avant, 3 `label for` invalides sur la page d'un ticket et
+  2 sur « Nouvel e-mail » (formulaires de FreeScout) ; après : aucun.
+- PHPUnit : **140 tests, 1924 assertions, 0 échec** (2 ignorés : SyncNow absent ; « sans Workflow Packs », celui-ci
+  étant installé), dont `LayoutTest::testBundledStylesheetHasNoContainerQuery`.
 
 ## 28. Adresse d'envoi au choix (1.10.0)
 

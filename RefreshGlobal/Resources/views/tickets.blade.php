@@ -15,6 +15,8 @@
 @section('stylesheets')
     @parent
     <link href="{{ asset(\Module::getPublicPath('refreshglobal').'/css/refreshglobal.css') }}?v={{ \Modules\RefreshGlobal\Services\Compatibility\CompatibilityChecker::moduleVersion() }}" rel="stylesheet" type="text/css">
+    {{-- container queries of the list: not in FreeScout's CSS bundle (its minifier breaks an @container inside an @media) --}}
+    <link href="{{ asset(\Module::getPublicPath('refreshglobal').'/css/refreshglobal-layout.css') }}?v={{ \Modules\RefreshGlobal\Services\Compatibility\CompatibilityChecker::moduleVersion() }}" rel="stylesheet" type="text/css">
 @endsection
 
 @php

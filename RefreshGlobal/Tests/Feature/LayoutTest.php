@@ -47,4 +47,18 @@ class LayoutTest extends TestCase
         $page = $this->ticketsPage($this->s['admin']);
         $this->seeIn($page, 'class="rg-mailbox-email" data-email="'.e($this->s['support']->email).'"></span>');
     }
+    /**
+     * FreeScout bundles the module's main stylesheet with the others ("stylesheets" filter); its minifier does not
+     * understand an @container inside an @media and nested every following rule in "@media (min-width: 768px)" (the
+     * phone rules of the ticket page were lost). The container queries live in a file the page loads itself.
+     */
+    public function testBundledStylesheetHasNoContainerQuery()
+    {
+        $main = preg_replace('#/\*.*?\*/#s', '', file_get_contents(__DIR__.'/../../Public/css/refreshglobal.css'));
+        $this->assertStringNotContainsString('@container', $main);
+        $this->assertStringContainsString('@container rglayout', file_get_contents(__DIR__.'/../../Public/css/refreshglobal-layout.css'));
+        $this->seeIn($this->ticketsPage($this->s['admin']), '/css/refreshglobal-layout.css');
+        // phone: the subject of a ticket keeps its width next to long badges (Workflow Packs folder, origin tags)
+        $this->assertStringContainsString('body.rf-m-ticket .conv-subjwrap > .conv-subjtext { flex: 1 1 0; min-width: 55%;', $main);
+    }
 }

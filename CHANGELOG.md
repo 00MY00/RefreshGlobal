@@ -2,6 +2,27 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.15.1] — 2026-10-19
+
+### Corrigé
+- **Téléphone : titre d'un ticket écrit une lettre par ligne.** Sur la page d'un ticket classé dans un dossier
+  automatique (badge « [WP] … » de Workflow Packs) ou portant des tags d'e-mail, Refresh met le sujet et les badges
+  sur une ligne qui ne passe jamais à la ligne ; un badge long réduisait le sujet à 0 px. Le sujet garde maintenant
+  la largeur, les badges passent dessous (souvent vu après « Fermer », qui ouvre le ticket suivant).
+- **Styles du module sur téléphone perdus hors de ses pages** (ticket, tableau de bord) : FreeScout regroupe les
+  feuilles de style et son minificateur ne comprend pas une règle `@container` dans un `@media` ; toute la suite de
+  la feuille du module se retrouvait dans `@media (min-width: 768px)` (par ex. les tags d'e-mail sans style sur
+  téléphone). Les règles `@container` de la liste sont dans `Public/css/refreshglobal-layout.css`, chargée par la page
+  « Toutes les boîtes » seulement ; un test empêche d'en remettre dans la feuille regroupée.
+- **Avertissement du navigateur « Incorrect use of <label for=FORM_ELEMENT> »** : il venait des formulaires de
+  FreeScout lui-même (« After Sending » vers un champ caché, « To » vers un champ pas toujours présent :
+  `editor_bottom_toolbar.blade.php:34,63`, `conversations/view.blade.php:267`, `create.blade.php:153`) ; le script du
+  module retire ce `for` invalide (le texte reste), sans toucher aux fichiers de FreeScout.
+
+### Information
+- La requête vers un domaine externe vue dans le navigateur à l'ouverture d'un ticket (« …/wf/open?upn=… ») ne vient
+  ni de Refresh ni du module : c'est un **pixel de suivi** contenu dans l'e-mail reçu, chargé avec ses images.
+
 ## [1.15.0] — 2026-10-19
 
 ### Ajouté

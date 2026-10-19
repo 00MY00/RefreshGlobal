@@ -384,6 +384,23 @@
      * Default when the form opens: the mailbox "All mailboxes" was filtered on, else the last address used (this
      * browser), else the form's own mailbox; opened from a mailbox or a ticket, that mailbox is kept.
      */
+    /*
+     * Labels of FreeScout's own forms that point to nothing a label can point to (browser warning "Incorrect use of
+     * <label for=FORM_ELEMENT>"): "After Sending" -> a hidden input (resources/views/conversations/editor_bottom_toolbar.blade.php:34,63),
+     * "To" -> a field not always printed (conversations/view.blade.php:267, create.blade.php:153). The "for" is
+     * removed from these labels only; their text stays.
+     */
+    $(function () {
+        var labelable = /^(INPUT|SELECT|TEXTAREA|BUTTON|METER|OUTPUT|PROGRESS)$/;
+        $('label[for]').each(function () {
+            var id = this.getAttribute('for');
+            var el = id ? document.getElementById(id) : null;
+            if (!el || !labelable.test(el.tagName) || (el.tagName === 'INPUT' && el.type === 'hidden')) {
+                this.removeAttribute('for');
+            }
+        });
+    });
+
     var rgStore = function (kind) {
         var s = null;
         try { s = window[kind]; } catch (e) { s = null; }

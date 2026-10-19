@@ -27,7 +27,7 @@ class HealthCommand extends Command
         'RG-ACL' => 'environment'];
 
     /** Files the module can not work without. */
-    const FILES = ['module.json', 'Providers/RefreshGlobalServiceProvider.php', 'Http/routes.php', 'Public/css/refreshglobal.css',
+    const FILES = ['module.json', 'Providers/RefreshGlobalServiceProvider.php', 'Http/routes.php', 'Public/css/refreshglobal.css', 'Public/css/refreshglobal-layout.css',
         'Public/js/refreshglobal.js', 'Public/js/shell.js', 'Resources/views/tickets.blade.php'];
 
     public function handle()
