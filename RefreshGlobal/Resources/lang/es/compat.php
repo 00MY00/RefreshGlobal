@@ -214,6 +214,12 @@ return [
         'effect' => 'La opción «Vistas previas al pasar el ratón» no se ofrece en el menú Diseño de «Todos los buzones». El resto funciona.',
         'action' => 'Actualizar RefreshGlobal a una versión prevista para esta versión de Refresh y ejecutar php artisan refreshglobal:check.',
     ],
+    'core_views' => [
+        'check'  => 'Código de FreeScout presente: :item',
+        'label'  => 'Falta un método de FreeScout usado por las vistas compartidas: :item.',
+        'effect' => 'Las vistas guardadas no pueden compartirse con usuarios elegidos; las vistas privadas y para todos funcionan. El resto funciona.',
+        'action' => 'Actualizar RefreshGlobal a una versión prevista para esta versión de FreeScout y ejecutar php artisan refreshglobal:check.',
+    ],
     'marker_crumb' => [
         'check'  => 'Elemento de Refresh presente: :item (:file)',
         'label'  => 'Elemento de Refresh no encontrado: :item (:file).',

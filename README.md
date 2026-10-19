@@ -42,7 +42,7 @@ Dans Gérer › Modules :
   liste) ; au choix corbeille (par défaut) ou suppression définitive.
 - **Compteurs** par boîte et par statut, calculés en une requête groupée.
 - **Export CSV** de la liste filtrée (UTF-8 avec BOM pour Excel, nombre de lignes plafonné).
-- **Vues enregistrées** personnelles : enregistrer les filtres, renommer, définir une vue par défaut, supprimer.
+- **Vues enregistrées privées, partagées ou pour tous** (voir « Vues enregistrées et partagées » plus bas).
 - Filtres dans l'adresse : un lien filtré se partage et le bouton « Retour » fonctionne.
 - **Respect des droits** : chacun ne voit, ne compte et n'exporte que les tickets de ses boîtes (et seulement ses
   tickets s'il a la permission « ne voir que les conversations assignées »).
@@ -73,6 +73,31 @@ Dans Gérer › Modules :
   celle du profil de l'utilisateur, sinon la langue par défaut (Gérer › Paramètres › Général). Un **sélecteur de
   langue** en bas du panneau des vues (et du tiroir sur téléphone) change cette langue du profil : FreeScout,
   Refresh et le module passent ensemble dans la nouvelle langue.
+
+### Vues enregistrées et partagées
+
+Une **vue** est un ensemble enregistré de filtres (boîtes, statut, assigné à, recherche, dossier automatique, tag
+d'e-mail, vue Refresh) et d'un tri de « Toutes les boîtes ». Elle **ne modifie jamais un ticket** (ni statut, ni
+assignation, ni dossier) et **ne donne jamais accès à une boîte**.
+
+- **Enregistrer** : filtrer la liste, puis « Enregistrer ces filtres comme vue » (panneau des vues) : nom, puis
+  **Visible par** : *Moi seul (privée)*, *Utilisateurs choisis* (liste filtrable des utilisateurs de vos boîtes ; un
+  administrateur voit tous les utilisateurs et peut cocher « peut modifier ») ou *Tout le monde*.
+- **Ouvrir** : sections du panneau *Vues épinglées*, *Mes vues*, *Partagées avec moi*, *Pour tous*. Changer un filtre
+  garde la vue ouverte avec « * Modifications non enregistrées » : *Mettre à jour la vue* (si vous pouvez la
+  modifier), *Enregistrer comme nouvelle* ou *Rétablir*. Une vue partagée n'est **jamais** modifiée sans ce clic.
+- **« Moi »** : un filtre « Assigné à : moi » désigne **la personne qui regarde**. Exemple : « Mes tickets en
+  attente » — *Statut : Actif + En attente*, *Assigné à : Moi* — publiée pour tous, montre à chacun ses propres
+  tickets.
+- **Droits** : l'auteur modifie, partage et supprime sa vue ; un administrateur peut gérer toutes les vues partagées
+  ou pour tous, les rendre **vue par défaut** pour tout le monde ou pour les utilisateurs choisis, et laisser des
+  utilisateurs les modifier ; les autres peuvent **la copier dans leurs vues** (si l'auteur le permet), l'épingler
+  ou en faire leur vue par défaut, sans changer la vue. Réglage *Seuls les administrateurs publient des vues pour
+  tous* (Gérer › Paramètres › RefreshGlobal).
+- **Boîtes** : une vue « Support + Facturation » ouverte par quelqu'un qui n'a que « Support » ne montre que
+  Support (avec un message) ; une boîte, un agent, un dossier ou un tag qui n'existe plus est ignoré avec un message.
+- **Gérer** : page *Vues enregistrées* (`/refresh-global/views`) : toutes vos vues, ordre (↑ ↓), export / import JSON
+  (les boîtes voyagent par adresse e-mail, aucun identifiant d'utilisateur), journal des vues partagées (admins).
 
 ## 3. Ce que le module ne fait pas
 
@@ -337,7 +362,8 @@ détail est dans `/var/log/refreshglobal-install.log`.
 - Les droits sont toujours appliqués **côté serveur** par une requête unique (`Services/GlobalTicketQuery.php`)
   pour la liste, les compteurs et l'export ; un identifiant de boîte reçu dans l'adresse n'est jamais pris tel quel
   (il est croisé avec les boîtes autorisées par FreeScout). Les boîtes archivées restent invisibles aux non-admins.
-- Toutes les actions qui modifient (vues enregistrées) passent par des formulaires POST/DELETE avec jeton CSRF.
+- Toutes les actions qui modifient (vues enregistrées) passent par des formulaires POST/DELETE avec jeton CSRF ; un
+  identifiant de vue reçu n'est jamais pris tel quel (droit de voir, de modifier, de gérer vérifiés à chaque requête).
 - L'export neutralise les formules (cellules commençant par `=`, `+`, `-`, `@`).
 - **Lisez le script avant de l'exécuter** (méthodes de la section 5.3 : clone Git ou fichiers de la publication), ou utilisez
   `--dry-run`. Le script ne télécharge rien d'autre que l'archive de ce dépôt (celle de la dernière release, vérifiée

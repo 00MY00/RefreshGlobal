@@ -214,6 +214,12 @@ return [
         'effect' => 'A opção “Prévias ao passar o mouse” não é oferecida no menu Layout de “Todas as caixas”. O resto funciona.',
         'action' => 'Atualizar o RefreshGlobal para uma versão feita para esta versão do Refresh e executar php artisan refreshglobal:check.',
     ],
+    'core_views' => [
+        'check'  => 'Código do FreeScout presente: :item',
+        'label'  => 'Falta um método do FreeScout usado pelas visões compartilhadas: :item.',
+        'effect' => 'As visões salvas não podem ser compartilhadas com usuários escolhidos; visões privadas e para todos funcionam. O resto funciona.',
+        'action' => 'Atualizar o RefreshGlobal para uma versão feita para esta versão do FreeScout e executar php artisan refreshglobal:check.',
+    ],
     'marker_crumb' => [
         'check'  => 'Elemento do Refresh presente: :item (:file)',
         'label'  => 'Elemento do Refresh não encontrado: :item (:file).',

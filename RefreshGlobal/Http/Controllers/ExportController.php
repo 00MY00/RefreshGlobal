@@ -3,7 +3,6 @@
 namespace Modules\RefreshGlobal\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Modules\RefreshGlobal\Entities\SavedView;
 use Modules\RefreshGlobal\Services\Compatibility\Messages;
 use Modules\RefreshGlobal\Services\GlobalTicketQuery;
 use Modules\RefreshGlobal\Services\MailboxAccess;
@@ -27,18 +26,8 @@ class ExportController extends Controller
             $user = auth()->user();
             $access = new MailboxAccess($user);
 
-            $input = $request->only(GlobalTicketsController::FILTER_PARAMS);
-            if ($request->filled('view')) {
-                try {
-                    $view = SavedView::findForUser($request->input('view'), $user);
-                } catch (\Exception $e) {
-                    $view = null;
-                }
-                if ($view) {
-                    $input = (array) $view->filters;
-                }
-            }
-            $filters = GlobalTicketQuery::normalize($input, $access);
+            // same list as the page: a saved view the user may open (Services/SavedViews.php), as shown or as changed
+            $filters = GlobalTicketsController::resolveFilters($request, $user, $access, false)['filters'];
             $query = (new GlobalTicketQuery($access, $filters))->query();
 
             $max = max(1, (int) config('refreshglobal.export_max_rows', 5000));

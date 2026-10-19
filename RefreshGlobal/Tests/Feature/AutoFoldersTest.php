@@ -159,7 +159,7 @@ class AutoFoldersTest extends TestCase
 
         $this->actingAs($this->s['admin'])->post(route('refreshglobal.views.store'), ['name' => 'Factures', 'wf' => $this->f])->assertStatus(302);
         $view = SavedView::forUser($this->s['admin'])->where('name', 'Factures')->first();
-        $this->assertSame($this->f, $view->filters['wfolder']);
+        $this->assertSame($this->f, \Modules\RefreshGlobal\Services\SavedViews::definition($view)['filters']['wfolder']);
         $page = $this->ticketsPage($this->s['admin'], ['view' => $view->id]);
         $this->seeIn($page, $p.'-SALES-OPEN');
         $this->dontSeeIn($page, $p.'-BILLING-CAROL');

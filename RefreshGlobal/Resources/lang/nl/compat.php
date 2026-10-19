@@ -214,6 +214,12 @@ return [
         'effect' => 'De optie „Hover-voorbeelden” wordt niet aangeboden in het menu Weergave van „Alle mailboxen”. De rest werkt.',
         'action' => 'RefreshGlobal bijwerken naar een versie voor deze Refresh-versie en daarna php artisan refreshglobal:check uitvoeren.',
     ],
+    'core_views' => [
+        'check'  => 'FreeScout-code aanwezig: :item',
+        'label'  => 'Een FreeScout-methode die de gedeelde weergaven gebruiken ontbreekt: :item.',
+        'effect' => 'Opgeslagen weergaven kunnen niet met gekozen gebruikers worden gedeeld; privéweergaven en weergaven voor iedereen werken. De rest werkt.',
+        'action' => 'RefreshGlobal bijwerken naar een versie voor deze FreeScout-versie en daarna php artisan refreshglobal:check uitvoeren.',
+    ],
     'marker_crumb' => [
         'check'  => 'Refresh-element aanwezig: :item (:file)',
         'label'  => 'Refresh-element niet meer gevonden: :item (:file).',

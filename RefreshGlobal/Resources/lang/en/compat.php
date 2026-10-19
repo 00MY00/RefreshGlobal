@@ -218,6 +218,12 @@ return [
         'effect' => 'The “Hover previews” entry is not offered in the Layout menu of “All mailboxes”. The rest works.',
         'action' => 'Update RefreshGlobal to a version made for this Refresh version, then run php artisan refreshglobal:check.',
     ],
+    'core_views' => [
+        'check'  => 'FreeScout code present: :item',
+        'label'  => 'A FreeScout method used by the shared views is missing: :item.',
+        'effect' => 'Saved views can not be shared with chosen users; private views and views for everyone work. The rest works.',
+        'action' => 'Update RefreshGlobal to a version made for this FreeScout version, then run php artisan refreshglobal:check.',
+    ],
     'marker_crumb' => [
         'check'  => 'Refresh element present: :item (:file)',
         'label'  => 'Refresh element no longer found: :item (:file).',

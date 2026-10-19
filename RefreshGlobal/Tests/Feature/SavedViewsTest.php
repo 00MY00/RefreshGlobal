@@ -18,7 +18,7 @@ class SavedViewsTest extends TestCase
         $this->store($s['bob'], ['name' => 'Sales only', 'mb' => [$s['sales']->id]])->assertStatus(302);
         $view = SavedView::forUser($s['bob'])->where('name', 'Sales only')->first();
         $this->assertNotNull($view);
-        $this->assertSame([$s['sales']->id], $view->filters['mailboxes']);
+        $this->assertSame([$s['sales']->id], \Modules\RefreshGlobal\Services\SavedViews::definition($view)['filters']['mailboxes']);
 
         $r = $this->ticketsPage($s['bob'], ['view' => $view->id]);
         $this->seeIn($r, $s['prefix'].'-SALES-OPEN');
@@ -42,7 +42,7 @@ class SavedViewsTest extends TestCase
         $s = $this->s;
         $this->store($s['bob'], ['name' => 'Try', 'mb' => [$s['billing']->id, $s['sales']->id]]);
         $view = SavedView::forUser($s['bob'])->where('name', 'Try')->first();
-        $this->assertSame([$s['sales']->id], $view->filters['mailboxes']);
+        $this->assertSame([$s['sales']->id], \Modules\RefreshGlobal\Services\SavedViews::definition($view)['filters']['mailboxes']);
     }
 
     public function testLostMailboxIsIgnoredWithNotice()

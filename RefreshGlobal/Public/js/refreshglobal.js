@@ -9,6 +9,17 @@
     }
     $(function () {
         var page = $('body').attr('data-rg-page');
+        if (page === 'views') {
+            // management page of the saved views (Resources/views/views.blade.php)
+            viewForms();
+            $(document).on('submit', 'form.rg-confirm', function (e) {
+                var msg = $(this).attr('data-confirm');
+                if (msg && !window.confirm(msg)) {
+                    e.preventDefault();
+                }
+            });
+            return;
+        }
         if (page !== 'tickets') {
             return;
         }
@@ -88,6 +99,7 @@
             }
         });
 
+        viewForms();
         filtersPanel();
         longPressGuard();
 
@@ -114,6 +126,43 @@
      * ticket, or check / uncheck it in selection mode).
      * Diagnostic: ?rg_debug=touch shows on the page what the phone sends (?rg_debug=off to stop).
      */
+    /*
+     * Forms of the saved views (save, share, management page): the fields of a visibility are shown only when it is
+     * chosen (data-rg-show-for), the list of users can be filtered by name or address, "may edit" only next to a chosen
+     * user, and "Save as new" opens the save form. Without this script every field stays visible and usable.
+     */
+    function viewForms() {
+        var sync = function (fs) {
+            var vis = fs.find('input[name="visibility"]:checked').val() || 'private';
+            fs.find('[data-rg-show-for]').each(function () {
+                $(this).toggle((' ' + $(this).attr('data-rg-show-for') + ' ').indexOf(' ' + vis + ' ') >= 0);
+            });
+            fs.find('.rg-user-item').each(function () {
+                $(this).find('.rg-can-edit').toggle(!!$(this).find('input[name="users[]"]').prop('checked'));
+            });
+        };
+        $('[data-rg-vis]').each(function () { sync($(this)); });
+        $(document).on('change', '[data-rg-vis] input', function () { sync($(this).closest('[data-rg-vis]')); });
+        $(document).on('input', '.rg-user-filter', function () {
+            var q = $.trim($(this).val() || '').toLowerCase();
+            $(this).siblings('.rg-user-list').find('.rg-user-item').each(function () {
+                $(this).toggle(!q || ($(this).attr('data-label') || '').indexOf(q) >= 0);
+            });
+        });
+        $(document).on('click', '.rg-save-as-new', function (e) {
+            var d = $('#rg-save-view');
+            if (!d.length) {
+                return;
+            }
+            e.preventDefault();
+            d.prop('open', true);
+            // phones: the form is in the drawer of the views panel (Refresh's .rf-m-menu button opens it)
+            if (window.innerWidth < 768) { $('.rf-m-menu').first().trigger('click'); }
+            if (d[0].scrollIntoView) { d[0].scrollIntoView({ block: 'center' }); }
+            d.find('input[name="name"]').trigger('focus').select();
+        });
+    }
+
     function longPressGuard() {
         if (!('ontouchstart' in window) || !document.addEventListener) {
             return;

@@ -214,6 +214,12 @@ return [
         'effect' => 'L’entrée « Aperçus au survol » n’est pas proposée dans le menu Affichage de « Toutes les boîtes ». Le reste fonctionne.',
         'action' => 'Mettre à jour RefreshGlobal vers une version prévue pour cette version de Refresh, puis exécuter php artisan refreshglobal:check.',
     ],
+    'core_views' => [
+        'check'  => 'Code de FreeScout présent : :item',
+        'label'  => 'Une méthode de FreeScout utilisée par les vues partagées est absente : :item.',
+        'effect' => 'Les vues enregistrées ne peuvent pas être partagées avec des utilisateurs choisis ; vues privées et vues pour tous fonctionnent. Le reste fonctionne.',
+        'action' => 'Mettre à jour RefreshGlobal vers une version prévue pour cette version de FreeScout, puis exécuter php artisan refreshglobal:check.',
+    ],
     'marker_crumb' => [
         'check'  => 'Élément de Refresh présent : :item (:file)',
         'label'  => 'Élément de Refresh introuvable : :item (:file).',

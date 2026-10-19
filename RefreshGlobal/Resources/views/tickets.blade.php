@@ -19,8 +19,10 @@
 
 @php
     $rg_base = \Modules\RefreshGlobal\Services\GlobalTicketQuery::toQueryParams($filters);
-    $rg_url = function (array $override = [], array $remove = []) use ($rg_base) {
-        $p = array_merge($rg_base, $override);
+    // an open saved view stays open when a filter is changed, marked "unsaved changes" (?vm=1)
+    $rg_keep = $active_view ? ['view' => $active_view->id, 'vm' => 1] : [];
+    $rg_url = function (array $override = [], array $remove = []) use ($rg_base, $rg_keep) {
+        $p = array_merge($rg_base, $rg_keep, $override);
         foreach ($remove as $k) {
             unset($p[$k]);
         }
@@ -30,7 +32,7 @@
         return route('refreshglobal.tickets', $p);
     };
     $rg_export = route('refreshglobal.export', $rg_params);
-    $rg_title = $active_view ? $active_view->name : ($filters['rview'] !== ''
+    $rg_title = $active_view ? $active_view->name.($rg_view && $rg_view['modified'] ? ' *' : '') : ($filters['rview'] !== ''
         ? \Modules\RefreshGlobal\Services\GlobalDashboard::viewLabel($filters['rview']).' · '.__('refreshglobal::messages.title')
         : ($filters['wfolder'] !== '' ? $rg_folder_label.' · '.__('refreshglobal::messages.title') : __('refreshglobal::messages.title')));
     $rg_first = $conversations->firstItem() ?: 0;
@@ -51,23 +53,7 @@
                 <i class="rf-i rf-i-search"></i>
                 <input type="text" class="rf-views-filter" placeholder="{{ __('refreshglobal::messages.search_views') }}">
             </div>
-            <div class="rf-views-sec" data-sec="rg-views">
-                <button type="button" class="rf-views-sec-head">{{ __('refreshglobal::messages.my_views') }}<i class="rf-i rf-i-fd-chevron-down rf-i-sm"></i></button>
-                {{-- Refresh hides the section heads in its phone drawer: same title, shown on phones only --}}
-                <div class="rg-m-sectitle">{{ __('refreshglobal::messages.my_views') }}</div>
-                <div class="rf-views-list">
-                    <a href="{{ route('refreshglobal.tickets', ['reset' => 1]) }}" class="rf-v @if (!$active_view && !$filters_count) active @endif" data-label="{{ mb_strtolower(__('refreshglobal::messages.title')) }}">
-                        <i class="rf-i rf-i-fd-all-tickets"></i><span class="rf-v-label">{{ __('refreshglobal::messages.title') }}</span>@if ($total_all)<span class="rf-v-count">{{ $total_all }}</span>@endif
-                    </a>
-                    @if ($saved_views)
-                        @foreach ($saved_views as $sv)
-                            <a href="{{ route('refreshglobal.tickets', ['view' => $sv->id]) }}" class="rf-v @if ($active_view && $active_view->id == $sv->id) active @endif" data-label="{{ mb_strtolower($sv->name) }}" title="{{ $sv->name }}">
-                                <i class="rf-i rf-i-fd-views"></i><span class="rf-v-label">{{ $sv->name }}</span>@if ($sv->is_default)<span class="rg-default-mark" title="{{ __('refreshglobal::messages.default_view') }}">★</span>@endif
-                            </a>
-                        @endforeach
-                    @endif
-                </div>
-            </div>
+            @include('refreshglobal::partials.views_sections')
             <div class="rf-views-sec" data-sec="rg-mailboxes">
                 <button type="button" class="rf-views-sec-head">{{ __('refreshglobal::messages.mailboxes') }}<i class="rf-i rf-i-fd-chevron-down rf-i-sm"></i></button>
                 {{-- Refresh hides the section heads in its phone drawer: same title, shown on phones only --}}
@@ -131,18 +117,7 @@
         <div class="sidebar-title">
             <span class="sidebar-title-real">{{ __('refreshglobal::messages.title') }}</span>
         </div>
-        <ul class="sidebar-menu rg-sidebar-menu">
-            <li class="@if (!$active_view && !$filters_count) active @endif">
-                <a href="{{ route('refreshglobal.tickets', ['reset' => 1]) }}"><i class="glyphicon glyphicon-inbox"></i> <span class="folder-name">{{ __('refreshglobal::messages.all_tickets') }}</span>@if ($total_all)<span class="active-count pull-right">{{ $total_all }}</span>@endif</a>
-            </li>
-            @if ($saved_views)
-                @foreach ($saved_views as $sv)
-                    <li class="@if ($active_view && $active_view->id == $sv->id) active @endif">
-                        <a href="{{ route('refreshglobal.tickets', ['view' => $sv->id]) }}"><i class="glyphicon glyphicon-filter"></i> <span class="folder-name">{{ $sv->name }}@if ($sv->is_default) ★@endif</span></a>
-                    </li>
-                @endforeach
-            @endif
-        </ul>
+        @include('refreshglobal::partials.views_sections')
         <div class="sidebar-title rg-sidebar-subtitle"><span class="sidebar-title-real">{{ __('refreshglobal::messages.mailboxes') }}</span></div>
         <ul class="sidebar-menu rg-sidebar-menu">
             @foreach ($mailboxes as $mb)
@@ -242,6 +217,7 @@
                         <button type="button" class="rf-btn rf-toggle-filters @if ($filters_count) rg-has-filters @endif" aria-controls="rg-filters"><i class="rf-i rf-i-filter"></i> {{ __('refreshglobal::messages.filters') }} @if ($filters_count)({{ $filters_count }})@endif</button>
                     </div>
                 </div>
+                @include('refreshglobal::partials.view_banner')
                 @include('refreshglobal::partials.folder_banner')
                 @include('refreshglobal::partials.active_filters')
 
@@ -261,6 +237,7 @@
                 <a class="btn btn-default btn-sm rg-export" href="{{ $rg_export }}" title="{{ __('refreshglobal::messages.export_hint', ['max' => $export_max]) }}"><i class="glyphicon glyphicon-download-alt"></i> {{ __('refreshglobal::messages.export') }}</a>
             </span>
         </div>
+        @include('refreshglobal::partials.view_banner')
         @include('refreshglobal::partials.folder_banner')
         @include('refreshglobal::partials.filters', ['form_class' => 'rg-filters-native'])
         @include('conversations/conversations_table', ['folder' => $folder, 'conversations' => $conversations])

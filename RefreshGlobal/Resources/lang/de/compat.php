@@ -214,6 +214,12 @@ return [
         'effect' => 'Der Eintrag „Hover-Vorschau“ wird im Layout-Menü von „Alle Postfächer“ nicht angeboten. Der Rest funktioniert.',
         'action' => 'RefreshGlobal auf eine Version für diese Refresh-Version aktualisieren, dann php artisan refreshglobal:check ausführen.',
     ],
+    'core_views' => [
+        'check'  => 'FreeScout-Code vorhanden: :item',
+        'label'  => 'Eine von den geteilten Ansichten verwendete FreeScout-Methode fehlt: :item.',
+        'effect' => 'Gespeicherte Ansichten können nicht mit ausgewählten Benutzern geteilt werden; private Ansichten und Ansichten für alle funktionieren. Der Rest funktioniert.',
+        'action' => 'RefreshGlobal auf eine Version für diese FreeScout-Version aktualisieren, dann php artisan refreshglobal:check ausführen.',
+    ],
     'marker_crumb' => [
         'check'  => 'Refresh-Element vorhanden: :item (:file)',
         'label'  => 'Refresh-Element nicht mehr gefunden: :item (:file).',

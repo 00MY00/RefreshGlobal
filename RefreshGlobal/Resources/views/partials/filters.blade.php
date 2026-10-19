@@ -5,6 +5,11 @@
 <form class="{{ $form_class }}" id="rg-filters" method="get" action="{{ route('refreshglobal.tickets') }}">
     <input type="hidden" name="sort" value="{{ $filters['sort'] }}">
     <input type="hidden" name="order" value="{{ $filters['order'] }}">
+    @if ($active_view)
+        {{-- open saved view: still open with the filters applied here, marked "unsaved changes" --}}
+        <input type="hidden" name="view" value="{{ $active_view->id }}">
+        <input type="hidden" name="vm" value="1">
+    @endif
     @if ($filters['rview'] !== '')
         {{-- Refresh view chosen on the dashboard: kept while filtering, removable --}}
         <input type="hidden" name="rv" value="{{ $filters['rview'] }}">

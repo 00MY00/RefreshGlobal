@@ -214,6 +214,12 @@ return [
         'effect' => 'La voce «Anteprime al passaggio del mouse» non è proposta nel menu Layout di «Tutte le caselle». Il resto funziona.',
         'action' => 'Aggiornare RefreshGlobal a una versione prevista per questa versione di Refresh, poi eseguire php artisan refreshglobal:check.',
     ],
+    'core_views' => [
+        'check'  => 'Codice di FreeScout presente: :item',
+        'label'  => 'Manca un metodo di FreeScout usato dalle viste condivise: :item.',
+        'effect' => 'Le viste salvate non possono essere condivise con utenti scelti; le viste private e per tutti funzionano. Il resto funziona.',
+        'action' => 'Aggiornare RefreshGlobal a una versione prevista per questa versione di FreeScout, poi eseguire php artisan refreshglobal:check.',
+    ],
     'marker_crumb' => [
         'check'  => 'Elemento di Refresh presente: :item (:file)',
         'label'  => 'Elemento di Refresh non più trovato: :item (:file).',

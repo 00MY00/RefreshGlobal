@@ -308,3 +308,54 @@
     .rg-widget-cols > a { width: auto; text-align: left; }
     .rg-widget-cols > a::before { content: attr(data-label) " : "; color: var(--fd-text-2, #64748b); font-weight: 400; }
 }
+
+/* Saved views (1.15.0): open view banner, save / share forms, panel marks, management page */
+.rg-view-banner { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; padding: 6px 12px; margin: 0 0 6px; border: 1px solid #e2e8f0; border-radius: 6px; background: #f8fafc; font-size: 13px; }
+.rg-view-banner.rg-view-modified { border-color: #f59e0b; background: #fffbeb; }
+.rg-vb-name { font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
+.rg-vb-key { font-weight: 400; color: var(--fd-text-2, #475569); margin-right: 4px; }
+.rg-vb-star { color: #d97706; margin-left: 2px; }
+.rg-vb-vis { color: var(--fd-text-2, #64748b); }
+.rg-vb-unsaved { color: #b45309; }
+.rg-vb-actions { display: inline-flex; flex-wrap: wrap; gap: 6px; margin-left: auto; }
+.rg-inline { display: inline-block; margin: 0; }
+.rg-view-issue { margin: 0 12px 4px; }
+.rg-vis { border: 0; padding: 0; margin: 6px 0; min-width: 0; }
+.rg-vis legend { border: 0; font-size: inherit; margin: 0 0 2px; width: auto; }
+.rg-share-users { margin: 4px 0 6px 18px; }
+.rg-user-list { max-height: 180px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 4px; padding: 4px 8px; background: #fff; }
+.rg-user-item { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 8px; }
+.rg-user-item .rg-check { margin: 2px 0; }
+.rg-can-edit { color: var(--fd-text-2, #64748b); font-size: 12px; }
+.rg-view-buttons { display: flex; flex-wrap: wrap; gap: 4px; margin: 4px 0 8px; }
+.rg-view-about { margin: 2px 0 4px; }
+.rg-manage-views { display: inline-block; margin: 6px 0; font-size: 13px; }
+.rg-vis-icon { margin-left: 6px; font-size: 11px; color: var(--fd-text-2, #94a3b8); }
+.rg-pin-mark { margin-left: 6px; font-size: 11px; color: #64748b; }
+.rg-badge { display: inline-block; margin-left: 6px; padding: 0 6px; border-radius: 9px; background: #e0f2fe; color: #075985; font-size: 11px; }
+.rg-views-page { max-width: 1200px; padding-top: 16px; padding-bottom: 32px; }
+.rg-views-h { font-size: 16px; margin: 22px 0 8px; }
+.rg-views-table td { vertical-align: top !important; }
+.rg-views-actions { white-space: normal; }
+.rg-views-actions > .btn, .rg-views-actions > form, .rg-views-actions > details { margin: 0 4px 4px 0; vertical-align: top; }
+.rg-view-edit { display: inline-block; }
+.rg-view-edit[open] { display: block; max-width: 420px; }
+.rg-view-edit > summary { list-style: none; }
+.rg-view-edit > summary::-webkit-details-marker { display: none; }
+@media (max-width: 767px) {
+    .rg-view-banner { margin: 0 8px 6px; }
+    .rg-vb-actions { margin-left: 0; width: 100%; }
+    .rg-vb-actions .btn { padding: 6px 10px; font-size: 14px; }
+    .rg-user-list { max-height: 240px; }
+    .rg-user-item .rg-check { padding: 6px 0; }
+    /* management page: one card per view */
+    .rg-views-table thead { display: none; }
+    .rg-views-table, .rg-views-table tbody, .rg-views-table tr, .rg-views-table td { display: block; width: 100%; }
+    .rg-views-table tr { border: 1px solid #e2e8f0; border-radius: 6px; margin: 0 0 10px; padding: 6px 10px; }
+    .rg-views-table td { border: 0 !important; padding: 3px 0 !important; }
+    .rg-views-table td[data-label]::before { content: attr(data-label) " : "; color: var(--fd-text-2, #64748b); }
+    .rg-views-table td.rg-view-cell-name::before { content: none; }
+    .rg-views-table td.rg-view-cell-name { font-size: 15px; font-weight: 600; }
+    .rg-views-actions .btn { padding: 6px 10px; font-size: 14px; }
+    .rg-view-edit[open] { max-width: none; }
+}

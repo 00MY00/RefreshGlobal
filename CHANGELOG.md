@@ -2,6 +2,46 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.15.0] — 2026-10-19
+
+### Ajouté
+- **Vues enregistrées partagées.** Une vue (filtres + tri de « Toutes les boîtes ») peut être :
+  - **privée** (son auteur seulement), **partagée avec des utilisateurs choisis**, ou **pour tous** (tous ceux qui ont
+    accès à « Toutes les boîtes ») ; tous les agents peuvent publier pour tous, ou seulement les administrateurs
+    (réglage « Seuls les administrateurs publient des vues pour tous », désactivé par défaut) ;
+  - dans le panneau des vues : sections **Vues épinglées**, **Mes vues**, **Partagées avec moi**, **Pour tous** ;
+  - **ouverte puis modifiée** : la vue reste ouverte, marquée « * Modifications non enregistrées », avec
+    **Mettre à jour la vue** (seulement avec le droit de modifier, confirmation pour une vue partagée),
+    **Enregistrer comme nouvelle** et **Rétablir** ; une vue partagée n'est jamais modifiée sans cette action ;
+  - **Copier dans mes vues** (copie privée « Nom (copie) »), sauf si l'auteur l'interdit ;
+  - **épingler** et **ma vue par défaut** : préférences personnelles, la vue elle-même ne change pas ;
+  - un administrateur peut la rendre **vue par défaut** pour tous (vue pour tous) ou pour les utilisateurs avec qui
+    elle est partagée ; le choix personnel de chacun passe avant ; il peut aussi laisser des utilisateurs choisis la
+    **modifier** (filtres et nom, pas le partage) ;
+  - **ordre** des vues (↑ ↓) : chacun pour les siennes, les administrateurs pour les vues partagées ;
+  - **page « Vues enregistrées »** (`/refresh-global/views`, lien « Gérer les vues ») : nom, propriétaire, visibilité,
+    partagée avec, dates, actions (ouvrir, modifier / partager, copier, épingler, par défaut, ordre, exporter,
+    supprimer) ; **import / export JSON** (boîtes par adresse e-mail, aucun identifiant d'utilisateur exporté) ;
+    journal des changements des vues partagées pour les administrateurs ; tableau sur ordinateur, cartes sur téléphone.
+- **« Moi » dynamique** : « Assigné à : moi » désigne toujours la personne qui regarde la liste, jamais l'auteur de
+  la vue (une vue « Mes tickets ouverts » pour tous montre à chacun les siens).
+- **Une vue ne donne jamais accès à une boîte** : chaque personne ne voit que les tickets de ses propres boîtes (et
+  seulement les siens avec le droit « ne voir que les tickets assignés »), aussi dans l'export et l'actualisation
+  automatique ; une vue qui désigne une boîte supprimée, une boîte qui n'est pas la vôtre, un agent supprimé, un
+  dossier automatique ou un tag d'e-mail qui n'existe plus l'indique au-dessus de la liste et l'ignore ; une
+  définition illisible affiche la liste complète avec un message.
+- Format des vues versionné (`schema_version` 2 : `filters`, `sorting`, `display`) ; les vues des versions
+  précédentes sont lues et converties automatiquement ; tables `refreshglobal_view_users` (partage),
+  `refreshglobal_view_prefs` (épinglée, vue par défaut de chacun, reprise des vues par défaut existantes),
+  `refreshglobal_view_audit` (création, modification, partage, suppression d'une vue partagée). Liste des vues
+  visibles gardée 1 minute par utilisateur, vidée à chaque changement ; 3 requêtes quel que soit le nombre de vues.
+- Contrôles RG-DB-12…14 (tables), RG-DB-05 (nouvelles colonnes), RG-CORE-20 (méthodes `App\User` utilisées).
+
+### Non inclus
+- **Partage avec une équipe** : FreeScout n'a pas d'équipe ; les équipes du module payant « Teams » sont des
+  utilisateurs de type « robot » dont RefreshGlobal ne peut pas lire les membres sans le code de ce module. Le modèle
+  de données le prévoit (`SavedView::SHARED_TEAM`) ; à ajouter si le code du module Teams est fourni.
+
 ## [1.14.0] — 2026-10-19
 
 ### Compatibilité

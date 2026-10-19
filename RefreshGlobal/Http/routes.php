@@ -25,10 +25,19 @@ Route::group([
     // permission checked by the controller (admins, or users allowed to delete conversations)
     Route::post('/trash/empty', $users + ['uses' => 'TrashController@empty'])->name('refreshglobal.trash.empty');
 
+    // saved views: who may see / edit / share each one is checked by Services/SavedViews.php (404 / 403)
+    Route::get('/views', $users + ['uses' => 'SavedViewsController@index'])->name('refreshglobal.views');
     Route::post('/views', $users + ['uses' => 'SavedViewsController@store'])->name('refreshglobal.views.store');
-    Route::post('/views/{id}/rename', $users + ['uses' => 'SavedViewsController@rename'])->name('refreshglobal.views.rename');
-    Route::post('/views/{id}/default', $users + ['uses' => 'SavedViewsController@setDefault'])->name('refreshglobal.views.default');
-    Route::delete('/views/{id}', $users + ['uses' => 'SavedViewsController@destroy'])->name('refreshglobal.views.destroy');
+    Route::post('/views/import', $users + ['uses' => 'SavedViewsController@import'])->name('refreshglobal.views.import');
+    Route::post('/views/{id}/update', $users + ['uses' => 'SavedViewsController@update'])->where('id', '[0-9]+')->name('refreshglobal.views.update');
+    Route::post('/views/{id}/rename', $users + ['uses' => 'SavedViewsController@rename'])->where('id', '[0-9]+')->name('refreshglobal.views.rename');
+    Route::post('/views/{id}/share', $users + ['uses' => 'SavedViewsController@share'])->where('id', '[0-9]+')->name('refreshglobal.views.share');
+    Route::post('/views/{id}/default', $users + ['uses' => 'SavedViewsController@setDefault'])->where('id', '[0-9]+')->name('refreshglobal.views.default');
+    Route::post('/views/{id}/pin', $users + ['uses' => 'SavedViewsController@pin'])->where('id', '[0-9]+')->name('refreshglobal.views.pin');
+    Route::post('/views/{id}/duplicate', $users + ['uses' => 'SavedViewsController@duplicate'])->where('id', '[0-9]+')->name('refreshglobal.views.duplicate');
+    Route::post('/views/{id}/move', $users + ['uses' => 'SavedViewsController@move'])->where('id', '[0-9]+')->name('refreshglobal.views.move');
+    Route::get('/views/{id}/export', $users + ['uses' => 'SavedViewsController@export'])->where('id', '[0-9]+')->name('refreshglobal.views.export');
+    Route::delete('/views/{id}', $users + ['uses' => 'SavedViewsController@destroy'])->where('id', '[0-9]+')->name('refreshglobal.views.destroy');
 
     Route::get('/diagnostic', $admins + ['uses' => 'DiagnosticController@index'])->name('refreshglobal.diagnostic');
     Route::post('/mail-tags/recalc', $admins + ['uses' => 'MailTagsController@recalc'])->name('refreshglobal.mail_tags.recalc');

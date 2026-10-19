@@ -31,7 +31,7 @@ otherwise it uses FreeScout's standard look.
   module (recommended: SHA-256, backup, health check, automatic rollback).
 - **Counters** per mailbox and per status (grouped queries).
 - **CSV export** of the filtered list (UTF-8 with BOM for Excel, capped number of rows).
-- **Personal saved views**: save filters, rename, set a default view, delete.
+- **Saved views, private, shared or for everyone** (see “Saved and shared views” below).
 - Filters live in the URL: a filtered list can be shared and the Back button works.
 - **Access rights enforced**: users only see, count and export tickets of their own mailboxes (and only their own
   tickets with the "see only assigned conversations" permission).
@@ -53,6 +53,28 @@ otherwise it uses FreeScout's standard look.
 - **Language**: the module follows FreeScout's language, like Refresh (which has no language choice of its own): the
   user's profile language, otherwise the default one. A **language switch** at the bottom of the views panel (and
   of the phone drawer) changes that profile language: FreeScout, Refresh and the module switch together.
+
+### Saved and shared views
+
+A **view** is a saved set of filters (mailboxes, status, assigned to, search, automatic folder, e-mail tag, Refresh
+view) and a sort of “All mailboxes”. It **never changes a ticket** and **never gives access to a mailbox**.
+
+- **Save**: filter the list, then “Save these filters as a view”: name and **Visible to**: *Only me (private)*,
+  *Users I choose* (searchable list of the users of your mailboxes; an administrator sees every user and can tick
+  “may edit”) or *Everyone*.
+- **Open**: sections *Pinned views*, *My views*, *Shared with me*, *For everyone* of the views panel. Changing a
+  filter keeps the view open with “* Unsaved changes”: *Update view* (if you may edit it), *Save as new* or *Reset*.
+  A shared view is **never** changed without that click.
+- **“Me”** always means **the person looking at the list**. Example: “My pending tickets” — *Status: Active +
+  Pending*, *Assigned to: Me* — published for everyone shows each user their own tickets.
+- **Rights**: the author edits, shares and deletes their view; administrators manage every shared / global view,
+  can make it the **default view** for everyone or for the chosen users, and let chosen users edit it; others can
+  **copy it into their views** (when allowed), pin it or make it their own default without changing it. Setting
+  *Only administrators publish views for everyone* (Manage › Settings › RefreshGlobal).
+- **Mailboxes**: a “Support + Billing” view opened by someone who only has Support shows Support only (with a note);
+  a mailbox, agent, folder or tag that no longer exists is ignored with a note.
+- **Manage**: page *Saved views* (`/refresh-global/views`): order (↑ ↓), JSON export / import (mailboxes travel by
+  e-mail address, no user id), audit of the shared views (admins).
 
 ## 3. What it does not do
 

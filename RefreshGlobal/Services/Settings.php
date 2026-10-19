@@ -225,6 +225,14 @@ class Settings
         }
     }
 
+    /** Saved views: only administrators may publish a view for everyone (off: every user may, Services/SavedViews.php). */
+    const VIEWS_GLOBAL_ADMINS = 'refreshglobal.views_global_admins';
+
+    public static function viewsGlobalAdminsOnly()
+    {
+        return self::flag(self::VIEWS_GLOBAL_ADMINS, (bool) config('refreshglobal.views_global_admins_default', false));
+    }
+
     /** Options shown in Manage › Settings › RefreshGlobal (saved by FreeScout itself) => current value. */
     public static function sectionValues()
     {
@@ -243,6 +251,7 @@ class Settings
             self::SKIP_SPAM               => self::skipSpam(),
             self::SHOW_MAIL_TAGS          => self::showMailTags(),
             self::MAIL_TAGS_FOLDERS       => self::mailTagsFolders(),
+            self::VIEWS_GLOBAL_ADMINS     => self::viewsGlobalAdminsOnly(),
         ];
     }
 

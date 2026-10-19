@@ -1,4 +1,4 @@
-# Résultats des tests — RefreshGlobal 1.14.0
+# Résultats des tests — RefreshGlobal 1.15.0
 
 Date : 2026-10-09. Environnements jetables Docker : FreeScout 1.8.245 (dépôt officiel), PHP 8.2.34, Apache,
 MariaDB 10.11 ; Refresh 1.4.3 (dépôt officiel). Données de test uniquement (adresses `.test`).
@@ -256,6 +256,27 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
   ses aperçus) : aperçu du premier message sur « Toutes les boîtes » comme sur la liste de Refresh ; l’entrée
   « Aperçus au survol » du menu Affichage de « Toutes les boîtes » les coupe (cookie `rf_hover=off`) ; aucune erreur
   JavaScript.
+
+## 32. Vues enregistrées partagées (1.15.0)
+
+- Instance FreeScout 1.8.245 + Refresh 1.6.0, `refreshglobal:check` : état **OK**, RG-DB-05 (nouvelles colonnes),
+  RG-DB-12…14 et RG-CORE-20 OK.
+- PHPUnit : **139 tests, 1926 assertions, 0 échec** (1 ignoré : SyncNow absent), dont `SharedViewsTest` (15 tests :
+  vue privée, partagée avec des utilisateurs choisis, pour tous et réglage « admins seulement », droits de
+  modification, copie, suppression, « moi » = la personne qui regarde, boîtes non permises jamais montrées — liste,
+  export, URL forcée, droit « tickets assignés » —, boîte / agent / utilisateur supprimés, définition illisible, ancien
+  format converti, cache vidé par les changements, même nombre de requêtes pour 1 et 9 vues, défauts, épinglage,
+  ordre, export / import, page de gestion et rendu téléphone).
+- Mise à niveau (`upgrade_views.php` sur l’instance) : table des vues remise au format 1.14 avec une vue par défaut,
+  migration 1.15 : vue conservée (privée, format 1), vue par défaut reprise dans les préférences et ouverte par
+  défaut ; migration relancée sans effet.
+- Navigateur (`views115.js`, Chromium headless) : l’admin enregistre « Team open tickets » partagée avec Sam (liste
+  des utilisateurs affichée pour « Utilisateurs choisis », « peut modifier » à côté de l’utilisateur coché) ; Sam la
+  trouve dans « Partagées avec moi », change le statut : « Team open tickets * », bandeau « Modifications non
+  enregistrées » avec « Enregistrer comme nouvelle » et « Rétablir », **sans** « Mettre à jour » ; « Enregistrer comme
+  nouvelle » ouvre le formulaire, nom « Team open tickets (copy) » ; page « Vues enregistrées » (tableau, journal
+  admin) ; à 390 px : cartes, pas de défilement horizontal (liste et page de gestion) ; aucune erreur JavaScript.
+- Non-régression avec Refresh 1.6.0 : `layout.js` (5 largeurs), `closenext.js`, `select.js`, `dash114.js` OK.
 
 ## 28. Adresse d'envoi au choix (1.10.0)
 

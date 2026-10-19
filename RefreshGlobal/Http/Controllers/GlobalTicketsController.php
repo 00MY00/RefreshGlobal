@@ -8,6 +8,7 @@ use Modules\RefreshGlobal\Providers\RefreshGlobalServiceProvider;
 use Modules\RefreshGlobal\Services\Compatibility\Messages;
 use Modules\RefreshGlobal\Services\GlobalTicketQuery;
 use Modules\RefreshGlobal\Services\MailboxAccess;
+use Modules\RefreshGlobal\Services\SavedViews;
 
 /**
  * "All mailboxes" page (GET /refresh-global/tickets): tickets of every mailbox the user can view, in one list.
@@ -17,7 +18,7 @@ use Modules\RefreshGlobal\Services\MailboxAccess;
 class GlobalTicketsController extends Controller
 {
     /** Filter parameters; a request without any of them can load the user's default view. */
-    const FILTER_PARAMS = ['mb', 'status', 'assignee', 'q', 'rv', 'wf', 'mt', 'sort', 'order', 'view'];
+    const FILTER_PARAMS = ['mb', 'status', 'assignee', 'q', 'rv', 'wf', 'mt', 'sort', 'order', 'view', 'vm'];
 
     public function home()
     {
@@ -50,33 +51,26 @@ class GlobalTicketsController extends Controller
                 'order'    => 'nullable|string|in:asc,desc',
                 'page'     => 'nullable|integer|min:1',
                 'view'     => 'nullable|integer|min:1',
+                'vm'       => 'nullable|in:1',
             ]);
             $ignored_params = $validator->fails();
 
-            // Saved view: ?view=<id> (only the user's own views), else the default view on a bare address
-            $saved_views = $this->savedViews($user);
-            $active_view = null;
-            $input = $request->only(self::FILTER_PARAMS);
-            if ($request->filled('view')) {
-                $active_view = $saved_views ? SavedView::findForUser($request->input('view'), $user) : null;
-            } elseif (!$request->has('reset') && !array_filter($input, function ($v) {
-                return $v !== null && $v !== '' && $v !== [];
-            })) {
-                $active_view = $saved_views ? $saved_views->first(function ($view) {
-                    return $view->is_default;
-                }) : null;
-            }
-            if ($active_view) {
-                $input = (array) $active_view->filters;
-            }
-
-            $filters = GlobalTicketQuery::normalize($input, $access);
+            // Saved view (Services/SavedViews.php): ?view=<id> (a view the user may open), with its filters, or with
+            // filters changed after opening it (?vm=1); else the user's default view on a bare address
+            $resolved = self::resolveFilters($request, $user, $access, true);
+            $filters = $resolved['filters'];
+            $active_view = $resolved['view'];
             $query = new GlobalTicketQuery($access, $filters);
 
             $params = GlobalTicketQuery::toQueryParams($filters);
             if ($active_view) {
                 $params['view'] = $active_view->id;
+                if ($resolved['changed']) {
+                    $params['vm'] = 1;
+                }
             }
+            $saved_views_ok = SavedViews::available();
+            $visible_views = $saved_views_ok ? SavedViews::visibleFor($user) : [];
             $conversations = $query->paginate(max(1, (int) config('refreshglobal.per_page', 30)))->appends($params);
 
             // where to come back after deleting a ticket opened from this list (Http\Middleware\AfterDelete)
@@ -130,10 +124,12 @@ class GlobalTicketsController extends Controller
                 'counts_by_mailbox' => $counts_by_mailbox,
                 'counts_by_status'  => $counts_by_status,
                 'total_all'         => array_sum($counts_by_mailbox),
-                'saved_views'       => $saved_views,
-                'saved_views_ok'    => $saved_views !== null,
+                'saved_views'       => $visible_views,
+                'saved_views_ok'    => $saved_views_ok,
                 'active_view'       => $active_view,
-                'dropped_mailboxes' => $active_view ? (int) $filters['dropped_mailboxes'] : 0,
+                'rg_view'           => self::viewState($active_view, $user, $visible_views, $resolved['modified'], $filters),
+                'rg_shareable'      => $saved_views_ok ? SavedViews::shareableUsers($user) : collect([]),
+                'dropped_mailboxes' => $active_view && !$resolved['changed'] ? (int) $filters['dropped_mailboxes'] : 0,
                 'ignored_params'    => $ignored_params,
                 'export_max'        => (int) config('refreshglobal.export_max_rows', 5000),
             ])->render());
@@ -150,12 +146,7 @@ class GlobalTicketsController extends Controller
         try {
             $user = auth()->user();
             $access = new MailboxAccess($user);
-            $input = $request->only(self::FILTER_PARAMS);
-            if ($request->filled('view')) {
-                $view = $this->savedViews($user) ? SavedView::findForUser($request->input('view'), $user) : null;
-                $input = $view ? (array) $view->filters : [];
-            }
-            $fp = (new GlobalTicketQuery($access, GlobalTicketQuery::normalize($input, $access)))->fingerprint();
+            $fp = (new GlobalTicketQuery($access, self::resolveFilters($request, $user, $access, false)['filters']))->fingerprint();
 
             return response()->json(['fp' => $fp])->header('Cache-Control', 'no-store');
         } catch (\Throwable $e) {
@@ -246,20 +237,87 @@ class GlobalTicketsController extends Controller
         return route('refreshglobal.state', $params ?: ['reset' => 1]);
     }
 
-    /** The user's saved views, or null when the table is missing (RG-DB-05: saved views disabled). */
-    protected function savedViews($user)
+    /**
+     * Filters of the list asked for (page, automatic refresh, export): a saved view the user may open
+     * (SavedViews::find(), never trusted from the URL), as saved (?view=<id>) or with the filters of the URL when they
+     * were changed after opening it (?view=<id>&vm=1); otherwise the URL's filters; on a bare address (and $use_default)
+     * the user's default view. The viewer's rights always apply (GlobalTicketQuery::normalize()).
+     *
+     * @return array ['filters', 'view' (SavedView|null), 'changed' (URL filters used with a view), 'modified' (they differ)]
+     */
+    public static function resolveFilters(Request $request, $user, MailboxAccess $access, $use_default)
     {
+        $out = ['filters' => null, 'view' => null, 'changed' => false, 'modified' => false];
+        $input = $request->only(self::FILTER_PARAMS);
         try {
-            if (!\Schema::hasTable('refreshglobal_saved_views')) {
-                return null;
+            if ($request->filled('view')) {
+                $out['view'] = SavedViews::find($request->input('view'), $user);
+            } elseif ($use_default && !$request->has('reset') && !array_filter($input, function ($v) {
+                return $v !== null && $v !== '' && $v !== [];
+            })) {
+                $default = SavedViews::defaultFor($user);
+                $out['view'] = $default ? SavedViews::find($default, $user) : null;
             }
-
-            return SavedView::forUser($user)->orderBy('name')->get();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             \Log::warning('[RefreshGlobal] [RG-DB-05] '.$e->getMessage());
+            $out['view'] = null;
+        }
+        if ($out['view']) {
+            $of_view = SavedViews::filtersFor($out['view'], $access);
+            if ((string) $request->input('vm') === '1') {
+                $out['changed'] = true;
+                $out['filters'] = GlobalTicketQuery::normalize($input, $access);
+                $out['modified'] = SavedViews::differs($out['filters'], $of_view);
+            } else {
+                $out['filters'] = $of_view;
+            }
+        } else {
+            $out['filters'] = GlobalTicketQuery::normalize($input, $access);
+        }
 
+        return $out;
+    }
+
+    /**
+     * What the page shows about the open view: its row (section, owner, pinned, my default), the user's rights on it,
+     * "changed since opened", and what the viewer gets without (SavedViews::issues()).
+     */
+    protected static function viewState($view, $user, array $visible, $modified, array $filters)
+    {
+        if (!$view) {
             return null;
         }
+        $row = null;
+        foreach ($visible as $v) {
+            if ($v['id'] === (int) $view->id) {
+                $row = $v;
+            }
+        }
+        try {
+            $issues = $modified ? [] : SavedViews::issues($view, $filters);
+        } catch (\Throwable $e) {
+            $issues = [];
+        }
+        $owner = $row ? $row['owner_name'] : (SavedViews::userNames([$view->user_id])[(int) $view->user_id]['name'] ?? '');
+
+        return [
+            'row'           => $row,
+            'visibility'    => $view->visibilityValue(),
+            'own'           => (int) $view->user_id === (int) $user->id,
+            'owner_name'    => $owner,
+            'modified'      => $modified,
+            'can_edit'      => SavedViews::canEdit($view, $user),
+            'can_manage'    => SavedViews::canManage($view, $user),
+            'can_duplicate' => SavedViews::canDuplicate($view, $user),
+            'can_global'    => SavedViews::canPublishGlobal($user),
+            'pinned'        => $row ? $row['pinned'] : false,
+            'my_default'    => $row ? $row['my_default'] : false,
+            'allow_duplicate' => (bool) $view->allow_duplicate,
+            'default_scope' => (string) $view->default_scope,
+            'shared_with'   => $view->visibilityValue() === SavedView::SHARED_USERS ? SavedViews::sharedWith($view) : [],
+            'issues'        => $issues,
+            'reset_url'     => route('refreshglobal.tickets', ['view' => $view->id]),
+        ];
     }
 
     public static function sortLabels()

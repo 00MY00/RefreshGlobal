@@ -128,6 +128,8 @@ return [
         // Refresh 1.6.0's hover previews: their on / off entry in the Layout menu of "All mailboxes" (not applicable
         // with an older Refresh: refresh_min)
         'RG-CORE-19' => ['class' => 'Modules\Refresh\Services\Settings', 'methods' => ['hoverCards'], 'refresh' => true, 'refresh_min' => '1.6.0', 'family' => 'marker_hover', 'severity' => 'warning', 'source' => 'Modules/Refresh/Services/Settings.php:20'],
+        // saved views shared with users (Services/SavedViews.php): who can be chosen, names, deleted users left out
+        'RG-CORE-20' => ['class' => 'App\User', 'methods' => ['nonDeleted', 'isDeleted', 'whichUsersCanView', 'getFullName'], 'constants' => ['App\User::TYPE_ROBOT', 'App\User::STATUS_DELETED'], 'family' => 'core_views', 'severity' => 'degraded', 'source' => 'app/User.php:57,64,1164,1181,1189,233'],
         // optional official Tags module: the origin tags are copied there (Services/MailTags.php mirror())
         'RG-CORE-18' => ['class' => 'Modules\Tags\Entities\Tag', 'methods' => ['attachByName'], 'module' => 'tags', 'family' => 'mailtags', 'severity' => 'warning', 'source' => 'Modules/Tags (used as by Modules/Refresh/Http/Controllers/NewTicketController.php:192)'],
     ],
@@ -164,6 +166,10 @@ return [
         'RG-DB-09' => ['table' => 'workflowpacks_ticket_folders', 'columns' => ['conversation_id', 'mailbox_id', 'folder', 'label', 'path', 'state', 'filed_at', 'updated_at'], 'module' => 'workflowpacks', 'family' => 'db_wp', 'severity' => 'warning', 'source' => 'Modules/WorkflowPacks/Database/Migrations/2026_10_21_000000_create_workflowpacks_ticket_folders_table.php'],
         'RG-DB-10' => ['table' => 'workflowpacks_retention', 'columns' => ['folder', 'number', 'metric', 'mode'], 'module' => 'workflowpacks', 'family' => 'db_wp', 'severity' => 'warning', 'source' => 'Modules/WorkflowPacks/Database/Migrations/2026_10_17_000000_create_workflowpacks_retention_table.php'],
         'RG-DB-11' => ['table' => 'refreshglobal_mail_tags', 'columns' => ['conversation_id', 'thread_id', 'mailbox_id', 'tag', 'folder'], 'family' => 'mailtags', 'severity' => 'warning', 'source' => 'Modules/RefreshGlobal/Database/Migrations/2026_10_14_000000_create_refreshglobal_mail_tags_table.php'],
-        'RG-DB-05' => ['table' => 'refreshglobal_saved_views', 'columns' => ['id', 'user_id', 'name', 'filters', 'is_default'], 'severity' => 'degraded', 'source' => 'Modules/RefreshGlobal/Database/Migrations'],
+        'RG-DB-05' => ['table' => 'refreshglobal_saved_views', 'columns' => ['id', 'user_id', 'name', 'filters', 'is_default', 'visibility', 'schema_version', 'sort_order', 'allow_duplicate', 'default_scope', 'updated_by'], 'severity' => 'degraded', 'source' => 'Modules/RefreshGlobal/Database/Migrations (2026_10_09, 2026_10_19)'],
+        // saved views shared with users / everyone (Services/SavedViews.php): sharing, per-user preferences, audit
+        'RG-DB-12' => ['table' => 'refreshglobal_view_users', 'columns' => ['view_id', 'user_id', 'can_edit'], 'family' => 'db_own', 'severity' => 'degraded', 'source' => 'Modules/RefreshGlobal/Database/Migrations/2026_10_19_000000_extend_refreshglobal_saved_views.php'],
+        'RG-DB-13' => ['table' => 'refreshglobal_view_prefs', 'columns' => ['user_id', 'view_id', 'pinned', 'is_default'], 'family' => 'db_own', 'severity' => 'degraded', 'source' => 'Modules/RefreshGlobal/Database/Migrations/2026_10_19_000000_extend_refreshglobal_saved_views.php'],
+        'RG-DB-14' => ['table' => 'refreshglobal_view_audit', 'columns' => ['view_id', 'view_name', 'user_id', 'action', 'details', 'created_at'], 'family' => 'db_own', 'severity' => 'degraded', 'source' => 'Modules/RefreshGlobal/Database/Migrations/2026_10_19_000000_extend_refreshglobal_saved_views.php'],
     ],
 ];

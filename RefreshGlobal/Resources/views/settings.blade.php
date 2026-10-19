@@ -43,6 +43,14 @@
         </div>
     </div>
 
+    {{-- Saved views shared with everyone (Services/SavedViews.php) --}}
+    <h3 class="subheader">{{ __('refreshglobal::messages.saved_views_title') }}</h3>
+    @include('refreshglobal::partials.switch', ['key' => $rg_s::VIEWS_GLOBAL_ADMINS, 'label' => __('refreshglobal::messages.views_global_admins'),
+        'help' => __('refreshglobal::messages.views_global_admins_help')])
+    <div class="form-group">
+        <div class="col-sm-6 col-sm-offset-2"><a href="{{ route('refreshglobal.views') }}">{{ __('refreshglobal::messages.manage_views') }}</a></div>
+    </div>
+
     <h3 class="subheader">{{ __('refreshglobal::messages.ticket_deletion') }}</h3>
     @include('refreshglobal::partials.switch', ['key' => $rg_s::DELETE_GOES_NEXT, 'label' => __('refreshglobal::messages.delete_goes_next'),
         'help' => __('refreshglobal::messages.delete_goes_next_help')])
