@@ -220,6 +220,18 @@ return [
         'effect' => 'Gespeicherte Ansichten können nicht mit ausgewählten Benutzern geteilt werden; private Ansichten und Ansichten für alle funktionieren. Der Rest funktioniert.',
         'action' => 'RefreshGlobal auf eine Version für diese FreeScout-Version aktualisieren, dann php artisan refreshglobal:check ausführen.',
     ],
+    'hook_images' => [
+        'check'  => 'FreeScout-Hook vorhanden: :item (:file)',
+        'label'  => 'Der FreeScout-Filter für den Inhalt der Nachrichten wurde nicht gefunden: :item (:file).',
+        'effect' => 'Externe Bilder der E-Mails werden wie bisher geladen (nicht gesperrt). Der Rest funktioniert.',
+        'action' => 'RefreshGlobal auf eine Version für diese FreeScout- / Refresh-Version aktualisieren, dann php artisan refreshglobal:check ausführen.',
+    ],
+    'hook_move' => [
+        'check'  => 'Von „In einen Ordner verschieben“ verwendetes Element vorhanden: :item',
+        'label'  => 'Ein von „In einen Ordner verschieben“ verwendetes Element wurde nicht gefunden: :item.',
+        'effect' => 'Die Schaltfläche „Verschieben“ kann dort fehlen (Ticket, Auswahlleiste); der Rest funktioniert.',
+        'action' => 'RefreshGlobal auf eine Version für diese FreeScout- / Refresh-Version aktualisieren, dann php artisan refreshglobal:check ausführen.',
+    ],
     'marker_crumb' => [
         'check'  => 'Refresh-Element vorhanden: :item (:file)',
         'label'  => 'Refresh-Element nicht mehr gefunden: :item (:file).',

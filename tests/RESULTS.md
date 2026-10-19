@@ -1,4 +1,4 @@
-# Résultats des tests — RefreshGlobal 1.15.1
+# Résultats des tests — RefreshGlobal 1.16.0
 
 Date : 2026-10-09. Environnements jetables Docker : FreeScout 1.8.245 (dépôt officiel), PHP 8.2.34, Apache,
 MariaDB 10.11 ; Refresh 1.4.3 (dépôt officiel). Données de test uniquement (adresses `.test`).
@@ -292,6 +292,24 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
   2 sur « Nouvel e-mail » (formulaires de FreeScout) ; après : aucun.
 - PHPUnit : **140 tests, 1924 assertions, 0 échec** (2 ignorés : SyncNow absent ; « sans Workflow Packs », celui-ci
   étant installé), dont `LayoutTest::testBundledStylesheetHasNoContainerQuery`.
+
+## 34. Déplacer vers un dossier du serveur, images distantes (1.16.0)
+
+- Bout en bout avec un vrai serveur IMAP (GreenMail) : boîte IMAP relevant INBOX et Junk, dossiers `INBOX.Factures`
+  et `INBOX.Clients` créés sur le serveur, 2 e-mails HTML avec un pixel de suivi et un logo distants, relevés par
+  `freescout:fetch-emails` (tags `inbox`).
+- Ticket (ordinateur, Refresh 1.6.0) : « 2 remote images not loaded (protects from tracking) », aucune requête vers le
+  site distant avant le clic ; « Show images » les charge (2 requêtes vues). Bouton « Move » juste après « Close » ;
+  fenêtre : INBOX, Clients, Factures (actuel), Junk ; choix d'un dossier → message « 1 e-mail moved to … » avec Undo.
+- Téléphone (412 px, tactile) : glisser la première carte vers la gauche (indicateur « Move », bleu au-delà de 90 px)
+  ouvre la fenêtre sans ouvrir le ticket ; choix d'un dossier → repère « → Factures » sur la carte, message avec
+  « UNDO » ; Undo → l'e-mail revient dans son dossier précédent.
+- Lecture indépendante du serveur après coup (`imap_list.php`) : e-mails dans les dossiers attendus ; tags du ticket
+  `folder:clients` / `inbox` conformes ; ticket inchangé (statut Actif).
+- Correction trouvée par ce test : le verrou « le relâchement du glissement n'ouvre pas le ticket » bloquait aussi le
+  clic dans la fenêtre ; il ne vise plus que les lignes de la liste.
+- PHPUnit : **150 tests, 2110 assertions, 0 échec** (2 ignorés : SyncNow absent ; « sans Workflow Packs »), dont
+  `MailMoveTest` (5) et `RemoteImagesTest` (5). `refreshglobal:check` : RG-HOOK-38…41, RG-CORE-21/22 OK.
 
 ## 28. Adresse d'envoi au choix (1.10.0)
 

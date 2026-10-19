@@ -25,6 +25,11 @@ Route::group([
     // permission checked by the controller (admins, or users allowed to delete conversations)
     Route::post('/trash/empty', $users + ['uses' => 'TrashController@empty'])->name('refreshglobal.trash.empty');
 
+    // e-mails of a ticket moved to a folder of the mail server (rights checked per ticket by the controller)
+    Route::get('/move/folders', $users + ['uses' => 'MailMoveController@folders'])->name('refreshglobal.move.folders');
+    Route::post('/move', $users + ['uses' => 'MailMoveController@move'])->name('refreshglobal.move');
+    Route::post('/move/undo', $users + ['uses' => 'MailMoveController@undo'])->name('refreshglobal.move.undo');
+
     // saved views: who may see / edit / share each one is checked by Services/SavedViews.php (404 / 403)
     Route::get('/views', $users + ['uses' => 'SavedViewsController@index'])->name('refreshglobal.views');
     Route::post('/views', $users + ['uses' => 'SavedViewsController@store'])->name('refreshglobal.views.store');

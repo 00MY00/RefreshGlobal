@@ -41,6 +41,8 @@ Chacun est contrôlé par `php artisan refreshglobal:check`.
 | Feuille de style sur toutes les pages (filtre `stylesheets`, `layouts/app.blade.php:33`) | hook de FreeScout | tags, fenêtre de détails et repère sans mise en forme hors des pages du module (RG-HOOK-35) |
 | Aperçus au survol de Refresh 1.6.0 (`Settings::hoverCards()`, `.rf-hover-toggle` de `hovercards.js`) | fonctions de Refresh ≥ 1.6.0 | entrée « Aperçus au survol » absente du menu Affichage de « Toutes les boîtes » ; contrôles ignorés avec un Refresh plus ancien (RG-CORE-19, RG-HOOK-37) |
 | Vues partagées : utilisateurs proposés (`User::whichUsersCanView()`, `User::nonDeleted()`, `TYPE_ROBOT`) | méthodes de FreeScout | partage avec des utilisateurs choisis indisponible ; vues privées et pour tous fonctionnent (RG-CORE-20) |
+| Images distantes (`thread.body_output`, `thread.blade.php:297`) | filtre de FreeScout | images distantes chargées comme avant (RG-HOOK-38) |
+| Déplacer vers un dossier (`bulk_actions.before_delete`, `.conv-actions`, `.rf-tb-close` de Refresh, `ConversationPolicy::update`, `Mailbox::getInImapFolders`, accès IMAP RG-CORE-14/15) | crochets et vues de FreeScout / Refresh | bouton absent à l'endroit concerné ; le reste fonctionne (RG-HOOK-39…41, RG-CORE-21/22) |
 | Correction des textes français de Refresh (`<meta name="refresh-l10n">`) | balise interne de Refresh | textes d'origine de Refresh (RG-HOOK-22, avertissement) |
 
 ## Mises à jour

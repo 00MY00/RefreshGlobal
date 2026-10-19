@@ -2,6 +2,29 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.16.0] — 2026-10-19
+
+### Ajouté
+- **Déplacer un ticket vers un dossier du serveur mail.** Les e-mails du ticket vont dans un dossier existant de leur
+  boîte sur le serveur (IMAP) ; le ticket lui-même ne change pas (statut, boîte, agent) et ses tags d'origine suivent
+  le dossier (`inbox` → `folder:factures`…). Un message propose **« Annuler »** pendant 8 secondes.
+  - bouton **« Déplacer »** sur la page d'un ticket (à côté de « Fermer » avec Refresh, dans la barre de FreeScout sans
+    Refresh), entrée « Déplacer vers un dossier » du menu « Actions du ticket » sur téléphone ;
+  - bouton dossier dans la **barre de sélection** des listes (plusieurs tickets à la fois) ;
+  - **glisser un ticket vers la gauche** sur écran tactile (téléphone, tablette) ouvre le choix du dossier (le
+    glissement vers la droite reste celui de Refresh : Supprimer / Prendre / Spam) ;
+  - fenêtre de choix : dossiers de la boîte (sous-dossiers d'INBOX sans « INBOX »), recherche, dossier actuel indiqué ;
+  - droits : ceux de FreeScout (« modifier le ticket ») ; seulement les boîtes en IMAP ; le dossier doit exister dans
+    la boîte ; l'annulation ne remet un e-mail que dans un dossier de sa boîte ;
+  - réglage « Déplacer vers un dossier » (activé par défaut) ; pour les autres modules, action
+    `refreshglobal.mail_moved` (`docs/api-tags.md`).
+- **Images distantes des e-mails** (pixels de suivi) : réglage par défaut **Toujours afficher**, **Restrictif**
+  (non chargées, bouton « Afficher les images » par message, par défaut) ou **Bloqué** (jamais chargées, adresses
+  retirées de la page) ; **règles par tag d'origine** « tag = mode » (préfixes avec `*`, ex. `folder:clients-* = show`),
+  la plus restrictive l'emporte (par défaut : `classified_spam = block`, `spam = block`). Les images jointes à l'e-mail
+  et celles de ce FreeScout s'affichent toujours. Filtre `thread.body_output` de FreeScout.
+- Contrôles RG-HOOK-38…41, RG-CORE-21, RG-CORE-22.
+
 ## [1.15.1] — 2026-10-19
 
 ### Corrigé

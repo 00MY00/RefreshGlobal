@@ -233,6 +233,38 @@ class Settings
         return self::flag(self::VIEWS_GLOBAL_ADMINS, (bool) config('refreshglobal.views_global_admins_default', false));
     }
 
+    /** Remote images of the e-mails (Services/RemoteImages.php): default mode show | ask | block, and "tag = mode" rules. */
+    const REMOTE_IMAGES = 'refreshglobal.remote_images';
+    const REMOTE_IMAGES_RULES = 'refreshglobal.remote_images_rules';
+
+    public static function remoteImages()
+    {
+        try {
+            $mode = (string) \App\Option::get(self::REMOTE_IMAGES, (string) config('refreshglobal.remote_images_default', 'ask'), true, false);
+        } catch (\Exception $e) {
+            $mode = 'ask';
+        }
+
+        return RemoteImages::normalizeMode($mode, 'ask');
+    }
+
+    public static function remoteImagesRules()
+    {
+        try {
+            return mb_substr((string) \App\Option::get(self::REMOTE_IMAGES_RULES, "classified_spam = block\nspam = block", true, false), 0, 5000);
+        } catch (\Exception $e) {
+            return '';
+        }
+    }
+
+    /** Moving the e-mails of a ticket to a folder of the mail server (Services/MailMove.php). */
+    const MAIL_MOVE = 'refreshglobal.mail_move';
+
+    public static function mailMove()
+    {
+        return self::flag(self::MAIL_MOVE, (bool) config('refreshglobal.mail_move_default', true));
+    }
+
     /** Options shown in Manage › Settings › RefreshGlobal (saved by FreeScout itself) => current value. */
     public static function sectionValues()
     {
@@ -252,6 +284,9 @@ class Settings
             self::SHOW_MAIL_TAGS          => self::showMailTags(),
             self::MAIL_TAGS_FOLDERS       => self::mailTagsFolders(),
             self::VIEWS_GLOBAL_ADMINS     => self::viewsGlobalAdminsOnly(),
+            self::REMOTE_IMAGES           => self::remoteImages(),
+            self::REMOTE_IMAGES_RULES     => self::remoteImagesRules(),
+            self::MAIL_MOVE               => self::mailMove(),
         ];
     }
 

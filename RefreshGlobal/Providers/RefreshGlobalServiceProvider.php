@@ -64,6 +64,8 @@ class RefreshGlobalServiceProvider extends ServiceProvider
         $this->registerSettings();
         $this->registerDashboard();
         $this->registerMailTags();
+        $this->registerRemoteImages();
+        $this->registerMailMove();
 
         // Ticket deleted for good: its e-mails are queued for the mail server's trash (Services/MailServerTrash.php).
         // FreeScout fires this action before removing the tickets (app/Conversation.php:2163).
@@ -164,6 +166,69 @@ class RefreshGlobalServiceProvider extends ServiceProvider
      * its dashboard block (class "rf-dash"), that addition is replaced by the same dashboard for all mailboxes.
      * Anything else (another module, a changed Refresh) is left untouched.
      */
+    /**
+     * Remote images of the e-mails on a ticket page (Services/RemoteImages.php): FreeScout's filter "thread.body_output"
+     * (resources/views/conversations/partials/thread.blade.php:297), mode of the settings / origin tags of the message.
+     */
+    protected function registerRemoteImages()
+    {
+        \Eventy::addFilter('thread.body_output', function ($body, $thread = null, $conversation = null) {
+            return \Modules\RefreshGlobal\Services\RemoteImages::filter($body, $thread, $conversation);
+        }, 20, 3);
+    }
+
+    /**
+     * "Move to a folder" of the mail server (Services/MailMove.php): addresses and texts for Public/js/shell.js
+     * (<meta name="refreshglobal-move">, "layout.head"), button in FreeScout's bulk actions of the lists
+     * ("bulk_actions.before_delete", resources/views/conversations/partials/bulk_actions.blade.php:34).
+     */
+    protected function registerMailMove()
+    {
+        \Eventy::addAction('layout.head', function () {
+            try {
+                if (!auth()->check() || !\Modules\RefreshGlobal\Services\Settings::mailMove()) {
+                    return;
+                }
+                $config = [
+                    'folders' => route('refreshglobal.move.folders'),
+                    'move'    => route('refreshglobal.move'),
+                    'undo'    => route('refreshglobal.move.undo'),
+                    // ticket page: only when its mailbox is an IMAP one and the user may change the ticket
+                    'ticket'  => false,
+                    't'       => [
+                        'title'      => __('refreshglobal::messages.move_title'),
+                        'title_many' => __('refreshglobal::messages.move_title_many'),
+                        'button'     => __('refreshglobal::messages.move_button'),
+                        'search'     => __('refreshglobal::messages.move_search'),
+                        'note'       => __('refreshglobal::messages.move_note'),
+                        'current'    => __('refreshglobal::messages.move_current'),
+                        'undo'       => __('refreshglobal::messages.move_undo'),
+                        'error'      => __('refreshglobal::messages.move_error'),
+                    ],
+                ];
+                if (\Route::is('conversations.view')) {
+                    $conversation = \App\Conversation::find((int) request()->route('id'));
+                    $config['ticket'] = $conversation && \Modules\RefreshGlobal\Services\MailMove::supported($conversation->mailbox)
+                        && \Modules\RefreshGlobal\Services\MailMove::allowed(auth()->user(), $conversation);
+                }
+                echo '<meta name="refreshglobal-move" content="'.e(json_encode($config, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)).'">'."\n";
+            } catch (\Throwable $e) {
+                // optional
+            }
+        });
+        \Eventy::addAction('bulk_actions.before_delete', function ($mailbox = null) {
+            try {
+                if (!\Modules\RefreshGlobal\Services\Settings::mailMove()) {
+                    return;
+                }
+                echo '<button type="button" class="btn btn-default rg-move-bulk" title="'.e(__('refreshglobal::messages.move_title')).'">'
+                    .'<span class="glyphicon glyphicon-folder-open"></span></button>';
+            } catch (\Throwable $e) {
+                // optional
+            }
+        }, 20, 1);
+    }
+
     protected function registerDashboard()
     {
         \Eventy::addFilter('dashboard.before', function ($html) {

@@ -49,6 +49,10 @@ otherwise it uses FreeScout's standard look.
   `sent`, `folder:<name>`, `classified_spam`…): shown, filterable, recalculable, readable by other modules and copied
   into the Tags module when installed ([docs/api-tags.md](docs/api-tags.md)).
 - **Details / raw text** of each message (headers, Message-ID, mail server folder, tags).
+- **Move to a folder of the mail server** (ticket, selection bar, swipe to the left on touch screens), with “Undo”;
+  the ticket itself does not change, its tags follow the folder.
+- **Remote images** (tracking pixels): always show, restricted (“Show images” button) or blocked, finely set per
+  origin tag of the e-mail.
 - Languages: English, French, German, Spanish, Italian, Dutch, Brazilian Portuguese.
 - **Language**: the module follows FreeScout's language, like Refresh (which has no language choice of its own): the
   user's profile language, otherwise the default one. A **language switch** at the bottom of the views panel (and

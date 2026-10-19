@@ -319,3 +319,38 @@
     body.rf-m-ticket .conv-subjwrap > .conv-tags, body.rf-m-ticket .conv-subjwrap > .rg-conv-tags { padding-left: 31.6px; }
     body .conv-subjwrap > .conv-tags .fs-tag { max-width: 100%; white-space: normal; height: auto; }
 }
+
+/* Remote images of the e-mails (Services/RemoteImages.php): bar above a message whose remote images were not loaded */
+.rg-remote-images { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 0 0 10px; padding: 6px 10px; border: 1px solid #e2e8f0; border-radius: 6px; background: #f8fafc; color: #475569; font-size: 13px; }
+.rg-remote-images.rg-ri-block { background: #fff7ed; border-color: #fed7aa; color: #9a3412; }
+.rg-ri-note { color: inherit; opacity: .8; }
+.rg-mono { font-family: SFMono-Regular, Menlo, Consolas, monospace; font-size: 12.5px; }
+
+/* "Move to a folder" (Public/js/shell.js): dialog, undo message, swipe hint on touch screens */
+.rg-move { position: fixed; inset: 0; z-index: 2000; display: flex; align-items: center; justify-content: center; background: rgba(15, 23, 42, .35); }
+.rg-move-panel { width: min(440px, 94vw); max-height: 80vh; display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: 10px; background: #fff; box-shadow: 0 18px 50px rgba(15, 23, 42, .25); }
+.rg-move-head { display: flex; align-items: center; justify-content: space-between; font-size: 15px; }
+.rg-move-x { border: 0; background: none; font-size: 22px; line-height: 1; color: #64748b; padding: 0 4px; }
+.rg-move-list { overflow-y: auto; min-height: 60px; display: flex; flex-direction: column; gap: 2px; }
+.rg-move-folder { display: flex; align-items: center; gap: 8px; width: 100%; padding: 9px 10px; border: 0; border-radius: 6px; background: none; text-align: left; color: #0f172a; font-size: 14px; }
+.rg-move-folder:hover:not(:disabled), .rg-move-folder:focus { background: #f1f5f9; outline: none; }
+.rg-move-folder .glyphicon { color: #64748b; }
+.rg-move-folder small { margin-left: auto; color: #64748b; }
+.rg-move-folder.rg-move-here { color: #64748b; }
+.rg-move-note { margin: 0; }
+.rg-move-btn .glyphicon { margin-right: 2px; }
+.rg-m-move .rg-m-move-icon { width: 22px; text-align: center; color: #475569; font-size: 16px; }
+.rg-moved { display: inline-block; margin: 2px 0 0 6px; padding: 0 6px; border-radius: 9px; background: #e0f2fe; color: #075985; font-size: 11.5px; }
+.rg-toast { position: fixed; left: 50%; bottom: 24px; z-index: 2100; transform: translateX(-50%); display: flex; align-items: center; gap: 12px; max-width: min(560px, 94vw); padding: 10px 12px 10px 16px; border-radius: 8px; background: #1e293b; color: #fff; font-size: 14px; box-shadow: 0 10px 30px rgba(15, 23, 42, .3); transition: opacity .25s; }
+.rg-toast-out { opacity: 0; }
+.rg-toast-undo { border: 0; background: none; color: #93c5fd; font-weight: 600; text-transform: uppercase; font-size: 13px; padding: 4px 6px; }
+.rg-toast-x { border: 0; background: none; color: #cbd5e1; font-size: 20px; line-height: 1; padding: 0 2px; }
+.rg-swipe-move { position: absolute; z-index: 50; display: flex; align-items: center; justify-content: center; gap: 6px; overflow: hidden; white-space: nowrap; background: #64748b; color: #fff; font-size: 14px; pointer-events: none; }
+.rg-swipe-move.rg-swipe-ready { background: #2563eb; }
+@media (max-width: 767px) {
+    .rg-move { align-items: flex-end; }
+    .rg-move-panel { width: 100vw; max-height: 85vh; border-radius: 14px 14px 0 0; padding: 16px 16px 24px; }
+    .rg-move-folder { padding: 13px 10px; font-size: 16px; }
+    .rg-move-search { font-size: 16px; height: 40px; }
+    .rg-toast { bottom: 84px; }
+}

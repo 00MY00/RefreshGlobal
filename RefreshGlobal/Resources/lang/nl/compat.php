@@ -220,6 +220,18 @@ return [
         'effect' => 'Opgeslagen weergaven kunnen niet met gekozen gebruikers worden gedeeld; privéweergaven en weergaven voor iedereen werken. De rest werkt.',
         'action' => 'RefreshGlobal bijwerken naar een versie voor deze FreeScout-versie en daarna php artisan refreshglobal:check uitvoeren.',
     ],
+    'hook_images' => [
+        'check'  => 'FreeScout-hook aanwezig: :item (:file)',
+        'label'  => 'Het FreeScout-filter op de inhoud van berichten is niet gevonden: :item (:file).',
+        'effect' => 'Externe afbeeldingen van e-mails worden geladen zoals voorheen (niet geblokkeerd). De rest werkt.',
+        'action' => 'RefreshGlobal bijwerken naar een versie voor deze FreeScout- / Refresh-versie en daarna php artisan refreshglobal:check uitvoeren.',
+    ],
+    'hook_move' => [
+        'check'  => 'Element gebruikt door „Naar een map verplaatsen” aanwezig: :item',
+        'label'  => 'Een element gebruikt door „Naar een map verplaatsen” is niet gevonden: :item.',
+        'effect' => 'De knop „Verplaatsen” kan daar ontbreken (ticket, selectiebalk); de rest werkt.',
+        'action' => 'RefreshGlobal bijwerken naar een versie voor deze FreeScout- / Refresh-versie en daarna php artisan refreshglobal:check uitvoeren.',
+    ],
     'marker_crumb' => [
         'check'  => 'Refresh-element aanwezig: :item (:file)',
         'label'  => 'Refresh-element niet meer gevonden: :item (:file).',

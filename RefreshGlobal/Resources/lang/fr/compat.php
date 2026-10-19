@@ -220,6 +220,18 @@ return [
         'effect' => 'Les vues enregistrées ne peuvent pas être partagées avec des utilisateurs choisis ; vues privées et vues pour tous fonctionnent. Le reste fonctionne.',
         'action' => 'Mettre à jour RefreshGlobal vers une version prévue pour cette version de FreeScout, puis exécuter php artisan refreshglobal:check.',
     ],
+    'hook_images' => [
+        'check'  => 'Point d’accroche de FreeScout présent : :item (:file)',
+        'label'  => 'Le filtre du contenu des messages de FreeScout est introuvable : :item (:file).',
+        'effect' => 'Les images distantes des e-mails sont chargées comme avant (pas de blocage). Le reste fonctionne.',
+        'action' => 'Mettre à jour RefreshGlobal vers une version prévue pour cette version de FreeScout / Refresh, puis exécuter php artisan refreshglobal:check.',
+    ],
+    'hook_move' => [
+        'check'  => 'Élément utilisé par « Déplacer vers un dossier » présent : :item',
+        'label'  => 'Un élément utilisé par « Déplacer vers un dossier » est introuvable : :item.',
+        'effect' => 'Le bouton « Déplacer » peut manquer à cet endroit (ticket, barre de sélection) ; le reste fonctionne.',
+        'action' => 'Mettre à jour RefreshGlobal vers une version prévue pour cette version de FreeScout / Refresh, puis exécuter php artisan refreshglobal:check.',
+    ],
     'marker_crumb' => [
         'check'  => 'Élément de Refresh présent : :item (:file)',
         'label'  => 'Élément de Refresh introuvable : :item (:file).',

@@ -43,6 +43,32 @@
         </div>
     </div>
 
+    {{-- Remote images of the e-mails (tracking pixels), Services/RemoteImages.php --}}
+    <h3 class="subheader">{{ __('refreshglobal::messages.remote_images_title') }}</h3>
+    <div class="form-group">
+        <label for="rg-remote-images" class="col-sm-2 control-label">{{ __('refreshglobal::messages.remote_images_default') }}</label>
+        <div class="col-sm-6">
+            <select id="rg-remote-images" name="settings[{{ $rg_s::REMOTE_IMAGES }}]" class="form-control">
+                @foreach (['show', 'ask', 'block'] as $rg_mode)
+                    <option value="{{ $rg_mode }}" @if (($settings[$rg_s::REMOTE_IMAGES] ?? 'ask') === $rg_mode) selected @endif>{{ __('refreshglobal::messages.remote_images_'.$rg_mode) }}</option>
+                @endforeach
+            </select>
+            <p class="form-help">{{ __('refreshglobal::messages.remote_images_help') }}</p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="rg-remote-images-rules" class="col-sm-2 control-label">{{ __('refreshglobal::messages.remote_images_rules') }}</label>
+        <div class="col-sm-6">
+            <textarea id="rg-remote-images-rules" name="settings[{{ $rg_s::REMOTE_IMAGES_RULES }}]" rows="5" maxlength="5000" class="form-control rg-mono" placeholder="classified_spam = block&#10;inbox = ask&#10;folder:clients-* = show">{{ $settings[$rg_s::REMOTE_IMAGES_RULES] ?? '' }}</textarea>
+            <p class="form-help">{{ __('refreshglobal::messages.remote_images_rules_help') }}</p>
+        </div>
+    </div>
+
+    {{-- E-mails of a ticket moved to a folder of the mail server, Services/MailMove.php --}}
+    <h3 class="subheader">{{ __('refreshglobal::messages.move_settings_title') }}</h3>
+    @include('refreshglobal::partials.switch', ['key' => $rg_s::MAIL_MOVE, 'label' => __('refreshglobal::messages.move_setting'),
+        'help' => __('refreshglobal::messages.move_setting_help')])
+
     {{-- Saved views shared with everyone (Services/SavedViews.php) --}}
     <h3 class="subheader">{{ __('refreshglobal::messages.saved_views_title') }}</h3>
     @include('refreshglobal::partials.switch', ['key' => $rg_s::VIEWS_GLOBAL_ADMINS, 'label' => __('refreshglobal::messages.views_global_admins'),

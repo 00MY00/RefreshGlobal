@@ -224,6 +224,18 @@ return [
         'effect' => 'Saved views can not be shared with chosen users; private views and views for everyone work. The rest works.',
         'action' => 'Update RefreshGlobal to a version made for this FreeScout version, then run php artisan refreshglobal:check.',
     ],
+    'hook_images' => [
+        'check'  => 'FreeScout hook present: :item (:file)',
+        'label'  => 'FreeScout’s filter on the content of messages was not found: :item (:file).',
+        'effect' => 'Remote images of the e-mails are loaded as before (not blocked). The rest works.',
+        'action' => 'Update RefreshGlobal to a version made for this FreeScout / Refresh version, then run php artisan refreshglobal:check.',
+    ],
+    'hook_move' => [
+        'check'  => 'Element used by “Move to a folder” present: :item',
+        'label'  => 'An element used by “Move to a folder” was not found: :item.',
+        'effect' => 'The “Move” button may be missing there (ticket, selection bar); the rest works.',
+        'action' => 'Update RefreshGlobal to a version made for this FreeScout / Refresh version, then run php artisan refreshglobal:check.',
+    ],
     'marker_crumb' => [
         'check'  => 'Refresh element present: :item (:file)',
         'label'  => 'Refresh element no longer found: :item (:file).',

@@ -220,6 +220,18 @@ return [
         'effect' => 'As visões salvas não podem ser compartilhadas com usuários escolhidos; visões privadas e para todos funcionam. O resto funciona.',
         'action' => 'Atualizar o RefreshGlobal para uma versão feita para esta versão do FreeScout e executar php artisan refreshglobal:check.',
     ],
+    'hook_images' => [
+        'check'  => 'Gancho do FreeScout presente: :item (:file)',
+        'label'  => 'O filtro do FreeScout sobre o conteúdo das mensagens não foi encontrado: :item (:file).',
+        'effect' => 'As imagens remotas dos e-mails são carregadas como antes (sem bloqueio). O resto funciona.',
+        'action' => 'Atualizar o RefreshGlobal para uma versão feita para esta versão do FreeScout / Refresh e executar php artisan refreshglobal:check.',
+    ],
+    'hook_move' => [
+        'check'  => 'Elemento usado por “Mover para uma pasta” presente: :item',
+        'label'  => 'Um elemento usado por “Mover para uma pasta” não foi encontrado: :item.',
+        'effect' => 'O botão “Mover” pode faltar ali (ticket, barra de seleção); o resto funciona.',
+        'action' => 'Atualizar o RefreshGlobal para uma versão feita para esta versão do FreeScout / Refresh e executar php artisan refreshglobal:check.',
+    ],
     'marker_crumb' => [
         'check'  => 'Elemento do Refresh presente: :item (:file)',
         'label'  => 'Elemento do Refresh não encontrado: :item (:file).',

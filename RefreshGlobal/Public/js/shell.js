@@ -714,4 +714,251 @@
             });
         });
     });
+
+    /*
+     * Remote images of the e-mails (Services/RemoteImages.php, mode "ask"): "Show images" loads the images of that
+     * message only (their addresses were kept in data-rg-* attributes).
+     */
+    $(document).on('click', '.rg-ri-show', function () {
+        var box = $(this).closest('.rg-remote-images');
+        var scope = box.parent();
+        scope.find('[data-rg-remote]').each(function () {
+            var el = $(this);
+            $.each(['src', 'srcset', 'background', 'style'], function (i, name) {
+                var v = el.attr('data-rg-' + name);
+                if (v !== undefined) {
+                    el.attr(name, v).removeAttr('data-rg-' + name);
+                }
+            });
+            el.removeAttr('data-rg-remote');
+        });
+        box.remove();
+    });
+
+    /*
+     * "Move to a folder" of the mail server (Services/MailMove.php, Http/Controllers/MailMoveController.php): the
+     * e-mails of the ticket(s) go to an existing folder of their mailbox on the server; the ticket itself does not
+     * change. Entry points: ticket page (Refresh's toolbar, FreeScout's toolbar, Refresh's phone "Ticket actions"
+     * sheet), selection bar of the lists (FreeScout's bulk actions, "bulk_actions.before_delete"), and on touch screens
+     * a swipe to the LEFT on a ticket of a list (Refresh's own swipe is to the right). After a move, a message offers
+     * "Undo" for a few seconds.
+     */
+    var moveCfg = function () {
+        try {
+            return JSON.parse(document.querySelector('meta[name="refreshglobal-move"]').getAttribute('content'));
+        } catch (e) {
+            return null;
+        }
+    };
+    var csrf = function () { return $('meta[name="csrf-token"]').attr('content'); };
+
+    var toast = function (text, undo) {
+        $('.rg-toast').remove();
+        var t = $('<div class="rg-toast" role="status"></div>').append($('<span class="rg-toast-text"></span>').text(text));
+        var timer = null;
+        var close = function () { clearTimeout(timer); t.addClass('rg-toast-out'); setTimeout(function () { t.remove(); }, 250); };
+        if (undo) {
+            t.append($('<button type="button" class="rg-toast-undo"></button>').text(undo.label).on('click', function () { close(); undo.fn(); }));
+        }
+        t.append($('<button type="button" class="rg-toast-x" aria-label="×">&times;</button>').on('click', close));
+        $('body').append(t);
+        timer = setTimeout(close, undo ? 8000 : 4000);
+    };
+
+    var moveDialog = function (ids, onMoved) {
+        var M = moveCfg();
+        if (!M || !ids.length) {
+            return;
+        }
+        $('.rg-move').remove();
+        var box = $('<div class="rg-move" role="dialog" aria-modal="true"></div>');
+        var panel = $('<div class="rg-move-panel"></div>');
+        var head = $('<div class="rg-move-head"></div>').append($('<strong></strong>').text(ids.length > 1 ? M.t.title_many.replace(':count', ids.length) : M.t.title));
+        var x = $('<button type="button" class="rg-move-x" aria-label="×">&times;</button>');
+        head.append(x);
+        var search = $('<input type="search" class="form-control input-sm rg-move-search" autocomplete="off">').attr('placeholder', M.t.search);
+        var list = $('<div class="rg-move-list"><p class="rg-muted"><i class="glyphicon glyphicon-refresh glyphicon-spin"></i> ' + '</p></div>');
+        var note = $('<p class="rg-muted rg-move-note"></p>').text(M.t.note);
+        panel.append(head, search, list, note);
+        box.append(panel);
+        var close = function () { box.remove(); $(document).off('keydown.rgmove'); };
+        x.on('click', close);
+        box.on('click', function (e) { if (e.target === box[0]) { close(); } });
+        $(document).on('keydown.rgmove', function (e) { if (e.key === 'Escape') { close(); } });
+        $('body').append(box);
+        $.ajax({ url: M.folders, data: { conversation_id: ids[0] }, dataType: 'json' }).done(function (r) {
+            list.empty();
+            if (!r || r.status !== 'success') {
+                list.append($('<p class="text-danger"></p>').text((r && r.message) || M.t.error));
+                return;
+            }
+            var current = (r.current || []).map(function (c) { return String(c).toLowerCase(); });
+            $.each(r.folders || [], function (i, f) {
+                var here = current.indexOf(String(f.path).toLowerCase()) >= 0;
+                var b = $('<button type="button" class="rg-move-folder"></button>').attr('data-path', f.path).attr('data-label', String(f.label).toLowerCase())
+                    .append('<i class="glyphicon glyphicon-folder-close" aria-hidden="true"></i> ', $('<span></span>').text(f.label));
+                if (here) {
+                    b.addClass('rg-move-here').prop('disabled', ids.length === 1).append($('<small></small>').text(M.t.current));
+                }
+                list.append(b);
+            });
+            search.trigger('focus');
+        }).fail(function (xhr) {
+            list.empty().append($('<p class="text-danger"></p>').text((xhr.responseJSON && xhr.responseJSON.message) || M.t.error));
+        });
+        search.on('input', function () {
+            var q = $.trim(search.val()).toLowerCase();
+            list.find('.rg-move-folder').each(function () { $(this).toggle(!q || $(this).attr('data-label').indexOf(q) >= 0); });
+        });
+        list.on('click', '.rg-move-folder', function () {
+            var path = $(this).attr('data-path');
+            list.find('.rg-move-folder').prop('disabled', true);
+            $(this).append(' <i class="glyphicon glyphicon-refresh glyphicon-spin"></i>');
+            $.ajax({ url: M.move, method: 'POST', dataType: 'json', data: { _token: csrf(), folder: path, conversation_ids: ids } }).done(function (r) {
+                close();
+                if (!r || r.status !== 'success') {
+                    toast((r && r.message) || M.t.error);
+                    return;
+                }
+                var undoable = $.grep(r.tickets || [], function (t) { return t.moved > 0; });
+                if (onMoved) { onMoved(r); }
+                toast(r.message + (r.errors && r.errors.length ? ' — ' + r.errors.join(' — ') : ''), undoable.length ? { label: M.t.undo, fn: function () {
+                    $.ajax({ url: M.undo, method: 'POST', dataType: 'json', data: { _token: csrf(), tickets: JSON.stringify(undoable) } }).done(function (u) {
+                        toast((u && u.message) || M.t.error);
+                        if (onMoved) { onMoved(null); }
+                    }).fail(function () { toast(M.t.error); });
+                } } : null);
+            }).fail(function (xhr) {
+                close();
+                toast((xhr.responseJSON && xhr.responseJSON.message) || M.t.error);
+            });
+        });
+    };
+    window.rgMoveDialog = moveDialog;
+
+    $(function () {
+        var M = moveCfg();
+        if (!M) {
+            return;
+        }
+        var convId = function () {
+            var id = window.getGlobalAttr ? window.getGlobalAttr('conversation_id') : null;
+            return id ? parseInt(id, 10) : 0;
+        };
+        // a row of a list moved: discreet mark under its subject (removed by "Undo")
+        var markRow = function (ids) {
+            return function (r) {
+                $.each(ids, function (i, id) {
+                    var row = $('.conv-checkbox[value="' + id + '"]').closest('tr');
+                    row.find('.rg-moved').remove();
+                    if (r) {
+                        row.find('td.conv-subject').first().append($('<span class="rg-moved"></span>').text('→ ' + r.label));
+                    }
+                });
+            };
+        };
+
+        // ticket page, computer: Refresh's toolbar (next to "Close"), or FreeScout's own toolbar
+        if (convId() && M.ticket) {
+            var button = function (cls) {
+                return $('<button type="button"></button>').addClass(cls + ' rg-move-btn').attr('title', M.t.title)
+                    .append('<i class="glyphicon glyphicon-folder-open" aria-hidden="true"></i>', $('<span class="rg-move-btn-text"></span>').text(' ' + M.t.button));
+            };
+            var tries = 0;
+            var place = function () {
+                if ($('.rg-move-btn').length) {
+                    return;
+                }
+                var close = $('.rf-tb-close').first();
+                if (close.length) {
+                    button('rf-btn').insertAfter(close);
+                } else if ($('#conv-toolbar .conv-actions').length && !$('body').hasClass('rf-conv')) {
+                    button('btn btn-default btn-sm').appendTo($('#conv-toolbar .conv-actions').first());
+                } else if (++tries < 30) {
+                    setTimeout(place, 100);
+                }
+            };
+            place();
+            $(document).on('click', '.rg-move-btn', function () { moveDialog([convId()]); });
+        }
+
+        // phone, ticket page: Refresh's "Ticket actions" sheet
+        if (convId() && M.ticket && window.MutationObserver && window.matchMedia && window.matchMedia('(max-width: 767px)').matches) {
+            new MutationObserver(function (records) {
+                records.forEach(function (r) {
+                    $(r.addedNodes).filter('.rf-m-sheet-actions').each(function () {
+                        var list = $(this).find('.rf-m-sheet-list');
+                        if (!list.length || list.find('.rg-m-move').length) {
+                            return;
+                        }
+                        $('<button type="button" class="rf-m-opt rg-m-move"></button>')
+                            .append('<i class="glyphicon glyphicon-folder-open rg-m-move-icon" aria-hidden="true"></i>')
+                            .append($('<span class="rf-m-opt-label"></span>').text(M.t.title))
+                            .on('click', function () {
+                                $('.rf-m-sheet').remove();
+                                $('body').removeClass('rf-m-overlay rf-m-drawer rf-m-pop-open');
+                                moveDialog([convId()]);
+                            })
+                            .prependTo(list);
+                    });
+                });
+            }).observe(document.body, { childList: true });
+        }
+
+        // lists: selection bar (button printed by the server in FreeScout's bulk actions)
+        $(document).on('click', '.rg-move-bulk', function () {
+            var ids = $('.conv-checkbox:checked').map(function () { return parseInt(this.value, 10); }).get().filter(function (v) { return v > 0; });
+            moveDialog(ids, markRow(ids));
+        });
+
+        // lists, touch screens: swipe a ticket to the LEFT -> "Move to a folder"
+        if (!('ontouchstart' in window) || !$('.table-conversations').length) {
+            return;
+        }
+        var sw = null;
+        var hint = null;
+        var clearHint = function () { if (hint) { hint.remove(); hint = null; } };
+        $(document).on('touchstart', 'tr.conv-row', function (e) {
+            if ($('body').hasClass('rf-m-sel') || e.originalEvent.touches.length !== 1) { sw = null; return; }
+            var t = e.originalEvent.touches[0];
+            sw = { tr: $(this), x: t.clientX, y: t.clientY, dir: '', dx: 0 };
+        });
+        $(document).on('touchmove', 'tr.conv-row', function (e) {
+            if (!sw) { return; }
+            var t = e.originalEvent.touches[0];
+            var dx = t.clientX - sw.x, dy = t.clientY - sw.y;
+            if (!sw.dir && (Math.abs(dx) > 10 || Math.abs(dy) > 10)) { sw.dir = Math.abs(dx) > Math.abs(dy) && dx < 0 ? 'left' : 'other'; }
+            if (sw.dir !== 'left') { clearHint(); return; }
+            sw.dx = dx;
+            var r = sw.tr[0].getBoundingClientRect();
+            if (!hint) {
+                hint = $('<div class="rg-swipe-move" aria-hidden="true"></div>').append('<i class="glyphicon glyphicon-folder-open"></i>', $('<span></span>').text(M.t.button));
+                $('body').append(hint);
+            }
+            var w = Math.min(Math.max(-dx, 0), 160);
+            hint.css({ top: r.top + window.pageYOffset, left: r.right - w + window.pageXOffset, width: w, height: r.height })
+                .toggleClass('rg-swipe-ready', -dx > 90);
+        });
+        $(document).on('touchend touchcancel', 'tr.conv-row', function (e) {
+            if (!sw) { return; }
+            var go = sw.dir === 'left' && sw.dx < -90 && e.type === 'touchend';
+            var id = parseInt(sw.tr.find('.conv-checkbox').val(), 10);
+            clearHint();
+            sw = null;
+            if (go && id) {
+                // the release must not open the ticket (only a click on the list's rows is stopped, never the dialog's)
+                var stop = function (ev) {
+                    if (!$(ev.target).closest('tr.conv-row').length) {
+                        return;
+                    }
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                    document.removeEventListener('click', stop, true);
+                };
+                document.addEventListener('click', stop, true);
+                setTimeout(function () { document.removeEventListener('click', stop, true); }, 600);
+                moveDialog([id], markRow([id]));
+            }
+        });
+    });
 })(window.jQuery);

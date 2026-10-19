@@ -36,6 +36,17 @@ $threads = \Eventy::filter('refreshglobal.thread_mail_tags', [], $threadIds);
 Fired while FreeScout fetches the e-mail (after the ticket and its thread are saved), and by the recalculation of
 the tags (Manage › Settings › RefreshGlobal › “Recalculate the tags”, command `php artisan refreshglobal:mail-tags`).
 
+## Be told when an e-mail is moved to another folder (RefreshGlobal ≥ 1.16.0)
+
+```php
+\Eventy::addAction('refreshglobal.mail_moved', function ($conversationId, $threadId, $fromFolder, $toFolder) {
+    // folders as UTF-8 paths of the mail server ("INBOX", "INBOX.[WP] Purchases.Deliveries"…); the tags of the
+    // e-mail were already updated (tag of the old folder replaced by the tag of the new one)
+}, 20, 4);
+```
+
+Fired by “Move to a folder” (ticket page, selection bar, swipe on touch screens) and by its “Undo”.
+
 ## SQL (read only)
 
 Table `refreshglobal_mail_tags`: `conversation_id`, `thread_id`, `mailbox_id`, `tag` (≤ 100), `folder` (≤ 191,

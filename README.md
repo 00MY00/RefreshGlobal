@@ -68,6 +68,10 @@ Dans Gérer › Modules :
   `trash`, `sent`, `folder:<nom>`, `classified_spam`…) : affichés, filtrables, recalculables, lisibles par les autres
   modules et copiés dans le module Tags s'il est installé ([docs/api-tags.md](docs/api-tags.md)).
 - **Détails / texte brut** de chaque message (en-têtes, Message-ID, dossier du serveur, tags).
+- **Déplacer vers un dossier du serveur mail** (ticket, barre de sélection, glisser vers la gauche sur écran tactile),
+  avec « Annuler » ; le ticket ne change pas, ses tags suivent le dossier.
+- **Images distantes** (pixels de suivi) : toujours afficher, restrictif (bouton « Afficher les images ») ou bloqué,
+  réglable finement par tag d'origine de l'e-mail.
 - Traductions : français, anglais, allemand, espagnol, italien, néerlandais, portugais (Brésil).
 - **Langue** : le module suit la langue de FreeScout, comme Refresh (Refresh n'a pas de choix de langue à lui) :
   celle du profil de l'utilisateur, sinon la langue par défaut (Gérer › Paramètres › Général). Un **sélecteur de

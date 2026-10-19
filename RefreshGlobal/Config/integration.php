@@ -94,6 +94,12 @@ return [
         'RG-HOOK-36' => ['hook' => 'conversations.ajax redirect_url', 'family' => 'hook_back', 'file' => 'app/Http/Controllers/ConversationsController.php', 'needle' => "\$response['redirect_url'] = \$this->getRedirectUrl(", 'severity' => 'warning', 'source' => 'app/Http/Controllers/ConversationsController.php:627,686,2814-2852, app/Conversation.php:953-964'],
         // Refresh 1.6.0's hover previews: its script handles the on / off entry of the Layout menu (.rf-hover-toggle)
         'RG-HOOK-37' => ['hook' => '.rf-hover-toggle', 'family' => 'marker_hover', 'refresh' => true, 'refresh_min' => '1.6.0', 'file' => 'Public/js/hovercards.js', 'needle' => "'.rf-hover-toggle a'", 'severity' => 'warning', 'source' => 'Modules/Refresh/Public/js/hovercards.js:149-199, Resources/views/tickets.blade.php:62-66'],
+        // Remote images of the e-mails (Services/RemoteImages.php): FreeScout's filter on the body of a message
+        'RG-HOOK-38' => ['hook' => 'thread.body_output', 'family' => 'hook_images', 'file' => 'resources/views/conversations/partials/thread.blade.php', 'needle' => "\\Eventy::filter('thread.body_output'", 'severity' => 'warning', 'source' => 'resources/views/conversations/partials/thread.blade.php:297'],
+        // "Move to a folder" (Services/MailMove.php, Public/js/shell.js): selection bar of the lists, toolbars of the ticket page
+        'RG-HOOK-39' => ['hook' => 'bulk_actions.before_delete', 'family' => 'hook_move', 'file' => 'resources/views/conversations/partials/bulk_actions.blade.php', 'needle' => "@action('bulk_actions.before_delete'", 'severity' => 'warning', 'source' => 'resources/views/conversations/partials/bulk_actions.blade.php:34'],
+        'RG-HOOK-40' => ['hook' => '.rf-tb-close', 'family' => 'hook_move', 'refresh' => true, 'file' => 'Providers/RefreshServiceProvider.php', 'needle' => 'rf-btn rf-tb-close', 'severity' => 'warning', 'source' => 'Modules/Refresh/Providers/RefreshServiceProvider.php:1476'],
+        'RG-HOOK-41' => ['hook' => '.conv-actions', 'family' => 'hook_move', 'file' => 'resources/views/conversations/view.blade.php', 'needle' => '<div class="conv-actions">', 'severity' => 'warning', 'source' => 'resources/views/conversations/view.blade.php:29'],
         'RG-HOOK-35' => ['hook' => 'stylesheets', 'file' => 'resources/views/layouts/app.blade.php', 'needle' => "\Eventy::filter('stylesheets'", 'severity' => 'warning', 'source' => 'resources/views/layouts/app.blade.php:33'],
         'RG-HOOK-07' => ['hook' => 'refresh.rail_items', 'refresh' => true, 'file' => 'Providers/RefreshServiceProvider.php', 'needle' => "'refresh.rail_items'", 'severity' => 'degraded', 'source' => 'Modules/Refresh/Providers/RefreshServiceProvider.php:742'],
     ],
@@ -130,6 +136,9 @@ return [
         'RG-CORE-19' => ['class' => 'Modules\Refresh\Services\Settings', 'methods' => ['hoverCards'], 'refresh' => true, 'refresh_min' => '1.6.0', 'family' => 'marker_hover', 'severity' => 'warning', 'source' => 'Modules/Refresh/Services/Settings.php:20'],
         // saved views shared with users (Services/SavedViews.php): who can be chosen, names, deleted users left out
         'RG-CORE-20' => ['class' => 'App\User', 'methods' => ['nonDeleted', 'isDeleted', 'whichUsersCanView', 'getFullName'], 'constants' => ['App\User::TYPE_ROBOT', 'App\User::STATUS_DELETED'], 'family' => 'core_views', 'severity' => 'degraded', 'source' => 'app/User.php:57,64,1164,1181,1189,233'],
+        // "Move to a folder": FreeScout's right to change a ticket, folders the mailbox fetches (IMAP access: RG-CORE-14/15)
+        'RG-CORE-21' => ['class' => 'App\Policies\ConversationPolicy', 'methods' => ['update'], 'family' => 'hook_move', 'severity' => 'warning', 'source' => 'app/Policies/ConversationPolicy.php:73'],
+        'RG-CORE-22' => ['class' => 'App\Mailbox', 'methods' => ['getInImapFolders'], 'constants' => ['App\Mailbox::IN_PROTOCOL_IMAP', 'App\Thread::TYPE_CUSTOMER'], 'family' => 'hook_move', 'severity' => 'warning', 'source' => 'app/Mailbox.php:81,906, app/Thread.php (TYPE_CUSTOMER)'],
         // optional official Tags module: the origin tags are copied there (Services/MailTags.php mirror())
         'RG-CORE-18' => ['class' => 'Modules\Tags\Entities\Tag', 'methods' => ['attachByName'], 'module' => 'tags', 'family' => 'mailtags', 'severity' => 'warning', 'source' => 'Modules/Tags (used as by Modules/Refresh/Http/Controllers/NewTicketController.php:192)'],
     ],

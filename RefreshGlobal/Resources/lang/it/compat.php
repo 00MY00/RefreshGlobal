@@ -220,6 +220,18 @@ return [
         'effect' => 'Le viste salvate non possono essere condivise con utenti scelti; le viste private e per tutti funzionano. Il resto funziona.',
         'action' => 'Aggiornare RefreshGlobal a una versione prevista per questa versione di FreeScout, poi eseguire php artisan refreshglobal:check.',
     ],
+    'hook_images' => [
+        'check'  => 'Hook di FreeScout presente: :item (:file)',
+        'label'  => 'Il filtro di FreeScout sul contenuto dei messaggi non è stato trovato: :item (:file).',
+        'effect' => 'Le immagini remote delle e-mail sono caricate come prima (non bloccate). Il resto funziona.',
+        'action' => 'Aggiornare RefreshGlobal a una versione prevista per questa versione di FreeScout / Refresh, poi eseguire php artisan refreshglobal:check.',
+    ],
+    'hook_move' => [
+        'check'  => 'Elemento usato da «Sposta in una cartella» presente: :item',
+        'label'  => 'Un elemento usato da «Sposta in una cartella» non è stato trovato: :item.',
+        'effect' => 'Il pulsante «Sposta» può mancare lì (ticket, barra di selezione); il resto funziona.',
+        'action' => 'Aggiornare RefreshGlobal a una versione prevista per questa versione di FreeScout / Refresh, poi eseguire php artisan refreshglobal:check.',
+    ],
     'marker_crumb' => [
         'check'  => 'Elemento di Refresh presente: :item (:file)',
         'label'  => 'Elemento di Refresh non più trovato: :item (:file).',
