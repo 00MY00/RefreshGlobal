@@ -208,6 +208,12 @@ return [
         'effect' => 'Tras cerrar el último ticket activo de un buzón (u otra acción que sale del ticket), FreeScout muestra la lista del buzón en lugar de volver a «Todos los buzones». El resto funciona.',
         'action' => 'Actualizar RefreshGlobal a una versión prevista para esta versión de FreeScout y ejecutar php artisan refreshglobal:check.',
     ],
+    'marker_hover' => [
+        'check'  => 'Elemento de Refresh presente: :item',
+        'label'  => 'Elemento de las vistas previas al pasar el ratón de Refresh no encontrado: :item.',
+        'effect' => 'La opción «Vistas previas al pasar el ratón» no se ofrece en el menú Diseño de «Todos los buzones». El resto funciona.',
+        'action' => 'Actualizar RefreshGlobal a una versión prevista para esta versión de Refresh y ejecutar php artisan refreshglobal:check.',
+    ],
     'marker_crumb' => [
         'check'  => 'Elemento de Refresh presente: :item (:file)',
         'label'  => 'Elemento de Refresh no encontrado: :item (:file).',

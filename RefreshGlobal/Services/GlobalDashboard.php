@@ -10,7 +10,7 @@ use Carbon\Carbon;
  * Refresh's dashboard ("My dashboard") for ALL the user's mailboxes.
  *
  * Refresh computes its dashboard for the user's first mailbox only ($user->mailboxesCanView()->first(),
- * Modules/Refresh/Providers/RefreshServiceProvider.php:491-523). This service computes the same figures over every
+ * Modules/Refresh/Providers/RefreshServiceProvider.php:505-537). This service computes the same figures over every
  * mailbox the user can see (MailboxAccess) and renders them with the same markup as Refresh's view
  * (Modules/Refresh/Resources/views/dashboard.blade.php), so Refresh's stylesheet gives the same look.
  *
@@ -18,7 +18,7 @@ use Carbon\Carbon;
  *  - Views::query($mailbox_id, $view, $user): its view definitions (SLA rules), for the tiles;
  *  - Dashboard::chart() / delta() / duration(): the chart and number formats;
  *  - Settings::resolutionHours(): the SLA used by "Resolved within SLA".
- * The trend figures follow the formulas of Modules/Refresh/Services/Dashboard.php:16-117, over several mailboxes.
+ * The trend figures follow the formulas of Modules/Refresh/Services/Dashboard.php:16-123, over several mailboxes.
  */
 class GlobalDashboard
 {
@@ -34,7 +34,7 @@ class GlobalDashboard
             && class_exists('Modules\Refresh\Services\Settings') && method_exists('Modules\Refresh\Services\Settings', 'resolutionHours');
     }
 
-    /** Name Refresh gives to one of its views (Views::labels(), Modules/Refresh/Services/Views.php:89). */
+    /** Name Refresh gives to one of its views (Views::labels(), Modules/Refresh/Services/Views.php:106). */
     public static function viewLabel($view)
     {
         if (method_exists('Modules\Refresh\Services\Views', 'labels')) {
@@ -60,7 +60,8 @@ class GlobalDashboard
         // one minute per user, mailboxes and language (the data holds translated labels), and per state of the tickets:
         // after any change (new ticket, reply, status…) the figures are computed again, never served from the cache
         $fp = (new GlobalTicketQuery($access, GlobalTicketQuery::normalize([], $access)))->fingerprint();
-        $key = 'refreshglobal.dash.'.$user->id.'.'.app()->getLocale().'.'.md5(implode(',', $ids)).'.'.$fp;
+        // "v2": the "Unresolved tickets" rows have open / pending since 1.14.0, the rows of an older module are not read
+        $key = 'refreshglobal.dash.v2.'.$user->id.'.'.app()->getLocale().'.'.md5(implode(',', $ids)).'.'.$fp;
         $data = \Cache::remember($key, 1, function () use ($user, $mailboxes, $ids) {
             return self::data($user, $mailboxes, $ids);
         });
@@ -117,16 +118,8 @@ class GlobalDashboard
         $toUtc = function ($c) {
             return $c->copy()->setTimezone('UTC');
         };
-        $onlyAssigned = (new MailboxAccess($user))->onlyAssigned();
-        $base = function () use ($ids, $onlyAssigned, $user) {
-            $q = Conversation::whereIn('mailbox_id', $ids)
-                ->where('state', Conversation::STATE_PUBLISHED)
-                ->where('status', '!=', Conversation::STATUS_SPAM);
-            if ($onlyAssigned) {
-                $q->where('user_id', $user->id);
-            }
-
-            return $q;
+        $base = function () use ($ids, $user) {
+            return self::baseQuery($user, $ids);
         };
         $day = function ($from) use ($toUtc) {
             return [$toUtc($from), $toUtc($from->copy()->endOfDay())];
@@ -189,20 +182,6 @@ class GlobalDashboard
             return $n ? (int) round($sum / $n) : null;
         };
 
-        $by_agent = [];
-        $rows = $base()->whereIn('status', [Conversation::STATUS_ACTIVE, Conversation::STATUS_PENDING])
-            ->select('user_id', \DB::raw('COUNT(*) AS n'))->groupBy('user_id')->get();
-        $users = \App\User::whereIn('id', $rows->pluck('user_id')->filter()->all())->get()->keyBy('id');
-        foreach ($rows as $r) {
-            $name = ($r->user_id && isset($users[$r->user_id])) ? $users[$r->user_id]->getFullName() : __('Unassigned');
-            $by_agent[] = ['name' => $name, 'n' => (int) $r->n, 'url' => route('refreshglobal.tickets', [
-                'status' => [Conversation::STATUS_ACTIVE, Conversation::STATUS_PENDING], 'assignee' => $r->user_id ? (string) $r->user_id : 'none',
-            ])];
-        }
-        usort($by_agent, function ($a, $b) {
-            return $b['n'] - $a['n'];
-        });
-
         return [
             'h_today'  => $hours($today),
             'h_yest'   => $hours($yesterday),
@@ -213,8 +192,75 @@ class GlobalDashboard
                 'frt'      => [$frt($today), $frt($yesterday)],
                 'sla'      => [$slaPct($today), $slaPct($yesterday)],
             ],
-            'by_agent' => $by_agent,
+            'by_agent' => self::unresolvedByAgent($base()),
         ];
+    }
+
+    /**
+     * Tickets the dashboard's figures are computed on: the given mailboxes (the user's allowed ones), published, not
+     * spam, only the user's own tickets with the "only assigned" right.
+     */
+    public static function baseQuery($user, array $ids)
+    {
+        $q = Conversation::whereIn('mailbox_id', $ids ?: [0])
+            ->where('state', Conversation::STATE_PUBLISHED)
+            ->where('status', '!=', Conversation::STATUS_SPAM);
+        if ((new MailboxAccess($user))->onlyAssigned()) {
+            $q->where('user_id', $user->id);
+        }
+
+        return $q;
+    }
+
+    /** "Unresolved tickets" rows for a user (allowed mailboxes and rights). */
+    public static function unresolvedFor($user)
+    {
+        return self::unresolvedByAgent(self::baseQuery($user, (new MailboxAccess($user))->allowedIds()));
+    }
+
+    /**
+     * "Unresolved tickets" card: per agent (and "Unassigned"), open and pending tickets counted apart, like Refresh's
+     * own card since Refresh 1.5.0 (Modules/Refresh/Services/Dashboard.php:94-111): one grouped query (agent, status)
+     * on the dashboard's base query (allowed mailboxes, published, "only assigned" right), the names in one more query.
+     * Sorted by open + pending, then by name.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $base
+     * @return array [['user_id', 'name', 'open', 'pending', 'total', 'n' (= total), 'url', 'url_open', 'url_pending'], …]
+     */
+    public static function unresolvedByAgent($base)
+    {
+        $rows = $base->whereIn('status', [Conversation::STATUS_ACTIVE, Conversation::STATUS_PENDING])
+            ->select('user_id', 'status', \DB::raw('COUNT(*) AS n'))->groupBy('user_id', 'status')->get();
+        $users = \App\User::whereIn('id', $rows->pluck('user_id')->filter()->unique()->values()->all())->get()->keyBy('id');
+        $by_agent = [];
+        foreach ($rows as $r) {
+            $id = (int) $r->user_id;
+            if (!isset($by_agent[$id])) {
+                $url = function (array $status) use ($id) {
+                    return route('refreshglobal.tickets', ['status' => $status, 'assignee' => $id ? (string) $id : 'none']);
+                };
+                $by_agent[$id] = [
+                    'user_id'     => $id,
+                    'name'        => ($id && isset($users[$id])) ? $users[$id]->getFullName() : __('Unassigned'),
+                    'open'        => 0,
+                    'pending'     => 0,
+                    'total'       => 0,
+                    'n'           => 0,
+                    'url'         => $url([Conversation::STATUS_ACTIVE, Conversation::STATUS_PENDING]),
+                    'url_open'    => $url([Conversation::STATUS_ACTIVE]),
+                    'url_pending' => $url([Conversation::STATUS_PENDING]),
+                ];
+            }
+            $by_agent[$id][(int) $r->status === Conversation::STATUS_PENDING ? 'pending' : 'open'] += (int) $r->n;
+            $by_agent[$id]['total'] += (int) $r->n;
+            $by_agent[$id]['n'] = $by_agent[$id]['total'];
+        }
+        $by_agent = array_values($by_agent);
+        usort($by_agent, function ($a, $b) {
+            return $b['total'] - $a['total'] ?: strnatcasecmp($a['name'], $b['name']);
+        });
+
+        return $by_agent;
     }
 
     /** Restricts a ticket query to a Refresh view (rv), over the given mailboxes, with Refresh's own definition. */

@@ -1,4 +1,4 @@
-# Résultats des tests — RefreshGlobal 1.13.0
+# Résultats des tests — RefreshGlobal 1.14.0
 
 Date : 2026-10-09. Environnements jetables Docker : FreeScout 1.8.245 (dépôt officiel), PHP 8.2.34, Apache,
 MariaDB 10.11 ; Refresh 1.4.3 (dépôt officiel). Données de test uniquement (adresses `.test`).
@@ -237,6 +237,25 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
   actif de la boîte, on revient directement à `/refresh-global/tickets?status[]=1` (au lieu de la liste de la boîte) et
   le ticket ouvert ensuite garde le retour ; aucune erreur JavaScript. `refreshglobal:check` : RG-HOOK-36 OK.
 - PHPUnit : **117 tests, 1681 assertions, 0 échec** (1 ignoré : SyncNow absent).
+
+## 31. Refresh 1.6.0, tableau de bord ouverts / en attente, aperçus au survol (1.14.0)
+
+- Instance neuve : FreeScout 1.8.245, **Refresh 1.6.0** (tag `v1.6.0`, commit `4259031`), données de démonstration.
+  `refreshglobal:check` : état **OK** (avant la mise à jour de la plage : avertissement RG-REF-02 « hors de la plage
+  testée ») ; les 13 éléments de Refresh cherchés dans ses fichiers sont présents ; RG-CORE-19 et RG-HOOK-37 OK.
+- PHPUnit : **124 tests, 1728 assertions, 0 échec** (1 ignoré : SyncNow absent), dont `DashboardUnresolvedTest`
+  (7 tests : ouverts seulement, en attente seulement, les deux, tri par total puis par nom — l’exemple Alice 7 + 5,
+  Bob 10 + 0, Charlie 2 + 3 donne Alice, Bob, Charlie —, « Non assigné », boîtes permises et droit « seulement ses
+  tickets », tableau de bord vide, lignes d’une version précédente, même nombre de requêtes pour 1 et 7 lignes).
+- Navigateur (Chromium headless) avec Refresh 1.6.0 : affichage à 1024, 1280, 1440, 1920 et 820 px (`layout.js`,
+  OK), retour à « Toutes les boîtes » après fermeture (`closenext.js`, 10/10), sélection par appui long sur
+  téléphone (`select.js`, 9/9), adresse d’envoi ordinateur et téléphone (`sendfrom.js`, `phonesf.js`, OK).
+- Tableau de bord (`dash114.js`) : carte « Agent | Open | Pending », lignes triées par total, chaque nombre mène à la
+  liste filtrée (`status[]=1&assignee=none`…) ; à 390 px, en-tête masqué et « Open : 7 » sous le nom.
+- Aperçus au survol (`hover114.js`, souris simulée : Chromium sans écran se déclare sans souris et Refresh coupe alors
+  ses aperçus) : aperçu du premier message sur « Toutes les boîtes » comme sur la liste de Refresh ; l’entrée
+  « Aperçus au survol » du menu Affichage de « Toutes les boîtes » les coupe (cookie `rf_hover=off`) ; aucune erreur
+  JavaScript.
 
 ## 28. Adresse d'envoi au choix (1.10.0)
 

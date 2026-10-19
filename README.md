@@ -85,7 +85,7 @@ Dans Gérer › Modules :
 | | Testé | Pris en charge |
 |---|---|---|
 | FreeScout | 1.8.245 | 1.8.x (avertissement en dehors) |
-| Refresh (facultatif) | 1.4.3 | 1.4.x (avertissement en dehors) ; sans Refresh : style FreeScout standard |
+| Refresh (facultatif) | 1.6.0 | 1.4.0 à 1.6.x (avertissement en dehors) ; sans Refresh : style FreeScout standard |
 | PHP | 8.2 | 7.1 et plus (comme FreeScout) |
 | Base de données | MariaDB 10.11, MySQL 8 (installation complète) | celles de FreeScout (MySQL/MariaDB, PostgreSQL) |
 | Système (installeur) | Debian 12, Ubuntu 24.04 | Linux avec bash ; installation complète : Ubuntu / Debian |

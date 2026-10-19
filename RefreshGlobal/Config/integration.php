@@ -12,7 +12,7 @@ return [
     // Version ranges that were tested (COMPATIBILITY.md). Outside them: warning only.
     'versions' => [
         'freescout' => ['min' => '1.8.0', 'max_exclusive' => '1.9.0', 'tested' => '1.8.245'],
-        'refresh'   => ['min' => '1.4.0', 'max_exclusive' => '1.5.0', 'tested' => '1.4.3'],
+        'refresh'   => ['min' => '1.4.0', 'max_exclusive' => '1.7.0', 'tested' => '1.6.0'],
     ],
 
     // Refresh module (third party). Only read, never modified.
@@ -58,13 +58,13 @@ return [
         'RG-HOOK-11' => ['hook' => 'javascripts', 'file' => 'resources/views/layouts/app.blade.php', 'needle' => "\\Eventy::filter('javascripts'", 'severity' => 'degraded', 'source' => 'resources/views/layouts/app.blade.php:284'],
         'RG-HOOK-12' => ['hook' => 'layout.head', 'file' => 'resources/views/layouts/app.blade.php', 'needle' => "@action('layout.head')", 'severity' => 'degraded', 'source' => 'resources/views/layouts/app.blade.php:21'],
         'RG-HOOK-13' => ['hook' => '.rf-m-tab-tickets', 'family' => 'marker', 'refresh' => true, 'file' => 'Public/js/mobile.js', 'needle' => "'rf-m-tab-tickets'", 'severity' => 'degraded', 'source' => 'Modules/Refresh/Public/js/mobile.js:133'],
-        'RG-HOOK-14' => ['hook' => '.rf-i-fd-all-tickets', 'family' => 'marker', 'refresh' => true, 'file' => 'Providers/RefreshServiceProvider.php', 'needle' => "'icon' => 'fd-all-tickets'", 'severity' => 'degraded', 'source' => 'Modules/Refresh/Providers/RefreshServiceProvider.php:698'],
+        'RG-HOOK-14' => ['hook' => '.rf-i-fd-all-tickets', 'family' => 'marker', 'refresh' => true, 'file' => 'Providers/RefreshServiceProvider.php', 'needle' => "'icon' => 'fd-all-tickets'", 'severity' => 'degraded', 'source' => 'Modules/Refresh/Providers/RefreshServiceProvider.php:729'],
         'RG-HOOK-15' => ['hook' => 'settings.sections', 'file' => 'app/Http/Controllers/SettingsController.php', 'needle' => "\\Eventy::filter('settings.sections'", 'severity' => 'degraded', 'source' => 'app/Http/Controllers/SettingsController.php:267'],
         'RG-HOOK-16' => ['hook' => 'settings.section_settings', 'file' => 'app/Http/Controllers/SettingsController.php', 'needle' => "\\Eventy::filter('settings.section_settings'", 'severity' => 'degraded', 'source' => 'app/Http/Controllers/SettingsController.php:250'],
         'RG-HOOK-17' => ['hook' => 'settings.view', 'file' => 'resources/views/settings/view.blade.php', 'needle' => "'settings.view'", 'severity' => 'degraded', 'source' => 'resources/views/settings/view.blade.php:27'],
         // Dashboard for all mailboxes: FreeScout's filter, and Refresh's block that it replaces (class rf-dash)
         'RG-HOOK-18' => ['hook' => 'dashboard.before', 'family' => 'hook_dash', 'file' => 'resources/views/secure/dashboard.blade.php', 'needle' => "@filter('dashboard.before'", 'severity' => 'degraded', 'source' => 'resources/views/secure/dashboard.blade.php:8'],
-        'RG-HOOK-19' => ['hook' => 'dashboard.before (Refresh)', 'family' => 'marker_dash', 'refresh' => true, 'file' => 'Providers/RefreshServiceProvider.php', 'needle' => "\\Eventy::addFilter('dashboard.before'", 'severity' => 'degraded', 'source' => 'Modules/Refresh/Providers/RefreshServiceProvider.php:491'],
+        'RG-HOOK-19' => ['hook' => 'dashboard.before (Refresh)', 'family' => 'marker_dash', 'refresh' => true, 'file' => 'Providers/RefreshServiceProvider.php', 'needle' => "\\Eventy::addFilter('dashboard.before'", 'severity' => 'degraded', 'source' => 'Modules/Refresh/Providers/RefreshServiceProvider.php:505'],
         'RG-HOOK-20' => ['hook' => '.rf-dash', 'family' => 'marker_dash', 'refresh' => true, 'file' => 'Resources/views/dashboard.blade.php', 'needle' => 'class="rf-dash"', 'severity' => 'degraded', 'source' => 'Modules/Refresh/Resources/views/dashboard.blade.php:13'],
         // Deleting a ticket (Http/Middleware/AfterDelete.php): actions of FreeScout's conversations.ajax
         'RG-HOOK-21' => ['hook' => 'conversations.ajax delete_conversation(_forever)', 'family' => 'hook_delete', 'file' => 'app/Http/Controllers/ConversationsController.php', 'needle' => "case 'delete_conversation_forever':", 'severity' => 'degraded', 'source' => 'app/Http/Controllers/ConversationsController.php:1944,1966,2164'],
@@ -76,7 +76,7 @@ return [
         'RG-HOOK-24' => ['hook' => 'conversations.before_delete_forever', 'family' => 'hook_mail', 'file' => 'app/Conversation.php', 'needle' => "\\Eventy::action('conversations.before_delete_forever'", 'severity' => 'degraded', 'source' => 'app/Conversation.php:2163'],
         // Back to "All mailboxes" from a ticket (Public/js/shell.js backToList()): Refresh's breadcrumb, its phone back arrow
         // that reads it, its views panel
-        'RG-HOOK-25' => ['hook' => '.rf-crumb', 'family' => 'marker_crumb', 'refresh' => true, 'file' => 'Providers/RefreshServiceProvider.php', 'needle' => "\$('<div class=\"rf-crumb\"></div>')", 'severity' => 'warning', 'source' => 'Modules/Refresh/Providers/RefreshServiceProvider.php:737-748, 940-944'],
+        'RG-HOOK-25' => ['hook' => '.rf-crumb', 'family' => 'marker_crumb', 'refresh' => true, 'file' => 'Providers/RefreshServiceProvider.php', 'needle' => "\$('<div class=\"rf-crumb\"></div>')", 'severity' => 'warning', 'source' => 'Modules/Refresh/Providers/RefreshServiceProvider.php:769-780, 1015-1019'],
         'RG-HOOK-26' => ['hook' => '.rf-m-back', 'family' => 'marker_crumb', 'refresh' => true, 'file' => 'Public/js/mobile.js', 'needle' => "\$('.rf-crumb a').first().attr('href')", 'severity' => 'warning', 'source' => 'Modules/Refresh/Public/js/mobile.js:674-676'],
         'RG-HOOK-27' => ['hook' => '.rf-views-search', 'family' => 'marker_crumb', 'refresh' => true, 'file' => 'Resources/views/core/mailboxes/sidebar_menu_view.blade.php', 'needle' => 'class="rf-views-search"', 'severity' => 'warning', 'source' => 'Modules/Refresh/Resources/views/core/mailboxes/sidebar_menu_view.blade.php:30'],
         // Address to send from on "Send an e-mail" / "New ticket" (Services/SendFrom.php, Public/js/shell.js sendFrom())
@@ -88,12 +88,14 @@ return [
         'RG-HOOK-32' => ['hook' => 'conversation.created_by_customer', 'family' => 'mailtags', 'file' => 'app/Console/Commands/FetchEmails.php', 'needle' => "\Eventy::action('conversation.created_by_customer'", 'severity' => 'warning', 'source' => 'app/Console/Commands/FetchEmails.php:1384, 1387'],
         // "Details / raw text" of a message: FreeScout's message menu, and Refresh's tools of each message
         'RG-HOOK-33' => ['hook' => 'thread.menu.append', 'file' => 'resources/views/conversations/partials/thread.blade.php', 'needle' => "@action('thread.menu.append', \$thread)", 'severity' => 'warning', 'source' => 'resources/views/conversations/partials/thread.blade.php:337'],
-        'RG-HOOK-34' => ['hook' => '.rf-th-tools', 'family' => 'marker', 'refresh' => true, 'file' => 'Providers/RefreshServiceProvider.php', 'needle' => "$('<div class=\"rf-th-tools\"></div>')", 'severity' => 'warning', 'source' => 'Modules/Refresh/Providers/RefreshServiceProvider.php:1722-1743'],
+        'RG-HOOK-34' => ['hook' => '.rf-th-tools', 'family' => 'marker', 'refresh' => true, 'file' => 'Providers/RefreshServiceProvider.php', 'needle' => "$('<div class=\"rf-th-tools\"></div>')", 'severity' => 'warning', 'source' => 'Modules/Refresh/Providers/RefreshServiceProvider.php:1833-1854'],
         // Way back to "All mailboxes" after an action on a ticket (Public/js/shell.js backToList()): FreeScout's answer
         // to conversations.ajax gives the address to open next (redirect_url, getRedirectUrl(): next ticket or folder)
         'RG-HOOK-36' => ['hook' => 'conversations.ajax redirect_url', 'family' => 'hook_back', 'file' => 'app/Http/Controllers/ConversationsController.php', 'needle' => "\$response['redirect_url'] = \$this->getRedirectUrl(", 'severity' => 'warning', 'source' => 'app/Http/Controllers/ConversationsController.php:627,686,2814-2852, app/Conversation.php:953-964'],
+        // Refresh 1.6.0's hover previews: its script handles the on / off entry of the Layout menu (.rf-hover-toggle)
+        'RG-HOOK-37' => ['hook' => '.rf-hover-toggle', 'family' => 'marker_hover', 'refresh' => true, 'refresh_min' => '1.6.0', 'file' => 'Public/js/hovercards.js', 'needle' => "'.rf-hover-toggle a'", 'severity' => 'warning', 'source' => 'Modules/Refresh/Public/js/hovercards.js:149-199, Resources/views/tickets.blade.php:62-66'],
         'RG-HOOK-35' => ['hook' => 'stylesheets', 'file' => 'resources/views/layouts/app.blade.php', 'needle' => "\Eventy::filter('stylesheets'", 'severity' => 'warning', 'source' => 'resources/views/layouts/app.blade.php:33'],
-        'RG-HOOK-07' => ['hook' => 'refresh.rail_items', 'refresh' => true, 'file' => 'Providers/RefreshServiceProvider.php', 'needle' => "'refresh.rail_items'", 'severity' => 'degraded', 'source' => 'Modules/Refresh/Providers/RefreshServiceProvider.php:711'],
+        'RG-HOOK-07' => ['hook' => 'refresh.rail_items', 'refresh' => true, 'file' => 'Providers/RefreshServiceProvider.php', 'needle' => "'refresh.rail_items'", 'severity' => 'degraded', 'source' => 'Modules/Refresh/Providers/RefreshServiceProvider.php:742'],
     ],
 
     // Core classes / methods (class_exists, method_exists).
@@ -110,9 +112,9 @@ return [
         // Settings of the module (FreeScout's options table; degraded: the defaults apply)
         'RG-CORE-07' => ['class' => 'App\Option', 'methods' => ['get', 'set'], 'severity' => 'degraded', 'source' => 'app/Option.php:35,75'],
         // Dashboard for all mailboxes (degraded: Refresh's own dashboard is shown instead)
-        'RG-CORE-09' => ['class' => 'Modules\Refresh\Services\Views', 'methods' => ['query', 'labels'], 'refresh' => true, 'family' => 'core_refresh', 'severity' => 'degraded', 'source' => 'Modules/Refresh/Services/Views.php:89,99'],
-        'RG-CORE-10' => ['class' => 'Modules\Refresh\Services\Dashboard', 'methods' => ['chart', 'delta', 'duration'], 'refresh' => true, 'family' => 'core_refresh', 'severity' => 'degraded', 'source' => 'Modules/Refresh/Services/Dashboard.php:121,130,147'],
-        'RG-CORE-11' => ['class' => 'Modules\Refresh\Services\Settings', 'methods' => ['resolutionHours'], 'refresh' => true, 'family' => 'core_refresh', 'severity' => 'degraded', 'source' => 'Modules/Refresh/Services/Settings.php:26'],
+        'RG-CORE-09' => ['class' => 'Modules\Refresh\Services\Views', 'methods' => ['query', 'labels'], 'refresh' => true, 'family' => 'core_refresh', 'severity' => 'degraded', 'source' => 'Modules/Refresh/Services/Views.php:106,116'],
+        'RG-CORE-10' => ['class' => 'Modules\Refresh\Services\Dashboard', 'methods' => ['chart', 'delta', 'duration'], 'refresh' => true, 'family' => 'core_refresh', 'severity' => 'degraded', 'source' => 'Modules/Refresh/Services/Dashboard.php:127,136,153'],
+        'RG-CORE-11' => ['class' => 'Modules\Refresh\Services\Settings', 'methods' => ['resolutionHours'], 'refresh' => true, 'family' => 'core_refresh', 'severity' => 'degraded', 'source' => 'Modules/Refresh/Services/Settings.php:32'],
         // Deleting a ticket permanently in a bulk delete (degraded: the tickets stay in the trash)
         'RG-CORE-12' => ['class' => 'App\Conversation', 'methods' => ['deleteForever'], 'constants' => ['App\Conversation::STATE_DELETED'], 'family' => 'core_delete', 'severity' => 'degraded', 'source' => 'app/Conversation.php:2156'],
         // "Empty the trash" (button and automatic emptying): FreeScout's own permanent deletion, its permission
@@ -123,6 +125,9 @@ return [
         // Dates of the automatic folders overview ("3 hours ago", in the user's time zone)
         'RG-CORE-16' => ['class' => 'App\User', 'methods' => ['dateFormat', 'dateDiffForHumans'], 'family' => 'core_dates', 'severity' => 'warning', 'source' => 'app/User.php:536,627'],
         'RG-CORE-17' => ['class' => 'App\Mailbox', 'methods' => ['getAliases', 'isArchived'], 'family' => 'sendfrom', 'severity' => 'warning', 'source' => 'app/Mailbox.php:793, 434'],
+        // Refresh 1.6.0's hover previews: their on / off entry in the Layout menu of "All mailboxes" (not applicable
+        // with an older Refresh: refresh_min)
+        'RG-CORE-19' => ['class' => 'Modules\Refresh\Services\Settings', 'methods' => ['hoverCards'], 'refresh' => true, 'refresh_min' => '1.6.0', 'family' => 'marker_hover', 'severity' => 'warning', 'source' => 'Modules/Refresh/Services/Settings.php:20'],
         // optional official Tags module: the origin tags are copied there (Services/MailTags.php mirror())
         'RG-CORE-18' => ['class' => 'Modules\Tags\Entities\Tag', 'methods' => ['attachByName'], 'module' => 'tags', 'family' => 'mailtags', 'severity' => 'warning', 'source' => 'Modules/Tags (used as by Modules/Refresh/Http/Controllers/NewTicketController.php:192)'],
     ],

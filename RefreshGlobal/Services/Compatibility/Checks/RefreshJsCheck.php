@@ -6,7 +6,7 @@ use Modules\RefreshGlobal\Services\Compatibility\Check;
 
 /**
  * RG-JS-01: Refresh's scripts exist. Refresh loads them itself ("javascripts" filter,
- * Modules/Refresh/Providers/RefreshServiceProvider.php:131-138) and builds its shell from its provider script.
+ * Modules/Refresh/Providers/RefreshServiceProvider.php:141-152) and builds its shell from its provider script.
  */
 class RefreshJsCheck extends Check
 {

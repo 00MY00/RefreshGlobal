@@ -28,6 +28,9 @@ class DashboardTest extends TestCase
         $this->seeIn($r, $this->s['prefix'].'-SALES-OPEN');
         // never a mailbox bob can not see
         $this->dontSeeIn($r, $this->s['prefix'].'-BILLING-');
+        // "Unresolved tickets": Open and Pending columns (Refresh 1.5.0's card)
+        $this->seeIn($r, 'rg-unres-th');
+        $this->seeIn($r, 'rg-unres-row');
         // tiles lead to the "All mailboxes" page
         $this->seeIn($r, e(route('refreshglobal.tickets', ['rv' => 'unresolved'])));
     }

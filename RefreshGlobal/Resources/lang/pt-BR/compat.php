@@ -208,6 +208,12 @@ return [
         'effect' => 'Depois de fechar o último ticket ativo de uma caixa (ou outra ação que sai do ticket), o FreeScout mostra a lista da caixa em vez de voltar a “Todas as caixas”. O resto funciona.',
         'action' => 'Atualizar o RefreshGlobal para uma versão feita para esta versão do FreeScout e executar php artisan refreshglobal:check.',
     ],
+    'marker_hover' => [
+        'check'  => 'Elemento do Refresh presente: :item',
+        'label'  => 'Elemento das prévias ao passar o mouse do Refresh não encontrado: :item.',
+        'effect' => 'A opção “Prévias ao passar o mouse” não é oferecida no menu Layout de “Todas as caixas”. O resto funciona.',
+        'action' => 'Atualizar o RefreshGlobal para uma versão feita para esta versão do Refresh e executar php artisan refreshglobal:check.',
+    ],
     'marker_crumb' => [
         'check'  => 'Elemento do Refresh presente: :item (:file)',
         'label'  => 'Elemento do Refresh não encontrado: :item (:file).',

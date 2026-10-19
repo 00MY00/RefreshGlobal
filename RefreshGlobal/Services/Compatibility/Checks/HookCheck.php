@@ -17,7 +17,8 @@ class HookCheck extends Check
             // "marker": an element of Refresh's own scripts the module relies on (texts of compat.php "marker")
             $family = $def['family'] ?? 'hook';
             if (!empty($def['refresh'])) {
-                if (!$this->checker->refreshUsable()) {
+                // (or a feature of a newer Refresh: 'refresh_min')
+                if (!$this->checker->refreshUsable() || $this->checker->refreshOlderThan($def['refresh_min'] ?? null)) {
                     $results[] = $this->result($code, $family, $def['severity'], null, $def['hook'], '', ['file' => $def['file']]);
                     continue;
                 }

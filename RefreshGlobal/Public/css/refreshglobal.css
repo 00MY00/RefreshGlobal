@@ -290,3 +290,21 @@
     .rg-td-dialog { max-height: 100vh; height: 100%; border-radius: 0; }
     .rg-td-table th { width: 110px; }
 }
+
+/* Dashboard, "Unresolved tickets": open | pending per agent (GlobalDashboard::unresolvedByAgent(), like Refresh 1.5.0's
+   .rf-widget-cols; own rules so that it works with any Refresh version) */
+.rg-unres-row { align-items: center; gap: 8px; }
+.rg-unres-row:hover { background: #f8fafc; }
+.rg-unres-name { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; color: inherit !important; text-decoration: none !important; }
+.rg-widget-cols { display: flex; flex: 0 0 auto; }
+.rg-widget-cols > span, .rg-widget-cols > a { width: 96px; text-align: right; text-decoration: none !important; }
+.rg-widget-cols > a:hover { text-decoration: underline !important; }
+@media (max-width: 480px) {
+    /* phones: no header row, each number with its label under the name */
+    .rg-unres-th { display: none !important; }
+    .rg-unres-row { flex-wrap: wrap; }
+    .rg-unres-name { flex-basis: 100%; }
+    .rg-widget-cols { gap: 16px; }
+    .rg-widget-cols > a { width: auto; text-align: left; }
+    .rg-widget-cols > a::before { content: attr(data-label) " : "; color: var(--fd-text-2, #64748b); font-weight: 400; }
+}

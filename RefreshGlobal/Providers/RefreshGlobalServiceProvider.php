@@ -11,7 +11,7 @@ use Illuminate\Support\ServiceProvider;
  * - adds its own routes, views, translations, migration and command;
  * - listens to Eventy hooks found during the audit (INTEGRATION_MAP.md):
  *     menu.append (resources/views/layouts/app.blade.php:121)                 → "All mailboxes" menu entry
- *     refresh.rail_items (Modules/Refresh/Providers/RefreshServiceProvider.php:711) → same entry in Refresh's left bar
+ *     refresh.rail_items (Modules/Refresh/Providers/RefreshServiceProvider.php:742) → same entry in Refresh's left bar
  *     conversations_table.col/th/td_before_conv_number
  *       (resources/views/conversations/conversations_table.blade.php:83,118,206) → "Mailbox" column, on its page only;
  *     conversations_table.before_subject (same file:191)                     → mailbox and automatic folder badges;
@@ -160,7 +160,7 @@ class RefreshGlobalServiceProvider extends ServiceProvider
      * Refresh's "My dashboard" over all mailboxes. FreeScout's filter "dashboard.before"
      * (resources/views/secure/dashboard.blade.php:8) runs its listeners by ascending priority
      * (overrides/tormjens/eventy/src/Event.php:34-35); Refresh appends its block at the default priority 20
-     * (RefreshServiceProvider.php:491). At 19 the module notes the HTML before Refresh; at 21, if what Refresh added is
+     * (RefreshServiceProvider.php:505). At 19 the module notes the HTML before Refresh; at 21, if what Refresh added is
      * its dashboard block (class "rf-dash"), that addition is replaced by the same dashboard for all mailboxes.
      * Anything else (another module, a changed Refresh) is left untouched.
      */
@@ -195,7 +195,7 @@ class RefreshGlobalServiceProvider extends ServiceProvider
     }
 
     /**
-     * Manage › Settings › RefreshGlobal, the same way as Refresh (RefreshServiceProvider.php:91-116): filters
+     * Manage › Settings › RefreshGlobal, the same way as Refresh (RefreshServiceProvider.php:91-126): filters
      * "settings.sections" (app/Http/Controllers/SettingsController.php:267), "settings.section_settings" (:250) and
      * "settings.view" (resources/views/settings/view.blade.php:27). FreeScout saves the posted values in its options
      * table itself (SettingsController::processSave, :288-379).
@@ -334,7 +334,7 @@ class RefreshGlobalServiceProvider extends ServiceProvider
         });
     }
 
-    /** Fake folder for the native conversations table (same technique as Refresh, RefreshServiceProvider.php:228). */
+    /** Fake folder for the native conversations table (same technique as Refresh, RefreshServiceProvider.php:242). */
     public static function virtualFolder()
     {
         $folder = new \App\Folder();
@@ -357,7 +357,7 @@ class RefreshGlobalServiceProvider extends ServiceProvider
     protected function registerMenu()
     {
         // FreeScout's top menu (stock interface). Refresh hides that menu and copies its plain links into its left
-        // bar with a generic icon (RefreshServiceProvider.php:906-910) unless declared through refresh.rail_items.
+        // bar with a generic icon (RefreshServiceProvider.php:980-984) unless declared through refresh.rail_items.
         \Eventy::addAction('menu.append', function () {
             try {
                 if (!auth()->check()) {
@@ -446,7 +446,7 @@ class RefreshGlobalServiceProvider extends ServiceProvider
             echo '<td class="rg-col-mailbox"><span class="rg-mailbox-badge" title="'.e($name).'">'.e($name).'</span></td>';
         }, 5);
         // Card layout of Refresh: the mailbox is shown next to the SLA badges (Refresh writes them at priority -10 and
-        // closes the badge line at 500, RefreshServiceProvider.php:396-411); CSS shows either this badge or the column.
+        // closes the badge line at 500, RefreshServiceProvider.php:410-425); CSS shows either this badge or the column.
         // Class rf-badge: Refresh's phone version turns the row's .rf-badge elements into pills
         // (Modules/Refresh/Public/js/mobile.js:592), so the mailbox also appears on phones.
         // Setting "show the mailbox above each ticket" (on by default): name and address. $show_mailbox_column is

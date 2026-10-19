@@ -212,6 +212,12 @@ return [
         'effect' => 'After closing the last active ticket of a mailbox (or another action leaving the ticket), FreeScout shows the mailbox’s list instead of going back to “All mailboxes”. The rest works.',
         'action' => 'Update RefreshGlobal to a version made for this FreeScout version, then run php artisan refreshglobal:check.',
     ],
+    'marker_hover' => [
+        'check'  => 'Refresh element present: :item',
+        'label'  => 'Element of Refresh’s hover previews not found: :item.',
+        'effect' => 'The “Hover previews” entry is not offered in the Layout menu of “All mailboxes”. The rest works.',
+        'action' => 'Update RefreshGlobal to a version made for this Refresh version, then run php artisan refreshglobal:check.',
+    ],
     'marker_crumb' => [
         'check'  => 'Refresh element present: :item (:file)',
         'label'  => 'Refresh element no longer found: :item (:file).',

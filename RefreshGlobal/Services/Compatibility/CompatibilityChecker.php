@@ -118,6 +118,17 @@ class CompatibilityChecker
         }
     }
 
+    /**
+     * A check of a feature Refresh only has from a given version ('refresh_min' of Config/integration.php): not
+     * applicable (skipped) with an older Refresh, the module then simply does not offer that feature.
+     */
+    public function refreshOlderThan($min)
+    {
+        $version = $this->refreshVersion();
+
+        return $min !== null && $min !== '' && $version !== '' && version_compare($version, (string) $min, '<');
+    }
+
     /** Refresh present AND active: the checks of its files, views and hooks make sense. */
     public function refreshUsable()
     {

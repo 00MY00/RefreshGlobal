@@ -49,18 +49,7 @@
     </div>
 
     <div class="rf-widgets">
-        <div class="rf-card rf-widget">
-            <div class="rf-widget-head">
-                <div><div class="rf-card-title">{{ __('Unresolved tickets') }}</div><div class="rf-widget-sub">{{ __('refreshglobal::messages.title') }}</div></div>
-                <a href="{{ $rg_unresolved }}">{{ __('View details') }}</a>
-            </div>
-            <div class="rf-widget-row rf-widget-th"><span>{{ __('Agent') }}</span><span>{{ __('refresh::labels.open') }}</span></div>
-            @forelse ($stats['by_agent'] as $a)
-                <a class="rf-widget-row" href="{{ $a['url'] }}"><span>{{ $a['name'] }}</span><span class="rf-widget-n">{{ $a['n'] }}</span></a>
-            @empty
-                <div class="rf-widget-row"><span class="text-help">{{ __('No unresolved tickets') }}</span></div>
-            @endforelse
-        </div>
+        @include('refreshglobal::partials.unresolved_card', ['by_agent' => $stats['by_agent']])
         <div class="rf-card rf-widget">
             <div class="rf-widget-head">
                 <div><div class="rf-card-title">{{ __('Undelivered e-mails') }}</div><div class="rf-widget-sub">{{ __('refreshglobal::messages.title') }}</div></div>

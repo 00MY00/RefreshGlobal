@@ -25,6 +25,21 @@ class Settings
         \App\Option::set(self::REPLACE_REFRESH_TICKETS, $on ? 1 : 0);
     }
 
+    /**
+     * Refresh's hover previews of the ticket lists (Refresh 1.6.0: Modules/Refresh/Services/Settings.php:20, its own
+     * setting, RG-CORE-19): offered on the "All mailboxes" list too when Refresh has them and they are on.
+     */
+    public static function refreshHoverCards()
+    {
+        try {
+            return (new Compatibility\CompatibilityChecker())->refreshUsable()
+                && method_exists('Modules\Refresh\Services\Settings', 'hoverCards')
+                && (bool) \Modules\Refresh\Services\Settings::hoverCards();
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
+
     /** Refresh's "My dashboard" over all the user's mailboxes instead of the first one only. */
     const GLOBAL_DASHBOARD = 'refreshglobal.global_dashboard';
 

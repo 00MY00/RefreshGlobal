@@ -224,6 +224,12 @@
                             <ul class="dropdown-menu dropdown-menu-right">
                                 <li class="@if (!$rg_layout_table) active @endif"><a href="#" class="rf-set-layout" data-layout="card">{{ __('refreshglobal::messages.card_view') }}</a></li>
                                 <li class="@if ($rg_layout_table) active @endif"><a href="#" class="rf-set-layout" data-layout="table">{{ __('refreshglobal::messages.table_view') }}</a></li>
+                                @if (\Modules\RefreshGlobal\Services\Settings::refreshHoverCards())
+                                    {{-- Refresh 1.6.0's hover previews (its Public/js/hovercards.js works on this list too): same on / off
+                                         entry as in Refresh's Layout menu, handled by Refresh's script (rf_hover cookie) --}}
+                                    <li class="divider"></li>
+                                    <li class="rf-hover-toggle @if (($_COOKIE['rf_hover'] ?? '') !== 'off') active @endif"><a href="#">{{ __('Hover previews') }} <i class="rf-i rf-i-fd-check rf-i-sm rf-hover-check"></i></a></li>
+                                @endif
                             </ul>
                         </div>
                         {{-- icon only (circular arrow, text in the tooltip): the toolbar has no room for one more label --}}

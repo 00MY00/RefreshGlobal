@@ -208,6 +208,12 @@ return [
         'effect' => 'Nach dem Schließen des letzten aktiven Tickets eines Postfachs (oder einer anderen Aktion, die das Ticket verlässt) zeigt FreeScout die Liste des Postfachs statt zu „Alle Postfächer“ zurückzukehren. Der Rest funktioniert.',
         'action' => 'RefreshGlobal auf eine Version für diese FreeScout-Version aktualisieren, dann php artisan refreshglobal:check ausführen.',
     ],
+    'marker_hover' => [
+        'check'  => 'Refresh-Element vorhanden: :item',
+        'label'  => 'Element der Hover-Vorschau von Refresh nicht gefunden: :item.',
+        'effect' => 'Der Eintrag „Hover-Vorschau“ wird im Layout-Menü von „Alle Postfächer“ nicht angeboten. Der Rest funktioniert.',
+        'action' => 'RefreshGlobal auf eine Version für diese Refresh-Version aktualisieren, dann php artisan refreshglobal:check ausführen.',
+    ],
     'marker_crumb' => [
         'check'  => 'Refresh-Element vorhanden: :item (:file)',
         'label'  => 'Refresh-Element nicht mehr gefunden: :item (:file).',

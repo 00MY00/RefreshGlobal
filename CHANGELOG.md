@@ -2,6 +2,27 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.14.0] — 2026-10-19
+
+### Compatibilité
+- **Refresh 1.6.0** (version actuelle) : testé avec Refresh 1.6.0 ; plage acceptée par `refreshglobal:check`
+  `>= 1.4.0` et `< 1.7.0` (avant : `< 1.5.0`, d'où l'avertissement RG-REF-02 avec un Refresh récent). Tous les
+  éléments de Refresh utilisés par le module ont été revérifiés dans le code de Refresh 1.6.0 et leurs numéros de
+  ligne mis à jour (`INTEGRATION_MAP.md`). Testé : 124 tests PHPUnit, affichage à 5 largeurs d'écran, retour à la
+  liste, sélection par appui long, adresse d'envoi (ordinateur et téléphone), tableau de bord.
+
+### Ajouté
+- **Tableau de bord global : tickets non résolus par agent en deux colonnes, « Ouverts » et « En attente »**, comme
+  la carte de Refresh depuis Refresh 1.5.0 ; agents triés par le total (ouverts + en attente), puis par nom ; la ligne
+  « Non assigné » est découpée de la même façon ; chaque nombre mène à « Toutes les boîtes » filtrée sur l'agent et
+  le statut. Une seule requête groupée (agent × statut), avec les mêmes droits qu'avant (boîtes permises, droit
+  « seulement ses tickets », tickets publiés, sans spam). Sur téléphone, chaque nombre a son libellé. Les données du
+  tableau de bord gardées en cache par une version précédente sont ignorées (nouvelle clé), sans action à faire.
+- **Aperçus au survol de Refresh 1.6.0** : l'entrée « Aperçus au survol » (activer / désactiver, par agent) est aussi
+  dans le menu Affichage de « Toutes les boîtes » ; les aperçus (premier message du ticket, fiche du contact)
+  fonctionnent sur cette liste. Contrôles RG-CORE-19 et RG-HOOK-37, ignorés avec un Refresh plus ancien (nouvelle
+  option `refresh_min` des contrôles).
+
 ## [1.13.0] — 2026-10-15
 
 ### Corrigé

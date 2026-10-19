@@ -208,6 +208,12 @@ return [
         'effect' => 'Na het sluiten van het laatste actieve ticket van een mailbox (of een andere actie die het ticket verlaat) toont FreeScout de lijst van de mailbox in plaats van terug te gaan naar „Alle mailboxen”. De rest werkt.',
         'action' => 'RefreshGlobal bijwerken naar een versie voor deze FreeScout-versie en daarna php artisan refreshglobal:check uitvoeren.',
     ],
+    'marker_hover' => [
+        'check'  => 'Refresh-element aanwezig: :item',
+        'label'  => 'Element van de hover-voorbeelden van Refresh niet gevonden: :item.',
+        'effect' => 'De optie „Hover-voorbeelden” wordt niet aangeboden in het menu Weergave van „Alle mailboxen”. De rest werkt.',
+        'action' => 'RefreshGlobal bijwerken naar een versie voor deze Refresh-versie en daarna php artisan refreshglobal:check uitvoeren.',
+    ],
     'marker_crumb' => [
         'check'  => 'Refresh-element aanwezig: :item (:file)',
         'label'  => 'Refresh-element niet meer gevonden: :item (:file).',

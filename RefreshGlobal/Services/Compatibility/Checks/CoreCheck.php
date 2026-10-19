@@ -14,7 +14,7 @@ class CoreCheck extends Check
             // texts of compat.php: "core", or the family of a secondary feature (core_refresh, core_delete)
             $family = $def['family'] ?? 'core';
             // classes of Refresh (or of another optional module, 'module' => alias): not applicable without it
-            if ((!empty($def['refresh']) && !$this->checker->refreshUsable()) || (!empty($def['module']) && !RouteCheck::moduleActive($def['module']))) {
+            if ((!empty($def['refresh']) && (!$this->checker->refreshUsable() || $this->checker->refreshOlderThan($def['refresh_min'] ?? null))) || (!empty($def['module']) && !RouteCheck::moduleActive($def['module']))) {
                 $results[] = $this->result($code, $family, $def['severity'] ?? self::BLOCKING, null, $def['class'] ?? implode(', ', (array) ($def['classes'] ?? [])));
                 continue;
             }
