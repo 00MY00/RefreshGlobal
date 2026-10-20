@@ -1,0 +1,62 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://github.com/00MY00/RefreshGlobal/blob/main/RefreshGlobal/docs/interop/schemas/conversation-origin-1.0.schema.json",
+    "title": "Conversation origin 1.0",
+    "description": "FreeScoutInterop.context.setConversationOrigin(): where a ticket was opened from, so that the module rendering the ticket page can offer the way back (breadcrumb, back arrow, landmark). No HTML, no selector.",
+    "type": "object",
+    "required": [
+        "schema",
+        "sourceModule",
+        "origin"
+    ],
+    "properties": {
+        "schema": {
+            "const": "1.0"
+        },
+        "sourceModule": {
+            "type": "string"
+        },
+        "conversationId": {
+            "type": [
+                "integer",
+                "null"
+            ],
+            "description": "null: the next ticket opened"
+        },
+        "mailboxId": {
+            "type": [
+                "integer",
+                "null"
+            ]
+        },
+        "origin": {
+            "type": "object",
+            "required": [
+                "id",
+                "label",
+                "href"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "\"refreshglobal.all-mailboxes\" or \"refreshglobal.view.<id>\""
+                },
+                "label": {
+                    "type": "string",
+                    "description": "already translated label, e.g. \"All mailboxes\" or the saved view name"
+                },
+                "href": {
+                    "type": "string",
+                    "description": "address of the list to go back to (may end with #rg-back=<ticket> to reopen the list at that ticket)"
+                },
+                "count": {
+                    "type": [
+                        "integer",
+                        "null"
+                    ],
+                    "description": "number of tickets of that list, when known"
+                }
+            }
+        }
+    }
+}

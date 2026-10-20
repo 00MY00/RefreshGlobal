@@ -1,0 +1,100 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://github.com/00MY00/RefreshGlobal/blob/main/RefreshGlobal/docs/interop/schemas/saved-view-2.0.schema.json",
+    "title": "Saved view export 2.0",
+    "description": "Exported saved view of RefreshGlobal (GET /refresh-global/views/{id}/export): mailboxes by e-mail address, the agent only as a dynamic value — no user id leaves the installation.",
+    "type": "object",
+    "required": [
+        "format",
+        "schema_version",
+        "name",
+        "definition"
+    ],
+    "properties": {
+        "format": {
+            "const": "refreshglobal-view"
+        },
+        "schema_version": {
+            "const": 2
+        },
+        "name": {
+            "type": "string"
+        },
+        "definition": {
+            "type": "object",
+            "required": [
+                "filters",
+                "sorting"
+            ],
+            "properties": {
+                "filters": {
+                    "type": "object",
+                    "properties": {
+                        "mailboxes": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "name": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "status": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        },
+                        "assignee": {
+                            "enum": [
+                                "",
+                                "me",
+                                "none"
+                            ]
+                        },
+                        "q": {
+                            "type": "string"
+                        },
+                        "rview": {
+                            "type": "string"
+                        },
+                        "wfolder": {
+                            "type": "string"
+                        },
+                        "mailtag": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "sorting": {
+                    "type": "object",
+                    "properties": {
+                        "field": {
+                            "enum": [
+                                "updated",
+                                "created",
+                                "number",
+                                "subject",
+                                "status"
+                            ]
+                        },
+                        "direction": {
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    }
+                },
+                "display": {
+                    "type": "object"
+                }
+            }
+        }
+    }
+}

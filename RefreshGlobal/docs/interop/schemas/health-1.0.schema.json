@@ -1,0 +1,71 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://github.com/00MY00/RefreshGlobal/blob/main/RefreshGlobal/docs/interop/schemas/health-1.0.schema.json",
+    "title": "Health check 1.0",
+    "description": "Output of php artisan refreshglobal:health --json. Exit code 0 healthy, 1 unhealthy, 2 error of the check itself. Read-only, no network.",
+    "type": "object",
+    "required": [
+        "schema",
+        "module",
+        "version",
+        "status",
+        "checks"
+    ],
+    "properties": {
+        "schema": {
+            "const": "1.0"
+        },
+        "module": {
+            "type": "string"
+        },
+        "version": {
+            "type": "string"
+        },
+        "status": {
+            "enum": [
+                "healthy",
+                "unhealthy",
+                "error"
+            ]
+        },
+        "state": {
+            "enum": [
+                "ok",
+                "warning",
+                "degraded",
+                "blocking",
+                "unknown"
+            ]
+        },
+        "checks": {
+            "type": "object",
+            "additionalProperties": {
+                "enum": [
+                    "pass",
+                    "warn",
+                    "fail"
+                ]
+            }
+        },
+        "interop": {
+            "type": "object",
+            "properties": {
+                "protocol": {
+                    "type": "string"
+                },
+                "refresh": {
+                    "type": [
+                        "object",
+                        "null"
+                    ]
+                }
+            }
+        },
+        "failed": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        }
+    }
+}

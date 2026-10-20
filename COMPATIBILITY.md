@@ -43,6 +43,7 @@ Chacun est contrôlé par `php artisan refreshglobal:check`.
 | Vues partagées : utilisateurs proposés (`User::whichUsersCanView()`, `User::nonDeleted()`, `TYPE_ROBOT`) | méthodes de FreeScout | partage avec des utilisateurs choisis indisponible ; vues privées et pour tous fonctionnent (RG-CORE-20) |
 | Images distantes (`thread.body_output`, `thread.blade.php:297`) | filtre de FreeScout | images distantes chargées comme avant (RG-HOOK-38) |
 | Déplacer vers un dossier (`bulk_actions.before_delete`, `.conv-actions`, `.rf-tb-close` de Refresh, `ConversationPolicy::update`, `Mailbox::getInImapFolders`, accès IMAP RG-CORE-14/15) | crochets et vues de FreeScout / Refresh | bouton absent à l'endroit concerné ; le reste fonctionne (RG-HOOK-39…41, RG-CORE-21/22) |
+| Contrat FreeScout Interop (`interop.json`, `window.FreeScoutInterop`) | Refresh qui déclare le protocole `>=1.0.0 <2.0.0` | sans contrat : mode *legacy* (replis DOM testés, comme avant) ; sans Refresh : *autonome* ; version en conflit déclarée : intégration coupée (INCOMPATIBLE) — voir Diagnostic › Interopérabilité |
 | Correction des textes français de Refresh (`<meta name="refresh-l10n">`) | balise interne de Refresh | textes d'origine de Refresh (RG-HOOK-22, avertissement) |
 
 ## Mises à jour

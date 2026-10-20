@@ -1,0 +1,43 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://github.com/00MY00/RefreshGlobal/blob/main/RefreshGlobal/docs/interop/schemas/view-changed-1.0.schema.json",
+    "title": "refreshglobal:view-changed 1.0",
+    "description": "Payload of the event emitted when the \"All mailboxes\" list is shown.",
+    "type": "object",
+    "required": [
+        "schema",
+        "source_module",
+        "href",
+        "label"
+    ],
+    "properties": {
+        "schema": {
+            "const": "1.0"
+        },
+        "source_module": {
+            "const": "refresh-global"
+        },
+        "view_id": {
+            "type": [
+                "integer",
+                "null"
+            ]
+        },
+        "modified": {
+            "type": "boolean",
+            "description": "filters changed after opening the saved view"
+        },
+        "href": {
+            "type": "string"
+        },
+        "label": {
+            "type": "string"
+        },
+        "count": {
+            "type": [
+                "integer",
+                "null"
+            ]
+        }
+    }
+}

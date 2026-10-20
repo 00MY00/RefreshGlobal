@@ -34,12 +34,16 @@ class UpdatesTest extends TestCase
         $this->assertSame(0, \Artisan::call('refreshglobal:health', ['--json' => true]));
         $out = json_decode(trim(\Artisan::output()), true);
         $this->assertIsArray($out);
-        $this->assertSame('ok', $out['status']);
+        // schema health 1.0 of the FreeScout Interop contract (interop.json updateguard.health)
+        $this->assertSame('1.0', $out['schema']);
+        $this->assertSame('healthy', $out['status']);
         $this->assertSame('RefreshGlobal', $out['module']);
         $this->assertSame($this->manifest()['version'], $out['version']);
-        $this->assertSame('ok', $out['checks']['files']);
-        $this->assertSame('ok', $out['checks']['page']);
-        $this->assertNotSame('fail', $out['checks']['database'] ?? 'ok');
+        $this->assertSame('pass', $out['checks']['files']);
+        $this->assertSame('pass', $out['checks']['page']);
+        $this->assertSame('pass', $out['checks']['interop_manifest']);
+        $this->assertNotSame('fail', $out['checks']['database'] ?? 'pass');
+        $this->assertSame('1.0.0', $out['interop']['protocol']);
         // UpdateGuard detects --json from the command's definition
         $this->assertTrue(\Artisan::all()['refreshglobal:health']->getDefinition()->hasOption('json'));
     }
@@ -50,7 +54,7 @@ class UpdatesTest extends TestCase
         $this->integration('routes.RG-ROUTE-03', ['route' => 'refreshglobal.does_not_exist', 'severity' => 'blocking', 'source' => 'test']);
         $this->assertSame(1, \Artisan::call('refreshglobal:health', ['--json' => true]));
         $out = json_decode(trim(\Artisan::output()), true);
-        $this->assertSame('fail', $out['status']);
+        $this->assertSame('unhealthy', $out['status']);
         $this->assertSame('blocking', $out['state']);
     }
 

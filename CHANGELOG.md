@@ -8,6 +8,44 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) — versions: [
 Every published change gets a new version number: FreeScout's Manage › Modules page and UpdateGuard only offer an
 update when the version changes.
 
+## [1.17.0] — unreleased (waiting for the review of Refresh's maintainer)
+
+### Added
+- **FreeScout Interop contract, protocol 1.0.0** ([docs/INTEROPERABILITY.md](docs/INTEROPERABILITY.md)): Refresh and
+  RefreshGlobal stay independent sibling modules and can cooperate through a small, versioned, declared contract
+  instead of RefreshGlobal changing Refresh's page.
+  - `RefreshGlobal/interop.json`: the single source of truth of what RefreshGlobal provides (capabilities, events,
+    surfaces, navigation / toolbar / swipe intents, conversation origin, schemas, server hooks, commands) and consumes
+    from an optional Refresh, its compatibility ranges and its UpdateGuard metadata; JSON schemas of every payload in
+    `RefreshGlobal/docs/interop/schemas/`.
+  - `Public/js/fs-interop.js`: the neutral browser bridge `window.FreeScoutInterop` (registration, capability
+    discovery with version ranges, event bus, conversation context, surfaces, registries) — idempotent,
+    order-independent, no dependency; Refresh can ship the same file.
+  - `Public/js/interop-adapter.js`: RefreshGlobal registers itself, declares its intents (“All mailboxes” navigation
+    entry, “Move to a folder” and “Delete forever” toolbar actions, left-swipe “Move” action) and gives the origin of
+    the tickets opened from its list.
+  - Server hooks `fsinterop.modules`, `fsinterop.dashboard.context` (other modules may only narrow the dashboard's
+    mailboxes) and `fsinterop.dashboard.data` (figures of scope `global-mailboxes`, schema 1.1).
+  - Diagnostics page: **Interoperability** section (Refresh version, interop protocol, mode, compatibility, status of
+    each capability, legacy fallbacks).
+  - Guide for Refresh's maintainer: [docs/interop/REFRESH_MAINTAINER_GUIDE.md](docs/interop/REFRESH_MAINTAINER_GUIDE.md),
+    proposed Refresh manifest `docs/interop/examples/refresh.interop.json`.
+
+### Changed
+- **Cooperation modes with Refresh**: *native* when Refresh declares a compatible protocol (RefreshGlobal no longer
+  changes Refresh's page for the capabilities Refresh provides), *legacy* with Refresh as it is today (the DOM
+  fallbacks of previous versions, unchanged for the user), *standalone* without Refresh. Compatibility reported as
+  COMPATIBLE / DEGRADED / UNKNOWN / INCOMPATIBLE.
+- `refreshglobal:health --json` follows the contract's health schema 1.0: `"schema": "1.0"`, status `healthy` /
+  `unhealthy` / `error`, checks `pass` / `warn` / `fail`, new `interop_manifest` check, `interop` summary; exit code 2
+  when the check itself fails. UpdateGuard only uses the exit code (0 = healthy): no change for it.
+- Releases publish `interop.json` next to `RefreshGlobal.zip`, listed in `SHA256SUMS`.
+
+### Compatibility
+- With today's Refresh (1.4.x – 1.6.x, no contract): mode **legacy**, same behaviour as 1.16.2.
+- New CI job **interop-contract**: `tools/validate-interop.php` (manifest valid and consistent with the code,
+  `module.json` and `Config/integration.php`) and `tests/interop/fs-interop.test.js`.
+
 ## [1.16.2] — 2026-10-20
 
 ### Fixed

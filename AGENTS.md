@@ -19,6 +19,27 @@ Refresh module. Read `README.en.md`, `COMPATIBILITY.md` and `RefreshGlobal/INTEG
 - **No personal or confidential data** in the repository, commits or release notes (no real names, e-mail addresses,
   host names or domains of an installation; test data uses `example.test`).
 
+## Interoperability rules (FreeScout Interop)
+
+Before changing any code related to navigation, mobile navigation, ticket lists, conversation pages, toolbars,
+dashboards, swipe gestures, search, saved / shared views, cross-module events, public routes or UpdateGuard
+compatibility, you MUST read:
+
+1. `RefreshGlobal/interop.json`
+2. `docs/INTEROPERABILITY.md`
+
+Refresh and RefreshGlobal are sibling FreeScout modules: neither may introduce a hard dependency on the other.
+If a public cross-module capability, event, schema, hook, route or action is added, removed, renamed or changed:
+
+1. update `interop.json` (and its schema in `RefreshGlobal/docs/interop/schemas/`) in the same commit;
+2. register browser-side intents with literal ids in `Public/js/interop-adapter.js` (the validator reads them);
+3. add or update tests (`InteropTest`, `tests/interop/fs-interop.test.js`) and run `php tools/validate-interop.php`;
+4. update `docs/INTEROPERABILITY.md` and both changelogs;
+5. keep the previous contract during a deprecation period when possible (protocol major bump for breaking changes).
+
+Do not depend on another module's private DOM selectors or private methods when a documented interoperability channel
+exists; the existing DOM code of `Public/js/shell.js` is a legacy fallback, run only when `legacy(capability)` is true.
+
 ## Every change that is published
 
 1. **New version number** (SemVer): `RefreshGlobal/module.json` (`version`) and `install.sh` (`SCRIPT_VERSION`). Never

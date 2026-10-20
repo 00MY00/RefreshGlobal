@@ -1,0 +1,82 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://github.com/00MY00/RefreshGlobal/blob/main/RefreshGlobal/docs/interop/schemas/dashboard-data-1.1.schema.json",
+    "title": "Dashboard data 1.1",
+    "description": "Answer of the server filter fsinterop.dashboard.data for a scope (RefreshGlobal answers \"global-mailboxes\"): figures, never templates.",
+    "type": "object",
+    "required": [
+        "schema",
+        "scope",
+        "counts",
+        "agents"
+    ],
+    "properties": {
+        "schema": {
+            "const": "1.1"
+        },
+        "source_module": {
+            "type": "string"
+        },
+        "scope": {
+            "type": "string"
+        },
+        "mailbox_ids": {
+            "type": "array",
+            "items": {
+                "type": "integer"
+            }
+        },
+        "counts": {
+            "type": "object",
+            "required": [
+                "open",
+                "pending",
+                "unassigned"
+            ],
+            "properties": {
+                "open": {
+                    "type": "integer"
+                },
+                "pending": {
+                    "type": "integer"
+                },
+                "unassigned": {
+                    "type": "integer"
+                }
+            }
+        },
+        "agents": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "user_id",
+                    "open",
+                    "pending",
+                    "total"
+                ],
+                "properties": {
+                    "user_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "description": "null: unassigned"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "open": {
+                        "type": "integer"
+                    },
+                    "pending": {
+                        "type": "integer"
+                    },
+                    "total": {
+                        "type": "integer"
+                    }
+                }
+            }
+        }
+    }
+}

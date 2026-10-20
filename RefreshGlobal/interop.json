@@ -1,0 +1,144 @@
+{
+  "manifest_version": 1,
+
+  "module": {
+    "id": "refresh-global",
+    "name": "RefreshGlobal",
+    "alias": "refreshglobal",
+    "version_source": "module.json",
+    "documentation": "docs/INTEROPERABILITY.md"
+  },
+
+  "interop": {
+    "protocol": "1.0.0",
+    "bridge": "Public/js/fs-interop.js",
+
+    "provides": {
+      "capabilities": {
+        "global-ticket-list": "1.0",
+        "global-dashboard": "1.1",
+        "saved-views": "1.0",
+        "shared-views": "1.0",
+        "navigation-origin": "1.0",
+        "mail-tags": "1.0",
+        "mail-move": "1.0"
+      },
+
+      "events": {
+        "refreshglobal:view-changed": { "version": "1.0", "schema": "view-changed" },
+        "refreshglobal:conversation-opened": { "version": "1.0", "schema": "conversation-origin" }
+      },
+
+      "surfaces": [
+        { "surface": "ticket-list", "context": "global-mailboxes", "version": "1.0" },
+        { "surface": "dashboard", "context": "global-mailboxes", "version": "1.1" },
+        { "surface": "saved-views", "context": "global-mailboxes", "version": "1.0" }
+      ],
+
+      "registrations": {
+        "navigation": [
+          { "id": "refreshglobal.all-mailboxes", "version": "1.0", "schema": "navigation-entry" }
+        ],
+        "toolbar": [
+          { "id": "refreshglobal.move-to-folder", "version": "1.0", "schema": "toolbar-action" },
+          { "id": "refreshglobal.delete-forever", "version": "1.0", "schema": "toolbar-action" }
+        ],
+        "swipe": [
+          { "id": "refreshglobal.move-to-folder", "version": "1.0", "schema": "swipe-action" }
+        ]
+      },
+
+      "context": {
+        "conversation-origin": "1.0"
+      },
+
+      "schemas": {
+        "module-registration": { "version": "1.0", "file": "docs/interop/schemas/module-registration-1.0.schema.json" },
+        "conversation-origin": { "version": "1.0", "file": "docs/interop/schemas/conversation-origin-1.0.schema.json" },
+        "view-changed": { "version": "1.0", "file": "docs/interop/schemas/view-changed-1.0.schema.json" },
+        "navigation-entry": { "version": "1.0", "file": "docs/interop/schemas/navigation-entry-1.0.schema.json" },
+        "toolbar-action": { "version": "1.0", "file": "docs/interop/schemas/toolbar-action-1.0.schema.json" },
+        "swipe-action": { "version": "1.0", "file": "docs/interop/schemas/swipe-action-1.0.schema.json" },
+        "dashboard-data": { "version": "1.1", "file": "docs/interop/schemas/dashboard-data-1.1.schema.json" },
+        "saved-view": { "version": "2.0", "file": "docs/interop/schemas/saved-view-2.0.schema.json" },
+        "health": { "version": "1.0", "file": "docs/interop/schemas/health-1.0.schema.json" }
+      },
+
+      "server_hooks": {
+        "fsinterop.modules": { "type": "filter", "version": "1.0", "description": "each participating module adds its summary (id, version, protocol, capabilities)" },
+        "fsinterop.dashboard.context": { "type": "filter", "version": "1.0", "description": "context of a dashboard about to be computed; other modules may only narrow mailbox_ids" },
+        "fsinterop.dashboard.data": { "type": "filter", "version": "1.1", "schema": "dashboard-data", "description": "dashboard figures of a scope; RefreshGlobal answers scope global-mailboxes" },
+        "refreshglobal.mail_tags": { "type": "filter", "version": "1.0", "description": "origin tags of tickets (docs/api-tags.md)" },
+        "refreshglobal.thread_mail_tags": { "type": "filter", "version": "1.0", "description": "origin tags and server folder of e-mails (docs/api-tags.md)" },
+        "refreshglobal.mail_tagged": { "type": "action", "version": "1.0", "description": "an e-mail received new origin tags (docs/api-tags.md)" },
+        "refreshglobal.mail_moved": { "type": "action", "version": "1.0", "description": "an e-mail was moved to another folder of the mail server (docs/api-tags.md)" }
+      },
+
+      "commands": {
+        "refreshglobal:health": "health check, read-only (see updateguard.health)",
+        "refreshglobal:check": "integration checks RG-xxx (Config/integration.php)"
+      }
+    },
+
+    "consumes": {
+      "optional": {
+        "refresh": {
+          "protocol": ">=1.0.0 <2.0.0",
+          "capabilities": {
+            "navigation": ">=1.0 <2.0",
+            "navigation-context": ">=1.0 <2.0",
+            "ticket-toolbar": ">=1.0 <2.0",
+            "swipe-actions": ">=1.0 <2.0",
+            "conversation-ui": ">=1.0 <2.0"
+          }
+        }
+      }
+    }
+  },
+
+  "compatibility": {
+    "freescout": ">=1.8.0 <1.9.0",
+    "php": ">=7.1.0",
+    "peers": {
+      "refresh": {
+        "required": false,
+        "supported_versions": ">=1.4.0 <2.0.0",
+        "interop_protocol": ">=1.0.0 <2.0.0",
+        "fallback": {
+          "supported_versions": ">=1.4.0 <1.7.0",
+          "mode": "legacy"
+        },
+        "conflicts": []
+      }
+    }
+  },
+
+  "compatibility_policy": {
+    "peer_protocol_mismatch": "degraded",
+    "explicit_conflict": "blocked",
+    "unknown_peer_version": "warning"
+  },
+
+  "updateguard": {
+    "schema": "1.0",
+    "package": {
+      "asset": "RefreshGlobal.zip"
+    },
+    "integrity": {
+      "algorithm": "sha256",
+      "asset": "SHA256SUMS",
+      "required": true
+    },
+    "health": {
+      "command": "php artisan refreshglobal:health",
+      "json_command": "php artisan refreshglobal:health --json",
+      "exit_codes": {
+        "healthy": 0,
+        "unhealthy": 1,
+        "error": 2
+      },
+      "read_only": true,
+      "network": false
+    }
+  }
+}

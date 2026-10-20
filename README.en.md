@@ -58,6 +58,14 @@ otherwise it uses FreeScout's standard look.
   user's profile language, otherwise the default one. A **language switch** at the bottom of the views panel (and
   of the phone drawer) changes that profile language: FreeScout, Refresh and the module switch together.
 
+### Interoperability with Refresh (FreeScout Interop)
+
+RefreshGlobal and Refresh are independent modules: each works without the other. Together they can cooperate through
+a declared contract (`RefreshGlobal/interop.json`, [docs/INTEROPERABILITY.md](docs/INTEROPERABILITY.md)): RefreshGlobal
+declares its intents (“All mailboxes” entry, “Move” action, origin of a ticket…) and Refresh renders them, without
+RefreshGlobal touching its page. With a Refresh that does not know the contract yet, RefreshGlobal uses its tested
+fallbacks (*legacy* mode, as before). The current mode is shown in **RefreshGlobal diagnostics › Interoperability**.
+
 ### Saved and shared views
 
 A **view** is a saved set of filters (mailboxes, status, assigned to, search, automatic folder, e-mail tag, Refresh

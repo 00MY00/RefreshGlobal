@@ -51,8 +51,12 @@ class GlobalDashboard
     public static function render($user)
     {
         $access = new MailboxAccess($user);
-        $mailboxes = $access->mailboxes();
-        $ids = $access->allowedIds();
+        // FreeScout Interop: other modules may narrow the mailboxes of this dashboard, never widen them
+        // (Services/Interop/ServerHooks.php, filter fsinterop.dashboard.context)
+        $ids = \Modules\RefreshGlobal\Services\Interop\ServerHooks::dashboardContext($user, $access->allowedIds())['mailbox_ids'];
+        $mailboxes = $access->mailboxes()->filter(function ($mailbox) use ($ids) {
+            return in_array((int) $mailbox->id, $ids, true);
+        })->values();
         if (!$ids) {
             return '';
         }
@@ -67,7 +71,7 @@ class GlobalDashboard
         });
 
         // unresolved tickets of every mailbox, with the "Mailbox" column (not cached: links, stars, viewers)
-        $query = new GlobalTicketQuery($access, GlobalTicketQuery::normalize(['status' => [Conversation::STATUS_ACTIVE, Conversation::STATUS_PENDING]], $access));
+        $query = new GlobalTicketQuery($access, GlobalTicketQuery::normalize(['status' => [Conversation::STATUS_ACTIVE, Conversation::STATUS_PENDING], 'mb' => $ids], $access));
         $conversations = $query->paginate(25);
 
         $previous = \Modules\RefreshGlobal\Providers\RefreshGlobalServiceProvider::$show_mailbox_column;

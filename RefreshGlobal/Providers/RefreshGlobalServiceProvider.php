@@ -66,6 +66,7 @@ class RefreshGlobalServiceProvider extends ServiceProvider
         $this->registerMailTags();
         $this->registerRemoteImages();
         $this->registerMailMove();
+        $this->registerInterop();
 
         // Ticket deleted for good: its e-mails are queued for the mail server's trash (Services/MailServerTrash.php).
         // FreeScout fires this action before removing the tickets (app/Conversation.php:2163).
@@ -166,6 +167,42 @@ class RefreshGlobalServiceProvider extends ServiceProvider
      * its dashboard block (class "rf-dash"), that addition is replaced by the same dashboard for all mailboxes.
      * Anything else (another module, a changed Refresh) is left untouched.
      */
+    /**
+     * FreeScout Interop contract (docs/INTEROPERABILITY.md, interop.json): server hooks fsinterop.* (Services/Interop/
+     * ServerHooks.php), and on every page <meta name="refreshglobal-interop"> for Public/js/interop-adapter.js — the
+     * module's id, version, protocol and capabilities, what it consumes from Refresh (all read from interop.json, the
+     * single source of truth) and the "All mailboxes" navigation intent.
+     */
+    protected function registerInterop()
+    {
+        \Modules\RefreshGlobal\Services\Interop\ServerHooks::register();
+        \Eventy::addAction('layout.head', function () {
+            try {
+                $manifest = \Modules\RefreshGlobal\Services\Interop\Manifest::own();
+                if (!auth()->check() || !$manifest) {
+                    return;
+                }
+                $config = [
+                    'module'       => ['id' => $manifest->id(), 'version' => \Modules\RefreshGlobal\Services\Compatibility\CompatibilityChecker::moduleVersion()],
+                    'protocol'     => $manifest->protocol(),
+                    'capabilities' => $manifest->capabilities(),
+                    'consumes'     => $manifest->consumes('refresh') ?: ['protocol' => '', 'capabilities' => []],
+                    'navigation'   => [
+                        'href'    => route('refreshglobal.tickets'),
+                        'label'   => __('refreshglobal::messages.menu'),
+                        'icon'    => asset(\Module::getPublicPath(self::ALIAS).'/img/all-mailboxes.svg'),
+                        'active'  => self::isModulePage(),
+                        'replace' => \Modules\RefreshGlobal\Services\Settings::replaceRefreshTickets(),
+                    ],
+                    'labels'       => ['deleteForever' => __('refreshglobal::messages.delete_forever')],
+                ];
+                echo '<meta name="refreshglobal-interop" content="'.e(json_encode($config, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)).'">'."\n";
+            } catch (\Throwable $e) {
+                // optional: shell.js stays in legacy mode
+            }
+        });
+    }
+
     /**
      * Remote images of the e-mails on a ticket page (Services/RemoteImages.php): FreeScout's filter "thread.body_output"
      * (resources/views/conversations/partials/thread.blade.php:297), mode of the settings / origin tags of the message.
@@ -293,6 +330,10 @@ class RefreshGlobalServiceProvider extends ServiceProvider
     protected function registerShell()
     {
         \Eventy::addFilter('javascripts', function ($scripts) {
+            // FreeScout Interop: the neutral bridge, then RefreshGlobal's participation, before shell.js which asks it
+            // whether Refresh cooperates natively (registerInterop())
+            $scripts[] = \Module::getPublicPath(self::ALIAS).'/js/fs-interop.js';
+            $scripts[] = \Module::getPublicPath(self::ALIAS).'/js/interop-adapter.js';
             $scripts[] = \Module::getPublicPath(self::ALIAS).'/js/shell.js';
 
             return $scripts;

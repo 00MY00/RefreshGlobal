@@ -1,4 +1,4 @@
-# Résultats des tests — RefreshGlobal 1.16.2
+# Résultats des tests — RefreshGlobal 1.17.0
 
 Date : 2026-10-09. Environnements jetables Docker : FreeScout 1.8.245 (dépôt officiel), PHP 8.2.34, Apache,
 MariaDB 10.11 ; Refresh 1.4.3 (dépôt officiel). Données de test uniquement (adresses `.test`).
@@ -320,6 +320,21 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
 - Navigateur, tableau de bord de toutes les boîtes avec la langue de l’utilisateur réglée sur es, it, nl, pt-BR, fr,
   de : aucun des textes anglais cherchés, en-tête « Agente / Abiertos / Pendientes », « Tendencias de hoy »… OK.
 - PHPUnit : **151 tests, 2111 assertions, 0 échec** (2 ignorés).
+
+## 36. Contrat FreeScout Interop (1.17.0, non publiée)
+
+- `php tools/validate-interop.php` : « Interop contract OK: protocol 1.0.0, 7 capabilities, 2 events, 9 schemas » ;
+  `node tests/interop/fs-interop.test.js` : **9/9** (chargement double, ordre de chargement, `supports()` et protocole,
+  plages de versions, isolation des erreurs, origine d’un ticket gardée pour l’onglet, registres, surfaces, mise à niveau
+  du pont).
+- PHPUnit : **157 tests, 2161 assertions, 0 échec** (2 ignorés), dont `InteropTest` (6 : manifeste, validation, plages,
+  sept situations de coopération, crochets serveur dont « réduire jamais élargir », meta de la page et ordre des scripts).
+- `refreshglobal:health` : « Healthy », `interop_manifest PASS`, « refresh interop legacy (DEGRADED) » avec Refresh 1.6.0.
+- Navigateur (`interop.js`) : **legacy** (Refresh 1.6.0 tel quel) : mode legacy, mêmes replis qu’avant (fil d’Ariane,
+  repère, bouton Déplacer) ; **natif** (Refresh simulé qui s’enregistre avec toutes les capacités) : mode natif, origine
+  du ticket transmise par le contrat, aucune modification de la page de Refresh (ni fil d’Ariane, ni repère, ni bouton),
+  l’action « Déplacer » déclarée ouvre la fenêtre quand son propriétaire l’exécute ; aucune erreur JavaScript.
+- Non-régression : `layout.js` (5 largeurs), `closenext.js`, `select.js`, `move116.js` (GreenMail) OK.
 
 ## 28. Adresse d'envoi au choix (1.10.0)
 

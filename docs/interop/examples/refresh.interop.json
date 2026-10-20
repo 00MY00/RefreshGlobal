@@ -1,0 +1,80 @@
+{
+  "manifest_version": 1,
+
+  "module": {
+    "id": "refresh",
+    "name": "Refresh",
+    "alias": "refresh",
+    "version_source": "module.json"
+  },
+
+  "interop": {
+    "protocol": "1.0.0",
+    "bridge": "Public/js/fs-interop.js",
+
+    "provides": {
+      "capabilities": {
+        "navigation": "1.0",
+        "navigation-context": "1.0",
+        "ticket-toolbar": "1.0",
+        "swipe-actions": "1.0",
+        "conversation-ui": "1.0",
+        "dashboard": "1.1"
+      },
+      "surfaces": [
+        { "surface": "ticket-list", "context": "mailbox", "version": "1.0" },
+        { "surface": "dashboard", "context": "mailbox", "version": "1.1" },
+        { "surface": "navigation", "context": "*", "version": "1.0" },
+        { "surface": "ticket-toolbar", "context": "conversation", "version": "1.0" }
+      ],
+      "events": {
+        "conversation:rendered": "1.0",
+        "list:rendered": "1.0"
+      }
+    },
+
+    "consumes": {
+      "optional": {
+        "refresh-global": {
+          "protocol": ">=1.0.0 <2.0.0",
+          "capabilities": {
+            "global-ticket-list": ">=1.0 <2.0",
+            "navigation-origin": ">=1.0 <2.0"
+          }
+        }
+      }
+    }
+  },
+
+  "compatibility": {
+    "freescout": ">=1.8.0 <2.0.0",
+    "php": ">=7.1.0",
+    "peers": {
+      "refresh-global": {
+        "required": false,
+        "supported_versions": ">=1.17.0 <2.0.0",
+        "interop_protocol": ">=1.0.0 <2.0.0",
+        "conflicts": []
+      }
+    }
+  },
+
+  "compatibility_policy": {
+    "peer_protocol_mismatch": "degraded",
+    "explicit_conflict": "blocked",
+    "unknown_peer_version": "warning"
+  },
+
+  "updateguard": {
+    "schema": "1.0",
+    "package": { "asset": "Refresh.zip" },
+    "integrity": { "algorithm": "sha256", "asset": "SHA256SUMS", "required": true },
+    "health": {
+      "command": "php artisan refresh:health",
+      "json_command": "php artisan refresh:health --json",
+      "exit_codes": { "healthy": 0, "unhealthy": 1, "error": 2 },
+      "read_only": true,
+      "network": false
+    }
+  }
+}

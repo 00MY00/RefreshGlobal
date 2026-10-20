@@ -166,7 +166,7 @@
         @include('partials/flash_messages')
         @include('refreshglobal::partials.notices')
     </div>
-    <span id="rg-state" hidden data-base="{{ $rg_url([], ['page']) }}" data-sort="{{ $filters['sort'] }}" data-order="{{ $filters['order'] }}" data-keep-position="{{ \Modules\RefreshGlobal\Services\Settings::keepPosition() ? 1 : 0 }}"
+    <span id="rg-state" hidden data-view-id="{{ $active_view ? $active_view->id : '' }}" data-view-modified="{{ $rg_view && $rg_view['modified'] ? 1 : 0 }}" data-base="{{ $rg_url([], ['page']) }}" data-sort="{{ $filters['sort'] }}" data-order="{{ $filters['order'] }}" data-keep-position="{{ \Modules\RefreshGlobal\Services\Settings::keepPosition() ? 1 : 0 }}"
         data-refresh="{{ \Modules\RefreshGlobal\Services\Settings::autoRefresh() }}" data-fp="{{ $rg_fp }}"
         data-mailbox="{{ $rg_single_mb }}" data-back-url="{{ $rg_back['url'] }}" data-back-label="{{ $rg_back['label'] }}" data-back-count="{{ $rg_back['count'] }}" data-state-url="{{ \Modules\RefreshGlobal\Http\Controllers\GlobalTicketsController::stateUrl($rg_params) }}"></span>
 

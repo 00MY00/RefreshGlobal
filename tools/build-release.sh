@@ -33,7 +33,7 @@ cp "$ROOT/CHANGELOG.md" "$ROOT/CHANGELOG.fr.md" "$ROOT/COMPATIBILITY.md" "$ROOT/
 find "$STAGE" -name '.DS_Store' -delete
 
 mkdir -p "$DIST"
-rm -f "$DIST/RefreshGlobal.zip" "$DIST/SHA256SUMS" "$DIST/module.json" "$DIST/version.txt"
+rm -f "$DIST/RefreshGlobal.zip" "$DIST/SHA256SUMS" "$DIST/module.json" "$DIST/interop.json" "$DIST/version.txt"
 if command -v zip >/dev/null 2>&1; then
     (cd "$STAGE" && zip -qrX "$DIST/RefreshGlobal.zip" RefreshGlobal)
 else
@@ -43,6 +43,8 @@ cp "$ROOT/install.sh" "$DIST/install.sh"
 # latest version as plain text (latestVersionUrl), and the manifest (required FreeScout version)
 printf '%s\n' "$version" >"$DIST/version.txt"
 cp "$ROOT/RefreshGlobal/module.json" "$DIST/module.json"
-(cd "$DIST" && sha256sum RefreshGlobal.zip install.sh module.json version.txt >SHA256SUMS)
+# FreeScout Interop manifest of this version (compatibility, health, contract), read by UpdateGuard before installing
+cp "$ROOT/RefreshGlobal/interop.json" "$DIST/interop.json"
+(cd "$DIST" && sha256sum RefreshGlobal.zip install.sh module.json interop.json version.txt >SHA256SUMS)
 printf 'RefreshGlobal %s : %s\n' "$version" "$DIST/RefreshGlobal.zip"
 cat "$DIST/SHA256SUMS"

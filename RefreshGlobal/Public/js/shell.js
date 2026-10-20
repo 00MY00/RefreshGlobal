@@ -11,12 +11,25 @@
  * - Automatic refresh of the "All mailboxes" list and of the dashboard when their tickets change.
  * - Loading indicator on the module's buttons while an action runs.
  * Nothing of Refresh is modified; without Refresh (no .rf-rail / .rf-m-tabs) the Refresh parts do nothing.
+ *
+ * FreeScout Interop (docs/INTEROPERABILITY.md, Public/js/interop-adapter.js): every place below that changes Refresh's
+ * page is a LEGACY fallback, run only when the installed Refresh does not provide the matching capability of the
+ * contract (legacy(capability)). With a Refresh that does, Refresh renders RefreshGlobal's declared intents itself
+ * (navigation entry, ticket toolbar actions, swipe actions, conversation origin) and this file leaves its page alone.
  */
 (function ($) {
     'use strict';
     if (!$) {
         return;
     }
+
+    /**
+     * True when the DOM fallback for a capability must run: Refresh does not cooperate natively for it (Refresh absent,
+     * older Refresh, or capability not provided). See RefreshGlobalInterop.native() in Public/js/interop-adapter.js.
+     */
+    var legacy = function (capability) {
+        return !(window.RefreshGlobalInterop && window.RefreshGlobalInterop.native(capability));
+    };
     // Forms of the module that destroy data ("Empty the trash"): confirmation first, on any page (also FreeScout's
     // settings page, where the module's page script is not loaded)
     $(document).on('submit', 'form[data-rg-confirm]', function (e) {
@@ -125,6 +138,10 @@
     };
     if (window.MutationObserver && window.matchMedia && window.matchMedia('(max-width: 767px)').matches) {
         $(function () {
+            // native: Refresh renders the toolbar actions it is given (toolbar registry), including this deletion
+            if (!legacy('ticket-toolbar')) {
+                return;
+            }
             new MutationObserver(function (records) {
                 records.forEach(function (r) {
                     $(r.addedNodes).filter('.rf-m-sheet-actions').each(function () {
@@ -216,6 +233,12 @@
     $(function () {
         var c = config();
         if (!c || !c.url) {
+            return;
+        }
+
+        // native: Refresh places the "All mailboxes" entry from the navigation registry (Public/js/interop-adapter.js)
+        if (!legacy('navigation')) {
+            backToList(c);
             return;
         }
 
@@ -371,7 +394,12 @@
                 setTimeout(apply, 100);
             }
         };
-        apply();
+        // native: the origin of the ticket was given to the contract (FreeScoutInterop.context, set by
+        // Public/js/interop-adapter.js when the ticket was opened from the list); Refresh shows it in its own breadcrumb,
+        // back arrow and panel. Legacy: the breadcrumb, the back arrow and the landmark are changed here.
+        if (legacy('navigation-context')) {
+            apply();
+        }
     }
     /*
      * "Send an e-mail" / "New ticket" (FreeScout's create form, rebuilt by Refresh's new.js): the address to send from,
@@ -858,8 +886,9 @@
             };
         };
 
-        // ticket page, computer: Refresh's toolbar (next to "Close"), or FreeScout's own toolbar
-        if (convId() && M.ticket) {
+        // ticket page, computer: Refresh's toolbar (next to "Close"), or FreeScout's own toolbar. Native: Refresh renders
+        // the action declared in the toolbar registry (Public/js/interop-adapter.js) instead.
+        if (convId() && M.ticket && legacy('ticket-toolbar')) {
             var button = function (cls) {
                 return $('<button type="button"></button>').addClass(cls + ' rg-move-btn').attr('title', M.t.title)
                     .append('<i class="glyphicon glyphicon-folder-open" aria-hidden="true"></i>', $('<span class="rg-move-btn-text"></span>').text(' ' + M.t.button));
@@ -883,7 +912,7 @@
         }
 
         // phone, ticket page: Refresh's "Ticket actions" sheet
-        if (convId() && M.ticket && window.MutationObserver && window.matchMedia && window.matchMedia('(max-width: 767px)').matches) {
+        if (convId() && M.ticket && legacy('ticket-toolbar') && window.MutationObserver && window.matchMedia && window.matchMedia('(max-width: 767px)').matches) {
             new MutationObserver(function (records) {
                 records.forEach(function (r) {
                     $(r.addedNodes).filter('.rf-m-sheet-actions').each(function () {
@@ -911,8 +940,9 @@
             moveDialog(ids, markRow(ids));
         });
 
-        // lists, touch screens: swipe a ticket to the LEFT -> "Move to a folder"
-        if (!('ontouchstart' in window) || !$('.table-conversations').length) {
+        // lists, touch screens: swipe a ticket to the LEFT -> "Move to a folder". Native: the list's owner handles the
+        // gestures and offers the action declared in the swipe registry (only one module handles raw touch events).
+        if (!('ontouchstart' in window) || !$('.table-conversations').length || !legacy('swipe-actions')) {
             return;
         }
         var sw = null;

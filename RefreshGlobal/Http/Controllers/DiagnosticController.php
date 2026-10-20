@@ -26,8 +26,29 @@ class DiagnosticController extends Controller
                 'report'         => $report,
                 'replace_tickets' => \Modules\RefreshGlobal\Services\Settings::replaceRefreshTickets(),
                 'refresh_active' => (bool) $report['versions']['refresh_active'],
+                'interop'        => self::interop(),
             ])->render());
         });
+    }
+
+    /**
+     * FreeScout Interop section of the page (docs/INTEROPERABILITY.md §45): the module's own contract (protocol, manifest
+     * valid) and how it cooperates with Refresh on this installation (Services/Interop/PeerStatus.php).
+     */
+    protected static function interop()
+    {
+        $manifest = \Modules\RefreshGlobal\Services\Interop\Manifest::own();
+        try {
+            $peer = \Modules\RefreshGlobal\Services\Interop\PeerStatus::fromInstallation('refresh');
+        } catch (\Throwable $e) {
+            $peer = null;
+        }
+
+        return [
+            'protocol' => $manifest ? $manifest->protocol() : '',
+            'errors'   => $manifest ? $manifest->validate() : ['interop.json missing or not valid JSON'],
+            'refresh'  => $peer,
+        ];
     }
 
     /** Navigation option: replace Refresh's "Tickets" entry by "All mailboxes". */

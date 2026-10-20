@@ -1,0 +1,34 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://github.com/00MY00/RefreshGlobal/blob/main/RefreshGlobal/docs/interop/schemas/module-registration-1.0.schema.json",
+    "title": "Module registration 1.0",
+    "description": "Argument of FreeScoutInterop.modules.register(): a participating module announces itself on the page.",
+    "type": "object",
+    "required": [
+        "id",
+        "version",
+        "protocol",
+        "capabilities"
+    ],
+    "properties": {
+        "id": {
+            "type": "string",
+            "description": "stable module id, e.g. \"refresh\", \"refresh-global\""
+        },
+        "version": {
+            "type": "string"
+        },
+        "protocol": {
+            "type": "string",
+            "pattern": "^\\d+(\\.\\d+){0,2}$"
+        },
+        "capabilities": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "string",
+                "pattern": "^\\d+(\\.\\d+){0,2}$"
+            },
+            "description": "capability id (kebab-case, as in interop.json) => version"
+        }
+    }
+}

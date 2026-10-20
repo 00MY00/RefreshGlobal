@@ -55,6 +55,9 @@
             </div>
         </div>
 
+        {{-- FreeScout Interop: the module's contract and the cooperation with Refresh --}}
+        @include('refreshglobal::partials.interop')
+
         {{-- Updates: FreeScout's Modules page or the UpdateGuard module (Services/Updates.php) --}}
         <div class="panel panel-default rg-update">
             <div class="panel-body">

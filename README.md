@@ -78,6 +78,15 @@ Dans Gérer › Modules :
   langue** en bas du panneau des vues (et du tiroir sur téléphone) change cette langue du profil : FreeScout,
   Refresh et le module passent ensemble dans la nouvelle langue.
 
+### Interopérabilité avec Refresh (FreeScout Interop)
+
+RefreshGlobal et Refresh sont deux modules indépendants : chacun fonctionne sans l’autre. Ensemble, ils peuvent
+coopérer par un contrat déclaré (`RefreshGlobal/interop.json`, [docs/INTEROPERABILITY.md](docs/INTEROPERABILITY.md)) :
+RefreshGlobal déclare ses intentions (entrée « Toutes les boîtes », action « Déplacer », origine d’un ticket…) et
+Refresh les affiche, sans que RefreshGlobal touche à sa page. Avec un Refresh qui ne connaît pas encore ce contrat,
+RefreshGlobal utilise ses replis testés (mode *legacy*, comme avant). Le mode actuel est visible dans
+**Diagnostic RefreshGlobal › Interopérabilité**.
+
 ### Vues enregistrées et partagées
 
 Une **vue** est un ensemble enregistré de filtres (boîtes, statut, assigné à, recherche, dossier automatique, tag

@@ -1,0 +1,56 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://github.com/00MY00/RefreshGlobal/blob/main/RefreshGlobal/docs/interop/schemas/toolbar-action-1.0.schema.json",
+    "title": "Ticket toolbar action 1.0",
+    "description": "FreeScoutInterop.toolbar.register(): an action for the ticket toolbar (desktop and phone); the toolbar owner renders it and calls handler(context) with {conversationId, mailboxId, userId, mobile}.",
+    "type": "object",
+    "required": [
+        "id",
+        "owner",
+        "label",
+        "handler"
+    ],
+    "properties": {
+        "id": {
+            "type": "string"
+        },
+        "owner": {
+            "type": "string"
+        },
+        "label": {
+            "type": "string"
+        },
+        "shortLabel": {
+            "type": "string"
+        },
+        "icon": {
+            "type": "string"
+        },
+        "contexts": {
+            "type": "array",
+            "items": {
+                "enum": [
+                    "conversation",
+                    "conversation-deleted"
+                ]
+            }
+        },
+        "position": {
+            "type": "object",
+            "properties": {
+                "after": {
+                    "type": "string"
+                },
+                "before": {
+                    "type": "string"
+                }
+            }
+        },
+        "order": {
+            "type": "integer"
+        },
+        "handler": {
+            "description": "function (context) — not serializable"
+        }
+    }
+}
