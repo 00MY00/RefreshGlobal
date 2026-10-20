@@ -46,6 +46,8 @@ shellcheck install.sh
 
 ## Publier une version
 
-1. Mettre à jour `RefreshGlobal/module.json` (`version`), `install.sh` (`SCRIPT_VERSION`), `CHANGELOG.md`.
+1. Mettre à jour `RefreshGlobal/module.json` (`version`), `install.sh` (`SCRIPT_VERSION`), et **les deux journaux** :
+   `CHANGELOG.md` (anglais, repris tel quel dans les notes de la release GitHub) et `CHANGELOG.fr.md` (français).
+   Voir aussi `AGENTS.md` (consignes pour les agents de programmation).
 2. `bash tools/build-release.sh` → `dist/RefreshGlobal.zip` et `dist/SHA256SUMS`.
 3. Créer le tag `vX.Y.Z` ; la CI (`.github/workflows/ci.yml`) joint l'archive et les empreintes à la publication.

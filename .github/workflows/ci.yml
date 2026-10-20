@@ -105,8 +105,11 @@ jobs:
       - name: Release notes from the CHANGELOG
         run: |
           v="${GITHUB_REF_NAME#v}"
-          awk -v v="$v" 'index($0, "## [" v "]") == 1 { on = 1; next } /^## \[/ { on = 0 } on' CHANGELOG.md > dist/release-notes.md
+          # English section of CHANGELOG.md (release notes in English), then a link to the French changelog
+          awk -v v="$v" 'index($0, "## [" v "]") == 1 { on = 1; next } /^## / { on = 0 } on' CHANGELOG.md > dist/release-notes.md
           test -s dist/release-notes.md
+          grep -q "^## \[$v\]" CHANGELOG.fr.md
+          printf '\n---\nFrench: [CHANGELOG.fr.md](https://github.com/%s/blob/%s/CHANGELOG.fr.md)\n' "$GITHUB_REPOSITORY" "$GITHUB_REF_NAME" >> dist/release-notes.md
       - uses: softprops/action-gh-release@v2
         with:
           body_path: dist/release-notes.md

@@ -385,7 +385,7 @@ détail est dans `/var/log/refreshglobal-install.log`.
   qui s'exécute dans FreeScout et utilise son code doit rester compatible : l'AGPL-3.0 est la même licence, sans
   restriction supplémentaire. Si vous proposez RefreshGlobal modifié à des utilisateurs via le réseau, vous devez leur
   donner accès à son code source.
-- **Changelog** : [CHANGELOG.md](CHANGELOG.md).
+- **Journal des modifications** : [CHANGELOG.fr.md](CHANGELOG.fr.md) (français), [CHANGELOG.md](CHANGELOG.md) (anglais).
 - Tests : [tests/RESULTS.md](tests/RESULTS.md).
 
 RefreshGlobal n'est ni affilié ni approuvé par FreeScout ou par l'auteur de Refresh.

@@ -201,4 +201,4 @@ repository's archive (SHA-256 checked) and, with `--full`, FreeScout's official 
 ## 11. Contributing, license, changelog
 
 [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) · [GNU AGPL v3](LICENSE) (same license as FreeScout and Refresh) ·
-[CHANGELOG.md](CHANGELOG.md) · [tests/RESULTS.md](tests/RESULTS.md)
+[CHANGELOG.md](CHANGELOG.md) (French: [CHANGELOG.fr.md](CHANGELOG.fr.md)) · [AGENTS.md](AGENTS.md) · [tests/RESULTS.md](tests/RESULTS.md)

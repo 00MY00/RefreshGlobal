@@ -19,14 +19,17 @@ if [ "$version" != "$script_version" ]; then
     printf 'module.json (%s) et install.sh (%s) n'"'"'ont pas la même version.\n' "$version" "$script_version" >&2
     exit 1
 fi
-if ! grep -q "^## \[${version}\]" "$ROOT/CHANGELOG.md"; then
-    printf 'CHANGELOG.md : entrée [%s] manquante.\n' "$version" >&2
-    exit 1
-fi
+# both changelogs (English: GitHub release notes, French) must describe the version
+for log in CHANGELOG.md CHANGELOG.fr.md; do
+    if ! grep -q "^## \[${version}\]" "$ROOT/$log"; then
+        printf '%s : entrée [%s] manquante.\n' "$log" "$version" >&2
+        exit 1
+    fi
+done
 
 cp -R "$ROOT/RefreshGlobal" "$STAGE/RefreshGlobal"
 rm -rf "$STAGE/RefreshGlobal/Tests"
-cp "$ROOT/CHANGELOG.md" "$ROOT/COMPATIBILITY.md" "$ROOT/LICENSE" "$STAGE/RefreshGlobal/"
+cp "$ROOT/CHANGELOG.md" "$ROOT/CHANGELOG.fr.md" "$ROOT/COMPATIBILITY.md" "$ROOT/LICENSE" "$STAGE/RefreshGlobal/"
 find "$STAGE" -name '.DS_Store' -delete
 
 mkdir -p "$DIST"
