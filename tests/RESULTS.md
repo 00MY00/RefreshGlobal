@@ -1,4 +1,4 @@
-# Résultats des tests — RefreshGlobal 1.16.1
+# Résultats des tests — RefreshGlobal 1.16.2
 
 Date : 2026-10-09. Environnements jetables Docker : FreeScout 1.8.245 (dépôt officiel), PHP 8.2.34, Apache,
 MariaDB 10.11 ; Refresh 1.4.3 (dépôt officiel). Données de test uniquement (adresses `.test`).
@@ -310,6 +310,16 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
   clic dans la fenêtre ; il ne vise plus que les lignes de la liste.
 - PHPUnit : **150 tests, 2110 assertions, 0 échec** (2 ignorés : SyncNow absent ; « sans Workflow Packs »), dont
   `MailMoveTest` (5) et `RemoteImagesTest` (5). `refreshglobal:check` : RG-HOOK-38…41, RG-CORE-21/22 OK.
+
+## 35. Textes non traduits du tableau de bord (1.16.2)
+
+- Audit statique : 22 textes du tableau de bord et de la liste venaient des traductions de Refresh ou de FreeScout
+  (`__('Unresolved tickets')`, `__('refresh::labels.open')`…), absentes en espagnol, italien, néerlandais et
+  portugais (Brésil) ; tous remplacés par des textes du module (7 langues). Nouveau test
+  `TranslationsTest::testEveryShownTextIsTheModulesOwn` (aucun texte affiché hors `refreshglobal::`).
+- Navigateur, tableau de bord de toutes les boîtes avec la langue de l’utilisateur réglée sur es, it, nl, pt-BR, fr,
+  de : aucun des textes anglais cherchés, en-tête « Agente / Abiertos / Pendientes », « Tendencias de hoy »… OK.
+- PHPUnit : **151 tests, 2111 assertions, 0 échec** (2 ignorés).
 
 ## 28. Adresse d'envoi au choix (1.10.0)
 

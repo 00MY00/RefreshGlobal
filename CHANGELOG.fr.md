@@ -5,6 +5,19 @@ sont tenus à jour ensemble à chaque version.
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.16.2] — 2026-10-20
+
+### Corrigé
+- **Textes non traduits du tableau de bord et de la liste.** Le tableau de bord de toutes les boîtes (indicateurs,
+  graphique, carte « Tickets non résolus » avec ses colonnes Ouverts / En attente, « E-mails non livrés », tuiles) et
+  l’entrée « Aperçus au survol » reprenaient les traductions de Refresh ou de FreeScout, qui n’existent qu’en
+  français et en allemand : en espagnol, italien, néerlandais et portugais (Brésil), ils s’affichaient en anglais
+  (« Open » n’était même traduit qu’en français). Ils utilisent maintenant les textes du module, dans ses 7 langues
+  (mêmes mots que Refresh en français et en allemand), et ne dépendent plus des fichiers de langue de Refresh.
+
+### Documentation
+- Le journal anglais (`CHANGELOG.md`) couvre maintenant toutes les versions (1.0.0 à 1.9.2 traduites aussi).
+
 ## [1.16.1] — 2026-10-20
 
 ### Documentation

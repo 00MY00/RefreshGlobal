@@ -9,10 +9,10 @@
     $D = '\Modules\Refresh\Services\Dashboard';
     $s = $stats['stats'];
     $kpis = [
-        [__('Resolved'), $s['resolved'][0], $s['resolved'][1], (string) $s['resolved'][0], true],
-        [__('Received'), $s['received'][0], $s['received'][1], (string) $s['received'][0], false],
-        [__('Average first response time'), $s['frt'][0], $s['frt'][1], $D::duration($s['frt'][0]), false],
-        [__('Resolved within SLA'), $s['sla'][0], $s['sla'][1], $s['sla'][0] === null ? '--' : $s['sla'][0].'%', true],
+        [__('refreshglobal::messages.dash_resolved'), $s['resolved'][0], $s['resolved'][1], (string) $s['resolved'][0], true],
+        [__('refreshglobal::messages.dash_received'), $s['received'][0], $s['received'][1], (string) $s['received'][0], false],
+        [__('refreshglobal::messages.dash_frt'), $s['frt'][0], $s['frt'][1], $D::duration($s['frt'][0]), false],
+        [__('refreshglobal::messages.dash_sla'), $s['sla'][0], $s['sla'][1], $s['sla'][0] === null ? '--' : $s['sla'][0].'%', true],
     ];
     $rg_unresolved = route('refreshglobal.tickets', ['rv' => 'unresolved']);
 @endphp
@@ -29,10 +29,10 @@
 
     <div class="rf-card rf-trends">
         <div class="rf-trends-chart">
-            <div class="rf-card-title">{{ __('Today\'s trends') }} · {{ __('refreshglobal::messages.title') }}</div>
+            <div class="rf-card-title">{{ __('refreshglobal::messages.dash_trends') }} · {{ __('refreshglobal::messages.title') }}</div>
             {!! $D::chart($stats['h_today'], $stats['h_yest'], $stats['now_h']) !!}
-            <div class="rf-chart-legend"><span class="rf-lg-today">{{ __('Today') }}</span><span class="rf-lg-yest">{{ __('Yesterday') }}</span></div>
-            <div class="rf-chart-axis">{{ __('Date created - Hour of the day') }}</div>
+            <div class="rf-chart-legend"><span class="rf-lg-today">{{ __('refreshglobal::messages.dash_today') }}</span><span class="rf-lg-yest">{{ __('refreshglobal::messages.dash_yesterday') }}</span></div>
+            <div class="rf-chart-axis">{{ __('refreshglobal::messages.dash_axis') }}</div>
         </div>
         <div class="rf-trends-kpis">
             @foreach ($kpis as $k)
@@ -52,9 +52,9 @@
         @include('refreshglobal::partials.unresolved_card', ['by_agent' => $stats['by_agent']])
         <div class="rf-card rf-widget">
             <div class="rf-widget-head">
-                <div><div class="rf-card-title">{{ __('Undelivered e-mails') }}</div><div class="rf-widget-sub">{{ __('refreshglobal::messages.title') }}</div></div>
+                <div><div class="rf-card-title">{{ __('refreshglobal::messages.dash_undelivered_title') }}</div><div class="rf-widget-sub">{{ __('refreshglobal::messages.title') }}</div></div>
             </div>
-            <div class="rf-widget-row rf-widget-th"><span>{{ __('refreshglobal::messages.col_mailbox') }}</span><span>{{ __('Undelivered') }}</span></div>
+            <div class="rf-widget-row rf-widget-th"><span>{{ __('refreshglobal::messages.col_mailbox') }}</span><span>{{ __('refreshglobal::messages.dash_undelivered') }}</span></div>
             @forelse ($undelivered as $u)
                 <a class="rf-widget-row" href="{{ $u['url'] }}"><span>{{ $u['name'] }}</span><span class="rf-widget-n">{{ $u['n'] }}</span></a>
             @empty
@@ -65,8 +65,8 @@
 
     <div class="rf-card rf-dash-list">
         <div class="rf-dash-list-heading">
-            <h3>{{ __('Unresolved tickets') }} <small>{{ $conversations->total() }}</small></h3>
-            <a href="{{ $rg_unresolved }}" class="rf-btn">{{ __('View all tickets') }}</a>
+            <h3>{{ __('refreshglobal::messages.dash_unresolved_tickets') }} <small>{{ $conversations->total() }}</small></h3>
+            <a href="{{ $rg_unresolved }}" class="rf-btn">{{ __('refreshglobal::messages.dash_view_all') }}</a>
         </div>
         @include('conversations/conversations_table', ['conversations' => $conversations, 'folder' => $folder, 'params' => []])
     </div>

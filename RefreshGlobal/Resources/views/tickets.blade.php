@@ -205,7 +205,7 @@
                                     {{-- Refresh 1.6.0's hover previews (its Public/js/hovercards.js works on this list too): same on / off
                                          entry as in Refresh's Layout menu, handled by Refresh's script (rf_hover cookie) --}}
                                     <li class="divider"></li>
-                                    <li class="rf-hover-toggle @if (($_COOKIE['rf_hover'] ?? '') !== 'off') active @endif"><a href="#">{{ __('Hover previews') }} <i class="rf-i rf-i-fd-check rf-i-sm rf-hover-check"></i></a></li>
+                                    <li class="rf-hover-toggle @if (($_COOKIE['rf_hover'] ?? '') !== 'off') active @endif"><a href="#">{{ __('refreshglobal::messages.hover_previews') }} <i class="rf-i rf-i-fd-check rf-i-sm rf-hover-check"></i></a></li>
                                 @endif
                             </ul>
                         </div>

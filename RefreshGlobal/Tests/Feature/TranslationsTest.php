@@ -56,4 +56,29 @@ class TranslationsTest extends TestCase
             }
         }
     }
+
+    /**
+     * Every text the module shows comes from its own language packs (refreshglobal::…). Refresh's and FreeScout's
+     * translations do not cover the module's 7 languages (Refresh has fr and de only): texts borrowed from them showed
+     * in English in Spanish, Italian, Dutch and Portuguese (1.16.2).
+     */
+    public function testEveryShownTextIsTheModulesOwn()
+    {
+        $root = realpath(__DIR__.'/../..');
+        $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($root, \FilesystemIterator::SKIP_DOTS));
+        $borrowed = [];
+        foreach ($files as $file) {
+            $path = str_replace('\\', '/', $file->getPathname());
+            if (!preg_match('/\.php$/', $path) || preg_match('#/(Tests|Resources/lang)/#', $path)) {
+                continue;
+            }
+            preg_match_all("/(?:__|trans_choice|@lang)\\(\\s*'([^']+)'/", file_get_contents($path), $m);
+            foreach ($m[1] as $key) {
+                if (strpos($key, 'refreshglobal::') !== 0) {
+                    $borrowed[] = substr($path, strlen($root) + 1).': '.$key;
+                }
+            }
+        }
+        $this->assertSame([], $borrowed);
+    }
 }

@@ -86,8 +86,8 @@ class GlobalDashboard
     protected static function data($user, $mailboxes, array $ids)
     {
         $V = '\Modules\Refresh\Services\Views';
-        $labels = ['unresolved' => __('Unresolved'), 'overdue' => __('Overdue'), 'due-today' => __('Due: today'),
-            'open' => __('refresh::labels.open'), 'pending' => __('Pending'), 'unassigned' => __('Unassigned')];
+        $labels = ['unresolved' => __('refreshglobal::messages.dash_unresolved'), 'overdue' => __('refreshglobal::messages.dash_overdue'), 'due-today' => __('refreshglobal::messages.dash_due_today'),
+            'open' => __('refreshglobal::messages.dash_open'), 'pending' => __('refreshglobal::messages.dash_pending'), 'unassigned' => __('refreshglobal::messages.dash_unassigned')];
         $tiles = [];
         foreach (self::TILES as $key) {
             $count = 0;
@@ -241,7 +241,7 @@ class GlobalDashboard
                 };
                 $by_agent[$id] = [
                     'user_id'     => $id,
-                    'name'        => ($id && isset($users[$id])) ? $users[$id]->getFullName() : __('Unassigned'),
+                    'name'        => ($id && isset($users[$id])) ? $users[$id]->getFullName() : __('refreshglobal::messages.dash_unassigned'),
                     'open'        => 0,
                     'pending'     => 0,
                     'total'       => 0,
