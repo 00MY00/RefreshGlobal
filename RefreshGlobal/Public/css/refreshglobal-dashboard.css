@@ -1,0 +1,87 @@
+/*
+ * RefreshGlobal — dashboard of all mailboxes WITHOUT Refresh ("standalone" mode, Services/GlobalDashboard.php).
+ * Linked only by Resources/views/dashboard.blade.php in that mode: with Refresh, Refresh's own stylesheet styles the same
+ * markup. Every rule is scoped to .rg-dash-standalone, so it can never change another page or module.
+ * Colours: FreeScout-like neutral tones (no dependency on Refresh's --fd-* variables).
+ */
+.rg-dash-standalone {
+    --rgd-text: #1e293b;
+    --rgd-text-2: #64748b;
+    --rgd-border: #e2e8f0;
+    --rgd-line: #f1f4f9;
+    --rgd-card: #fff;
+    --rgd-accent: #3f51b5;
+    --rgd-accent-2: #a5b4fc;
+    --rgd-bad: #e11d48;
+    --rgd-good: #16a34a;
+    margin: 16px 0 24px;
+    color: var(--rgd-text);
+}
+
+/* tiles */
+.rg-dash-standalone .rf-tiles { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin: 0 0 12px; }
+.rg-dash-standalone .rf-tile { display: flex; flex-direction: column; background: var(--rgd-card); border: 1px solid var(--rgd-border); border-radius: 5px; padding: 14px 16px; color: var(--rgd-text); text-decoration: none; transition: box-shadow .15s; }
+.rg-dash-standalone .rf-tile:hover, .rg-dash-standalone .rf-tile:focus { box-shadow: 0 4px 16px rgba(15, 23, 42, .10); color: var(--rgd-text); text-decoration: none; }
+.rg-dash-standalone .rf-tile-label { order: -1; font-size: 14px; font-weight: 500; margin-bottom: 8px; }
+.rg-dash-standalone .rf-tile-count { font-size: 24px; font-weight: 700; line-height: 1.3; }
+.rg-dash-standalone .rf-tile-overdue:not(.rf-tile-zero) .rf-tile-count { color: var(--rgd-bad); }
+.rg-dash-standalone .rf-tile-zero .rf-tile-count { color: var(--rgd-text-2); }
+
+/* cards */
+.rg-dash-standalone .rf-card { background: var(--rgd-card); border: 1px solid var(--rgd-border); border-radius: 5px; }
+.rg-dash-standalone .rf-card-title { font-size: 14px; font-weight: 500; }
+
+/* trends: chart + key figures */
+.rg-dash-standalone .rf-trends { display: grid; grid-template-columns: 1.9fr 1fr; gap: 24px; padding: 20px 16px 16px; margin-bottom: 12px; }
+.rg-dash-standalone .rf-chart { width: 100%; height: auto; margin-top: 12px; overflow: visible; }
+.rg-dash-standalone .rf-chart-grid { stroke: var(--rgd-line); stroke-width: 1; }
+.rg-dash-standalone .rf-chart-lbl { font-size: 11px; fill: #94a3b8; }
+.rg-dash-standalone .rf-chart-val { font-size: 11px; fill: #475569; }
+.rg-dash-standalone .rf-chart-today { fill: none; stroke: var(--rgd-accent); stroke-width: 2; }
+.rg-dash-standalone .rf-chart-today-dot { fill: var(--rgd-accent); }
+.rg-dash-standalone .rf-chart-yest { fill: none; stroke: var(--rgd-accent-2); stroke-width: 2; }
+.rg-dash-standalone .rf-chart-yest-dot { fill: var(--rgd-accent-2); }
+.rg-dash-standalone .rf-chart-legend { display: flex; gap: 16px; justify-content: flex-end; font-size: 12px; color: var(--rgd-text-2); }
+.rg-dash-standalone .rf-chart-legend span::before { content: ""; display: inline-block; width: 14px; height: 2px; vertical-align: middle; margin-right: 6px; }
+.rg-dash-standalone .rf-lg-today::before { background: var(--rgd-accent); }
+.rg-dash-standalone .rf-lg-yest::before { background: var(--rgd-accent-2); }
+.rg-dash-standalone .rf-chart-axis { text-align: center; font-size: 12px; margin-top: 6px; }
+.rg-dash-standalone .rf-trends-kpis { display: grid; grid-template-columns: 1fr 1fr; align-content: center; gap: 40px 16px; text-align: center; }
+.rg-dash-standalone .rf-kpi-label { font-size: 12px; color: var(--rgd-text-2); margin-bottom: 10px; }
+.rg-dash-standalone .rf-kpi-value { font-size: 22px; font-weight: 700; }
+.rg-dash-standalone .rf-kpi-delta { font-size: 12px; font-weight: 600; margin-left: 8px; }
+.rg-dash-standalone .rf-kpi-delta.good { color: var(--rgd-good); }
+.rg-dash-standalone .rf-kpi-delta.bad { color: var(--rgd-bad); }
+.rg-dash-standalone .rf-kpi-arrow { display: inline-block; width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; margin-right: 3px; vertical-align: 1px; }
+.rg-dash-standalone .rf-kpi-arrow.up { border-bottom: 7px solid currentColor; }
+.rg-dash-standalone .rf-kpi-arrow.down { border-top: 7px solid currentColor; }
+
+/* widgets: unresolved per agent, undelivered per mailbox */
+.rg-dash-standalone .rf-widgets { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.rg-dash-standalone .rf-widget { padding: 16px; }
+.rg-dash-standalone .rf-widget-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+.rg-dash-standalone .rf-widget-sub { font-size: 12px; color: var(--rgd-text-2); }
+.rg-dash-standalone .rf-widget-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--rgd-line); font-size: 14px; color: var(--rgd-text); text-decoration: none; }
+.rg-dash-standalone .rf-widget-row:last-child { border-bottom: 0; }
+.rg-dash-standalone a.rf-widget-row:hover { background: #f8fafc; }
+.rg-dash-standalone .rf-widget-th { color: var(--rgd-text-2); }
+.rg-dash-standalone .rf-widget-n { color: var(--rgd-text-2); }
+
+/* unresolved tickets list */
+.rg-dash-standalone .rf-dash-list { padding: 16px; }
+.rg-dash-standalone .rf-dash-list-heading { display: flex; align-items: center; justify-content: space-between; margin: 0 0 10px; }
+.rg-dash-standalone .rf-dash-list-heading h3 { font-size: 16px; font-weight: 600; margin: 0; }
+.rg-dash-standalone .rf-dash-list-heading h3 small { display: inline-block; color: var(--rgd-text-2); background: #eceff4; border-radius: 7px; font-size: 12px; font-weight: 600; padding: 0 8px; line-height: 20px; margin-left: 8px; vertical-align: 2px; }
+.rg-dash-standalone .rf-btn { display: inline-flex; align-items: center; height: 32px; padding: 0 12px; border: 1px solid var(--rgd-border); border-radius: 5px; background: var(--rgd-card); color: var(--rgd-text); font-size: 14px; font-weight: 500; text-decoration: none; }
+.rg-dash-standalone .rf-btn:hover { background: #f6f7fb; text-decoration: none; }
+
+@media (max-width: 1200px) {
+    .rg-dash-standalone .rf-trends { grid-template-columns: 1fr; }
+    .rg-dash-standalone .rf-tiles { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 767px) {
+    .rg-dash-standalone .rf-tiles { grid-template-columns: repeat(2, 1fr); }
+    .rg-dash-standalone .rf-widgets { grid-template-columns: 1fr; }
+    .rg-dash-standalone .rf-trends-kpis { gap: 24px 12px; }
+    .rg-dash-standalone .rf-dash-list { padding: 8px; overflow-x: auto; }
+}

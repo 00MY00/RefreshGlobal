@@ -117,10 +117,9 @@ return [
         ], 'source' => 'app/Conversation.php:78-81,131'],
         // Settings of the module (FreeScout's options table; degraded: the defaults apply)
         'RG-CORE-07' => ['class' => 'App\Option', 'methods' => ['get', 'set'], 'severity' => 'degraded', 'source' => 'app/Option.php:35,75'],
-        // Dashboard for all mailboxes (degraded: Refresh's own dashboard is shown instead)
-        'RG-CORE-09' => ['class' => 'Modules\Refresh\Services\Views', 'methods' => ['query', 'labels'], 'refresh' => true, 'family' => 'core_refresh', 'severity' => 'degraded', 'source' => 'Modules/Refresh/Services/Views.php:106,116'],
-        'RG-CORE-10' => ['class' => 'Modules\Refresh\Services\Dashboard', 'methods' => ['chart', 'delta', 'duration'], 'refresh' => true, 'family' => 'core_refresh', 'severity' => 'degraded', 'source' => 'Modules/Refresh/Services/Dashboard.php:127,136,153'],
-        'RG-CORE-11' => ['class' => 'Modules\Refresh\Services\Settings', 'methods' => ['resolutionHours'], 'refresh' => true, 'family' => 'core_refresh', 'severity' => 'degraded', 'source' => 'Modules/Refresh/Services/Settings.php:32'],
+        // Dashboard for all mailboxes: Refresh's SLA targets when Refresh is there (Services/Dashboard/Sla.php); without them
+        // the module's own SLA settings apply (warning). Views, figures and chart are the module's own since 1.17.0.
+        'RG-CORE-11' => ['class' => 'Modules\Refresh\Services\Settings', 'methods' => ['firstResponseHours', 'resolutionHours'], 'refresh' => true, 'family' => 'core_refresh', 'severity' => 'warning', 'source' => 'Modules/Refresh/Services/Settings.php:26,32'],
         // Deleting a ticket permanently in a bulk delete (degraded: the tickets stay in the trash)
         'RG-CORE-12' => ['class' => 'App\Conversation', 'methods' => ['deleteForever'], 'constants' => ['App\Conversation::STATE_DELETED'], 'family' => 'core_delete', 'severity' => 'degraded', 'source' => 'app/Conversation.php:2156'],
         // "Empty the trash" (button and automatic emptying): FreeScout's own permanent deletion, its permission
@@ -139,6 +138,11 @@ return [
         // "Move to a folder": FreeScout's right to change a ticket, folders the mailbox fetches (IMAP access: RG-CORE-14/15)
         'RG-CORE-21' => ['class' => 'App\Policies\ConversationPolicy', 'methods' => ['update'], 'family' => 'hook_move', 'severity' => 'warning', 'source' => 'app/Policies/ConversationPolicy.php:73'],
         'RG-CORE-22' => ['class' => 'App\Mailbox', 'methods' => ['getInImapFolders'], 'constants' => ['App\Mailbox::IN_PROTOCOL_IMAP', 'App\Thread::TYPE_CUSTOMER'], 'family' => 'hook_move', 'severity' => 'warning', 'source' => 'app/Mailbox.php:81,906, app/Thread.php (TYPE_CUSTOMER)'],
+        // Dashboard of all mailboxes, the module's own views and figures (1.17.0): "Undelivered" view (FreeScout's send
+        // log statuses on the threads), "New" / "Overdue" (agent replies); warning: only that card / those tiles are affected
+        'RG-CORE-23' => ['constants' => ['App\SendLog::STATUS_SEND_ERROR', 'App\SendLog::STATUS_DELIVERY_ERROR', 'App\Thread::TYPE_MESSAGE', 'App\Thread::STATE_PUBLISHED'], 'family' => 'core_dashboard', 'severity' => 'warning', 'source' => 'app/SendLog.php:18,20, app/Thread.php:37,92'],
+        // FreeScout Interop: fsinterop.conversation.context answers only for a user who may view the ticket
+        'RG-CORE-24' => ['class' => 'App\Policies\ConversationPolicy', 'methods' => ['view'], 'family' => 'core_interop', 'severity' => 'warning', 'source' => 'app/Policies/ConversationPolicy.php:22'],
         // optional official Tags module: the origin tags are copied there (Services/MailTags.php mirror())
         'RG-CORE-18' => ['class' => 'Modules\Tags\Entities\Tag', 'methods' => ['attachByName'], 'module' => 'tags', 'family' => 'mailtags', 'severity' => 'warning', 'source' => 'Modules/Tags (used as by Modules/Refresh/Http/Controllers/NewTicketController.php:192)'],
     ],
@@ -180,5 +184,6 @@ return [
         'RG-DB-12' => ['table' => 'refreshglobal_view_users', 'columns' => ['view_id', 'user_id', 'can_edit'], 'family' => 'db_own', 'severity' => 'degraded', 'source' => 'Modules/RefreshGlobal/Database/Migrations/2026_10_19_000000_extend_refreshglobal_saved_views.php'],
         'RG-DB-13' => ['table' => 'refreshglobal_view_prefs', 'columns' => ['user_id', 'view_id', 'pinned', 'is_default'], 'family' => 'db_own', 'severity' => 'degraded', 'source' => 'Modules/RefreshGlobal/Database/Migrations/2026_10_19_000000_extend_refreshglobal_saved_views.php'],
         'RG-DB-14' => ['table' => 'refreshglobal_view_audit', 'columns' => ['view_id', 'view_name', 'user_id', 'action', 'details', 'created_at'], 'family' => 'db_own', 'severity' => 'degraded', 'source' => 'Modules/RefreshGlobal/Database/Migrations/2026_10_19_000000_extend_refreshglobal_saved_views.php'],
+        'RG-DB-15' => ['table' => 'threads', 'columns' => ['conversation_id', 'type', 'state', 'send_status', 'created_by_user_id', 'created_at'], 'family' => 'db_dashboard', 'severity' => 'warning', 'source' => 'database/migrations/2018_07_12_003318_create_threads_table.php:69'],
     ],
 ];

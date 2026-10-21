@@ -3,201 +3,158 @@
 namespace Modules\RefreshGlobal\Services;
 
 use App\Conversation;
-use App\Thread;
-use Carbon\Carbon;
+use Modules\RefreshGlobal\Services\Dashboard\Statistics;
+use Modules\RefreshGlobal\Services\Dashboard\TicketViews;
 
 /**
- * Refresh's dashboard ("My dashboard") for ALL the user's mailboxes.
+ * Dashboard of ALL the user's mailboxes (scope "global-mailboxes" of the FreeScout Interop contract), computed and
+ * rendered by RefreshGlobal alone: it works with or without Refresh (docs/INTEROPERABILITY.md §2.1, §19).
  *
- * Refresh computes its dashboard for the user's first mailbox only ($user->mailboxesCanView()->first(),
- * Modules/Refresh/Providers/RefreshServiceProvider.php:505-537). This service computes the same figures over every
- * mailbox the user can see (MailboxAccess) and renders them with the same markup as Refresh's view
- * (Modules/Refresh/Resources/views/dashboard.blade.php), so Refresh's stylesheet gives the same look.
+ * Two places, chosen by the service provider (registerDashboard()):
+ *  - MODE_REFRESH: Refresh computes its "My dashboard" for the user's first mailbox only
+ *    (Modules/Refresh/Providers/RefreshServiceProvider.php:505-537); this dashboard replaces that block, with the same
+ *    markup and class names, so Refresh's stylesheet gives it the same look;
+ *  - MODE_STANDALONE: without Refresh, the same dashboard is shown above FreeScout's own dashboard (mailbox cards),
+ *    styled by Public/css/refreshglobal-dashboard.css.
  *
- * Reused from Refresh (public static API, checked by refreshglobal:check):
- *  - Views::query($mailbox_id, $view, $user): its view definitions (SLA rules), for the tiles;
- *  - Dashboard::chart() / delta() / duration(): the chart and number formats;
- *  - Settings::resolutionHours(): the SLA used by "Resolved within SLA".
- * The trend figures follow the formulas of Modules/Refresh/Services/Dashboard.php:16-123, over several mailboxes.
+ * Its pieces are the module's own services (Services/Dashboard): TicketViews (tiles and "rv" views), Statistics
+ * (trends), Chart (SVG chart and formats), Sla (targets: Refresh's settings when present, else the module's).
  */
 class GlobalDashboard
 {
+    const MODE_REFRESH = 'refresh';
+    const MODE_STANDALONE = 'standalone';
+
+    /** Tiles, in their order. */
     const TILES = ['unresolved', 'overdue', 'due-today', 'open', 'pending', 'unassigned'];
 
-    /** Refresh views the "All mailboxes" page can filter on (parameter rv). */
-    const VIEWS = ['unresolved', 'overdue', 'due-today', 'open', 'pending', 'unassigned', 'new'];
+    /** Quick views the "All mailboxes" page can filter on (parameter rv). */
+    const VIEWS = TicketViews::KEYS;
 
-    public static function refreshApi()
+    /** Mode of the dashboard rendered during this request (MODE_*), null when none was (see renderedMode()). */
+    protected static $rendered = null;
+
+    /**
+     * Mode of the dashboard rendered during this request, or null: tells the FreeScout Interop navigation context that
+     * RefreshGlobal owns the "dashboard@global-mailboxes" surface of this page (Services/Interop/NavigationContext.php).
+     */
+    public static function renderedMode()
     {
-        return class_exists('Modules\Refresh\Services\Views') && method_exists('Modules\Refresh\Services\Views', 'query')
-            && class_exists('Modules\Refresh\Services\Dashboard') && method_exists('Modules\Refresh\Services\Dashboard', 'chart')
-            && class_exists('Modules\Refresh\Services\Settings') && method_exists('Modules\Refresh\Services\Settings', 'resolutionHours');
+        return self::$rendered;
     }
 
-    /** Name Refresh gives to one of its views (Views::labels(), Modules/Refresh/Services/Views.php:106). */
+    /** Name of a quick view (filter chip, page title). */
     public static function viewLabel($view)
     {
-        if (method_exists('Modules\Refresh\Services\Views', 'labels')) {
-            $labels = \Modules\Refresh\Services\Views::labels();
-            if (isset($labels[$view])) {
-                return $labels[$view];
-            }
-        }
-
-        return $view;
+        return TicketViews::label($view);
     }
 
-    /** HTML of the dashboard block, or '' when nothing to show. */
-    public static function render($user)
+    /**
+     * HTML of the dashboard block, or '' when nothing to show.
+     *
+     * @param \App\User $user
+     * @param string    $mode MODE_REFRESH or MODE_STANDALONE
+     */
+    public static function render($user, $mode = self::MODE_REFRESH)
     {
         $access = new MailboxAccess($user);
         // FreeScout Interop: other modules may narrow the mailboxes of this dashboard, never widen them
         // (Services/Interop/ServerHooks.php, filter fsinterop.dashboard.context)
         $ids = \Modules\RefreshGlobal\Services\Interop\ServerHooks::dashboardContext($user, $access->allowedIds())['mailbox_ids'];
-        $mailboxes = $access->mailboxes()->filter(function ($mailbox) use ($ids) {
-            return in_array((int) $mailbox->id, $ids, true);
-        })->values();
         if (!$ids) {
             return '';
         }
+        $mailboxes = $access->mailboxes()->filter(function ($mailbox) use ($ids) {
+            return in_array((int) $mailbox->id, $ids, true);
+        })->values();
 
         // one minute per user, mailboxes and language (the data holds translated labels), and per state of the tickets:
         // after any change (new ticket, reply, status…) the figures are computed again, never served from the cache
         $fp = (new GlobalTicketQuery($access, GlobalTicketQuery::normalize([], $access)))->fingerprint();
-        // "v2": the "Unresolved tickets" rows have open / pending since 1.14.0, the rows of an older module are not read
-        $key = 'refreshglobal.dash.v2.'.$user->id.'.'.app()->getLocale().'.'.md5(implode(',', $ids)).'.'.$fp;
+        // "v3": figures computed by the module itself since 1.17.0 (links of the undelivered card changed)
+        $key = 'refreshglobal.dash.v3.'.$user->id.'.'.app()->getLocale().'.'.md5(implode(',', $ids)).'.'.$fp;
         $data = \Cache::remember($key, 1, function () use ($user, $mailboxes, $ids) {
             return self::data($user, $mailboxes, $ids);
         });
 
         // unresolved tickets of every mailbox, with the "Mailbox" column (not cached: links, stars, viewers)
-        $query = new GlobalTicketQuery($access, GlobalTicketQuery::normalize(['status' => [Conversation::STATUS_ACTIVE, Conversation::STATUS_PENDING], 'mb' => $ids], $access));
+        $query = new GlobalTicketQuery($access, GlobalTicketQuery::normalize(['status' => TicketViews::unresolvedStatuses(), 'mb' => $ids], $access));
         $conversations = $query->paginate(25);
 
         $previous = \Modules\RefreshGlobal\Providers\RefreshGlobalServiceProvider::$show_mailbox_column;
         \Modules\RefreshGlobal\Providers\RefreshGlobalServiceProvider::$show_mailbox_column = \Modules\RefreshGlobal\Providers\RefreshGlobalServiceProvider::mailboxColumnMode();
         try {
-            return view('refreshglobal::dashboard', $data + [
+            $html = view('refreshglobal::dashboard', $data + [
                 'rg_fp'         => $fp,
+                'rg_mode'       => $mode === self::MODE_STANDALONE ? self::MODE_STANDALONE : self::MODE_REFRESH,
                 'conversations' => $conversations,
                 'folder'        => \Modules\RefreshGlobal\Providers\RefreshGlobalServiceProvider::virtualFolder(),
             ])->render();
+            self::$rendered = $mode === self::MODE_STANDALONE ? self::MODE_STANDALONE : self::MODE_REFRESH;
+
+            return $html;
         } finally {
             \Modules\RefreshGlobal\Providers\RefreshGlobalServiceProvider::$show_mailbox_column = $previous;
         }
     }
 
+    /** Cached figures of the dashboard: tiles, trends, unresolved per agent, undelivered per mailbox. */
     protected static function data($user, $mailboxes, array $ids)
     {
-        $V = '\Modules\Refresh\Services\Views';
-        $labels = ['unresolved' => __('refreshglobal::messages.dash_unresolved'), 'overdue' => __('refreshglobal::messages.dash_overdue'), 'due-today' => __('refreshglobal::messages.dash_due_today'),
-            'open' => __('refreshglobal::messages.dash_open'), 'pending' => __('refreshglobal::messages.dash_pending'), 'unassigned' => __('refreshglobal::messages.dash_unassigned')];
-        $tiles = [];
-        foreach (self::TILES as $key) {
-            $count = 0;
-            foreach ($ids as $id) {
-                $count += $V::query($id, $key, $user)->count();
-            }
-            $tiles[] = ['key' => $key, 'label' => $labels[$key], 'count' => $count, 'url' => route('refreshglobal.tickets', ['rv' => $key])];
-        }
-
-        $undelivered = [];
-        foreach ($mailboxes as $mailbox) {
-            $n = $V::query($mailbox->id, 'undelivered', $user)->count();
-            if ($n) {
-                $undelivered[] = ['name' => $mailbox->name, 'n' => $n, 'url' => \Route::has('refresh.tickets')
-                    ? route('refresh.tickets', ['mailbox_id' => $mailbox->id, 'view' => 'undelivered']) : MailboxAccess::mailboxUrl($mailbox)];
-            }
-        }
-
-        return ['tiles' => $tiles, 'stats' => self::stats($user, $ids), 'undelivered' => $undelivered];
-    }
-
-    /** Same figures as Refresh's Dashboard::stats(), over several mailboxes and with the user's rights. */
-    protected static function stats($user, array $ids)
-    {
-        $tz = config('app.timezone');
-        $today = Carbon::now($tz)->startOfDay();
-        $yesterday = $today->copy()->subDay();
-        $toUtc = function ($c) {
-            return $c->copy()->setTimezone('UTC');
-        };
-        $base = function () use ($ids, $user) {
+        $base = function () use ($user, $ids) {
             return self::baseQuery($user, $ids);
         };
-        $day = function ($from) use ($toUtc) {
-            return [$toUtc($from), $toUtc($from->copy()->endOfDay())];
-        };
-
-        $hours = function ($from) use ($base, $day, $tz) {
-            $h = array_fill(0, 24, 0);
-            foreach ($base()->whereBetween('created_at', $day($from))->pluck('created_at') as $c) {
-                $h[(int) Carbon::parse($c)->setTimezone($tz)->format('G')]++;
-            }
-
-            return $h;
-        };
-        $received = function ($from) use ($base, $day) {
-            return $base()->whereBetween('created_at', $day($from))->count();
-        };
-        $resolved = function ($from) use ($base, $day) {
-            return $base()->where('status', Conversation::STATUS_CLOSED)->whereBetween('closed_at', $day($from))->count();
-        };
-        $slaPct = function ($from) use ($base, $day) {
-            $rows = $base()->where('status', Conversation::STATUS_CLOSED)->whereBetween('closed_at', $day($from))->get(['created_at', 'closed_at', 'meta']);
-            if (!count($rows)) {
-                return null;
-            }
-            $ok = 0;
-            foreach ($rows as $r) {
-                $meta = is_array($r->meta) ? $r->meta : (json_decode((string) $r->meta, true) ?: []);
-                $due = !empty($meta['rf_due']) ? Carbon::parse($meta['rf_due'])
-                    : Carbon::parse($r->created_at)->addHours(\Modules\Refresh\Services\Settings::resolutionHours());
-                if (Carbon::parse($r->closed_at)->lte($due)) {
-                    $ok++;
-                }
-            }
-
-            return (int) round($ok * 100 / count($rows));
-        };
-        // average first response time (minutes) of the agent first replies sent that day
-        $frt = function ($from) use ($base, $day) {
-            $range = $day($from);
-            $first = Thread::select('conversation_id', \DB::raw('MIN(created_at) AS r_at'))
-                ->where('type', Thread::TYPE_MESSAGE)->where('state', Thread::STATE_PUBLISHED)->whereNotNull('created_by_user_id')
-                ->whereIn('conversation_id', $base()->select('id')->getQuery())
-                ->groupBy('conversation_id')
-                ->havingRaw('MIN(created_at) BETWEEN ? AND ?', [$range[0]->toDateTimeString(), $range[1]->toDateTimeString()])
-                ->get();
-            $sum = 0;
-            $n = 0;
-            $created = [];
-            foreach ($first as $row) {
-                $created[$row->conversation_id] = Carbon::parse($row->r_at);
-            }
-            if (!$created) {
-                return null;
-            }
-            foreach (Conversation::whereIn('id', array_keys($created))->get(['id', 'created_at']) as $c) {
-                $sum += max(0, $created[$c->id]->diffInMinutes(Carbon::parse($c->created_at)));
-                $n++;
-            }
-
-            return $n ? (int) round($sum / $n) : null;
-        };
+        $stats = (new Statistics($base))->summary();
+        $stats['by_agent'] = self::unresolvedByAgent($base());
 
         return [
-            'h_today'  => $hours($today),
-            'h_yest'   => $hours($yesterday),
-            'now_h'    => (int) Carbon::now($tz)->format('G'),
-            'stats'    => [
-                'resolved' => [$resolved($today), $resolved($yesterday)],
-                'received' => [$received($today), $received($yesterday)],
-                'frt'      => [$frt($today), $frt($yesterday)],
-                'sla'      => [$slaPct($today), $slaPct($yesterday)],
-            ],
-            'by_agent' => self::unresolvedByAgent($base()),
+            'tiles'       => self::tiles($base),
+            'stats'       => $stats,
+            'undelivered' => self::undeliveredPerMailbox($base, $mailboxes),
         ];
+    }
+
+    /**
+     * Tiles: one count per quick view on the base query; each tile opens the "All mailboxes" page on that view.
+     *
+     * @return array [['key', 'label', 'count', 'url'], …]
+     */
+    public static function tiles(callable $base)
+    {
+        $tiles = [];
+        foreach (self::TILES as $view) {
+            $tiles[] = [
+                'key'   => $view,
+                'label' => TicketViews::label($view),
+                'count' => TicketViews::apply($base(), $view)->count(),
+                'url'   => route('refreshglobal.tickets', ['rv' => $view]),
+            ];
+        }
+
+        return $tiles;
+    }
+
+    /**
+     * "Undelivered e-mails" card: mailboxes holding tickets whose last outgoing e-mail failed (one grouped query), each
+     * linked to the "All mailboxes" page on that view and mailbox.
+     *
+     * @return array [['name', 'n', 'url'], …] in the order of $mailboxes
+     */
+    public static function undeliveredPerMailbox(callable $base, $mailboxes)
+    {
+        $counts = TicketViews::apply($base(), 'undelivered')
+            ->select('conversations.mailbox_id', \DB::raw('COUNT(*) AS n'))
+            ->groupBy('conversations.mailbox_id')
+            ->pluck('n', 'mailbox_id');
+        $rows = [];
+        foreach ($mailboxes as $mailbox) {
+            $n = (int) ($counts[$mailbox->id] ?? 0);
+            if ($n) {
+                $rows[] = ['name' => $mailbox->name, 'n' => $n, 'url' => route('refreshglobal.tickets', ['rv' => 'undelivered', 'mb' => [$mailbox->id]])];
+            }
+        }
+
+        return $rows;
     }
 
     /**
@@ -267,14 +224,10 @@ class GlobalDashboard
         return $by_agent;
     }
 
-    /** Restricts a ticket query to a Refresh view (rv), over the given mailboxes, with Refresh's own definition. */
-    public static function applyView($query, $view, array $ids, $user)
+
+    /** Restricts a ticket query to a quick view (rv); rights and mailboxes are already part of the query. */
+    public static function applyView($query, $view)
     {
-        $query->where(function ($w) use ($view, $ids, $user) {
-            foreach ($ids ?: [0] as $id) {
-                $sub = \Modules\Refresh\Services\Views::query($id, $view, $user)->select('conversations.id');
-                $w->orWhereIn('conversations.id', $sub->getQuery());
-            }
-        });
+        return TicketViews::apply($query, $view);
     }
 }

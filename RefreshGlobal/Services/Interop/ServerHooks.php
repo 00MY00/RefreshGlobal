@@ -4,6 +4,7 @@ namespace Modules\RefreshGlobal\Services\Interop;
 
 use Modules\RefreshGlobal\Services\GlobalDashboard;
 use Modules\RefreshGlobal\Services\MailboxAccess;
+use Modules\RefreshGlobal\Services\Search\GlobalSearch;
 
 /**
  * Server side of the FreeScout Interop contract (docs/INTEROPERABILITY.md §18–19): neutral Eventy hooks, declared in
@@ -14,6 +15,12 @@ use Modules\RefreshGlobal\Services\MailboxAccess;
  *                                      mailbox_ids (never widen them: the user's rights always apply)
  *   filter fsinterop.dashboard.data    figures of a dashboard scope (schema dashboard-data 1.1); RefreshGlobal answers
  *                                      the scope "global-mailboxes" for the given user
+ *   filter fsinterop.navigation.context which module renders which surface on the current page (NavigationContext)
+ *   filter fsinterop.conversation.context what each module knows about a ticket, for a user (ConversationContext)
+ *   filter fsinterop.search.providers  [provider id => descriptor]: search providers of the modules (schema
+ *                                      search-provider 1.0); RefreshGlobal adds "refreshglobal.global-search"
+ *   filter fsinterop.search.results    results of a search scope (schema search-results 1.0); RefreshGlobal answers
+ *                                      the scope "global-mailboxes" (Services/Search/GlobalSearch.php)
  *
  * The existing public hooks of RefreshGlobal (refreshglobal.mail_tags…, docs/api-tags.md) are declared in the same
  * manifest and stay unchanged.
@@ -36,6 +43,27 @@ class ServerHooks
             }
 
             return self::dashboardData($context);
+        }, 20, 2);
+
+        \Eventy::addFilter('fsinterop.navigation.context', function ($context) {
+            return NavigationContext::addOwnClaims($context);
+        }, 20, 1);
+
+        \Eventy::addFilter('fsinterop.conversation.context', function ($context, $conversation = null, $user = null) {
+            return ConversationContext::addOwn($context, $conversation, $user);
+        }, 20, 3);
+
+        \Eventy::addFilter('fsinterop.search.providers', function ($providers) {
+            return self::addSearchProvider(is_array($providers) ? $providers : []);
+        }, 20, 1);
+
+        \Eventy::addFilter('fsinterop.search.results', function ($results, $context = []) {
+            // another module already answered, or not our scope
+            if (!empty($results) || !is_array($context) || ($context['scope'] ?? '') !== GlobalSearch::CONTEXT) {
+                return $results;
+            }
+
+            return self::searchResults($context);
         }, 20, 2);
     }
 
@@ -111,6 +139,39 @@ class ServerHooks
                 'mailbox_ids' => $ctx['mailbox_ids'], 'counts' => $counts, 'agents' => $rows];
         } catch (\Throwable $e) {
             \Log::warning('[RefreshGlobal] [interop] fsinterop.dashboard.data: '.$e->getMessage());
+
+            return null;
+        }
+    }
+
+    /** RefreshGlobal's entry of fsinterop.search.providers. */
+    public static function addSearchProvider(array $providers)
+    {
+        try {
+            $providers[GlobalSearch::PROVIDER_ID] = GlobalSearch::provider();
+        } catch (\Throwable $e) {
+            \Log::warning('[RefreshGlobal] [interop] fsinterop.search.providers: '.$e->getMessage());
+        }
+
+        return $providers;
+    }
+
+    /**
+     * Results of the scope "global-mailboxes" (schema search-results 1.0) for $context['user_id'] or the logged-in user.
+     * Context: ['scope' => 'global-mailboxes', 'query' => text, 'limit' => int, 'user_id' => int, 'mailbox_ids' => int[]].
+     */
+    public static function searchResults(array $context)
+    {
+        try {
+            $user = !empty($context['user_id']) ? \App\User::find((int) $context['user_id']) : auth()->user();
+            if (!$user) {
+                return null;
+            }
+            $mailboxes = is_array($context['mailbox_ids'] ?? null) ? $context['mailbox_ids'] : [];
+
+            return GlobalSearch::run($user, $context['query'] ?? '', $context['limit'] ?? GlobalSearch::DEFAULT_LIMIT, $mailboxes);
+        } catch (\Throwable $e) {
+            \Log::warning('[RefreshGlobal] [interop] fsinterop.search.results: '.$e->getMessage());
 
             return null;
         }

@@ -1,0 +1,125 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://github.com/00MY00/RefreshGlobal/blob/main/RefreshGlobal/docs/interop/schemas/search-results-1.0.schema.json",
+    "title": "Search results 1.0",
+    "description": "Answer of a search provider (endpoint, handler or the server filter fsinterop.search.results): tickets the user may see, most recently updated first. No message bodies.",
+    "type": "object",
+    "required": [
+        "schema",
+        "source_module",
+        "provider",
+        "context",
+        "query",
+        "total",
+        "items"
+    ],
+    "properties": {
+        "schema": {
+            "const": "1.0"
+        },
+        "source_module": {
+            "type": "string"
+        },
+        "provider": {
+            "type": "string"
+        },
+        "context": {
+            "type": "string"
+        },
+        "query": {
+            "type": "string"
+        },
+        "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 50
+        },
+        "total": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "all the matching tickets (items holds at most limit of them)"
+        },
+        "items": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "number",
+                    "subject",
+                    "status",
+                    "mailbox",
+                    "url"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "minimum": 1
+                    },
+                    "number": {
+                        "type": "integer"
+                    },
+                    "subject": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "enum": [
+                            "active",
+                            "pending",
+                            "closed",
+                            "spam",
+                            "unknown"
+                        ]
+                    },
+                    "mailbox": {
+                        "type": "object",
+                        "required": [
+                            "id",
+                            "name"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "integer",
+                                "minimum": 1
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "customer": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "email": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "assignee_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "url": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "error": {
+            "type": "string",
+            "description": "only on failure (HTTP 500), with no items"
+        }
+    }
+}

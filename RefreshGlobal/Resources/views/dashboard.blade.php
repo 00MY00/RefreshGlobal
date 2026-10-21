@@ -1,23 +1,28 @@
 {{--
-    "My dashboard" of Refresh for ALL the user's mailboxes. Same markup and classes as Refresh's view
-    (Modules/Refresh/Resources/views/dashboard.blade.php), so Refresh's stylesheet gives the same look; the chart and
-    the number formats come from Refresh itself (Services\Dashboard::chart / delta / duration).
-    Differences: figures over every mailbox; links lead to the "All mailboxes" page; undelivered e-mails per mailbox;
-    "Mailbox" column in the list.
+    Dashboard of ALL the user's mailboxes (Services/GlobalDashboard.php), computed and drawn by RefreshGlobal itself
+    (Services/Dashboard: TicketViews, Statistics, Chart, Sla).
+    $rg_mode = "refresh": it replaces Refresh's "My dashboard" block, with the same markup and classes as Refresh's view
+    (Modules/Refresh/Resources/views/dashboard.blade.php), so Refresh's stylesheet gives the same look.
+    $rg_mode = "standalone": without Refresh, above FreeScout's dashboard, styled by css/refreshglobal-dashboard.css.
+    Links lead to the "All mailboxes" page; undelivered e-mails per mailbox; "Mailbox" column in the list.
 --}}
 @php
-    $D = '\Modules\Refresh\Services\Dashboard';
+    $C = '\Modules\RefreshGlobal\Services\Dashboard\Chart';
+    $rg_standalone = ($rg_mode ?? 'refresh') === 'standalone';
     $s = $stats['stats'];
     $kpis = [
         [__('refreshglobal::messages.dash_resolved'), $s['resolved'][0], $s['resolved'][1], (string) $s['resolved'][0], true],
         [__('refreshglobal::messages.dash_received'), $s['received'][0], $s['received'][1], (string) $s['received'][0], false],
-        [__('refreshglobal::messages.dash_frt'), $s['frt'][0], $s['frt'][1], $D::duration($s['frt'][0]), false],
+        [__('refreshglobal::messages.dash_frt'), $s['frt'][0], $s['frt'][1], $C::duration($s['frt'][0]), false],
         [__('refreshglobal::messages.dash_sla'), $s['sla'][0], $s['sla'][1], $s['sla'][0] === null ? '--' : $s['sla'][0].'%', true],
     ];
     $rg_unresolved = route('refreshglobal.tickets', ['rv' => 'unresolved']);
 @endphp
 <link href="{{ asset(\Module::getPublicPath('refreshglobal').'/css/refreshglobal.css') }}?v={{ \Modules\RefreshGlobal\Services\Compatibility\CompatibilityChecker::moduleVersion() }}" rel="stylesheet" type="text/css">
-<div class="rf-dash rg-dash" data-refresh="{{ \Modules\RefreshGlobal\Services\Settings::autoRefresh() }}" data-fp="{{ $rg_fp ?? '' }}" data-state-url="{{ route('refreshglobal.state', ['reset' => 1]) }}">
+@if ($rg_standalone)
+<link href="{{ asset(\Module::getPublicPath('refreshglobal').'/css/refreshglobal-dashboard.css') }}?v={{ \Modules\RefreshGlobal\Services\Compatibility\CompatibilityChecker::moduleVersion() }}" rel="stylesheet" type="text/css">
+@endif
+<div class="{{ $rg_standalone ? 'rg-dash rg-dash-standalone' : 'rf-dash rg-dash' }}" data-refresh="{{ \Modules\RefreshGlobal\Services\Settings::autoRefresh() }}" data-fp="{{ $rg_fp ?? '' }}" data-state-url="{{ route('refreshglobal.state', ['reset' => 1]) }}">
     <div class="rf-tiles">
         @foreach ($tiles as $tile)
             <a href="{{ $tile['url'] }}" class="rf-tile rf-tile-{{ $tile['key'] }} @if (!$tile['count']) rf-tile-zero @endif">
@@ -30,14 +35,14 @@
     <div class="rf-card rf-trends">
         <div class="rf-trends-chart">
             <div class="rf-card-title">{{ __('refreshglobal::messages.dash_trends') }} · {{ __('refreshglobal::messages.title') }}</div>
-            {!! $D::chart($stats['h_today'], $stats['h_yest'], $stats['now_h']) !!}
+            {!! $C::hourly($stats['h_today'], $stats['h_yest'], $stats['now_h']) !!}
             <div class="rf-chart-legend"><span class="rf-lg-today">{{ __('refreshglobal::messages.dash_today') }}</span><span class="rf-lg-yest">{{ __('refreshglobal::messages.dash_yesterday') }}</span></div>
             <div class="rf-chart-axis">{{ __('refreshglobal::messages.dash_axis') }}</div>
         </div>
         <div class="rf-trends-kpis">
             @foreach ($kpis as $k)
                 @php
-                    list($dtxt, $dir) = $D::delta($k[1], $k[2]);
+                    list($dtxt, $dir) = $C::delta($k[1], $k[2]);
                     $good = $dir === null ? null : (($dir === 'up') === $k[4]);
                 @endphp
                 <div class="rf-kpi">

@@ -87,6 +87,12 @@ Refresh les affiche, sans que RefreshGlobal touche à sa page. Avec un Refresh q
 RefreshGlobal utilise ses replis testés (mode *legacy*, comme avant). Le mode actuel est visible dans
 **Diagnostic RefreshGlobal › Interopérabilité**.
 
+Sans Refresh, RefreshGlobal garde tout : « Toutes les boîtes », vues enregistrées et partagées, filtres, et le
+tableau de bord de toutes les boîtes (calculé par le module, affiché au-dessus du tableau de bord de FreeScout). Pour
+les autres modules, il offre aussi une **recherche** sur toutes les boîtes (`GET /refresh-global/search`, fournisseur
+`refreshglobal.global-search`) et des contextes serveur (`fsinterop.navigation.context`,
+`fsinterop.conversation.context`), toujours avec les droits de l’utilisateur.
+
 ### Vues enregistrées et partagées
 
 Une **vue** est un ensemble enregistré de filtres (boîtes, statut, assigné à, recherche, dossier automatique, tag
@@ -240,7 +246,8 @@ Sans l'installeur, il n'y a ni sauvegarde automatique ni retour arrière.
 | Réglage | Par défaut | Effet |
 |---|---|---|
 | Entrée « Tickets » | désactivé | remplace l'entrée « Tickets » de Refresh par « Toutes les boîtes » |
-| Tableau de bord de toutes les boîtes | activé | « Mon tableau de bord » de Refresh couvre toutes les boîtes de l'utilisateur |
+| Tableau de bord de toutes les boîtes | activé | « Mon tableau de bord » de Refresh couvre toutes les boîtes de l'utilisateur ; sans Refresh, le même tableau de bord s'affiche au-dessus de celui de FreeScout |
+| Objectif de première réponse / de résolution | 24 h / 72 h | objectifs SLA du tableau de bord (« En retard », « Échéance : aujourd'hui », « Résolution dans le cadre du SLA ») quand Refresh n'est pas actif ; avec Refresh, ceux de Refresh |
 | Boîte au-dessus de chaque ticket | activé | nom et adresse de la boîte au-dessus du sujet (liste et tableau de bord) |
 | Passer au ticket suivant | désactivé | après une suppression : désactivé = retour à « Toutes les boîtes » (derniers filtres), activé = ticket suivant de cette liste |
 | Actualisation automatique | 30 secondes | la liste et le tableau de bord se mettent à jour seuls quand leurs tickets changent (jamais pendant une saisie, une sélection ou un menu ouvert) ; 0 = désactivée |
@@ -345,7 +352,10 @@ curl -fsSL https://raw.githubusercontent.com/00MY00/RefreshGlobal/main/install.s
 | RG-VIEW-05 | dégradé | la page liste de Refresh a changé | mettre à jour RefreshGlobal |
 | RG-VIEW-06 | dégradé | liste des langues de FreeScout introuvable | sélecteur de langue masqué (la langue se change dans le profil) ; mettre à jour RefreshGlobal |
 | RG-HOOK-01…17 | dégradé | un hook n'est plus déclenché (menu, colonne « Boîte », icône, entrée de la barre latérale, onglet téléphone, réglages) | mettre à jour RefreshGlobal ; la liste fonctionne |
-| RG-HOOK-18…20, RG-CORE-09…11 | dégradé | tableau de bord de FreeScout ou de Refresh changé | le tableau de bord de Refresh s'affiche tel quel (première boîte) ; mettre à jour RefreshGlobal |
+| RG-HOOK-18…20 | dégradé | tableau de bord de FreeScout ou de Refresh changé | le tableau de bord de Refresh s'affiche tel quel (première boîte) ; mettre à jour RefreshGlobal |
+| RG-CORE-11 | avertissement | réglages SLA de Refresh introuvables | les objectifs SLA de RefreshGlobal s'appliquent (réglages du module) |
+| RG-CORE-23, RG-DB-15 | avertissement | statuts d'envoi ou colonnes des fils de FreeScout changés | carte « E-mails non remis » et vues « Nouveaux » / « En retard » possiblement fausses |
+| RG-CORE-24 | avertissement | `ConversationPolicy::view` absent | `fsinterop.conversation.context` ne donne rien sur les tickets |
 | RG-HOOK-21, RG-ROUTE-04, RG-CORE-12 | dégradé | suppression d'un ticket de FreeScout changée | la suppression garde le comportement de FreeScout ; mettre à jour RefreshGlobal |
 | RG-HOOK-22 | avertissement | dictionnaire des textes de Refresh changé | certains textes de Refresh sur téléphone gardent leur tournure d'origine |
 | RG-CORE-01…06 | bloquant | classe / méthode / constante de FreeScout absente | mettre à jour RefreshGlobal |

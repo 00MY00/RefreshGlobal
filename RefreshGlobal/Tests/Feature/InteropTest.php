@@ -3,7 +3,9 @@
 namespace Modules\RefreshGlobal\Tests\Feature;
 
 use App\Conversation;
+use Modules\RefreshGlobal\Services\Interop\ConversationContext;
 use Modules\RefreshGlobal\Services\Interop\Manifest;
+use Modules\RefreshGlobal\Services\Interop\NavigationContext;
 use Modules\RefreshGlobal\Services\Interop\PeerStatus;
 use Modules\RefreshGlobal\Services\Interop\SemVer;
 use Modules\RefreshGlobal\Services\Interop\ServerHooks;
@@ -45,7 +47,7 @@ class InteropTest extends TestCase
         $this->assertNotNull($manifest);
         $this->assertSame([], $manifest->validate());
         $this->assertSame('refresh-global', $manifest->id());
-        $this->assertSame('1.0.0', $manifest->protocol());
+        $this->assertSame('1.1.0', $manifest->protocol());
         // single source of truth: what the module declares is what it gives the browser
         $this->assertArrayHasKey('global-ticket-list', $manifest->capabilities());
         $this->assertSame(['refreshglobal.move-to-folder', 'refreshglobal.delete-forever'], $manifest->registrations('toolbar'));
@@ -54,7 +56,8 @@ class InteropTest extends TestCase
     public function testValidationFindsProblems()
     {
         $bad = new Manifest(['manifest_version' => 9, 'module' => ['id' => ''], 'interop' => ['protocol' => 'x',
-            'provides' => ['capabilities' => ['a' => 'z'], 'schemas' => ['s' => ['version' => '1.0', 'file' => 'nope.json']],
+            'provides' => ['capabilities' => ['a' => 'z', 'old' => ['version' => '1.0', 'status' => 'deprecated']], 'schemas' => ['s' => ['version' => '1.0', 'file' => 'nope.json']],
+                'routes' => ['r' => ['path' => 'x']],
                 'registrations' => ['toolbar' => [['id' => 'd'], ['id' => 'd']]]],
             'consumes' => ['optional' => ['refresh' => ['protocol' => '~1']]]],
             'compatibility' => ['freescout' => '>=1.8', 'php' => '>=7.1', 'peers' => ['refresh' => ['required' => 'no']]],
@@ -62,9 +65,24 @@ class InteropTest extends TestCase
             sys_get_temp_dir());
         $errors = implode("\n", $bad->validate());
         foreach (['manifest_version', 'module.id', 'not a version', 'capability a', 'nope.json', 'duplicate id d', 'invalid protocol range',
-            'required must be true or false', 'healthy must be 0', 'read_only and without network'] as $expected) {
+            'required must be true or false', 'healthy must be 0', 'read_only and without network',
+            'capability old: a deprecated element needs remove_in_protocol', 'route r: method'] as $expected) {
             $this->assertStringContainsString($expected, $errors);
         }
+    }
+
+    public function testDeprecationPolicy()
+    {
+        $data = Manifest::own()->data();
+        $data['interop']['provides']['events']['refreshglobal:view-changed'] += ['status' => 'deprecated', 'replacement' => 'list:rendered', 'remove_in_protocol' => '2.0.0'];
+        $manifest = new Manifest($data, Manifest::own()->root());
+        $this->assertSame([], $manifest->validate(), 'a deprecated element stays valid during its transition');
+        $this->assertSame(['event refreshglobal:view-changed' => ['replacement' => 'list:rendered', 'remove_in_protocol' => '2.0.0']], $manifest->deprecations());
+        $this->assertSame([], Manifest::own()->deprecations());
+
+        // removal announced in the current major: refused (a removal needs a major protocol version)
+        $data['interop']['provides']['events']['refreshglobal:view-changed']['remove_in_protocol'] = '1.5.0';
+        $this->assertNotEmpty((new Manifest($data, Manifest::own()->root()))->validate());
     }
 
     public function testSemVer()
@@ -115,7 +133,7 @@ class InteropTest extends TestCase
     public function testServerHooks()
     {
         $modules = \Eventy::filter('fsinterop.modules', []);
-        $this->assertSame('1.0.0', $modules['refresh-global']['protocol']);
+        $this->assertSame('1.1.0', $modules['refresh-global']['protocol']);
         $this->assertSame(Manifest::own()->capabilities(), $modules['refresh-global']['capabilities']);
 
         $bob = $this->s['bob'];
@@ -138,16 +156,85 @@ class InteropTest extends TestCase
         $this->assertSame([$this->s['sales']->id], $ctx['mailbox_ids']);
     }
 
+    public function testNavigationContext()
+    {
+        $bob = $this->s['bob'];
+        $this->actingAs($bob);
+        // RefreshGlobal claims its surfaces on its own pages only
+        $ctx = NavigationContext::resolve(NavigationContext::base('refreshglobal.tickets', [], $bob->id));
+        $this->assertSame('global-mailboxes', $ctx['context']);
+        $this->assertSame('refresh-global', $ctx['owners']['saved-views@global-mailboxes']);
+        $mailbox = NavigationContext::resolve(NavigationContext::base('mailboxes.view', ['id' => (string) $this->s['support']->id], $bob->id));
+        $this->assertSame(['mailbox', $this->s['support']->id, []], [$mailbox['context'], $mailbox['mailbox_id'], $mailbox['owners']]);
+        $ticket = NavigationContext::base('conversations.view', ['id' => '42'], $bob->id);
+        $this->assertSame(['conversation', 42], [$ticket['context'], $ticket['conversation_id']]);
+
+        // a claim made before RefreshGlobal's is kept, never overwritten
+        \Eventy::addFilter('fsinterop.navigation.context', function ($context) {
+            $context['owners']['search@global-mailboxes'] = 'other-module';
+
+            return $context;
+        }, 10, 1);
+        // a listener can neither change the base fields nor add malformed owners
+        \Eventy::addFilter('fsinterop.navigation.context', function ($context) {
+            $context['owners']['bad key'] = 'x';
+            $context['context'] = 'mailbox';
+
+            return $context;
+        }, 30, 1);
+        $ctx = NavigationContext::resolve(NavigationContext::base('refreshglobal.tickets', [], $bob->id));
+        $this->assertSame('other-module', $ctx['owners']['search@global-mailboxes']);
+        $this->assertSame('refresh-global', $ctx['owners']['ticket-list@global-mailboxes']);
+        $this->assertArrayNotHasKey('bad key', $ctx['owners']);
+        $this->assertSame('global-mailboxes', $ctx['context']);
+    }
+
+    public function testConversationContext()
+    {
+        $ticket = $this->s['t_support_open'];
+        $ctx = ConversationContext::resolve($ticket, $this->s['bob']);
+        $this->assertSame(['1.0', $ticket->id, $this->s['support']->id, 'active'], [$ctx['schema'], $ctx['conversation_id'], $ctx['mailbox_id'], $ctx['status']]);
+        $this->assertSame(route('refreshglobal.tickets'), $ctx['modules']['refresh-global']['all_mailboxes_url']);
+        $this->assertIsArray($ctx['modules']['refresh-global']['mail_tags']);
+        // the test mailboxes are not IMAP mailboxes: moving is not offered
+        $this->assertSame([], $ctx['modules']['refresh-global']['actions']);
+
+        // rights: nothing for a user who may not view the ticket, also through the raw filter
+        $carol = $this->s['carol'];
+        $this->assertNull(ConversationContext::resolve($ticket, $carol));
+        $raw = \Eventy::filter('fsinterop.conversation.context', ConversationContext::base($ticket, $carol), $ticket, $carol);
+        $this->assertArrayNotHasKey('refresh-global', $raw['modules']);
+
+        // other modules add their own entry; the base fields can not be changed
+        \Eventy::addFilter('fsinterop.conversation.context', function ($context) {
+            $context['modules']['other-module'] = ['x' => 1];
+            $context['mailbox_id'] = 999;
+
+            return $context;
+        }, 30, 1);
+        $ctx = ConversationContext::resolve($ticket, $this->s['bob']);
+        $this->assertSame(['x' => 1], $ctx['modules']['other-module']);
+        $this->assertSame($this->s['support']->id, $ctx['mailbox_id']);
+    }
+
     public function testPagesGiveTheContractToTheBrowser()
     {
         $page = $this->ticketsPage($this->s['bob'])->getContent();
         $this->assertMatchesRegularExpression('/<meta name="refreshglobal-interop" content="([^"]+)"/', $page);
         preg_match('/<meta name="refreshglobal-interop" content="([^"]+)"/', $page, $m);
         $cfg = json_decode(html_entity_decode($m[1], ENT_QUOTES), true);
-        $this->assertSame('1.0.0', $cfg['protocol']);
+        $this->assertSame('1.1.0', $cfg['protocol']);
         $this->assertSame(Manifest::own()->capabilities(), $cfg['capabilities']);
         $this->assertSame(Manifest::own()->consumes('refresh')['capabilities'], $cfg['consumes']['capabilities']);
         $this->assertSame(route('refreshglobal.tickets'), $cfg['navigation']['href']);
+        // surfaces decided on the server (fsinterop.navigation.context), versions from interop.json
+        $this->assertSame('global-mailboxes', $cfg['page']['context']);
+        $this->assertSame('refresh-global', $cfg['page']['owners']['ticket-list@global-mailboxes']);
+        $this->assertSame('refresh-global', $cfg['page']['owners']['search@global-mailboxes']);
+        $this->assertSame(Manifest::own()->surfaces(), $cfg['surfaces']);
+        // search provider (protocol 1.1)
+        $this->assertSame('refreshglobal.global-search', $cfg['search']['id']);
+        $this->assertSame(route('refreshglobal.search'), $cfg['search']['endpoint']);
         // the bridge, then RefreshGlobal's participation, then shell.js
         $scripts = \Eventy::filter('javascripts', []);
         $order = array_map(function ($s) {

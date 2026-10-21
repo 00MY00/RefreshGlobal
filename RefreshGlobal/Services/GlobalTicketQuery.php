@@ -13,7 +13,7 @@ use App\Conversation;
  *   status    int[]   empty = every status except spam (like FreeScout's folders and Refresh's "All tickets")
  *   assignee  string  '' any | 'me' | 'none' | user id
  *   q         string  subject, customer name, customer e-mail, ticket number
- *   rview     string  '' | a Refresh view (GlobalDashboard::VIEWS) with Refresh's own definition (URL parameter rv)
+ *   rview     string  '' | a quick view of the dashboard (GlobalDashboard::VIEWS, Dashboard\TicketViews) (URL parameter rv)
  *   wfolder   string  '' | an automatic folder of Workflow Packs, sub-folders included (URL parameter wf, AutoFolders)
  *   mailtag   string  '' | an origin tag of the e-mails (URL parameter mt, MailTags: "inbox", "classified_spam"…)
  *   sort      string  one of sorts()
@@ -103,10 +103,10 @@ class GlobalTicketQuery
         $q = isset($input['q']) && is_scalar($input['q']) ? trim((string) $input['q']) : '';
         $f['q'] = mb_substr($q, 0, self::MAX_QUERY_LENGTH);
 
-        // Refresh view (links of the dashboard tiles), only when Refresh's API is there
+        // quick view of the dashboard tiles (Services/Dashboard/TicketViews.php: the module's own definitions)
         $rv = isset($input['rv']) ? $input['rv'] : ($input['rview'] ?? '');
         $rv = is_scalar($rv) ? (string) $rv : '';
-        if (in_array($rv, GlobalDashboard::VIEWS, true) && GlobalDashboard::refreshApi()) {
+        if (in_array($rv, GlobalDashboard::VIEWS, true)) {
             $f['rview'] = $rv;
         }
 
@@ -244,8 +244,8 @@ class GlobalTicketQuery
             $this->applySearch($query, $f['q']);
         }
 
-        if ($f['rview'] !== '' && GlobalDashboard::refreshApi()) {
-            GlobalDashboard::applyView($query, $f['rview'], $ids, $user);
+        if ($f['rview'] !== '') {
+            GlobalDashboard::applyView($query, $f['rview']);
         }
 
         if (!in_array('wfolder', $except, true) && $f['wfolder'] !== '' && AutoFolders::available()) {

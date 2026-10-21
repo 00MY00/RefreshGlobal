@@ -160,18 +160,11 @@ class RefreshGlobalServiceProvider extends ServiceProvider
     protected static $dashboardBefore = null;
 
     /**
-     * Refresh's "My dashboard" over all mailboxes. FreeScout's filter "dashboard.before"
-     * (resources/views/secure/dashboard.blade.php:8) runs its listeners by ascending priority
-     * (overrides/tormjens/eventy/src/Event.php:34-35); Refresh appends its block at the default priority 20
-     * (RefreshServiceProvider.php:505). At 19 the module notes the HTML before Refresh; at 21, if what Refresh added is
-     * its dashboard block (class "rf-dash"), that addition is replaced by the same dashboard for all mailboxes.
-     * Anything else (another module, a changed Refresh) is left untouched.
-     */
-    /**
      * FreeScout Interop contract (docs/INTEROPERABILITY.md, interop.json): server hooks fsinterop.* (Services/Interop/
      * ServerHooks.php), and on every page <meta name="refreshglobal-interop"> for Public/js/interop-adapter.js — the
      * module's id, version, protocol and capabilities, what it consumes from Refresh (all read from interop.json, the
-     * single source of truth) and the "All mailboxes" navigation intent.
+     * single source of truth), the "All mailboxes" navigation intent, the surfaces it owns on the page and its search
+     * provider. Blade renders the page content before the layout, so the dashboard rendered on this page is known here.
      */
     protected function registerInterop()
     {
@@ -195,6 +188,11 @@ class RefreshGlobalServiceProvider extends ServiceProvider
                         'replace' => \Modules\RefreshGlobal\Services\Settings::replaceRefreshTickets(),
                     ],
                     'labels'       => ['deleteForever' => __('refreshglobal::messages.delete_forever')],
+                    // which module renders which surface on this page (fsinterop.navigation.context, §11 of the contract)
+                    'page'         => \Modules\RefreshGlobal\Services\Interop\NavigationContext::current(),
+                    'surfaces'     => $manifest->surfaces(),
+                    // search provider "refreshglobal.global-search" (endpoint GET /refresh-global/search)
+                    'search'       => \Modules\RefreshGlobal\Services\Search\GlobalSearch::provider(),
                 ];
                 echo '<meta name="refreshglobal-interop" content="'.e(json_encode($config, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)).'">'."\n";
             } catch (\Throwable $e) {
@@ -266,6 +264,15 @@ class RefreshGlobalServiceProvider extends ServiceProvider
         }, 20, 1);
     }
 
+    /**
+     * Dashboard of all mailboxes (Services/GlobalDashboard.php) on FreeScout's dashboard, through FreeScout's filter
+     * "dashboard.before" (resources/views/secure/dashboard.blade.php:8), whose listeners run by ascending priority
+     * (overrides/tormjens/eventy/src/Event.php:34-35). At 19 the module notes the HTML before the other modules; at 21:
+     *  - with Refresh: Refresh appends its "My dashboard" (first mailbox only) at the default priority 20
+     *    (RefreshServiceProvider.php:505); if what Refresh added is that block (class "rf-dash"), it is replaced by the
+     *    same dashboard for all mailboxes. Anything else (another module, a changed Refresh) is left untouched;
+     *  - without Refresh (standalone, docs/INTEROPERABILITY.md §2.1): the dashboard is added above FreeScout's mailbox cards.
+     */
     protected function registerDashboard()
     {
         \Eventy::addFilter('dashboard.before', function ($html) {
@@ -278,22 +285,45 @@ class RefreshGlobalServiceProvider extends ServiceProvider
             self::$dashboardBefore = null;
             try {
                 $html = (string) $html;
-                if ($before === null || !auth()->check() || !\Modules\RefreshGlobal\Services\Settings::globalDashboard()
-                    || !self::refreshViewsPanel() || !\Modules\RefreshGlobal\Services\GlobalDashboard::refreshApi()
-                    || strpos($html, $before) !== 0
-                    || strpos(substr($html, strlen($before)), 'class="rf-dash"') === false
-                ) {
+                $mode = self::dashboardMode($before, $html);
+                if ($mode === null) {
                     return $html;
                 }
-                $ours = \Modules\RefreshGlobal\Services\GlobalDashboard::render(auth()->user());
+                $ours = \Modules\RefreshGlobal\Services\GlobalDashboard::render(auth()->user(), $mode);
+                if ($ours === '') {
+                    return $html;
+                }
 
-                return $ours === '' ? $html : $before.$ours;
+                return $mode === \Modules\RefreshGlobal\Services\GlobalDashboard::MODE_REFRESH ? $before.$ours : $html.$ours;
             } catch (\Throwable $e) {
                 \Log::warning('[RefreshGlobal] [RG-ERR-03] dashboard for all mailboxes: '.$e->getMessage());
 
                 return $html;
             }
         }, 21);
+    }
+
+    /**
+     * Where the dashboard of all mailboxes goes on this request: MODE_REFRESH (replace Refresh's block), MODE_STANDALONE
+     * (Refresh not active: add it), or null (setting off, not logged in, or Refresh active but its block not recognised).
+     *
+     * @param string|null $before HTML of dashboard.before before Refresh's listener
+     * @param string      $html   HTML after Refresh's listener
+     */
+    protected static function dashboardMode($before, $html)
+    {
+        if ($before === null || !auth()->check() || !\Modules\RefreshGlobal\Services\Settings::globalDashboard()) {
+            return null;
+        }
+        if (!\App\Module::isActive('refresh')) {
+            return \Modules\RefreshGlobal\Services\GlobalDashboard::MODE_STANDALONE;
+        }
+        $added = strpos($html, $before) === 0 ? substr($html, strlen($before)) : '';
+        if (self::refreshViewsPanel() && strpos($added, 'class="rf-dash"') !== false) {
+            return \Modules\RefreshGlobal\Services\GlobalDashboard::MODE_REFRESH;
+        }
+
+        return null;
     }
 
     /**

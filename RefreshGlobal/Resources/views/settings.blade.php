@@ -28,8 +28,25 @@
     <h3 class="subheader">{{ __('refreshglobal::messages.navigation') }}</h3>
     @include('refreshglobal::partials.switch', ['key' => $rg_s::REPLACE_REFRESH_TICKETS, 'label' => __('refreshglobal::messages.replace_tickets_label'),
         'help' => __('refreshglobal::messages.replace_tickets').'. '.__('refreshglobal::messages.replace_tickets_help'), 'extra_help' => $rg_need_refresh, 'disabled' => !$rg_refresh])
+    {{-- works without Refresh too: then shown above FreeScout's dashboard (Services/GlobalDashboard.php, standalone) --}}
     @include('refreshglobal::partials.switch', ['key' => $rg_s::GLOBAL_DASHBOARD, 'label' => __('refreshglobal::messages.global_dashboard'),
-        'help' => __('refreshglobal::messages.global_dashboard_help'), 'extra_help' => $rg_need_refresh, 'disabled' => !$rg_refresh])
+        'help' => __('refreshglobal::messages.global_dashboard_help'), 'extra_help' => $rg_refresh ? '' : __('refreshglobal::messages.global_dashboard_standalone')])
+    {{-- service-level targets of the dashboard (Services/Dashboard/Sla.php): Refresh's own settings apply when it is active --}}
+    @php $rg_sla = '\Modules\RefreshGlobal\Services\Dashboard\Sla'; $rg_sla_refresh = $rg_sla::source() === 'refresh'; @endphp
+    @foreach ([[$rg_sla::FIRST_RESPONSE, 'sla_first_response', $rg_sla::firstResponseHours()], [$rg_sla::RESOLUTION, 'sla_resolution', $rg_sla::resolutionHours()]] as $rg_sla_row)
+        <div class="form-group">
+            <label for="rg-{{ $rg_sla_row[1] }}" class="col-sm-2 control-label">{{ __('refreshglobal::messages.'.$rg_sla_row[1]) }}</label>
+            <div class="col-sm-6">
+                <div class="input-group" style="max-width: 220px;">
+                    <input type="number" id="rg-{{ $rg_sla_row[1] }}" name="settings[{{ $rg_sla_row[0] }}]" value="{{ (int) ($settings[$rg_sla_row[0]] ?? $rg_sla_row[2]) }}" min="1" max="{{ $rg_sla::MAX_HOURS }}" step="1" class="form-control" @if ($rg_sla_refresh) disabled @endif>
+                    <span class="input-group-addon">{{ __('refreshglobal::messages.sla_unit') }}</span>
+                </div>
+                @if ($loop->last)
+                    <p class="form-help">{{ __('refreshglobal::messages.sla_help', ['overdue' => __('refreshglobal::messages.dash_overdue'), 'due_today' => __('refreshglobal::messages.dash_due_today'), 'sla' => __('refreshglobal::messages.dash_sla')]) }}@if ($rg_sla_refresh) {{ __('refreshglobal::messages.sla_from_refresh', ['first' => $rg_sla::firstResponseHours(), 'resolution' => $rg_sla::resolutionHours()]) }}@endif</p>
+                @endif
+            </div>
+        </div>
+    @endforeach
     @include('refreshglobal::partials.switch', ['key' => $rg_s::SHOW_MAILBOX, 'label' => __('refreshglobal::messages.show_mailbox'),
         'help' => __('refreshglobal::messages.show_mailbox_help')])
     <div class="form-group">

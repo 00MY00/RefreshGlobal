@@ -336,6 +336,26 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
   l’action « Déplacer » déclarée ouvre la fenêtre quand son propriétaire l’exécute ; aucune erreur JavaScript.
 - Non-régression : `layout.js` (5 largeurs), `closenext.js`, `select.js`, `move116.js` (GreenMail) OK.
 
+### 36 b. Autonomie sans Refresh, recherche, contextes serveur (1.17.0, protocole 1.1.0 — 2026-10-21)
+
+- `php tools/validate-interop.php` : « Interop contract OK: protocol 1.1.0, 8 capabilities, 2 events, 13 schemas,
+  11 server hooks, 0 deprecated » ; route déclarée retirée de `Http/routes.php` → erreur détectée (vérifié puis remis).
+- `node tests/interop/fs-interop.test.js` : **12/12** (en plus : registre de recherche, ajout de `search` à un pont 1.0
+  déjà chargé sur son bus d’événements, copie plus ancienne chargée après sans effet).
+- `php -l` des fichiers PHP modifiés ou nouveaux sous PHP **7.1** : 0 erreur.
+- PHPUnit : **170 tests, 2413 assertions, 0 échec** (2 ignorés). Nouveaux : `SearchTest` (4 : boîtes autorisées
+  seulement, ni brouillon / supprimé / spam, limite et total, texte trop court, `mb[]` interdit ignoré, droit « assignées
+  uniquement », invité refusé, filtres serveur), `DashboardStandaloneTest` (6 : tableau de bord au-dessus de celui de
+  FreeScout sans Refresh, vues rapides sans Refresh, SLA « En retard » / « Nouveaux » et réglages du module, tuiles et
+  chiffres, graphique et durées, carte « E-mails non remis »), `InteropTest` (+3 : politique d’obsolescence, contexte de
+  navigation avec revendications et champs protégés, contexte d’un ticket avec droits).
+- Navigateur (`standalone.js`, FreeScout 1.8.245) : **avec Refresh 1.6.0** — tableau de bord à la place de celui de
+  Refresh (`rf-dash rg-dash`, mêmes tuiles), surface `dashboard@global-mailboxes` à RefreshGlobal, pastille « Overdue »,
+  recherche par `FreeScoutInterop.search.run()` (protocole 1.1.0, 43 résultats, 1 caractère → 0) ; **Refresh désactivé**
+  (`module:disable Refresh`) — même tableau de bord au-dessus des cartes de FreeScout (`rg-dash-standalone`, mêmes
+  chiffres), mêmes vues rapides et recherche ; téléphone 390 px sans défilement horizontal ; aucune erreur JavaScript.
+  Refresh réactivé ensuite : `refreshglobal:health` « Healthy ».
+
 ## 28. Adresse d'envoi au choix (1.10.0)
 
 - `refreshglobal:check` : RG-HOOK-28/29, RG-CORE-17, RG-ROUTE-11 OK, état OK.

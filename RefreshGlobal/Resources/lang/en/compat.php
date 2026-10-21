@@ -119,7 +119,7 @@ return [
     'core_refresh' => [
         'check'  => 'Refresh code present: :item',
         'label'  => 'A Refresh class or method used by the module is missing: :item.',
-        'effect' => 'Refresh’s own dashboard is shown (first mailbox only). The rest works.',
+        'effect' => 'The dashboard of all mailboxes uses RefreshGlobal’s own SLA targets (settings) instead of Refresh’s. The rest works.',
         'action' => 'Update RefreshGlobal to a version made for this FreeScout / Refresh version, then run php artisan refreshglobal:check.',
     ],
     'hook_delete' => [
@@ -258,6 +258,24 @@ return [
         'check'  => 'Element used for the e-mail tags present: :item',
         'label'  => 'An element used for the e-mail tags is missing: :item.',
         'effect' => 'The e-mails are imported without origin tags, and spam is imported as before. The rest works.',
+        'action' => 'Update RefreshGlobal to a version made for this FreeScout version, then run php artisan refreshglobal:check.',
+    ],
+    'core_dashboard' => [
+        'check'  => 'FreeScout code present: :item',
+        'label'  => 'A FreeScout constant used by the dashboard of all mailboxes is missing: :item.',
+        'effect' => 'The “Undelivered e-mails” card and the “New” / “Overdue” views may be wrong. The rest works.',
+        'action' => 'Update RefreshGlobal to a version made for this FreeScout version, then run php artisan refreshglobal:check.',
+    ],
+    'db_dashboard' => [
+        'check'  => 'Table and columns present: :item',
+        'label'  => 'A column used by the dashboard of all mailboxes is missing: :item.',
+        'effect' => 'The “Undelivered e-mails” card and the “New” / “Overdue” views may be wrong. The rest works.',
+        'action' => 'Update RefreshGlobal to a version made for this FreeScout version, then run php artisan refreshglobal:check.',
+    ],
+    'core_interop' => [
+        'check'  => 'FreeScout code present: :item',
+        'label'  => 'A FreeScout method used by the FreeScout Interop contract is missing: :item.',
+        'effect' => 'Other modules get no RefreshGlobal data about a ticket (fsinterop.conversation.context). The rest works.',
         'action' => 'Update RefreshGlobal to a version made for this FreeScout version, then run php artisan refreshglobal:check.',
     ],
 ];

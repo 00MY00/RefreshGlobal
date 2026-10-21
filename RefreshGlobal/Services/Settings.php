@@ -271,6 +271,8 @@ class Settings
         return [
             self::REPLACE_REFRESH_TICKETS => self::replaceRefreshTickets(),
             self::GLOBAL_DASHBOARD        => self::globalDashboard(),
+            Dashboard\Sla::FIRST_RESPONSE  => Dashboard\Sla::own(Dashboard\Sla::FIRST_RESPONSE, Dashboard\Sla::DEFAULT_FIRST_RESPONSE_HOURS),
+            Dashboard\Sla::RESOLUTION      => Dashboard\Sla::own(Dashboard\Sla::RESOLUTION, Dashboard\Sla::DEFAULT_RESOLUTION_HOURS),
             self::SHOW_MAILBOX            => self::showMailbox(),
             self::DELETE_GOES_NEXT        => self::deleteGoesNext(),
             self::KEEP_POSITION           => self::keepPosition(),

@@ -9,8 +9,9 @@
  *      ids, schema files present and valid JSON, UpdateGuard health section);
  *   2. consistency with the other declarations of the module: module.json healthCommand, Config/integration.php version
  *      ranges (FreeScout, Refresh legacy fallback), the health command declared in the module;
- *   3. no undocumented integration: every event emitted and every intent registered by the module's scripts is declared
- *      in interop.json, and everything declared is really emitted / registered.
+ *   3. no undocumented integration: every event emitted and every intent registered by the module's scripts (navigation,
+ *      toolbar, swipe, search) is declared in interop.json, and everything declared is really emitted / registered; the
+ *      declared server hooks are used by the PHP code and the declared public routes exist in Http/routes.php.
  */
 $root = dirname(__DIR__);
 $module = $root.'/RefreshGlobal';
@@ -67,7 +68,7 @@ foreach (array_diff($emitted, $declaredEvents) as $event) {
 foreach (array_diff($declaredEvents, $emitted) as $event) {
     $problems[] = "event $event is declared in interop.json but never emitted";
 }
-foreach (['navigation', 'toolbar', 'swipe'] as $registry) {
+foreach (Manifest::REGISTRIES as $registry) {
     preg_match_all('/FI\\.'.$registry."\\.register\\(\\{\\s*id: '([^']+)'/", $js, $r);
     $registered = array_values(array_unique($r[1]));
     $declared = $manifest->registrations($registry);
@@ -91,6 +92,17 @@ foreach (array_keys((array) $manifest->get('interop.provides.server_hooks', []))
     }
 }
 
+// the public routes declared exist (by name, with the same method and path)
+$routes = (string) @file_get_contents($module.'/Http/routes.php');
+foreach ((array) $manifest->get('interop.provides.routes', []) as $name => $def) {
+    $path = preg_replace('#^/refresh-global#', '', (string) ($def['path'] ?? ''));
+    $pattern = '#Route::'.strtolower((string) ($def['method'] ?? ''))."\('".preg_quote($path, '#')."',[^
+]*->name\('".preg_quote($name, '#')."'\)#";
+    if (!preg_match($pattern, $routes)) {
+        $problems[] = "route $name ({$def['method']} {$def['path']}) is declared in interop.json but not found in Http/routes.php";
+    }
+}
+
 if ($problems) {
     fwrite(STDERR, "Interop contract: ".count($problems)." problem(s)\n");
     foreach ($problems as $p) {
@@ -99,5 +111,6 @@ if ($problems) {
     exit(1);
 }
 echo 'Interop contract OK: protocol '.$manifest->protocol().', '.count($manifest->capabilities()).' capabilities, '
-    .count($declaredEvents).' events, '.count((array) $manifest->get('interop.provides.schemas', [])).' schemas'."\n";
+    .count($declaredEvents).' events, '.count((array) $manifest->get('interop.provides.schemas', [])).' schemas, '
+    .count((array) $manifest->get('interop.provides.server_hooks', [])).' server hooks, '.count($manifest->deprecations()).' deprecated'."\n";
 exit(0);

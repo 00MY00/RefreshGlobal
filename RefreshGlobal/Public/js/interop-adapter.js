@@ -5,9 +5,11 @@
  * What it does, from the data of <meta name="refreshglobal-interop"> (written by the server from interop.json, the
  * single source of truth: Providers/RefreshGlobalServiceProvider::registerInterop()):
  *   1. registers RefreshGlobal (id, version, protocol, capabilities of its manifest);
- *   2. declares the surfaces it renders on the current page (ticket list / dashboard of all mailboxes);
+ *   2. declares the surfaces it renders on the current page, as decided on the server by the filter
+ *      fsinterop.navigation.context (Services/Interop/NavigationContext.php: "page.owners" of the meta);
  *   3. declares its INTENTS — never HTML — in the shared registries: the "All mailboxes" navigation entry, the ticket
- *      toolbar actions ("Move to a folder", "Delete forever" for a ticket in the trash) and the swipe action;
+ *      toolbar actions ("Move to a folder", "Delete forever" for a ticket in the trash), the swipe action and the
+ *      search provider of all mailboxes (protocol 1.1, endpoint GET /refresh-global/search);
  *   4. gives the origin of a ticket opened from the "All mailboxes" list (FreeScoutInterop.context) and announces the
  *      list shown (refreshglobal:view-changed) and the ticket opened (refreshglobal:conversation-opened);
  *   5. tells Public/js/shell.js, capability by capability, whether Refresh cooperates natively
@@ -91,16 +93,23 @@
 
     /* ------------------------------------------------------------------ 2. surfaces of this page */
 
-    var page = document.body ? document.body.getAttribute('data-rg-page') : null;
-    if (page === 'tickets') {
-        FI.surfaces.register({ module: cfg.module.id, surface: 'ticket-list', context: 'global-mailboxes', version: '1.0' });
-        FI.surfaces.register({ module: cfg.module.id, surface: 'saved-views', context: 'global-mailboxes', version: '1.0' });
+    /**
+     * Surfaces claimed by RefreshGlobal on this page ("surface@scope" => module id, server side), with the versions of
+     * interop.json (provides.surfaces). The server knows the page: no guessing from the HTML.
+     */
+    function registerSurfaces() {
+        var owners = (cfg.page && cfg.page.owners) || {};
+        Object.keys(owners).forEach(function (key) {
+            if (owners[key] !== cfg.module.id) {
+                return;
+            }
+            var parts = key.split('@');
+            FI.surfaces.register({ module: cfg.module.id, surface: parts[0], context: parts[1], version: (cfg.surfaces || {})[key] || '1.0' });
+        });
     }
-    document.addEventListener('DOMContentLoaded', function () {
-        if (document.querySelector('.rg-dash')) {
-            FI.surfaces.register({ module: cfg.module.id, surface: 'dashboard', context: 'global-mailboxes', version: '1.1' });
-        }
-    });
+
+    registerSurfaces();
+    var page = document.body ? document.body.getAttribute('data-rg-page') : null;
 
     /* ------------------------------------------------------------------ 3. intents */
 
@@ -182,7 +191,47 @@
         });
     }
 
+    /**
+     * Search provider of all mailboxes (protocol 1.1): the module that owns a search UI may list the providers of the
+     * context "global-mailboxes" and run this one; its handler asks the module's endpoint (the user's rights apply
+     * on the server) and resolves with search results 1.0.
+     */
+    function registerSearch() {
+        var provider = cfg.search;
+        if (!FI.search || !provider || !provider.endpoint) {
+            return; // an older bridge (protocol 1.0) without search: nothing to declare
+        }
+        FI.search.register({
+            id: 'refreshglobal.global-search',
+            owner: cfg.module.id,
+            context: 'global-mailboxes',
+            endpoint: provider.endpoint,
+            label: provider.label,
+            version: provider.version || '1.0',
+            handler: function (request) {
+                return searchRequest(provider.endpoint, request || {});
+            }
+        });
+    }
+
+    /** GET endpoint?q=…&limit=… with the session cookie; a Promise of the JSON results (rejected on an HTTP error). */
+    function searchRequest(endpoint, request) {
+        if (!root.fetch) {
+            return undefined;
+        }
+        var url = endpoint + (endpoint.indexOf('?') >= 0 ? '&' : '?') + 'q=' + encodeURIComponent(String(request.query || ''))
+            + (request.limit ? '&limit=' + parseInt(request.limit, 10) : '');
+        return root.fetch(url, { credentials: 'same-origin', headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(function (response) {
+                if (!response.ok) {
+                    throw new Error('HTTP ' + response.status);
+                }
+                return response.json();
+            });
+    }
+
     registerNavigation();
+    registerSearch();
     document.addEventListener('DOMContentLoaded', function () {
         registerMoveActions();
         registerDeleteForever();

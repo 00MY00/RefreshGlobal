@@ -66,6 +66,11 @@ declares its intents (“All mailboxes” entry, “Move” action, origin of a 
 RefreshGlobal touching its page. With a Refresh that does not know the contract yet, RefreshGlobal uses its tested
 fallbacks (*legacy* mode, as before). The current mode is shown in **RefreshGlobal diagnostics › Interoperability**.
 
+Without Refresh, RefreshGlobal keeps everything: “All mailboxes”, saved and shared views, filters, and the dashboard of
+all mailboxes (computed by the module, shown above FreeScout's dashboard). For other modules it also offers a
+**search** over all mailboxes (`GET /refresh-global/search`, provider `refreshglobal.global-search`) and server
+contexts (`fsinterop.navigation.context`, `fsinterop.conversation.context`), always with the user's rights.
+
 ### Saved and shared views
 
 A **view** is a saved set of filters (mailboxes, status, assigned to, search, automatic folder, e-mail tag, Refresh
@@ -146,7 +151,8 @@ Updates: `sudo git -C /opt/RefreshGlobal pull`, then the same command with `--up
 | Setting | Default | Effect |
 |---|---|---|
 | "Tickets" entry | off | replaces Refresh's "Tickets" entry by "All mailboxes" |
-| Dashboard of all mailboxes | on | Refresh's "My dashboard" covers all the user's mailboxes |
+| Dashboard of all mailboxes | on | Refresh's "My dashboard" covers all the user's mailboxes; without Refresh, the same dashboard is shown above FreeScout's |
+| First response / resolution target | 24 h / 72 h | SLA targets of the dashboard ("Overdue", "Due: today", "Resolved within SLA") when Refresh is not active; with Refresh, Refresh's |
 | Mailbox above each ticket | on | name and address of the mailbox above the subject (list and dashboard) |
 | Go to the next ticket | off | after a deletion: off = back to "All mailboxes" (last filters), on = next ticket of that list |
 | Automatic refresh | 30 seconds | the list and the dashboard refresh themselves when their tickets change (never while typing, selecting or with a menu open); 0 = off |

@@ -115,7 +115,7 @@ return [
     'core_refresh' => [
         'check'  => 'Refresh-Code vorhanden: :item',
         'label'  => 'Eine vom Modul verwendete Klasse oder Methode von Refresh fehlt: :item.',
-        'effect' => 'Das eigene Dashboard von Refresh wird angezeigt (nur erstes Postfach). Der Rest funktioniert.',
+        'effect' => 'Das Dashboard aller Postfächer verwendet die eigenen SLA-Ziele von RefreshGlobal (Einstellungen) statt jener von Refresh. Der Rest funktioniert.',
         'action' => 'RefreshGlobal auf eine Version für diese FreeScout-/Refresh-Version aktualisieren, dann php artisan refreshglobal:check ausführen.',
     ],
     'hook_delete' => [
@@ -254,6 +254,24 @@ return [
         'check'  => 'Element für die E-Mail-Tags vorhanden: :item',
         'label'  => 'Ein Element für die E-Mail-Tags fehlt: :item.',
         'effect' => 'E-Mails werden ohne Herkunfts-Tags importiert, Spam wird wie bisher importiert. Der Rest funktioniert.',
+        'action' => 'RefreshGlobal auf eine Version für diese FreeScout-Version aktualisieren, dann php artisan refreshglobal:check ausführen.',
+    ],
+    'core_dashboard' => [
+        'check'  => 'FreeScout-Code vorhanden: :item',
+        'label'  => 'Eine vom Dashboard aller Postfächer verwendete FreeScout-Konstante fehlt: :item.',
+        'effect' => 'Die Karte „Nicht zugestellte E-Mails“ und die Ansichten „Neu“ / „Überfällig“ können falsch sein. Der Rest funktioniert.',
+        'action' => 'RefreshGlobal auf eine Version für diese FreeScout-Version aktualisieren, dann php artisan refreshglobal:check ausführen.',
+    ],
+    'db_dashboard' => [
+        'check'  => 'Tabelle und Spalten vorhanden: :item',
+        'label'  => 'Eine vom Dashboard aller Postfächer verwendete Spalte fehlt: :item.',
+        'effect' => 'Die Karte „Nicht zugestellte E-Mails“ und die Ansichten „Neu“ / „Überfällig“ können falsch sein. Der Rest funktioniert.',
+        'action' => 'RefreshGlobal auf eine Version für diese FreeScout-Version aktualisieren, dann php artisan refreshglobal:check ausführen.',
+    ],
+    'core_interop' => [
+        'check'  => 'FreeScout-Code vorhanden: :item',
+        'label'  => 'Eine vom FreeScout-Interop-Vertrag verwendete FreeScout-Methode fehlt: :item.',
+        'effect' => 'Andere Module erhalten keine Daten von RefreshGlobal zu einem Ticket (fsinterop.conversation.context). Der Rest funktioniert.',
         'action' => 'RefreshGlobal auf eine Version für diese FreeScout-Version aktualisieren, dann php artisan refreshglobal:check ausführen.',
     ],
 ];

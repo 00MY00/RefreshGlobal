@@ -11,7 +11,30 @@ update when the version changes.
 ## [1.17.0] — unreleased (waiting for the review of Refresh's maintainer)
 
 ### Added
-- **FreeScout Interop contract, protocol 1.0.0** ([docs/INTEROPERABILITY.md](docs/INTEROPERABILITY.md)): Refresh and
+- **RefreshGlobal works fully without Refresh** (contract §2.1): the dashboard of all mailboxes, its quick views
+  (tiles, `rv` filter of “All mailboxes”), its figures, chart and SLA targets are now computed by RefreshGlobal itself
+  (`Services/Dashboard/`: `TicketViews`, `Statistics`, `Chart`, `Sla`) instead of calling Refresh's classes.
+  - With Refresh: the dashboard still replaces Refresh's “My dashboard” (first mailbox only), same look, same figures.
+  - Without Refresh: the dashboard is shown above FreeScout's own dashboard, with its own stylesheet
+    (`Public/css/refreshglobal-dashboard.css`, desktop and phone); the setting is no longer greyed out.
+  - SLA targets: Refresh's settings when Refresh is active, otherwise new settings **First response target** /
+    **Resolution target** (Manage › Settings › RefreshGlobal, defaults 24 h / 72 h, Refresh's defaults).
+  - New quick views `new` and `undelivered`; the “Undelivered e-mails” card links to “All mailboxes” instead of
+    Refresh's per-mailbox view.
+- **Search API** (contract §20, protocol 1.1): search provider `refreshglobal.global-search` for the context
+  `global-mailboxes` — endpoint `GET /refresh-global/search?q=&limit=&mb[]=` (JSON, read-only, the user's rights,
+  schema `search-results` 1.0), browser registry `FreeScoutInterop.search` (`registerProvider`, `forContext`, `run`),
+  server filters `fsinterop.search.providers` and `fsinterop.search.results`.
+- **Server contexts** (contract Phase 4): filter `fsinterop.navigation.context` — which module renders which surface
+  on the current page (context-aware ownership, §11; RefreshGlobal registers its browser surfaces from it instead of
+  guessing from the HTML); filter `fsinterop.conversation.context` — what each module knows about a ticket for a user
+  who may view it (RefreshGlobal: “All mailboxes” link, origin tags, usable actions).
+- **Deprecation policy** (§42): a capability, event or server hook can be declared `"status": "deprecated"` with
+  `replacement` and `remove_in_protocol` (a later major); checked by the validator and by `Manifest::deprecations()`.
+- Public routes are declared in `interop.json` (`provides.routes`) and checked against `Http/routes.php`.
+- Integration checks RG-CORE-23 (send log statuses), RG-CORE-24 (`ConversationPolicy::view`), RG-DB-15 (`threads`
+  columns) with their texts in 7 languages.
+- **FreeScout Interop contract, protocol 1.1.0** ([docs/INTEROPERABILITY.md](docs/INTEROPERABILITY.md)): Refresh and
   RefreshGlobal stay independent sibling modules and can cooperate through a small, versioned, declared contract
   instead of RefreshGlobal changing Refresh's page.
   - `RefreshGlobal/interop.json`: the single source of truth of what RefreshGlobal provides (capabilities, events,
@@ -40,8 +63,15 @@ update when the version changes.
   `unhealthy` / `error`, checks `pass` / `warn` / `fail`, new `interop_manifest` check, `interop` summary; exit code 2
   when the check itself fails. UpdateGuard only uses the exit code (0 = healthy): no change for it.
 - Releases publish `interop.json` next to `RefreshGlobal.zip`, listed in `SHA256SUMS`.
+- The chip of a quick view on “All mailboxes” is called “Quick view” (was “Refresh view”), in the 7 languages.
+- Integration checks: RG-CORE-09 (`Views::query`, `Views::labels`) and RG-CORE-10 (`Dashboard::chart / delta /
+  duration`) removed (no longer used); RG-CORE-11 now covers `Settings::firstResponseHours / resolutionHours` with
+  severity *warning* (without them, the module's own SLA targets apply).
 
 ### Compatibility
+- Protocol **1.1.0** = protocol 1.0 + search providers, added without breaking anything: a module speaking 1.0 stays
+  compatible (`>=1.0.0 <2.0.0`); when an older copy of the bridge loaded first, RefreshGlobal's copy only adds the
+  `search` registry, on the existing event bus.
 - With today's Refresh (1.4.x – 1.6.x, no contract): mode **legacy**, same behaviour as 1.16.2.
 - New CI job **interop-contract**: `tools/validate-interop.php` (manifest valid and consistent with the code,
   `module.json` and `Config/integration.php`) and `tests/interop/fs-interop.test.js`.

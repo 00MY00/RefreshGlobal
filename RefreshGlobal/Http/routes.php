@@ -17,6 +17,8 @@ Route::group([
     Route::get('/tickets', $users + ['uses' => 'GlobalTicketsController@index'])->name('refreshglobal.tickets');
     Route::get('/export', $users + ['uses' => 'ExportController@export'])->name('refreshglobal.export');
     Route::get('/state', $users + ['uses' => 'GlobalTicketsController@state'])->name('refreshglobal.state');
+    // search provider of the FreeScout Interop contract (JSON, read-only; rights applied by Services/Search/GlobalSearch.php)
+    Route::get('/search', $users + ['uses' => 'SearchController@search'])->name('refreshglobal.search');
     // automatic folders of Workflow Packs (when installed): overview
     Route::get('/folders', $users + ['uses' => 'AutoFoldersController@index'])->name('refreshglobal.folders');
     // details and raw text of a message (permission checked by the controller: the user can view the ticket)

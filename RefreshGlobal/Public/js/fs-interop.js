@@ -1,5 +1,5 @@
 /*
- * FreeScout Interop — protocol 1.0.0 (browser side).
+ * FreeScout Interop — protocol 1.1.0 (browser side).
  *
  * A small, neutral, versioned registry through which sibling FreeScout modules (Refresh, RefreshGlobal…) cooperate
  * without depending on each other's private HTML or functions. Contract: docs/INTEROPERABILITY.md, machine-readable
@@ -19,7 +19,9 @@
  *   events      on(name, fn) / off(name, fn) / emit(name, payload) / once(name, fn)
  *   context     setConversationOrigin(origin) / getConversationOrigin(conversationId)
  *   surfaces    register({module, surface, context, version}) / owner(surface, context)
- *   navigation, toolbar, swipe   register(item) / list(filter) / get(id) — action registries
+ *   navigation, toolbar, swipe   register(item) / list(filter) / get(id) / run(id, context) — action registries
+ *   search      registerProvider(provider) / forContext(context) / list / get / run(id, request) — search providers
+ *               (protocol 1.1: added without breaking 1.0; a module checks FreeScoutInterop.search before using it)
  *   semver      satisfies(version, range) / compare(a, b)
  *
  * Licence: same as the module that ships it (AGPL-3.0 for RefreshGlobal). Copy it unchanged into another module;
@@ -28,7 +30,7 @@
 (function (root) {
     'use strict';
 
-    var PROTOCOL = '1.0.0';
+    var PROTOCOL = '1.1.0';
 
     /* ------------------------------------------------------------------ helpers */
 
@@ -375,6 +377,21 @@
         api.toolbar = registry('toolbar', ['id', 'owner', 'label', 'handler']);
         api.swipe = registry('swipe', ['id', 'owner', 'label', 'direction', 'handler']);
 
+        /*
+         * ---------- search providers (protocol 1.1): {id, owner, context, endpoint, label, version, handler}.
+         * The module that owns the search UI of a context lists the providers of that context and runs them; a
+         * provider's handler(request) receives {query, limit} and returns a Promise of search results (schema
+         * search-results 1.0). The bridge itself never makes a network call.
+         */
+        api.search = registry('search', ['id', 'owner', 'context', 'endpoint']);
+        api.search.registerProvider = api.search.register;
+        /** Providers of a context (and the ones declared for every context, "*"). */
+        api.search.forContext = function (context) {
+            return api.search.list(function (p) {
+                return p.context === context || p.context === '*';
+            });
+        };
+
         api.semver = { satisfies: satisfies, compare: compare };
 
         return api;
@@ -387,13 +404,16 @@
         root.FreeScoutInterop = createFreeScoutInterop();
     } else if (existing.semver && existing.semver.compare(PROTOCOL, existing.protocol) > 0
         && parseVersion(PROTOCOL)[0] === parseVersion(existing.protocol)[0]) {
-        // a newer copy of the same major protocol: add only what the loaded copy misses, keep its registries
+        // a newer copy of the same major protocol: add only what the loaded copy misses, keep its registries; the added
+        // parts announce themselves on the loaded copy's event bus (they read api.events when they emit)
         var fresh = createFreeScoutInterop();
+        fresh.events = existing.events;
         for (var key in fresh) {
             if (Object.prototype.hasOwnProperty.call(fresh, key) && existing[key] === undefined) {
                 existing[key] = fresh[key];
             }
         }
+        existing.protocol = PROTOCOL;
     }
     root.FreeScoutInterop.events.emit('interop:ready', { schema: '1.0', protocol: root.FreeScoutInterop.protocol });
 })(typeof window !== 'undefined' ? window : this);

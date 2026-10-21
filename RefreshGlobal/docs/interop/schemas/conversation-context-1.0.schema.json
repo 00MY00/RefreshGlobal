@@ -1,0 +1,74 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://github.com/00MY00/RefreshGlobal/blob/main/RefreshGlobal/docs/interop/schemas/conversation-context-1.0.schema.json",
+    "title": "Conversation context 1.0",
+    "description": "Server filter fsinterop.conversation.context (arguments: context, conversation, user): read-only data the modules know about one ticket, for a user who may view it. Each module adds only modules[<its id>].",
+    "type": "object",
+    "required": [
+        "schema",
+        "conversation_id",
+        "mailbox_id",
+        "status",
+        "modules"
+    ],
+    "properties": {
+        "schema": {
+            "const": "1.0"
+        },
+        "conversation_id": {
+            "type": "integer",
+            "minimum": 1
+        },
+        "mailbox_id": {
+            "type": "integer",
+            "minimum": 1
+        },
+        "number": {
+            "type": "integer"
+        },
+        "status": {
+            "enum": [
+                "active",
+                "pending",
+                "closed",
+                "spam",
+                "unknown"
+            ]
+        },
+        "user_id": {
+            "type": [
+                "integer",
+                "null"
+            ]
+        },
+        "modules": {
+            "type": "object",
+            "properties": {
+                "refresh-global": {
+                    "type": "object",
+                    "properties": {
+                        "all_mailboxes_url": {
+                            "type": "string"
+                        },
+                        "mail_tags": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "actions": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "ids of RefreshGlobal intents usable on this ticket"
+                        }
+                    }
+                }
+            },
+            "additionalProperties": {
+                "type": "object"
+            }
+        }
+    }
+}

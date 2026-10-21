@@ -10,7 +10,7 @@
   },
 
   "interop": {
-    "protocol": "1.0.0",
+    "protocol": "1.1.0",
     "bridge": "Public/js/fs-interop.js",
 
     "provides": {
@@ -21,7 +21,8 @@
         "shared-views": "1.0",
         "navigation-origin": "1.0",
         "mail-tags": "1.0",
-        "mail-move": "1.0"
+        "mail-move": "1.0",
+        "global-search": "1.0"
       },
 
       "events": {
@@ -32,7 +33,8 @@
       "surfaces": [
         { "surface": "ticket-list", "context": "global-mailboxes", "version": "1.0" },
         { "surface": "dashboard", "context": "global-mailboxes", "version": "1.1" },
-        { "surface": "saved-views", "context": "global-mailboxes", "version": "1.0" }
+        { "surface": "saved-views", "context": "global-mailboxes", "version": "1.0" },
+        { "surface": "search", "context": "global-mailboxes", "version": "1.0" }
       ],
 
       "registrations": {
@@ -45,6 +47,9 @@
         ],
         "swipe": [
           { "id": "refreshglobal.move-to-folder", "version": "1.0", "schema": "swipe-action" }
+        ],
+        "search": [
+          { "id": "refreshglobal.global-search", "version": "1.0", "schema": "search-provider", "since_protocol": "1.1.0" }
         ]
       },
 
@@ -61,17 +66,29 @@
         "swipe-action": { "version": "1.0", "file": "docs/interop/schemas/swipe-action-1.0.schema.json" },
         "dashboard-data": { "version": "1.1", "file": "docs/interop/schemas/dashboard-data-1.1.schema.json" },
         "saved-view": { "version": "2.0", "file": "docs/interop/schemas/saved-view-2.0.schema.json" },
-        "health": { "version": "1.0", "file": "docs/interop/schemas/health-1.0.schema.json" }
+        "health": { "version": "1.0", "file": "docs/interop/schemas/health-1.0.schema.json" },
+        "search-provider": { "version": "1.0", "file": "docs/interop/schemas/search-provider-1.0.schema.json" },
+        "search-results": { "version": "1.0", "file": "docs/interop/schemas/search-results-1.0.schema.json" },
+        "navigation-context": { "version": "1.0", "file": "docs/interop/schemas/navigation-context-1.0.schema.json" },
+        "conversation-context": { "version": "1.0", "file": "docs/interop/schemas/conversation-context-1.0.schema.json" }
       },
 
       "server_hooks": {
         "fsinterop.modules": { "type": "filter", "version": "1.0", "description": "each participating module adds its summary (id, version, protocol, capabilities)" },
         "fsinterop.dashboard.context": { "type": "filter", "version": "1.0", "description": "context of a dashboard about to be computed; other modules may only narrow mailbox_ids" },
         "fsinterop.dashboard.data": { "type": "filter", "version": "1.1", "schema": "dashboard-data", "description": "dashboard figures of a scope; RefreshGlobal answers scope global-mailboxes" },
+        "fsinterop.navigation.context": { "type": "filter", "version": "1.0", "schema": "navigation-context", "description": "context of the page being built; each module claims the surfaces it renders there (owners surface@scope => module id), never overwriting another claim" },
+        "fsinterop.conversation.context": { "type": "filter", "version": "1.0", "schema": "conversation-context", "description": "what each module knows about a ticket for a user (args: context, conversation, user); each module adds only modules[<its id>]" },
+        "fsinterop.search.providers": { "type": "filter", "version": "1.0", "schema": "search-provider", "description": "search providers of the modules, [provider id => descriptor]; RefreshGlobal adds refreshglobal.global-search" },
+        "fsinterop.search.results": { "type": "filter", "version": "1.0", "schema": "search-results", "description": "results of a search scope (context: scope, query, limit, user_id, mailbox_ids); RefreshGlobal answers scope global-mailboxes" },
         "refreshglobal.mail_tags": { "type": "filter", "version": "1.0", "description": "origin tags of tickets (docs/api-tags.md)" },
         "refreshglobal.thread_mail_tags": { "type": "filter", "version": "1.0", "description": "origin tags and server folder of e-mails (docs/api-tags.md)" },
         "refreshglobal.mail_tagged": { "type": "action", "version": "1.0", "description": "an e-mail received new origin tags (docs/api-tags.md)" },
         "refreshglobal.mail_moved": { "type": "action", "version": "1.0", "description": "an e-mail was moved to another folder of the mail server (docs/api-tags.md)" }
+      },
+
+      "routes": {
+        "refreshglobal.search": { "method": "GET", "path": "/refresh-global/search", "version": "1.0", "schema": "search-results", "description": "endpoint of the search provider refreshglobal.global-search (q, limit, mb[]); read-only, the user's rights" }
       },
 
       "commands": {

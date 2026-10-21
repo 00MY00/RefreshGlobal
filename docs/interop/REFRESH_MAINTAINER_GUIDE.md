@@ -105,7 +105,28 @@ FreeScoutInterop.swipe.list(function (a) { return a.direction === 'left'; })
     .forEach(function (a) { /* button → FreeScoutInterop.swipe.run(a.id, {conversationId: id}) */ });
 ```
 
-## 8. Check it
+## 8. Optional: search and server contexts
+
+* **Search (protocol 1.1)** — if Refresh's search box wants results from all mailboxes, list the providers of that
+  context and run them (check `FreeScoutInterop.search` first: a protocol 1.0 bridge does not have it):
+
+  ```javascript
+  if (FreeScoutInterop.search) {
+      FreeScoutInterop.search.forContext('global-mailboxes').forEach(function (p) {
+          FreeScoutInterop.search.run(p.id, { query: text, limit: 10 }).then(render); // search-results 1.0
+      });
+  }
+  ```
+
+  Server side: `\Eventy::filter('fsinterop.search.results', null, ['scope' => 'global-mailboxes', 'query' => $text, 'user_id' => $id])`.
+* **Who renders what** — on the server, `\Eventy::addFilter('fsinterop.navigation.context', …)` lets Refresh claim
+  its surfaces (`"ticket-list@mailbox" => "refresh"`, `"dashboard@mailbox" => "refresh"`…); RefreshGlobal only
+  claims `…@global-mailboxes`.
+* **Ticket data** — `\Eventy::filter('fsinterop.conversation.context', $base, $conversation, $user)` gives
+  `modules['refresh-global']` (“All mailboxes” link, origin tags, actions usable on the ticket) for a user who may view
+  it; Refresh can add its own entry `modules['refresh']`.
+
+## 9. Check it
 
 * Diagnostics page of RefreshGlobal (**Interoperability**): mode **Native**, compatibility **COMPATIBLE**, every
   capability **Native**, legacy DOM fallbacks **Off**.
@@ -113,12 +134,15 @@ FreeScoutInterop.swipe.list(function (a) { return a.direction === 'left'; })
 * RefreshGlobal's browser scenario `interop.js` simulates exactly this registration (legacy and native) and checks that
   RefreshGlobal no longer changes Refresh's page in native mode.
 
-## 9. What does not change
+## 10. What does not change
 
 * Refresh's own dashboard, lists, views, settings and API stay yours; RefreshGlobal never calls private Refresh classes
   for these capabilities.
-* The public server hooks of Refresh used by RefreshGlobal (`refresh.rail_items`, `dashboard.before` replacement,
-  `Views::query`, `Dashboard::chart`…) are listed in `RefreshGlobal/INTEGRATION_MAP.md` and checked by
-  `refreshglobal:check`; a future protocol version could turn them into contract capabilities too.
+* Since 1.17.0 RefreshGlobal no longer calls `Views::query` or `Dashboard::chart / delta / duration`: its dashboard and
+  quick views are its own (same meaning as your views of the same name). It still reads your SLA settings
+  (`Settings::firstResponseHours / resolutionHours`) so both modules count the same tickets as overdue.
+* The public server hooks of Refresh used by RefreshGlobal (`refresh.rail_items`, `dashboard.before` replacement) are
+  listed in `RefreshGlobal/INTEGRATION_MAP.md` and checked by `refreshglobal:check`; a future protocol version could
+  turn them into contract capabilities too.
 * If you change a capability you declared, bump its version; a breaking change bumps the protocol major — RefreshGlobal
   then falls back to legacy / standalone by itself instead of breaking.

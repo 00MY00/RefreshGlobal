@@ -91,12 +91,15 @@ class Manifest
         return (string) $this->get('interop.protocol', '');
     }
 
-    /** [capability => version] provided. */
+    /** [capability => version] provided (an entry may be "1.0" or {"version": "1.0", "status": …}). */
     public function capabilities()
     {
-        $caps = $this->get('interop.provides.capabilities', []);
+        $out = [];
+        foreach ((array) $this->get('interop.provides.capabilities', []) as $name => $def) {
+            $out[$name] = is_array($def) ? (string) ($def['version'] ?? '') : (string) $def;
+        }
 
-        return is_array($caps) ? $caps : [];
+        return $out;
     }
 
     /** [event name => version] provided (an entry may be "1.0" or {"version": "1.0", …}). */
@@ -110,7 +113,55 @@ class Manifest
         return $out;
     }
 
-    /** Ids of the items registered in a registry (navigation, toolbar, swipe). */
+    /** Registries of intents a manifest may declare (interop.provides.registrations). */
+    const REGISTRIES = ['navigation', 'toolbar', 'swipe', 'search'];
+
+    /** Lifecycle of a provided element (docs/INTEROPERABILITY.md, deprecation policy). */
+    const STATUSES = ['active', 'deprecated'];
+
+    /** ["surface@context" => version] of the surfaces provided. */
+    public function surfaces()
+    {
+        $out = [];
+        foreach ((array) $this->get('interop.provides.surfaces', []) as $s) {
+            if (is_array($s) && isset($s['surface'])) {
+                $out[$s['surface'].'@'.($s['context'] ?? '*')] = (string) ($s['version'] ?? '1.0');
+            }
+        }
+
+        return $out;
+    }
+
+    /**
+     * Deprecated elements: ["capability|event|server_hook <name>" => ['replacement' => …, 'remove_in_protocol' => …]].
+     * An element is deprecated when its declaration is an object with "status": "deprecated".
+     */
+    public function deprecations()
+    {
+        $out = [];
+        foreach ($this->lifecycleEntries() as $label => $def) {
+            if (is_array($def) && ($def['status'] ?? 'active') === 'deprecated') {
+                $out[$label] = ['replacement' => (string) ($def['replacement'] ?? ''), 'remove_in_protocol' => (string) ($def['remove_in_protocol'] ?? '')];
+            }
+        }
+
+        return $out;
+    }
+
+    /** Declarations that may carry a lifecycle status: ["<kind> <name>" => definition]. */
+    protected function lifecycleEntries()
+    {
+        $entries = [];
+        foreach (['capability' => 'capabilities', 'event' => 'events', 'server_hook' => 'server_hooks'] as $kind => $key) {
+            foreach ((array) $this->get('interop.provides.'.$key, []) as $name => $def) {
+                $entries[$kind.' '.$name] = $def;
+            }
+        }
+
+        return $entries;
+    }
+
+    /** Ids of the items registered in a registry (navigation, toolbar, swipe, search). */
     public function registrations($registry)
     {
         return array_values(array_filter(array_map(function ($item) {
@@ -177,7 +228,7 @@ class Manifest
         }
 
         // 3. unique ids in every list
-        foreach (['navigation', 'toolbar', 'swipe'] as $registry) {
+        foreach (self::REGISTRIES as $registry) {
             $ids = $this->registrations($registry);
             foreach (array_unique(array_diff_assoc($ids, array_unique($ids))) as $dup) {
                 $errors[] = "registration $registry: duplicate id $dup";
@@ -211,7 +262,7 @@ class Manifest
                 $referenced[] = $def['schema'];
             }
         }
-        foreach (['navigation', 'toolbar', 'swipe'] as $registry) {
+        foreach (self::REGISTRIES as $registry) {
             foreach ((array) $this->get('interop.provides.registrations.'.$registry, []) as $item) {
                 if (isset($item['schema'])) {
                     $referenced[] = $item['schema'];
@@ -226,9 +277,32 @@ class Manifest
                 $referenced[] = $def['schema'];
             }
         }
+        foreach ((array) $this->get('interop.provides.routes', []) as $route => $def) {
+            if (!in_array($def['method'] ?? '', ['GET', 'POST'], true) || strpos((string) ($def['path'] ?? ''), '/') !== 0) {
+                $errors[] = "route $route: method (GET or POST) and path are required";
+            }
+            if (isset($def['schema'])) {
+                $referenced[] = $def['schema'];
+            }
+        }
         foreach (array_unique($referenced) as $schema) {
             if (!isset($schemas[$schema])) {
                 $errors[] = "schema $schema is referenced but not declared";
+            }
+        }
+
+        // 4b. lifecycle (deprecation policy): a deprecated element names its removal protocol, a later major version
+        foreach ($this->lifecycleEntries() as $label => $def) {
+            if (!is_array($def) || !isset($def['status'])) {
+                continue;
+            }
+            if (!in_array($def['status'], self::STATUSES, true)) {
+                $errors[] = "$label: status must be one of ".implode(', ', self::STATUSES);
+            } elseif ($def['status'] === 'deprecated') {
+                $remove = (string) ($def['remove_in_protocol'] ?? '');
+                if (!SemVer::isVersion($remove) || SemVer::compare($remove, $this->protocol()) <= 0 || (int) $remove <= (int) $this->protocol()) {
+                    $errors[] = "$label: a deprecated element needs remove_in_protocol, a later major protocol version";
+                }
             }
         }
 

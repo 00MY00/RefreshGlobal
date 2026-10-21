@@ -39,7 +39,8 @@
           "protocol": ">=1.0.0 <2.0.0",
           "capabilities": {
             "global-ticket-list": ">=1.0 <2.0",
-            "navigation-origin": ">=1.0 <2.0"
+            "navigation-origin": ">=1.0 <2.0",
+            "global-search": ">=1.0 <2.0"
           }
         }
       }
