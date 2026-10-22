@@ -48,7 +48,7 @@ update when the version changes.
   instead of RefreshGlobal changing Refresh's page.
   - `RefreshGlobal/interop.json`: the single source of truth of what RefreshGlobal provides (capabilities, events,
     surfaces, navigation / toolbar / swipe intents, conversation origin, schemas, server hooks, commands) and consumes
-    from an optional Refresh, its compatibility ranges and its UpdateGuard metadata; JSON schemas of every payload in
+    from an optional Refresh, and its compatibility ranges; JSON schemas of every payload in
     `RefreshGlobal/docs/interop/schemas/`.
   - `Public/js/fs-interop.js`: the neutral browser bridge `window.FreeScoutInterop` (registration, capability
     discovery with version ranges, event bus, conversation context, surfaces, registries) — idempotent,
@@ -71,7 +71,6 @@ update when the version changes.
 - `refreshglobal:health --json` follows the contract's health schema 1.0: `"schema": "1.0"`, status `healthy` /
   `unhealthy` / `error`, checks `pass` / `warn` / `fail`, new `interop_manifest` check, `interop` summary; exit code 2
   when the check itself fails. UpdateGuard only uses the exit code (0 = healthy): no change for it.
-- Releases publish `interop.json` next to `RefreshGlobal.zip`, listed in `SHA256SUMS`.
 - The chip of a quick view on “All mailboxes” is called “Quick view” (was “Refresh view”), in the 7 languages.
 - Integration checks: RG-CORE-09 (`Views::query`, `Views::labels`) and RG-CORE-10 (`Dashboard::chart / delta /
   duration`) removed (no longer used); RG-CORE-11 now covers `Settings::firstResponseHours / resolutionHours` with

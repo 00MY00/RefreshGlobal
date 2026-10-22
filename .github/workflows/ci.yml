@@ -135,5 +135,4 @@ jobs:
             dist/install.sh
             dist/module.json
             dist/version.txt
-            dist/interop.json
             dist/SHA256SUMS

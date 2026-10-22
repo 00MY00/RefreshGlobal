@@ -35,9 +35,6 @@ foreach ($manifest->validate() as $error) {
 // 2. consistency with module.json and Config/integration.php
 $moduleJson = json_decode((string) file_get_contents($module.'/module.json'), true) ?: [];
 $healthCommand = (string) ($moduleJson['healthCommand'] ?? '');
-if ('php artisan '.$healthCommand !== (string) $manifest->get('updateguard.health.command')) {
-    $problems[] = 'updateguard.health.command must be "php artisan '.$healthCommand.'" (module.json healthCommand)';
-}
 if ((string) $manifest->get('module.alias') !== (string) ($moduleJson['alias'] ?? '')) {
     $problems[] = 'module.alias must be the alias of module.json';
 }

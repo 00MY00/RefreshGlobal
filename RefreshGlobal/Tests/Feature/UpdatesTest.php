@@ -34,7 +34,7 @@ class UpdatesTest extends TestCase
         $this->assertSame(0, \Artisan::call('refreshglobal:health', ['--json' => true]));
         $out = json_decode(trim(\Artisan::output()), true);
         $this->assertIsArray($out);
-        // schema health 1.0 of the FreeScout Interop contract (interop.json updateguard.health)
+        // schema health 1.0 (docs/interop/schemas/health-1.0.schema.json)
         $this->assertSame('1.0', $out['schema']);
         $this->assertSame('healthy', $out['status']);
         $this->assertSame('RefreshGlobal', $out['module']);

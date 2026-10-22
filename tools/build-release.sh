@@ -44,7 +44,6 @@ cp "$ROOT/install.sh" "$DIST/install.sh"
 printf '%s\n' "$version" >"$DIST/version.txt"
 cp "$ROOT/RefreshGlobal/module.json" "$DIST/module.json"
 # FreeScout Interop manifest of this version (compatibility, health, contract), read by UpdateGuard before installing
-cp "$ROOT/RefreshGlobal/interop.json" "$DIST/interop.json"
-(cd "$DIST" && sha256sum RefreshGlobal.zip install.sh module.json interop.json version.txt >SHA256SUMS)
+(cd "$DIST" && sha256sum RefreshGlobal.zip install.sh module.json version.txt >SHA256SUMS)
 printf 'RefreshGlobal %s : %s\n' "$version" "$DIST/RefreshGlobal.zip"
 cat "$DIST/SHA256SUMS"

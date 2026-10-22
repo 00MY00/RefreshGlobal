@@ -13,7 +13,7 @@ are in [docs/interop/REFRESH_MAINTAINER_GUIDE.md](interop/REFRESH_MAINTAINER_GUI
 
 | File | Role |
 |---|---|
-| `RefreshGlobal/interop.json` | **single source of truth**: what RefreshGlobal provides and consumes, compatibility, UpdateGuard metadata |
+| `RefreshGlobal/interop.json` | **single source of truth**: what RefreshGlobal provides and consumes, compatibility |
 | `RefreshGlobal/Public/js/fs-interop.js` | the neutral browser bridge `window.FreeScoutInterop` (no dependency, idempotent; any module may ship the same file) |
 | `RefreshGlobal/Public/js/interop-adapter.js` | RefreshGlobal's participation: registration, surfaces, intents, conversation origin, events, negotiation |
 | `RefreshGlobal/Services/Interop/` | server side: `Manifest` (read / validate), `SemVer` (ranges), `PeerStatus` (cooperation mode), `ServerHooks` (`fsinterop.*` hooks), `NavigationContext`, `ConversationContext` |
@@ -256,13 +256,15 @@ Refresh's views of the same name.
 Plus the server filter `fsinterop.sla.targets` (asked, never answered by RefreshGlobal). Nothing is required: without
 any of them RefreshGlobal uses its legacy fallback or works alone.
 
-## 6. Compatibility and UpdateGuard
+## 6. Compatibility
 
 `interop.json` declares `compatibility` (FreeScout `>=1.8.0 <1.9.0`, PHP `>=7.1.0`, Refresh optional with
-`supported_versions`, `interop_protocol`, `fallback` = the tested legacy range, `conflicts`), a
-`compatibility_policy`, and an `updateguard` section (package, SHA-256 integrity, health command and exit codes).
-Each release publishes `interop.json` next to `RefreshGlobal.zip` and lists it in `SHA256SUMS`, so UpdateGuard can
-evaluate the **target** version before installing it.
+`supported_versions`, `interop_protocol`, `fallback` = the tested legacy range, `conflicts`) and a
+`compatibility_policy`; RefreshGlobal uses them to decide how it cooperates with Refresh (section 2).
+
+**UpdateGuard is not part of the contract for now** (agreed with Refresh's maintainer: an idea for later). Nothing in
+`interop.json` is meant for UpdateGuard; RefreshGlobal's existing UpdateGuard support (since 1.9.0: `healthCommand`
+of `module.json`, `SHA256SUMS` of the release) is unchanged.
 
 Health check — `php artisan refreshglobal:health --json` (schema `health` 1.0): exit code **0** healthy, **1**
 unhealthy, **2** the check itself failed; read-only, no network. Checks: files, classes, views, routes, hooks,

@@ -10,14 +10,14 @@ use Modules\RefreshGlobal\Services\Interop\PeerStatus;
 /**
  * php artisan refreshglobal:health [--json] — health check of the installed module, run by UpdateGuard
  * (https://github.com/00MY00/UpdateGuard) in a new process right after an update or a restore, and at the end of its
- * observation period ("healthCommand" of module.json, "updateguard.health" of interop.json). Read-only, fast, no
+ * observation period ("healthCommand" of module.json). Read-only, fast, no
  * network call, no e-mail, no change to tickets:
  *  - files of the module (module.json, interop.json, ServiceProvider, routes, stylesheets, scripts);
  *  - the compatibility checks of refreshglobal:check (classes, views, routes, hooks, assets, database), grouped;
  *  - the module's interop.json valid (FreeScout Interop contract, docs/INTEROPERABILITY.md);
  *  - the "All mailboxes" page rendered for an administrator (refreshglobal:selftest).
  *
- * Exit codes (interop.json updateguard.health.exit_codes): 0 healthy (state ok, warning or degraded: the list works),
+ * Exit codes: 0 healthy (state ok, warning or degraded: the list works),
  * 1 unhealthy (blocking state, missing files, invalid manifest, page not rendered), 2 the check itself could not run.
  * JSON (schema health 1.0, docs/interop/schemas/health-1.0.schema.json):
  *   {"schema", "module", "version", "status": healthy|unhealthy|error, "state", "checks": {name: pass|warn|fail},

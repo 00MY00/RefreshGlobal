@@ -51,7 +51,7 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions :
   petit, versionné et déclaré, au lieu que RefreshGlobal modifie la page de Refresh.
   - `RefreshGlobal/interop.json` : la référence unique de ce que RefreshGlobal fournit (capacités, événements,
     surfaces, intentions de navigation / barre du ticket / glissement, origine d’un ticket, schémas, crochets serveur,
-    commandes) et utilise d’un Refresh facultatif, ses plages de compatibilité et ses informations pour UpdateGuard ;
+    commandes) et utilise d’un Refresh facultatif, et ses plages de compatibilité ;
     schémas JSON de chaque échange dans `RefreshGlobal/docs/interop/schemas/`.
   - `Public/js/fs-interop.js` : le pont neutre du navigateur `window.FreeScoutInterop` (enregistrement, découverte
     des capacités par plages de versions, bus d’événements, contexte d’un ticket, surfaces, registres) — chargeable
@@ -75,7 +75,6 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions :
   `unhealthy` / `error`, contrôles `pass` / `warn` / `fail`, nouveau contrôle `interop_manifest`, résumé `interop` ;
   code de sortie 2 si le contrôle lui-même échoue. UpdateGuard ne lit que le code de sortie (0 = sain) : rien ne
   change pour lui.
-- Les releases publient `interop.json` à côté de `RefreshGlobal.zip`, listé dans `SHA256SUMS`.
 - La pastille d’une vue rapide sur « Toutes les boîtes » s’appelle « Vue rapide » (au lieu de « Vue Refresh »), dans
   les 7 langues.
 - Contrôles d’intégration : RG-CORE-09 (`Views::query`, `Views::labels`) et RG-CORE-10 (`Dashboard::chart / delta /

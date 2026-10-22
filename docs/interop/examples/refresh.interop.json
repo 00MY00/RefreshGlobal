@@ -68,18 +68,5 @@
     "peer_protocol_mismatch": "degraded",
     "explicit_conflict": "blocked",
     "unknown_peer_version": "warning"
-  },
-
-  "updateguard": {
-    "schema": "1.0",
-    "package": { "asset": "Refresh.zip" },
-    "integrity": { "algorithm": "sha256", "asset": "SHA256SUMS", "required": true },
-    "health": {
-      "command": "php artisan refresh:health",
-      "json_command": "php artisan refresh:health --json",
-      "exit_codes": { "healthy": 0, "unhealthy": 1, "error": 2 },
-      "read_only": true,
-      "network": false
-    }
   }
 }

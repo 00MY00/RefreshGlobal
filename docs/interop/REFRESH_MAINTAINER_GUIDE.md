@@ -2,7 +2,7 @@
 
 RefreshGlobal 1.17.0 implements its side of the contract **as agreed on 2026-10-22** ([DECISIONS.md](DECISIONS.md)):
 protocol 1.0.0 = navigation, ticket toolbar, swipe and navigation context; bridge in its own repository; dashboard and
-SLA through public hooks; search and UpdateGuard later. It waits for a testable Refresh 1.8.0 before being released.
+SLA through public hooks; search later (UpdateGuard: only an idea for later, nothing in the contract). It waits for a testable Refresh 1.8.0 before being released.
 Nothing here requires RefreshGlobal: every step keeps Refresh fully independent, and Refresh keeps working exactly as
 today if you do none of them.
 
@@ -54,7 +54,7 @@ fallbacks, the others keep working as today.
 
 ## 3. Add `interop.json` next to your `module.json`
 
-The server side of RefreshGlobal reads it (diagnostics, health check) and UpdateGuard can use it before an update.
+The server side of RefreshGlobal reads it (diagnostics, health check).
 A complete proposal is in [examples/refresh.interop.json](examples/refresh.interop.json). Without it, RefreshGlobal
 still detects your browser registration, but its server side reports “legacy”.
 

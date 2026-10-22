@@ -95,7 +95,7 @@
       },
 
       "commands": {
-        "refreshglobal:health": "health check, read-only (see updateguard.health)",
+        "refreshglobal:health": "health check, read-only (healthCommand of module.json)",
         "refreshglobal:check": "integration checks RG-xxx (Config/integration.php)"
       }
     },
@@ -138,28 +138,5 @@
     "peer_protocol_mismatch": "degraded",
     "explicit_conflict": "blocked",
     "unknown_peer_version": "warning"
-  },
-
-  "updateguard": {
-    "schema": "1.0",
-    "package": {
-      "asset": "RefreshGlobal.zip"
-    },
-    "integrity": {
-      "algorithm": "sha256",
-      "asset": "SHA256SUMS",
-      "required": true
-    },
-    "health": {
-      "command": "php artisan refreshglobal:health",
-      "json_command": "php artisan refreshglobal:health --json",
-      "exit_codes": {
-        "healthy": 0,
-        "unhealthy": 1,
-        "error": 2
-      },
-      "read_only": true,
-      "network": false
-    }
   }
 }
