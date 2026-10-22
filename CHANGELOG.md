@@ -78,7 +78,7 @@ update when the version changes.
 
 ### Compatibility
 - Protocol **1.0.0** as validated by Refresh's maintainer: navigation, ticket toolbar, swipe and navigation context.
-  Refresh's side comes in Refresh 1.8.0; until then RefreshGlobal works in **legacy** mode with Refresh.
+  Refresh's side comes in Refresh 1.9.0; until then RefreshGlobal works in **legacy** mode with Refresh.
 - With today's Refresh (1.4.x – 1.6.x, no contract): mode **legacy**, same behaviour as 1.16.2.
 - New CI job **interop-contract**: `tools/validate-interop.php` (manifest valid and consistent with the code,
   `module.json` and `Config/integration.php`, bridge copy identical to its lock file) and the bridge's tests run on the

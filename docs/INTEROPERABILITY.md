@@ -190,7 +190,7 @@ $owner = \Eventy::filter('fsinterop.dashboard.owner', null, ['schema' => '1.0', 
 | Refresh | Dashboard of all mailboxes | SLA targets |
 |---|---|---|
 | with the contract (capability `dashboard-handoff`, answers `fsinterop.sla.targets`) | Refresh asks `fsinterop.dashboard.owner` and skips its block; RefreshGlobal **adds** its dashboard (placement `native`) | from `fsinterop.sla.targets` |
-| ≤ 1.7, no contract — **legacy**, to be removed once Refresh answers the hooks | RefreshGlobal **replaces** Refresh's `rf-dash` block (placement `refresh`) | read from Refresh's `Settings` class (RG-CORE-11) |
+| ≤ 1.8, no contract — **legacy**, to be removed once Refresh answers the hooks | RefreshGlobal **replaces** Refresh's `rf-dash` block (placement `refresh`) | read from Refresh's `Settings` class (RG-CORE-11) |
 | not active | added above FreeScout's dashboard (placement `standalone`) | RefreshGlobal's settings (24 h / 72 h) |
 
 The decision is `GlobalDashboard::decideMode()`, tested alone.

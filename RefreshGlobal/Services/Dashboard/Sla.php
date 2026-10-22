@@ -8,7 +8,7 @@ namespace Modules\RefreshGlobal\Services\Dashboard;
  * One source, chosen in this order (docs/INTEROPERABILITY.md: RefreshGlobal works without Refresh, and never relies on
  * Refresh's internal classes when a public channel exists):
  *   1. the public server filter fsinterop.sla.targets (schema sla-targets 1.0) — what another module (Refresh from its
- *      contract version) declares; agreed with Refresh's maintainer, to be answered by Refresh 1.8.0;
+ *      contract version) declares; agreed with Refresh's maintainer, to be answered by Refresh 1.9.0;
  *   2. LEGACY, until Refresh answers the filter: Refresh's settings class (RG-CORE-11,
  *      Modules/Refresh/Services/Settings.php:26,32), internal to Refresh and only read while Refresh is active;
  *   3. RefreshGlobal's own settings (Manage › Settings › RefreshGlobal), defaults 24 h / 72 h (Refresh's defaults).

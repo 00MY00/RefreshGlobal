@@ -2,7 +2,7 @@
 
 RefreshGlobal 1.17.0 implements its side of the contract **as agreed on 2026-10-22** ([DECISIONS.md](DECISIONS.md)):
 protocol 1.0.0 = navigation, ticket toolbar, swipe and navigation context; bridge in its own repository; dashboard and
-SLA through public hooks; search later (UpdateGuard: only an idea for later, nothing in the contract). It waits for a testable Refresh 1.8.0 before being released.
+SLA through public hooks; search later (UpdateGuard: only an idea for later, nothing in the contract). It waits for a testable Refresh 1.9.0 before being released.
 Nothing here requires RefreshGlobal: every step keeps Refresh fully independent, and Refresh keeps working exactly as
 today if you do none of them.
 
@@ -34,7 +34,7 @@ At script evaluation time (not in `$(function () {…})`, because other modules 
 ```javascript
 FreeScoutInterop.modules.register({
     id: 'refresh',
-    version: '1.8.0',            // Refresh's version (e.g. printed into the page by your provider)
+    version: '1.9.0',            // Refresh's version (e.g. printed into the page by your provider)
     protocol: '1.0.0',
     capabilities: {
         // declare ONLY what you implement (steps 4–8); RefreshGlobal keeps its fallback for the others
@@ -143,7 +143,7 @@ RefreshGlobal's proposal (schemas in `RefreshGlobal/docs/interop/schemas/`); tel
 
   RefreshGlobal then adds its dashboard instead of replacing your block, and announces it in the browser
   (`refreshglobal:dashboard-rendered`). Until then it keeps its legacy replacement of the `rf-dash` block and its
-  reading of `Settings`, for Refresh ≤ 1.7 only.
+  reading of `Settings`, for Refresh ≤ 1.8 only.
 
 ## 9. Optional: server contexts
 

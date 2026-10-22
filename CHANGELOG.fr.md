@@ -83,7 +83,7 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions :
 
 ### Compatibilité
 - Protocole **1.0.0** tel que validé par le créateur de Refresh : navigation, barre d’un ticket, glissements et contexte
-  de navigation. Le côté Refresh arrive avec Refresh 1.8.0 ; d’ici là, RefreshGlobal fonctionne en mode **legacy** avec
+  de navigation. Le côté Refresh arrive avec Refresh 1.9.0 ; d’ici là, RefreshGlobal fonctionne en mode **legacy** avec
   Refresh.
 - Avec le Refresh actuel (1.4.x – 1.6.x, sans contrat) : mode **legacy**, même comportement qu’en 1.16.2.
 - Nouveau job CI **interop-contract** : `tools/validate-interop.php` (manifeste valide et cohérent avec le code,

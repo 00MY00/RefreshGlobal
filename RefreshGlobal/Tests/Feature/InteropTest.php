@@ -112,11 +112,11 @@ class InteropTest extends TestCase
 
         // Refresh speaking the contract with every capability: native, compatible, no fallback
         $all = ['navigation' => '1.0', 'navigation-context' => '1.0', 'ticket-toolbar' => '1.2', 'swipe-actions' => '1.0', 'conversation-ui' => '1.0', 'dashboard-handoff' => '1.0'];
-        $s = $this->cooperation(['version' => '1.8.0'], $this->peer('1.0.0', $all));
+        $s = $this->cooperation(['version' => '1.9.0'], $this->peer('1.0.0', $all));
         $this->assertSame(['native', 'COMPATIBLE', false], [$s['mode'], $s['compatibility'], $s['legacy_fallbacks']]);
 
         // native but a capability missing: that one is unavailable (version outside the tested legacy range), degraded
-        $s = $this->cooperation(['version' => '1.8.0'], $this->peer('1.0.0', array_diff_key($all, ['swipe-actions' => 1])));
+        $s = $this->cooperation(['version' => '1.9.0'], $this->peer('1.0.0', array_diff_key($all, ['swipe-actions' => 1])));
         $this->assertSame(['native', 'DEGRADED', 'unavailable'], [$s['mode'], $s['compatibility'], $s['capabilities']['swipe-actions']]);
 
         // an explicit conflict of the manifest: incompatible, integration off

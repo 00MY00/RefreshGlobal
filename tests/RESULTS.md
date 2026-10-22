@@ -369,7 +369,7 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
 - Navigateur (`standalone.js`) avec Refresh 1.6.0 (placement `refresh`, legacy) et Refresh désactivé (placement
   `standalone`) : mêmes tuiles, recherche par `RefreshGlobalInterop.search()`, protocole 1.0.0, téléphone sans
   défilement horizontal, aucune erreur JavaScript ; `refreshglobal:health` « Healthy ». Le mode **natif** sera testé
-  avec la première version testable de Refresh 1.8.0.
+  avec la première version testable de Refresh 1.9.0.
 
 ## 28. Adresse d'envoi au choix (1.10.0)
 
