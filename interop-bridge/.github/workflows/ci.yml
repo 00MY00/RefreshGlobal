@@ -1,0 +1,22 @@
+# CI of the shared bridge repository (active once this folder is its own repository).
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Tests
+        run: node tests/fs-interop.test.js
+      - name: Release tag matches @bridge-version
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          version=$(sed -n 's/.*@bridge-version \([0-9.]*\).*/\1/p' fs-interop.js | head -1)
+          test "v$version" = "${GITHUB_REF_NAME}" || { echo "tag ${GITHUB_REF_NAME} but @bridge-version $version"; exit 1; }

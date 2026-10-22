@@ -1,7 +1,8 @@
 {{--
     Dashboard of ALL the user's mailboxes (Services/GlobalDashboard.php), computed and drawn by RefreshGlobal itself
     (Services/Dashboard: TicketViews, Statistics, Chart, Sla).
-    $rg_mode = "refresh": it replaces Refresh's "My dashboard" block, with the same markup and classes as Refresh's view
+    $rg_mode = "native" (Refresh hands the dashboard over through fsinterop.dashboard.owner) or "refresh" (legacy: it
+    replaces Refresh's "My dashboard" block), with the same markup and classes as Refresh's view
     (Modules/Refresh/Resources/views/dashboard.blade.php), so Refresh's stylesheet gives the same look.
     $rg_mode = "standalone": without Refresh, above FreeScout's dashboard, styled by css/refreshglobal-dashboard.css.
     Links lead to the "All mailboxes" page; undelivered e-mails per mailbox; "Mailbox" column in the list.
@@ -22,7 +23,7 @@
 @if ($rg_standalone)
 <link href="{{ asset(\Module::getPublicPath('refreshglobal').'/css/refreshglobal-dashboard.css') }}?v={{ \Modules\RefreshGlobal\Services\Compatibility\CompatibilityChecker::moduleVersion() }}" rel="stylesheet" type="text/css">
 @endif
-<div class="{{ $rg_standalone ? 'rg-dash rg-dash-standalone' : 'rf-dash rg-dash' }}" data-refresh="{{ \Modules\RefreshGlobal\Services\Settings::autoRefresh() }}" data-fp="{{ $rg_fp ?? '' }}" data-state-url="{{ route('refreshglobal.state', ['reset' => 1]) }}">
+<div class="{{ $rg_standalone ? 'rg-dash rg-dash-standalone' : 'rf-dash rg-dash' }}" data-placement="{{ $rg_mode ?? 'refresh' }}" data-refresh="{{ \Modules\RefreshGlobal\Services\Settings::autoRefresh() }}" data-fp="{{ $rg_fp ?? '' }}" data-state-url="{{ route('refreshglobal.state', ['reset' => 1]) }}">
     <div class="rf-tiles">
         @foreach ($tiles as $tile)
             <a href="{{ $tile['url'] }}" class="rf-tile rf-tile-{{ $tile['key'] }} @if (!$tile['count']) rf-tile-zero @endif">

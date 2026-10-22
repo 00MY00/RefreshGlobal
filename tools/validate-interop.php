@@ -103,6 +103,25 @@ foreach ((array) $manifest->get('interop.provides.routes', []) as $name => $def)
     }
 }
 
+// the shared bridge: the module ships an unchanged copy of a bridge release (tools/sync-bridge.php)
+$bridgeFile = $module.'/Public/js/fs-interop.js';
+$bridgeLock = json_decode((string) @file_get_contents($module.'/Public/js/fs-interop.lock.json'), true);
+if (!is_array($bridgeLock)) {
+    $problems[] = 'Public/js/fs-interop.lock.json is missing: run php tools/sync-bridge.php';
+} else {
+    $bridgeCode = (string) @file_get_contents($bridgeFile);
+    if (hash('sha256', $bridgeCode) !== ($bridgeLock['sha256'] ?? '')) {
+        $problems[] = 'Public/js/fs-interop.js differs from its lock file: never edit it, update the shared bridge and run php tools/sync-bridge.php';
+    }
+    if (($bridgeLock['protocol'] ?? '') !== $manifest->protocol()) {
+        $problems[] = 'the bridge copy speaks protocol '.($bridgeLock['protocol'] ?? '?').' but interop.protocol is '.$manifest->protocol();
+    }
+    // while the shared repository is staged here, the staged file and the module's copy are the same release
+    if (is_file($root.'/interop-bridge/fs-interop.js') && hash_file('sha256', $root.'/interop-bridge/fs-interop.js') !== ($bridgeLock['sha256'] ?? '')) {
+        $problems[] = 'interop-bridge/fs-interop.js and the module copy differ: run php tools/sync-bridge.php';
+    }
+}
+
 if ($problems) {
     fwrite(STDERR, "Interop contract: ".count($problems)." problem(s)\n");
     foreach ($problems as $p) {

@@ -10,20 +10,60 @@ use Modules\RefreshGlobal\Services\Dashboard\TicketViews;
  * Dashboard of ALL the user's mailboxes (scope "global-mailboxes" of the FreeScout Interop contract), computed and
  * rendered by RefreshGlobal alone: it works with or without Refresh (docs/INTEROPERABILITY.md §2.1, §19).
  *
- * Two places, chosen by the service provider (registerDashboard()):
- *  - MODE_REFRESH: Refresh computes its "My dashboard" for the user's first mailbox only
- *    (Modules/Refresh/Providers/RefreshServiceProvider.php:505-537); this dashboard replaces that block, with the same
- *    markup and class names, so Refresh's stylesheet gives it the same look;
+ * Three placements, chosen by decideMode() for the service provider (registerDashboard()):
+ *  - MODE_NATIVE: Refresh cooperates through the contract (capability "dashboard-handoff"): it asks the public filter
+ *    fsinterop.dashboard.owner, sees that RefreshGlobal owns the dashboard and does not render its own block; this
+ *    dashboard is added, with Refresh's class names so that Refresh's stylesheet gives the same look;
+ *  - MODE_REFRESH (LEGACY, Refresh without the contract): Refresh renders its "My dashboard" for the user's first
+ *    mailbox only (Modules/Refresh/Providers/RefreshServiceProvider.php:505-537); this dashboard replaces that block;
  *  - MODE_STANDALONE: without Refresh, the same dashboard is shown above FreeScout's own dashboard (mailbox cards),
  *    styled by Public/css/refreshglobal-dashboard.css.
  *
  * Its pieces are the module's own services (Services/Dashboard): TicketViews (tiles and "rv" views), Statistics
- * (trends), Chart (SVG chart and formats), Sla (targets: Refresh's settings when present, else the module's).
+ * (trends), Chart (SVG chart and formats), Sla (targets: fsinterop.sla.targets, else legacy, else the module's).
  */
 class GlobalDashboard
 {
+    const MODE_NATIVE = 'native';
     const MODE_REFRESH = 'refresh';
     const MODE_STANDALONE = 'standalone';
+
+    /**
+     * Placement of the dashboard on FreeScout's dashboard page, from plain facts (no side effect, tested alone).
+     *
+     * @param bool $enabled        setting "Dashboard of all mailboxes" on, user logged in
+     * @param bool $refreshActive  Refresh module active
+     * @param bool $handoffNative  Refresh provides the capability "dashboard-handoff" in a supported version
+     * @param bool $refreshBlock   what Refresh added to dashboard.before is its "rf-dash" block (legacy replacement)
+     * @return string|null MODE_* or null (nothing to add)
+     */
+    public static function decideMode($enabled, $refreshActive, $handoffNative, $refreshBlock)
+    {
+        if (!$enabled) {
+            return null;
+        }
+        if (!$refreshActive) {
+            return self::MODE_STANDALONE;
+        }
+        if ($handoffNative) {
+            return self::MODE_NATIVE;
+        }
+
+        return $refreshBlock ? self::MODE_REFRESH : null;
+    }
+
+    /**
+     * Answer of RefreshGlobal to fsinterop.dashboard.owner: it owns the dashboard of the FreeScout dashboard page when its
+     * setting is on and the user has at least one mailbox (the dashboard would not be empty).
+     */
+    public static function ownsDashboardFor($user)
+    {
+        try {
+            return $user && Settings::globalDashboard() && (new MailboxAccess($user))->allowedIds() !== [];
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
 
     /** Tiles, in their order. */
     const TILES = ['unresolved', 'overdue', 'due-today', 'open', 'pending', 'unassigned'];
@@ -53,10 +93,11 @@ class GlobalDashboard
      * HTML of the dashboard block, or '' when nothing to show.
      *
      * @param \App\User $user
-     * @param string    $mode MODE_REFRESH or MODE_STANDALONE
+     * @param string    $mode MODE_NATIVE, MODE_REFRESH or MODE_STANDALONE
      */
     public static function render($user, $mode = self::MODE_REFRESH)
     {
+        $mode = in_array($mode, [self::MODE_NATIVE, self::MODE_REFRESH, self::MODE_STANDALONE], true) ? $mode : self::MODE_REFRESH;
         $access = new MailboxAccess($user);
         // FreeScout Interop: other modules may narrow the mailboxes of this dashboard, never widen them
         // (Services/Interop/ServerHooks.php, filter fsinterop.dashboard.context)
@@ -86,11 +127,11 @@ class GlobalDashboard
         try {
             $html = view('refreshglobal::dashboard', $data + [
                 'rg_fp'         => $fp,
-                'rg_mode'       => $mode === self::MODE_STANDALONE ? self::MODE_STANDALONE : self::MODE_REFRESH,
+                'rg_mode'       => $mode,
                 'conversations' => $conversations,
                 'folder'        => \Modules\RefreshGlobal\Providers\RefreshGlobalServiceProvider::virtualFolder(),
             ])->render();
-            self::$rendered = $mode === self::MODE_STANDALONE ? self::MODE_STANDALONE : self::MODE_REFRESH;
+            self::$rendered = $mode;
 
             return $html;
         } finally {

@@ -68,7 +68,7 @@ fallbacks (*legacy* mode, as before). The current mode is shown in **RefreshGlob
 
 Without Refresh, RefreshGlobal keeps everything: “All mailboxes”, saved and shared views, filters, and the dashboard of
 all mailboxes (computed by the module, shown above FreeScout's dashboard). For other modules it also offers a
-**search** over all mailboxes (`GET /refresh-global/search`, provider `refreshglobal.global-search`) and server
+**search** over all mailboxes (`GET /refresh-global/search`, a module extension until search joins the shared contract) and server
 contexts (`fsinterop.navigation.context`, `fsinterop.conversation.context`), always with the user's rights.
 
 ### Saved and shared views

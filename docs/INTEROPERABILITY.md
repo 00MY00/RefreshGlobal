@@ -1,4 +1,4 @@
-# FreeScout Interop — RefreshGlobal implementation (protocol 1.1.0)
+# FreeScout Interop — RefreshGlobal implementation (protocol 1.0.0)
 
 RefreshGlobal and Refresh are **sibling** FreeScout modules: neither owns or extends the other, each works without
 the other. When both are installed they cooperate through a small, versioned, declared contract. This document
@@ -17,10 +17,13 @@ are in [docs/interop/REFRESH_MAINTAINER_GUIDE.md](interop/REFRESH_MAINTAINER_GUI
 | `RefreshGlobal/Public/js/fs-interop.js` | the neutral browser bridge `window.FreeScoutInterop` (no dependency, idempotent; any module may ship the same file) |
 | `RefreshGlobal/Public/js/interop-adapter.js` | RefreshGlobal's participation: registration, surfaces, intents, conversation origin, events, negotiation |
 | `RefreshGlobal/Services/Interop/` | server side: `Manifest` (read / validate), `SemVer` (ranges), `PeerStatus` (cooperation mode), `ServerHooks` (`fsinterop.*` hooks), `NavigationContext`, `ConversationContext` |
-| `RefreshGlobal/Services/Search/GlobalSearch.php`, `Http/Controllers/SearchController.php` | search provider `refreshglobal.global-search` and its endpoint |
+| `RefreshGlobal/Services/Search/GlobalSearch.php`, `Http/Controllers/SearchController.php` | search of all mailboxes and its endpoint — a RefreshGlobal **extension**, outside the shared protocol for now |
+| `interop-bridge/` | **staging** of the future shared repository of the bridge (reference `fs-interop.js`, its tests, CI, README); moved out once the repository exists |
+| `RefreshGlobal/Public/js/fs-interop.lock.json`, `tools/sync-bridge.php` | the bridge release shipped by RefreshGlobal (version, protocol, SHA-256, source) and the script that updates the copy |
+| `docs/interop/DECISIONS.md` | what the maintainers of Refresh and RefreshGlobal agreed |
 | `RefreshGlobal/Services/Dashboard/` | the module's own dashboard pieces (`TicketViews`, `Statistics`, `Chart`, `Sla`): no Refresh class needed |
 | `RefreshGlobal/docs/interop/schemas/*.schema.json` | JSON schemas of every payload (shipped with the module) |
-| `tools/validate-interop.php`, `tests/interop/fs-interop.test.js` | CI job **interop-contract** |
+| `tools/validate-interop.php`, `interop-bridge/tests/fs-interop.test.js` (run on the module's copy) | CI job **interop-contract** |
 | `RefreshGlobal/Tests/Feature/InteropTest.php`, `SearchTest.php`, `DashboardStandaloneTest.php` | PHPUnit: manifest, ranges, modes, deprecations, server hooks and contexts, what pages give to the browser; search; dashboard without Refresh |
 
 ## 2. Cooperation modes
@@ -63,7 +66,7 @@ Loaded by FreeScout's `javascripts` filter on every page, in this order: `fs-int
 `shell.js`. Capability ids are **kebab-case**, exactly as in `interop.json`.
 
 ```javascript
-FreeScoutInterop.protocol                       // "1.1.0"
+FreeScoutInterop.protocol                       // "1.0.0"
 FreeScoutInterop.modules.register({id, version, protocol, capabilities})
 FreeScoutInterop.modules.get(id) / .list() / .when(id, fn)     // when(): now, or when the module registers
 FreeScoutInterop.supports(moduleId, capability, range)         // false = use your own fallback
@@ -71,13 +74,18 @@ FreeScoutInterop.events.on(name, fn) / .once / .off / .emit(name, payload)
 FreeScoutInterop.context.setConversationOrigin(origin) / .getConversationOrigin(conversationId) / .clearConversationOrigin()
 FreeScoutInterop.surfaces.register({module, surface, context, version}) / .owner(surface, context)
 FreeScoutInterop.navigation | .toolbar | .swipe  .register(item) / .get(id) / .list(filter) / .run(id, context)
-FreeScoutInterop.search.registerProvider(provider) / .forContext(context) / .get(id) / .list(filter) / .run(id, {query, limit})   // protocol 1.1
 FreeScoutInterop.semver.satisfies(version, range) / .compare(a, b)
 ```
 
-Protocol **1.1** only adds the `search` registry to 1.0: a module that uses it checks `FreeScoutInterop.search` first.
 When an older copy of the bridge loaded first, a newer copy of the same major adds the missing members, wired to the
 existing event bus, and the page then reports the newer protocol.
+
+**One shared bridge.** As agreed with Refresh's maintainer, `fs-interop.js` has its own repository (staged in
+`interop-bridge/` until it is created); each module ships an **unchanged copy of a tagged release** — FreeScout installs
+modules one by one, so the bridge must never become a module to install. RefreshGlobal records its copy in
+`Public/js/fs-interop.lock.json` (`version`, `protocol`, `sha256`, `source`), updates it with
+`php tools/sync-bridge.php [file]`, and its CI refuses a copy that differs from the lock file or a protocol that differs
+from `interop.json`; the bridge's own tests run on the module's copy.
 
 Guarantees: loading order does not matter (`modules.when()`), a second copy of the bridge keeps the first one's
 registries (a newer copy of the same major only adds missing members), listeners and handlers that throw are isolated,
@@ -98,7 +106,7 @@ payloads are copied (no shared objects), unknown range syntax never matches. Ran
 | `navigation-origin` | 1.0 | gives the origin of the tickets opened from its list (`context.setConversationOrigin`) |
 | `mail-tags` | 1.0 | origin tags of the e-mails (server hooks, `docs/api-tags.md`) |
 | `mail-move` | 1.0 | moving the e-mails of a ticket to a folder of the mail server (`refreshglobal.mail_moved`) |
-| `global-search` | 1.0 | search provider of all mailboxes (protocol 1.1, see *Search* below) |
+| `global-search` | 1.0 | search of all mailboxes — **extension** (`"extension": true`), outside the shared protocol for now (see *Search* below) |
 
 ### Surfaces (`interop.provides.surfaces`)
 
@@ -122,7 +130,6 @@ dashboard was really rendered.
 | toolbar | `refreshglobal.move-to-folder` | “Move to a folder”, icon `folder`, context `conversation`, `position.after: "close"`; handler opens RefreshGlobal's own dialog (`toolbar-action` 1.0) |
 | toolbar | `refreshglobal.delete-forever` | only on a ticket in the trash, context `conversation-deleted`; handler clicks FreeScout's own button (its confirmation and rights) |
 | swipe | `refreshglobal.move-to-folder` | direction `left`, context `ticket-list` (`swipe-action` 1.0) |
-| search | `refreshglobal.global-search` | context `global-mailboxes`, `endpoint`, `label`; handler returns a Promise of results (`search-provider` 1.0, protocol 1.1) |
 
 Handlers receive a plain context: `{conversationId, mailboxId, userId, mobile}`.
 
@@ -151,6 +158,7 @@ FreeScout's own redirects (next ticket after “Close”), on the server side, i
 |---|---|
 | `refreshglobal:view-changed` | `{schema, source_module, view_id, modified, href, label, count}` when the list is shown (`view-changed` 1.0) |
 | `refreshglobal:conversation-opened` | `{schema, source_module, conversation_id, origin}` (`conversation-origin` 1.0) |
+| `refreshglobal:dashboard-rendered` | `{schema, source_module, scope: "global-mailboxes", placement}` when the dashboard of all mailboxes is on the page (`dashboard-rendered` 1.0) |
 
 The bridge itself emits `interop:ready`, `module:registered`, `context:changed`, `surface:registered`,
 `<registry>:registered`.
@@ -166,18 +174,39 @@ $data = \Eventy::filter('fsinterop.dashboard.data', null, ['scope' => 'global-ma
 
 // narrow the mailboxes of the all-mailboxes dashboard (never widen: intersected with the user's rights)
 \Eventy::addFilter('fsinterop.dashboard.context', function ($context) { /* $context['mailbox_ids'] */ return $context; });
+
+// who renders the dashboard of FreeScout's dashboard page (schema dashboard-owner 1.0); RefreshGlobal answers
+// "refresh-global" when its dashboard of all mailboxes is on — Refresh, with the contract, then skips its own block
+$owner = \Eventy::filter('fsinterop.dashboard.owner', null, ['schema' => '1.0', 'page' => 'dashboard', 'user_id' => $userId]);
+
+// SLA targets (schema sla-targets 1.0): ASKED by RefreshGlobal, answered by Refresh from its contract version
+\Eventy::addFilter('fsinterop.sla.targets', function ($targets, $context = []) {
+    return $targets ?: ['schema' => '1.0', 'source_module' => 'refresh', 'first_response_hours' => 24, 'resolution_hours' => 72];
+}, 20, 2);
 ```
+
+**Dashboard and SLA without private channels** (agreed with Refresh's maintainer, [interop/DECISIONS.md](interop/DECISIONS.md)):
+
+| Refresh | Dashboard of all mailboxes | SLA targets |
+|---|---|---|
+| with the contract (capability `dashboard-handoff`, answers `fsinterop.sla.targets`) | Refresh asks `fsinterop.dashboard.owner` and skips its block; RefreshGlobal **adds** its dashboard (placement `native`) | from `fsinterop.sla.targets` |
+| ≤ 1.7, no contract — **legacy**, to be removed once Refresh answers the hooks | RefreshGlobal **replaces** Refresh's `rf-dash` block (placement `refresh`) | read from Refresh's `Settings` class (RG-CORE-11) |
+| not active | added above FreeScout's dashboard (placement `standalone`) | RefreshGlobal's settings (24 h / 72 h) |
+
+The decision is `GlobalDashboard::decideMode()`, tested alone.
 
 Note: Eventy passes a `null` value on as `''`; listeners treat any empty value as “not answered yet”.
 The existing public hooks `refreshglobal.mail_tags`, `refreshglobal.thread_mail_tags`, `refreshglobal.mail_tagged`,
 `refreshglobal.mail_moved` ([docs/api-tags.md](api-tags.md)) are declared in the same manifest.
 
-### Search (`global-search`, protocol 1.1)
+### Search (`global-search`, RefreshGlobal extension)
+
+Search is **not** part of the shared protocol yet (agreed: later, once the core is in place). RefreshGlobal offers it as
+its own extension, declared in `interop.json` with `"extension": true`, so that it can be proposed for the contract
+without changing anything for the user:
 
 ```javascript
-FreeScoutInterop.search.forContext('global-mailboxes')            // [{id: "refreshglobal.global-search", endpoint, label, …}]
-FreeScoutInterop.search.run('refreshglobal.global-search', {query: 'invoice', limit: 10})
-    .then(function (results) { /* search-results 1.0 */ });
+RefreshGlobalInterop.search('invoice', 10).then(function (results) { /* search-results 1.0 */ });
 ```
 
 Endpoint `GET /refresh-global/search?q=&limit=&mb[]=` (route `refreshglobal.search`, declared in
@@ -207,11 +236,10 @@ ticket (FreeScout's `ConversationPolicy::view`).
 ### Working without Refresh
 
 Everything above works without Refresh (contract §2.1). The dashboard of all mailboxes is computed by RefreshGlobal
-(`Services/Dashboard/`): with Refresh it replaces Refresh's “My dashboard” block (same markup, Refresh's stylesheet);
-without Refresh it is shown above FreeScout's dashboard with `Public/css/refreshglobal-dashboard.css`. Its quick views
+(`Services/Dashboard/`); without Refresh it is shown above FreeScout's dashboard with
+`Public/css/refreshglobal-dashboard.css` (see the table above for the placements and SLA sources). Its quick views
 (`unresolved`, `overdue`, `due-today`, `open`, `pending`, `unassigned`, `new`, `undelivered`) have the same meaning as
-Refresh's views of the same name; the SLA targets are Refresh's settings when Refresh is active, otherwise the
-module's (24 h / 72 h by default).
+Refresh's views of the same name.
 
 ## 5. What RefreshGlobal consumes from Refresh (optional)
 
@@ -220,12 +248,13 @@ module's (24 h / 72 h by default).
   "protocol": ">=1.0.0 <2.0.0",
   "capabilities": {
     "navigation": ">=1.0 <2.0", "navigation-context": ">=1.0 <2.0", "ticket-toolbar": ">=1.0 <2.0",
-    "swipe-actions": ">=1.0 <2.0", "conversation-ui": ">=1.0 <2.0"
+    "swipe-actions": ">=1.0 <2.0", "conversation-ui": ">=1.0 <2.0", "dashboard-handoff": ">=1.0 <2.0"
   }
 }
 ```
 
-Nothing is required: without any of them RefreshGlobal uses its legacy fallback or works alone.
+Plus the server filter `fsinterop.sla.targets` (asked, never answered by RefreshGlobal). Nothing is required: without
+any of them RefreshGlobal uses its legacy fallback or works alone.
 
 ## 6. Compatibility and UpdateGuard
 
@@ -245,11 +274,12 @@ assets, database, `interop_manifest`, page; plus `interop.refresh.{mode, compati
    documented adapter; DOM only as a legacy fallback).
 2. Update `interop.json` (and its schema file) **in the same commit**.
 3. Implement; the browser side registers in `Public/js/interop-adapter.js` with literal ids (the validator reads them).
-4. Tests: `InteropTest`, `fs-interop.test.js`, browser scenario.
+4. Tests: `InteropTest`, `interop-bridge/tests/fs-interop.test.js` (bridge changes go to the shared repository), browser scenario.
 5. Docs: this file, `INTEGRATION_MAP.md` for any element of another module, both changelogs.
 
 `php tools/validate-interop.php` fails when an event emitted or an intent registered by the scripts (navigation,
-toolbar, swipe, search) is not declared (or the other way round), when a declared server hook is not used, when a
+toolbar, swipe) is not declared (or the other way round), when a declared server hook is not used, when the bridge
+copy differs from `fs-interop.lock.json`, when a
 declared public route is missing from `Http/routes.php`, when a deprecated element has no later major
 `remove_in_protocol`, when the version ranges differ from
 `Config/integration.php`, or when the health command differs from `module.json`.

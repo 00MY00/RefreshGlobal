@@ -1,6 +1,7 @@
 /*
- * Tests of the FreeScout Interop bridge (RefreshGlobal/Public/js/fs-interop.js), with Node only (no dependency):
- *   node tests/interop/fs-interop.test.js
+ * Tests of the FreeScout Interop bridge (fs-interop.js), with Node only (no dependency):
+ *   node tests/fs-interop.test.js                         the copy of this repository
+ *   FS_INTEROP_FILE=path/to/fs-interop.js node tests/fs-interop.test.js   a module's copy (RefreshGlobal's CI)
  * Each test loads the bridge in a fresh fake window (vm), as a browser would load it from one or several modules.
  */
 'use strict';
@@ -9,7 +10,8 @@ var vm = require('vm');
 var path = require('path');
 var assert = require('assert');
 
-var SOURCE = fs.readFileSync(path.join(__dirname, '../../RefreshGlobal/Public/js/fs-interop.js'), 'utf8');
+var FILE = process.env.FS_INTEROP_FILE || path.join(__dirname, '../fs-interop.js');
+var SOURCE = fs.readFileSync(FILE, 'utf8');
 
 /** A fake browser window with a working sessionStorage and a console that records warnings. */
 function newWindow() {
@@ -161,40 +163,33 @@ test('a newer copy of the same major only adds what is missing', function () {
     assert.ok(now.modules.get('refresh'), 'registries kept');
 });
 
-test('search providers (protocol 1.1): required fields, context, run', function () {
-    var api = load(newWindow());
-    assert.strictEqual(api.protocol, '1.1.0');
-    assert.strictEqual(api.search.registerProvider({ id: 'p', owner: 'm', context: 'global-mailboxes' }), false, 'endpoint required');
-    assert.ok(api.search.registerProvider({ id: 'refreshglobal.global-search', owner: 'refresh-global', context: 'global-mailboxes',
-        endpoint: '/refresh-global/search', handler: function (r) { return 'results for ' + r.query; } }));
-    assert.ok(api.search.register({ id: 'everywhere', owner: 'other', context: '*', endpoint: '/x' }));
-    assert.ok(api.search.register({ id: 'mailbox-only', owner: 'refresh', context: 'mailbox', endpoint: '/y' }));
-    assert.strictEqual(JSON.stringify(api.search.forContext('global-mailboxes').map(function (p) { return p.id; })),
-        JSON.stringify(['refreshglobal.global-search', 'everywhere']));
-    assert.strictEqual(api.search.run('refreshglobal.global-search', { query: 'invoice' }), 'results for invoice');
-    assert.strictEqual(api.search.run('everywhere', {}), undefined, 'no handler: nothing run');
-});
-
-test('a newer copy adds the search registry to an older bridge, on its event bus', function () {
+test("a newer copy adds missing members on the older copy's event bus", function () {
     var win = newWindow();
-    var old = load(win, '1.0.0');
-    delete old.search; // a protocol 1.0 bridge (e.g. shipped by another module) loaded first
+    var old = load(win, "1.0.0");
+    delete old.swipe; // an older bridge (e.g. shipped by another module) without a member, loaded first
     var announced = [];
-    old.events.on('search:registered', function (p) { announced.push(p.id); });
-    var now = load(win);
+    old.events.on("swipe:registered", function (p) { announced.push(p.id); });
+    var now = load(win, "1.1.0");
     assert.strictEqual(now, old);
-    assert.strictEqual(now.protocol, '1.1.0', 'the page now offers protocol 1.1');
-    assert.ok(now.search.registerProvider({ id: 'refreshglobal.global-search', owner: 'refresh-global', context: 'global-mailboxes', endpoint: '/s' }));
-    assert.deepStrictEqual(announced, ['refreshglobal.global-search']);
+    assert.strictEqual(now.protocol, "1.1.0", "the page now reports the newer protocol");
+    assert.ok(now.swipe.register({ id: "s", owner: "m", label: "S", direction: "left", handler: function () {} }));
+    assert.deepStrictEqual(announced, ["s"]);
 });
 
-test('an older copy loaded after a newer one changes nothing', function () {
+test("an older copy loaded after a newer one changes nothing", function () {
     var win = newWindow();
-    var now = load(win);
-    var older = load(win, '1.0.0');
+    var now = load(win, "1.1.0");
+    var older = load(win, "1.0.0");
     assert.strictEqual(older, now);
-    assert.strictEqual(now.protocol, '1.1.0');
-    assert.ok(now.search);
+    assert.strictEqual(now.protocol, "1.1.0");
+});
+
+test("the file declares its bridge release and protocol", function () {
+    var bridge = /@bridge-version (\d+\.\d+\.\d+)/.exec(SOURCE);
+    var protocol = /var PROTOCOL = '(\d+\.\d+\.\d+)';/.exec(SOURCE);
+    assert.ok(bridge, "@bridge-version in the header");
+    assert.ok(protocol, "PROTOCOL constant");
+    assert.strictEqual(load(newWindow()).protocol, protocol[1]);
 });
 
 var failed = 0;

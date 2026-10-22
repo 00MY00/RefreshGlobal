@@ -268,10 +268,14 @@ class RefreshGlobalServiceProvider extends ServiceProvider
      * Dashboard of all mailboxes (Services/GlobalDashboard.php) on FreeScout's dashboard, through FreeScout's filter
      * "dashboard.before" (resources/views/secure/dashboard.blade.php:8), whose listeners run by ascending priority
      * (overrides/tormjens/eventy/src/Event.php:34-35). At 19 the module notes the HTML before the other modules; at 21:
-     *  - with Refresh: Refresh appends its "My dashboard" (first mailbox only) at the default priority 20
-     *    (RefreshServiceProvider.php:505); if what Refresh added is that block (class "rf-dash"), it is replaced by the
-     *    same dashboard for all mailboxes. Anything else (another module, a changed Refresh) is left untouched;
+     *  - Refresh with the contract (capability "dashboard-handoff"): Refresh asks fsinterop.dashboard.owner, does not
+     *    render its own block, and the dashboard is added (native, no HTML of Refresh read or replaced);
+     *  - Refresh without the contract (legacy): Refresh appends its "My dashboard" (first mailbox only) at the default
+     *    priority 20 (RefreshServiceProvider.php:505); if what Refresh added is that block (class "rf-dash"), it is
+     *    replaced by the same dashboard for all mailboxes. Anything else (another module, a changed Refresh) is left
+     *    untouched;
      *  - without Refresh (standalone, docs/INTEROPERABILITY.md §2.1): the dashboard is added above FreeScout's mailbox cards.
+     * The choice itself is GlobalDashboard::decideMode().
      */
     protected function registerDashboard()
     {
@@ -294,6 +298,7 @@ class RefreshGlobalServiceProvider extends ServiceProvider
                     return $html;
                 }
 
+                // legacy: Refresh's block replaced; native and standalone: added
                 return $mode === \Modules\RefreshGlobal\Services\GlobalDashboard::MODE_REFRESH ? $before.$ours : $html.$ours;
             } catch (\Throwable $e) {
                 \Log::warning('[RefreshGlobal] [RG-ERR-03] dashboard for all mailboxes: '.$e->getMessage());
@@ -304,26 +309,34 @@ class RefreshGlobalServiceProvider extends ServiceProvider
     }
 
     /**
-     * Where the dashboard of all mailboxes goes on this request: MODE_REFRESH (replace Refresh's block), MODE_STANDALONE
-     * (Refresh not active: add it), or null (setting off, not logged in, or Refresh active but its block not recognised).
+     * Facts of this request for GlobalDashboard::decideMode(): MODE_NATIVE / MODE_REFRESH / MODE_STANDALONE, or null.
      *
      * @param string|null $before HTML of dashboard.before before Refresh's listener
      * @param string      $html   HTML after Refresh's listener
      */
     protected static function dashboardMode($before, $html)
     {
-        if ($before === null || !auth()->check() || !\Modules\RefreshGlobal\Services\Settings::globalDashboard()) {
-            return null;
-        }
-        if (!\App\Module::isActive('refresh')) {
-            return \Modules\RefreshGlobal\Services\GlobalDashboard::MODE_STANDALONE;
-        }
-        $added = strpos($html, $before) === 0 ? substr($html, strlen($before)) : '';
-        if (self::refreshViewsPanel() && strpos($added, 'class="rf-dash"') !== false) {
-            return \Modules\RefreshGlobal\Services\GlobalDashboard::MODE_REFRESH;
-        }
+        $refreshActive = \App\Module::isActive('refresh');
+        $added = ($before !== null && strpos($html, $before) === 0) ? substr($html, strlen($before)) : '';
 
-        return null;
+        return \Modules\RefreshGlobal\Services\GlobalDashboard::decideMode(
+            $before !== null && auth()->check() && \Modules\RefreshGlobal\Services\Settings::globalDashboard(),
+            $refreshActive,
+            $refreshActive && self::refreshCapabilityNative('dashboard-handoff'),
+            $refreshActive && self::refreshViewsPanel() && strpos($added, 'class="rf-dash"') !== false
+        );
+    }
+
+    /** Refresh provides this capability of the contract in a supported version (its interop.json, PeerStatus). */
+    protected static function refreshCapabilityNative($capability)
+    {
+        try {
+            $status = \Modules\RefreshGlobal\Services\Interop\PeerStatus::fromInstallation('refresh');
+
+            return ($status['capabilities'][$capability] ?? '') === 'native';
+        } catch (\Throwable $e) {
+            return false;
+        }
     }
 
     /**

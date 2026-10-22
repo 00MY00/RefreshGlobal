@@ -46,7 +46,7 @@ jobs:
       - name: interop.json
         run: php tools/validate-interop.php
       - name: FreeScoutInterop bridge
-        run: node tests/interop/fs-interop.test.js
+        run: FS_INTEROP_FILE=RefreshGlobal/Public/js/fs-interop.js node interop-bridge/tests/fs-interop.test.js
 
   module-tests:
     runs-on: ubuntu-24.04

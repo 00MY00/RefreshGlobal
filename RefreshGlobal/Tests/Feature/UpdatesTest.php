@@ -43,7 +43,7 @@ class UpdatesTest extends TestCase
         $this->assertSame('pass', $out['checks']['page']);
         $this->assertSame('pass', $out['checks']['interop_manifest']);
         $this->assertNotSame('fail', $out['checks']['database'] ?? 'pass');
-        $this->assertSame('1.1.0', $out['interop']['protocol']);
+        $this->assertSame('1.0.0', $out['interop']['protocol']);
         // UpdateGuard detects --json from the command's definition
         $this->assertTrue(\Artisan::all()['refreshglobal:health']->getDefinition()->hasOption('json'));
     }

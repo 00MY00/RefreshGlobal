@@ -37,7 +37,8 @@ If a public cross-module capability, event, schema, hook, route or action is add
 1. update `interop.json` (and its schema in `RefreshGlobal/docs/interop/schemas/`) in the same commit;
 2. register browser-side intents (navigation, toolbar, swipe, search) with literal ids in
    `Public/js/interop-adapter.js` (the validator reads them); declare public routes in `interop.provides.routes`;
-3. add or update tests (`InteropTest`, `tests/interop/fs-interop.test.js`) and run `php tools/validate-interop.php`;
+3. add or update tests (`InteropTest`; bridge changes: in the shared bridge repository, staged in `interop-bridge/`,
+   then `php tools/sync-bridge.php`) and run `php tools/validate-interop.php`; never edit `Public/js/fs-interop.js`;
 4. update `docs/INTEROPERABILITY.md` and both changelogs;
 5. keep the previous contract during a deprecation period when possible (protocol major bump for breaking changes).
 

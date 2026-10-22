@@ -8,12 +8,13 @@
  *   2. declares the surfaces it renders on the current page, as decided on the server by the filter
  *      fsinterop.navigation.context (Services/Interop/NavigationContext.php: "page.owners" of the meta);
  *   3. declares its INTENTS — never HTML — in the shared registries: the "All mailboxes" navigation entry, the ticket
- *      toolbar actions ("Move to a folder", "Delete forever" for a ticket in the trash), the swipe action and the
- *      search provider of all mailboxes (protocol 1.1, endpoint GET /refresh-global/search);
+ *      toolbar actions ("Move to a folder", "Delete forever" for a ticket in the trash) and the swipe action;
  *   4. gives the origin of a ticket opened from the "All mailboxes" list (FreeScoutInterop.context) and announces the
- *      list shown (refreshglobal:view-changed) and the ticket opened (refreshglobal:conversation-opened);
+ *      list shown (refreshglobal:view-changed), the ticket opened (refreshglobal:conversation-opened) and the
+ *      dashboard of all mailboxes (refreshglobal:dashboard-rendered);
  *   5. tells Public/js/shell.js, capability by capability, whether Refresh cooperates natively
- *      (window.RefreshGlobalInterop.native()) — otherwise shell.js keeps its documented DOM fallbacks (legacy mode).
+ *      (window.RefreshGlobalInterop.native()) — otherwise shell.js keeps its documented DOM fallbacks (legacy mode);
+ *   6. offers RefreshGlobalInterop.search(query, limit), a module extension outside the shared protocol.
  * Nothing here touches another module's HTML.
  */
 (function (root) {
@@ -192,26 +193,13 @@
     }
 
     /**
-     * Search provider of all mailboxes (protocol 1.1): the module that owns a search UI may list the providers of the
-     * context "global-mailboxes" and run this one; its handler asks the module's endpoint (the user's rights apply
-     * on the server) and resolves with search results 1.0.
+     * Search over all mailboxes — a RefreshGlobal extension, NOT part of the shared protocol 1.0 (search will be
+     * proposed for the contract later): RefreshGlobalInterop.search(query, limit) asks the module's endpoint (the
+     * user's rights apply on the server) and resolves with search results 1.0; undefined without fetch().
      */
-    function registerSearch() {
-        var provider = cfg.search;
-        if (!FI.search || !provider || !provider.endpoint) {
-            return; // an older bridge (protocol 1.0) without search: nothing to declare
-        }
-        FI.search.register({
-            id: 'refreshglobal.global-search',
-            owner: cfg.module.id,
-            context: 'global-mailboxes',
-            endpoint: provider.endpoint,
-            label: provider.label,
-            version: provider.version || '1.0',
-            handler: function (request) {
-                return searchRequest(provider.endpoint, request || {});
-            }
-        });
+    function search(query, limit) {
+        var endpoint = cfg.search && cfg.search.endpoint;
+        return endpoint ? searchRequest(endpoint, { query: query, limit: limit }) : undefined;
     }
 
     /** GET endpoint?q=…&limit=… with the session cookie; a Promise of the JSON results (rejected on an HTTP error). */
@@ -230,11 +218,30 @@
             });
     }
 
+    root.RefreshGlobalInterop.search = search;
+
+    /**
+     * The dashboard of all mailboxes is on this page: announced (refreshglobal:dashboard-rendered, schema
+     * dashboard-rendered 1.0) so that another module can react without reading RefreshGlobal's HTML.
+     */
+    function announceDashboard() {
+        var dash = document.querySelector('.rg-dash');
+        if (!dash) {
+            return;
+        }
+        FI.events.emit('refreshglobal:dashboard-rendered', {
+            schema: '1.0',
+            source_module: cfg.module.id,
+            scope: 'global-mailboxes',
+            placement: dash.getAttribute('data-placement') || ''
+        });
+    }
+
     registerNavigation();
-    registerSearch();
     document.addEventListener('DOMContentLoaded', function () {
         registerMoveActions();
         registerDeleteForever();
+        announceDashboard();
     });
 
     /* ------------------------------------------------------------------ 4. context and events of the list */

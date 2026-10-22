@@ -19,7 +19,8 @@
         "ticket-toolbar": "1.0",
         "swipe-actions": "1.0",
         "conversation-ui": "1.0",
-        "dashboard": "1.1"
+        "dashboard": "1.1",
+        "dashboard-handoff": "1.0"
       },
       "surfaces": [
         { "surface": "ticket-list", "context": "mailbox", "version": "1.0" },
@@ -30,6 +31,10 @@
       "events": {
         "conversation:rendered": "1.0",
         "list:rendered": "1.0"
+      },
+      "server_hooks": {
+        "fsinterop.sla.targets": { "type": "filter", "version": "1.0", "schema": "sla-targets", "description": "Refresh answers with its SLA targets" },
+        "fsinterop.dashboard.owner": { "type": "filter", "role": "consumer", "version": "1.0", "schema": "dashboard-owner", "description": "asked before rendering My dashboard; another owner = Refresh skips its block" }
       }
     },
 
@@ -39,8 +44,7 @@
           "protocol": ">=1.0.0 <2.0.0",
           "capabilities": {
             "global-ticket-list": ">=1.0 <2.0",
-            "navigation-origin": ">=1.0 <2.0",
-            "global-search": ">=1.0 <2.0"
+            "navigation-origin": ">=1.0 <2.0"
           }
         }
       }

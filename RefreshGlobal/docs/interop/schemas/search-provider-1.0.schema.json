@@ -2,7 +2,7 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "https://github.com/00MY00/RefreshGlobal/blob/main/RefreshGlobal/docs/interop/schemas/search-provider-1.0.schema.json",
     "title": "Search provider 1.0",
-    "description": "FreeScoutInterop.search.registerProvider() (bridge protocol 1.1) and the server filter fsinterop.search.providers: a module that can search tickets in a context. The module that owns the search UI of that context lists the providers and runs them; handler(request) receives {query, limit} and returns a Promise of search results 1.0.",
+    "description": "Server filter fsinterop.search.providers (RefreshGlobal extension, not in the shared protocol yet): a module that can search tickets in a context, with a GET endpoint answering ?q=&limit= with search results 1.0 for the logged-in user. In the browser, RefreshGlobal offers RefreshGlobalInterop.search(query, limit).",
     "type": "object",
     "required": [
         "id",
@@ -31,9 +31,6 @@
         },
         "version": {
             "type": "string"
-        },
-        "handler": {
-            "description": "browser only: function (request) returning a Promise, not serializable"
         }
     }
 }

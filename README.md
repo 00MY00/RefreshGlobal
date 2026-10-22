@@ -89,8 +89,8 @@ RefreshGlobal utilise ses replis testés (mode *legacy*, comme avant). Le mode a
 
 Sans Refresh, RefreshGlobal garde tout : « Toutes les boîtes », vues enregistrées et partagées, filtres, et le
 tableau de bord de toutes les boîtes (calculé par le module, affiché au-dessus du tableau de bord de FreeScout). Pour
-les autres modules, il offre aussi une **recherche** sur toutes les boîtes (`GET /refresh-global/search`, fournisseur
-`refreshglobal.global-search`) et des contextes serveur (`fsinterop.navigation.context`,
+les autres modules, il offre aussi une **recherche** sur toutes les boîtes (`GET /refresh-global/search`,
+extension propre au module en attendant le contrat commun) et des contextes serveur (`fsinterop.navigation.context`,
 `fsinterop.conversation.context`), toujours avec les droits de l’utilisateur.
 
 ### Vues enregistrées et partagées

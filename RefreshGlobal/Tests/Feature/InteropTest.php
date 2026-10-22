@@ -3,6 +3,8 @@
 namespace Modules\RefreshGlobal\Tests\Feature;
 
 use App\Conversation;
+use Modules\RefreshGlobal\Services\Dashboard\Sla;
+use Modules\RefreshGlobal\Services\GlobalDashboard;
 use Modules\RefreshGlobal\Services\Interop\ConversationContext;
 use Modules\RefreshGlobal\Services\Interop\Manifest;
 use Modules\RefreshGlobal\Services\Interop\NavigationContext;
@@ -47,7 +49,7 @@ class InteropTest extends TestCase
         $this->assertNotNull($manifest);
         $this->assertSame([], $manifest->validate());
         $this->assertSame('refresh-global', $manifest->id());
-        $this->assertSame('1.1.0', $manifest->protocol());
+        $this->assertSame('1.0.0', $manifest->protocol());
         // single source of truth: what the module declares is what it gives the browser
         $this->assertArrayHasKey('global-ticket-list', $manifest->capabilities());
         $this->assertSame(['refreshglobal.move-to-folder', 'refreshglobal.delete-forever'], $manifest->registrations('toolbar'));
@@ -109,7 +111,7 @@ class InteropTest extends TestCase
         $this->assertSame('legacy', $s['capabilities']['ticket-toolbar']);
 
         // Refresh speaking the contract with every capability: native, compatible, no fallback
-        $all = ['navigation' => '1.0', 'navigation-context' => '1.0', 'ticket-toolbar' => '1.2', 'swipe-actions' => '1.0', 'conversation-ui' => '1.0'];
+        $all = ['navigation' => '1.0', 'navigation-context' => '1.0', 'ticket-toolbar' => '1.2', 'swipe-actions' => '1.0', 'conversation-ui' => '1.0', 'dashboard-handoff' => '1.0'];
         $s = $this->cooperation(['version' => '1.8.0'], $this->peer('1.0.0', $all));
         $this->assertSame(['native', 'COMPATIBLE', false], [$s['mode'], $s['compatibility'], $s['legacy_fallbacks']]);
 
@@ -133,7 +135,7 @@ class InteropTest extends TestCase
     public function testServerHooks()
     {
         $modules = \Eventy::filter('fsinterop.modules', []);
-        $this->assertSame('1.1.0', $modules['refresh-global']['protocol']);
+        $this->assertSame('1.0.0', $modules['refresh-global']['protocol']);
         $this->assertSame(Manifest::own()->capabilities(), $modules['refresh-global']['capabilities']);
 
         $bob = $this->s['bob'];
@@ -154,6 +156,44 @@ class InteropTest extends TestCase
         }, 20, 1);
         $ctx = ServerHooks::dashboardContext($bob, [$this->s['support']->id, $this->s['sales']->id]);
         $this->assertSame([$this->s['sales']->id], $ctx['mailbox_ids']);
+    }
+
+    public function testDashboardHandoff()
+    {
+        // fsinterop.dashboard.owner: what Refresh (with the contract) asks before rendering its own block
+        \Modules\RefreshGlobal\Services\Settings::setGlobalDashboard(true);
+        $ask = function ($user) {
+            return \Eventy::filter('fsinterop.dashboard.owner', null, ['schema' => '1.0', 'page' => 'dashboard', 'user_id' => $user->id]);
+        };
+        $this->assertSame('refresh-global', $ask($this->s['bob']));
+        $this->assertEmpty(\Eventy::filter('fsinterop.dashboard.owner', null, ['schema' => '1.0', 'page' => 'other', 'user_id' => $this->s['bob']->id]));
+        $noMailbox = Fixtures::user('Nomail');
+        $this->assertEmpty($ask($noMailbox), 'nothing to show: Refresh keeps its dashboard');
+        \Modules\RefreshGlobal\Services\Settings::setGlobalDashboard(false);
+        $this->assertEmpty($ask($this->s['bob']));
+
+        // where the dashboard goes: enabled, Refresh active, Refresh hands over natively, Refresh's block found
+        $G = GlobalDashboard::class;
+        $this->assertNull($G::decideMode(false, true, true, true));
+        $this->assertSame($G::MODE_STANDALONE, $G::decideMode(true, false, false, false));
+        $this->assertSame($G::MODE_NATIVE, $G::decideMode(true, true, true, false));
+        $this->assertSame($G::MODE_REFRESH, $G::decideMode(true, true, false, true), 'legacy replacement');
+        $this->assertNull($G::decideMode(true, true, false, false), 'unknown Refresh output: left untouched');
+    }
+
+    public function testSlaTargetsHook()
+    {
+        $this->assertNotSame('hook:refresh', Sla::source());
+        // a module (Refresh with the contract) declares its targets: they win over every other source
+        \Eventy::addFilter('fsinterop.sla.targets', function ($targets) {
+            return ['schema' => '1.0', 'source_module' => 'refresh', 'first_response_hours' => 8, 'resolution_hours' => 40];
+        }, 20, 1);
+        $this->assertSame(['first_response_hours' => 8, 'resolution_hours' => 40, 'source' => 'hook:refresh'], Sla::targets());
+        // invalid answers are ignored
+        \Eventy::addFilter('fsinterop.sla.targets', function ($targets) {
+            return ['first_response_hours' => 0, 'resolution_hours' => 'x'];
+        }, 30, 1);
+        $this->assertNotSame('hook:refresh', Sla::source());
     }
 
     public function testNavigationContext()
@@ -223,7 +263,7 @@ class InteropTest extends TestCase
         $this->assertMatchesRegularExpression('/<meta name="refreshglobal-interop" content="([^"]+)"/', $page);
         preg_match('/<meta name="refreshglobal-interop" content="([^"]+)"/', $page, $m);
         $cfg = json_decode(html_entity_decode($m[1], ENT_QUOTES), true);
-        $this->assertSame('1.1.0', $cfg['protocol']);
+        $this->assertSame('1.0.0', $cfg['protocol']);
         $this->assertSame(Manifest::own()->capabilities(), $cfg['capabilities']);
         $this->assertSame(Manifest::own()->consumes('refresh')['capabilities'], $cfg['consumes']['capabilities']);
         $this->assertSame(route('refreshglobal.tickets'), $cfg['navigation']['href']);
@@ -232,7 +272,7 @@ class InteropTest extends TestCase
         $this->assertSame('refresh-global', $cfg['page']['owners']['ticket-list@global-mailboxes']);
         $this->assertSame('refresh-global', $cfg['page']['owners']['search@global-mailboxes']);
         $this->assertSame(Manifest::own()->surfaces(), $cfg['surfaces']);
-        // search provider (protocol 1.1)
+        // search: a RefreshGlobal extension outside the shared protocol (RefreshGlobalInterop.search)
         $this->assertSame('refreshglobal.global-search', $cfg['search']['id']);
         $this->assertSame(route('refreshglobal.search'), $cfg['search']['endpoint']);
         // the bridge, then RefreshGlobal's participation, then shell.js

@@ -16,15 +16,25 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions :
     même apparence, mêmes chiffres.
   - Sans Refresh : le tableau de bord s’affiche au-dessus du tableau de bord de FreeScout, avec sa propre feuille de
     style (`Public/css/refreshglobal-dashboard.css`, ordinateur et téléphone) ; le réglage n’est plus grisé.
-  - Objectifs SLA : ceux des réglages de Refresh quand Refresh est actif, sinon les nouveaux réglages **Objectif de
-    première réponse** / **Objectif de résolution** (Gérer › Paramètres › RefreshGlobal, 24 h / 72 h par défaut, comme
-    Refresh).
+  - Objectifs SLA : déclarés par le filtre public `fsinterop.sla.targets` (Refresh à partir de sa version avec le
+    contrat) ; avec un Refresh sans contrat, lus dans les réglages de Refresh en repli legacy ; sans Refresh, nouveaux
+    réglages **Objectif de première réponse** / **Objectif de résolution** (Gérer › Paramètres › RefreshGlobal,
+    24 h / 72 h).
+  - Passage de main du tableau de bord par un crochet public : RefreshGlobal répond à `fsinterop.dashboard.owner` ; un
+    Refresh avec la capacité `dashboard-handoff` n’affiche pas son bloc et RefreshGlobal ajoute son tableau de bord
+    (aucun HTML remplacé). Avec un Refresh sans contrat, le remplacement de son bloc `rf-dash` reste en repli legacy.
+    Événement navigateur `refreshglobal:dashboard-rendered`.
   - Nouvelles vues rapides `new` et `undelivered` ; la carte « E-mails non remis » mène à « Toutes les boîtes » au lieu
     de la vue de Refresh boîte par boîte.
-- **API de recherche** (contrat §20, protocole 1.1) : fournisseur de recherche `refreshglobal.global-search` pour le
-  contexte `global-mailboxes` — point d’accès `GET /refresh-global/search?q=&limit=&mb[]=` (JSON, lecture seule, droits
-  de l’utilisateur, schéma `search-results` 1.0), registre du navigateur `FreeScoutInterop.search` (`registerProvider`,
-  `forContext`, `run`), filtres serveur `fsinterop.search.providers` et `fsinterop.search.results`.
+- **Recherche sur toutes les boîtes**, extension propre à RefreshGlobal (la recherche n’entre pas encore dans le contrat
+  commun, d’un commun accord avec le créateur de Refresh) : point d’accès `GET /refresh-global/search?q=&limit=&mb[]=`
+  (JSON, lecture seule, droits de l’utilisateur, schéma `search-results` 1.0), `RefreshGlobalInterop.search()` dans le
+  navigateur, filtres serveur `fsinterop.search.providers` et `fsinterop.search.results` (déclarés avec
+  `"extension": true`).
+- **Dépôt séparé du pont, préparé** : le contenu du futur dépôt de `fs-interop.js` est préparé dans `interop-bridge/`
+  (fichier, tests, CI, README, changelog) ; RefreshGlobal livre une copie inchangée d’une version du pont, notée dans
+  `Public/js/fs-interop.lock.json` (version, protocole, SHA-256), mise à jour par `tools/sync-bridge.php` et vérifiée
+  par la CI. Décisions avec le créateur de Refresh : [docs/interop/DECISIONS.md](docs/interop/DECISIONS.md).
 - **Contextes serveur** (contrat, phase 4) : filtre `fsinterop.navigation.context` — quel module affiche quelle
   surface sur la page en cours (propriété selon le contexte, §11 ; RefreshGlobal en déduit ses surfaces dans le
   navigateur au lieu de les deviner d’après le HTML) ; filtre `fsinterop.conversation.context` — ce que chaque module
@@ -36,7 +46,7 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions :
 - Les routes publiques sont déclarées dans `interop.json` (`provides.routes`) et vérifiées dans `Http/routes.php`.
 - Contrôles d’intégration RG-CORE-23 (statuts d’envoi), RG-CORE-24 (`ConversationPolicy::view`), RG-DB-15 (colonnes
   de `threads`), avec leurs textes en 7 langues.
-- **Contrat d’interopérabilité FreeScout Interop, protocole 1.1.0** ([docs/INTEROPERABILITY.md](docs/INTEROPERABILITY.md)) :
+- **Contrat d’interopérabilité FreeScout Interop, protocole 1.0.0** ([docs/INTEROPERABILITY.md](docs/INTEROPERABILITY.md)) :
   Refresh et RefreshGlobal restent deux modules indépendants, au même niveau, et peuvent coopérer par un contrat
   petit, versionné et déclaré, au lieu que RefreshGlobal modifie la page de Refresh.
   - `RefreshGlobal/interop.json` : la référence unique de ce que RefreshGlobal fournit (capacités, événements,
@@ -73,12 +83,13 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions :
   en gravité *avertissement* (sans eux, les objectifs SLA du module s’appliquent).
 
 ### Compatibilité
-- Protocole **1.1.0** = protocole 1.0 + fournisseurs de recherche, ajoutés sans rien casser : un module qui parle 1.0
-  reste compatible (`>=1.0.0 <2.0.0`) ; si une copie plus ancienne du pont est chargée en premier, celle de
-  RefreshGlobal ajoute seulement le registre `search`, sur le bus d’événements existant.
+- Protocole **1.0.0** tel que validé par le créateur de Refresh : navigation, barre d’un ticket, glissements et contexte
+  de navigation. Le côté Refresh arrive avec Refresh 1.8.0 ; d’ici là, RefreshGlobal fonctionne en mode **legacy** avec
+  Refresh.
 - Avec le Refresh actuel (1.4.x – 1.6.x, sans contrat) : mode **legacy**, même comportement qu’en 1.16.2.
 - Nouveau job CI **interop-contract** : `tools/validate-interop.php` (manifeste valide et cohérent avec le code,
-  `module.json` et `Config/integration.php`) et `tests/interop/fs-interop.test.js`.
+  `module.json` et `Config/integration.php`, copie du pont identique à son fichier de verrouillage) et les tests du pont
+  lancés sur la copie du module (`interop-bridge/tests/fs-interop.test.js`).
 
 ## [1.16.2] — 2026-10-20
 

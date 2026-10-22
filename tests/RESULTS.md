@@ -356,6 +356,21 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
   chiffres), mêmes vues rapides et recherche ; téléphone 390 px sans défilement horizontal ; aucune erreur JavaScript.
   Refresh réactivé ensuite : `refreshglobal:health` « Healthy ».
 
+### 36 c. Après la réponse du créateur de Refresh (2026-10-22)
+
+- Pont ramené au protocole **1.0.0** (sans registre `search`), préparé pour un dépôt séparé (`interop-bridge/`) ; copie
+  du module notée dans `fs-interop.lock.json` (SHA-256). `php tools/validate-interop.php` : « Interop contract OK:
+  protocol 1.0.0, 8 capabilities, 3 events, 16 schemas, 13 server hooks, 0 deprecated » (copie modifiée → refusée).
+- Tests du pont : **12/12** sur `interop-bridge/fs-interop.js` et **12/12** sur la copie du module
+  (`FS_INTEROP_FILE`).
+- PHPUnit : **172 tests, 2425 assertions, 0 échec** (2 ignorés) ; nouveaux dans `InteropTest` : passage de main du
+  tableau de bord (`fsinterop.dashboard.owner`, décision natif / legacy / autonome), objectifs SLA par
+  `fsinterop.sla.targets`.
+- Navigateur (`standalone.js`) avec Refresh 1.6.0 (placement `refresh`, legacy) et Refresh désactivé (placement
+  `standalone`) : mêmes tuiles, recherche par `RefreshGlobalInterop.search()`, protocole 1.0.0, téléphone sans
+  défilement horizontal, aucune erreur JavaScript ; `refreshglobal:health` « Healthy ». Le mode **natif** sera testé
+  avec la première version testable de Refresh 1.8.0.
+
 ## 28. Adresse d'envoi au choix (1.10.0)
 
 - `refreshglobal:check` : RG-HOOK-28/29, RG-CORE-17, RG-ROUTE-11 OK, état OK.

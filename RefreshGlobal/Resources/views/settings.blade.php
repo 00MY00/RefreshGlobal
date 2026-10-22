@@ -32,7 +32,7 @@
     @include('refreshglobal::partials.switch', ['key' => $rg_s::GLOBAL_DASHBOARD, 'label' => __('refreshglobal::messages.global_dashboard'),
         'help' => __('refreshglobal::messages.global_dashboard_help'), 'extra_help' => $rg_refresh ? '' : __('refreshglobal::messages.global_dashboard_standalone')])
     {{-- service-level targets of the dashboard (Services/Dashboard/Sla.php): Refresh's own settings apply when it is active --}}
-    @php $rg_sla = '\Modules\RefreshGlobal\Services\Dashboard\Sla'; $rg_sla_refresh = $rg_sla::source() === 'refresh'; @endphp
+    @php $rg_sla = '\Modules\RefreshGlobal\Services\Dashboard\Sla'; $rg_sla_refresh = $rg_sla::source() !== 'refreshglobal'; @endphp
     @foreach ([[$rg_sla::FIRST_RESPONSE, 'sla_first_response', $rg_sla::firstResponseHours()], [$rg_sla::RESOLUTION, 'sla_resolution', $rg_sla::resolutionHours()]] as $rg_sla_row)
         <div class="form-group">
             <label for="rg-{{ $rg_sla_row[1] }}" class="col-sm-2 control-label">{{ __('refreshglobal::messages.'.$rg_sla_row[1]) }}</label>

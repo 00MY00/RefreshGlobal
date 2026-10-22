@@ -15,12 +15,15 @@ use Modules\RefreshGlobal\Services\Search\GlobalSearch;
  *                                      mailbox_ids (never widen them: the user's rights always apply)
  *   filter fsinterop.dashboard.data    figures of a dashboard scope (schema dashboard-data 1.1); RefreshGlobal answers
  *                                      the scope "global-mailboxes" for the given user
+ *   filter fsinterop.dashboard.owner   module that renders the dashboard of FreeScout's dashboard page for a user;
+ *                                      RefreshGlobal answers "refresh-global" when its dashboard of all mailboxes is on
+ *                                      (Refresh, with the contract, then does not render its own block)
  *   filter fsinterop.navigation.context which module renders which surface on the current page (NavigationContext)
  *   filter fsinterop.conversation.context what each module knows about a ticket, for a user (ConversationContext)
- *   filter fsinterop.search.providers  [provider id => descriptor]: search providers of the modules (schema
- *                                      search-provider 1.0); RefreshGlobal adds "refreshglobal.global-search"
- *   filter fsinterop.search.results    results of a search scope (schema search-results 1.0); RefreshGlobal answers
- *                                      the scope "global-mailboxes" (Services/Search/GlobalSearch.php)
+ *   filter fsinterop.search.providers  [provider id => descriptor]  } RefreshGlobal extension, outside the shared
+ *   filter fsinterop.search.results    results of a search scope    } protocol 1.0 (search: later, by agreement)
+ *
+ * Consumed (asked, never answered by RefreshGlobal): fsinterop.sla.targets (Services/Dashboard/Sla.php).
  *
  * The existing public hooks of RefreshGlobal (refreshglobal.mail_tags…, docs/api-tags.md) are declared in the same
  * manifest and stay unchanged.
@@ -43,6 +46,10 @@ class ServerHooks
             }
 
             return self::dashboardData($context);
+        }, 20, 2);
+
+        \Eventy::addFilter('fsinterop.dashboard.owner', function ($owner, $context = []) {
+            return self::dashboardOwner($owner, is_array($context) ? $context : []);
         }, 20, 2);
 
         \Eventy::addFilter('fsinterop.navigation.context', function ($context) {
@@ -142,6 +149,22 @@ class ServerHooks
 
             return null;
         }
+    }
+
+    /**
+     * Answer to fsinterop.dashboard.owner. Context (schema dashboard-owner 1.0): ['schema' => '1.0', 'page' =>
+     * 'dashboard', 'user_id' => int]. An answer already given by another module is kept.
+     *
+     * @return string|mixed "refresh-global", or the value received
+     */
+    public static function dashboardOwner($owner, array $context)
+    {
+        if (!empty($owner) || ($context['page'] ?? 'dashboard') !== 'dashboard') {
+            return $owner;
+        }
+        $user = !empty($context['user_id']) ? \App\User::find((int) $context['user_id']) : auth()->user();
+
+        return GlobalDashboard::ownsDashboardFor($user) ? 'refresh-global' : $owner;
     }
 
     /** RefreshGlobal's entry of fsinterop.search.providers. */

@@ -1,5 +1,9 @@
 /*
- * FreeScout Interop — protocol 1.1.0 (browser side).
+ * FreeScout Interop — protocol 1.0.0 (browser side).
+ *
+ * @bridge-version 1.0.0
+ * Shared bridge: the reference copy lives in its own repository (staged in interop-bridge/ until it is created); each
+ * module ships an unchanged copy of a tagged release, checked by its CI against fs-interop.lock.json.
  *
  * A small, neutral, versioned registry through which sibling FreeScout modules (Refresh, RefreshGlobal…) cooperate
  * without depending on each other's private HTML or functions. Contract: docs/INTEROPERABILITY.md, machine-readable
@@ -20,17 +24,15 @@
  *   context     setConversationOrigin(origin) / getConversationOrigin(conversationId)
  *   surfaces    register({module, surface, context, version}) / owner(surface, context)
  *   navigation, toolbar, swipe   register(item) / list(filter) / get(id) / run(id, context) — action registries
- *   search      registerProvider(provider) / forContext(context) / list / get / run(id, request) — search providers
- *               (protocol 1.1: added without breaking 1.0; a module checks FreeScoutInterop.search before using it)
  *   semver      satisfies(version, range) / compare(a, b)
  *
- * Licence: same as the module that ships it (AGPL-3.0 for RefreshGlobal). Copy it unchanged into another module;
- * report changes upstream so that the shared copies stay identical.
+ * Licence: AGPL-3.0 (the licence of Refresh and RefreshGlobal). Never edit a module's copy: change the shared
+ * repository, release a new bridge version, then update each module's copy and lock file.
  */
 (function (root) {
     'use strict';
 
-    var PROTOCOL = '1.1.0';
+    var PROTOCOL = '1.0.0';
 
     /* ------------------------------------------------------------------ helpers */
 
@@ -376,21 +378,6 @@
         api.navigation = registry('navigation', ['id', 'owner', 'label', 'href']);
         api.toolbar = registry('toolbar', ['id', 'owner', 'label', 'handler']);
         api.swipe = registry('swipe', ['id', 'owner', 'label', 'direction', 'handler']);
-
-        /*
-         * ---------- search providers (protocol 1.1): {id, owner, context, endpoint, label, version, handler}.
-         * The module that owns the search UI of a context lists the providers of that context and runs them; a
-         * provider's handler(request) receives {query, limit} and returns a Promise of search results (schema
-         * search-results 1.0). The bridge itself never makes a network call.
-         */
-        api.search = registry('search', ['id', 'owner', 'context', 'endpoint']);
-        api.search.registerProvider = api.search.register;
-        /** Providers of a context (and the ones declared for every context, "*"). */
-        api.search.forContext = function (context) {
-            return api.search.list(function (p) {
-                return p.context === context || p.context === '*';
-            });
-        };
 
         api.semver = { satisfies: satisfies, compare: compare };
 

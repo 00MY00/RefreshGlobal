@@ -1,0 +1,7 @@
+{
+    "bridge": "fs-interop",
+    "version": "1.0.0",
+    "protocol": "1.0.0",
+    "sha256": "ab1dd931e2a632bf0a09ab35aace7dad730eac0cad37e8951e5bd6549e47b0e7",
+    "source": "interop-bridge/ (staging, until the shared repository is created)"
+}
