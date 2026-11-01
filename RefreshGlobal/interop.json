@@ -126,7 +126,7 @@
         "supported_versions": ">=1.4.0 <2.0.0",
         "interop_protocol": ">=1.0.0 <2.0.0",
         "fallback": {
-          "supported_versions": ">=1.4.0 <1.7.0",
+          "supported_versions": ">=1.4.0 <1.10.0",
           "mode": "legacy"
         },
         "conflicts": []

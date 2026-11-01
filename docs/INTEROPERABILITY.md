@@ -18,12 +18,12 @@ are in [docs/interop/REFRESH_MAINTAINER_GUIDE.md](interop/REFRESH_MAINTAINER_GUI
 | `RefreshGlobal/Public/js/interop-adapter.js` | RefreshGlobal's participation: registration, surfaces, intents, conversation origin, events, negotiation |
 | `RefreshGlobal/Services/Interop/` | server side: `Manifest` (read / validate), `SemVer` (ranges), `PeerStatus` (cooperation mode), `ServerHooks` (`fsinterop.*` hooks), `NavigationContext`, `ConversationContext` |
 | `RefreshGlobal/Services/Search/GlobalSearch.php`, `Http/Controllers/SearchController.php` | search of all mailboxes and its endpoint — a RefreshGlobal **extension**, outside the shared protocol for now |
-| `interop-bridge/` | **staging** of the future shared repository of the bridge (reference `fs-interop.js`, its tests, CI, README); moved out once the repository exists |
+| [altmenorg/fs-interop](https://github.com/altmenorg/fs-interop) | shared repository of the bridge (reference `fs-interop.js`, its tests, releases `vX.Y.Z`); changes by pull request |
 | `RefreshGlobal/Public/js/fs-interop.lock.json`, `tools/sync-bridge.php` | the bridge release shipped by RefreshGlobal (version, protocol, SHA-256, source) and the script that updates the copy |
 | `docs/interop/DECISIONS.md` | what the maintainers of Refresh and RefreshGlobal agreed |
 | `RefreshGlobal/Services/Dashboard/` | the module's own dashboard pieces (`TicketViews`, `Statistics`, `Chart`, `Sla`): no Refresh class needed |
 | `RefreshGlobal/docs/interop/schemas/*.schema.json` | JSON schemas of every payload (shipped with the module) |
-| `tools/validate-interop.php`, `interop-bridge/tests/fs-interop.test.js` (run on the module's copy) | CI job **interop-contract** |
+| `tools/validate-interop.php`, the bridge's tests of `altmenorg/fs-interop` (run on the module's copy) | CI job **interop-contract** |
 | `RefreshGlobal/Tests/Feature/InteropTest.php`, `SearchTest.php`, `DashboardStandaloneTest.php` | PHPUnit: manifest, ranges, modes, deprecations, server hooks and contexts, what pages give to the browser; search; dashboard without Refresh |
 
 ## 2. Cooperation modes
@@ -80,11 +80,11 @@ FreeScoutInterop.semver.satisfies(version, range) / .compare(a, b)
 When an older copy of the bridge loaded first, a newer copy of the same major adds the missing members, wired to the
 existing event bus, and the page then reports the newer protocol.
 
-**One shared bridge.** As agreed with Refresh's maintainer, `fs-interop.js` has its own repository (staged in
-`interop-bridge/` until it is created); each module ships an **unchanged copy of a tagged release** — FreeScout installs
+**One shared bridge.** As agreed with Refresh's maintainer, `fs-interop.js` has its own repository (
+[altmenorg/fs-interop](https://github.com/altmenorg/fs-interop)); each module ships an **unchanged copy of a tagged release** — FreeScout installs
 modules one by one, so the bridge must never become a module to install. RefreshGlobal records its copy in
 `Public/js/fs-interop.lock.json` (`version`, `protocol`, `sha256`, `source`), updates it with
-`php tools/sync-bridge.php [file]`, and its CI refuses a copy that differs from the lock file or a protocol that differs
+`php tools/sync-bridge.php <file> <release URL>`, and its CI refuses a copy that differs from the lock file or a protocol that differs
 from `interop.json`; the bridge's own tests run on the module's copy.
 
 Guarantees: loading order does not matter (`modules.when()`), a second copy of the bridge keeps the first one's
@@ -276,7 +276,7 @@ assets, database, `interop_manifest`, page; plus `interop.refresh.{mode, compati
    documented adapter; DOM only as a legacy fallback).
 2. Update `interop.json` (and its schema file) **in the same commit**.
 3. Implement; the browser side registers in `Public/js/interop-adapter.js` with literal ids (the validator reads them).
-4. Tests: `InteropTest`, `interop-bridge/tests/fs-interop.test.js` (bridge changes go to the shared repository), browser scenario.
+4. Tests: `InteropTest`, the bridge's tests (bridge changes go to `altmenorg/fs-interop` by pull request), browser scenario.
 5. Docs: this file, `INTEGRATION_MAP.md` for any element of another module, both changelogs.
 
 `php tools/validate-interop.php` fails when an event emitted or an intent registered by the scripts (navigation,

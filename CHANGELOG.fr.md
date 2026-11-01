@@ -5,7 +5,7 @@ sont tenus à jour ensemble à chaque version.
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
-## [1.17.0] — non publiée (en attente de la validation du créateur de Refresh)
+## [1.17.0] — 2026-11-01
 
 ### Ajouté
 - **RefreshGlobal fonctionne entièrement sans Refresh** (contrat §2.1) : le tableau de bord de toutes les boîtes, ses
@@ -31,10 +31,10 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions :
   (JSON, lecture seule, droits de l’utilisateur, schéma `search-results` 1.0), `RefreshGlobalInterop.search()` dans le
   navigateur, filtres serveur `fsinterop.search.providers` et `fsinterop.search.results` (déclarés avec
   `"extension": true`).
-- **Dépôt séparé du pont, préparé** : le contenu du futur dépôt de `fs-interop.js` est préparé dans `interop-bridge/`
-  (fichier, tests, CI, README, changelog) ; RefreshGlobal livre une copie inchangée d’une version du pont, notée dans
-  `Public/js/fs-interop.lock.json` (version, protocole, SHA-256), mise à jour par `tools/sync-bridge.php` et vérifiée
-  par la CI. Décisions avec le créateur de Refresh : [docs/interop/DECISIONS.md](docs/interop/DECISIONS.md).
+- **Pont partagé** : `fs-interop.js` vient de son propre dépôt, [altmenorg/fs-interop](https://github.com/altmenorg/fs-interop)
+  (release v1.0.0), utilisé aussi par Refresh 1.9.0. RefreshGlobal livre une copie inchangée, notée dans
+  `Public/js/fs-interop.lock.json` (version, protocole, SHA-256), mise à jour par `tools/sync-bridge.php` ; la CI refuse
+  une copie modifiée et lance sur elle les tests du pont. Décisions avec le créateur de Refresh : [docs/interop/DECISIONS.md](docs/interop/DECISIONS.md).
 - **Contextes serveur** (contrat, phase 4) : filtre `fsinterop.navigation.context` — quel module affiche quelle
   surface sur la page en cours (propriété selon le contexte, §11 ; RefreshGlobal en déduit ses surfaces dans le
   navigateur au lieu de les deviner d’après le HTML) ; filtre `fsinterop.conversation.context` — ce que chaque module
@@ -83,12 +83,14 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions :
 
 ### Compatibilité
 - Protocole **1.0.0** tel que validé par le créateur de Refresh : navigation, barre d’un ticket, glissements et contexte
-  de navigation. Le côté Refresh arrive avec Refresh 1.9.0 ; d’ici là, RefreshGlobal fonctionne en mode **legacy** avec
-  Refresh.
+  de navigation. **Refresh 1.9.0 implémente son côté : mode natif**, testé ensemble (navigation, origine du ticket,
+  barre d’un ticket, glissements, passage de main du tableau de bord, objectifs SLA). Avec Refresh 1.4 – 1.8 (sans
+  contrat) : mode **legacy**, même comportement qu’en 1.16.2. Plage Refresh testée étendue à `>=1.4.0 <1.10.0` (testé
+  1.9.0 ; tous les contrôles d’intégration passent).
 - Avec le Refresh actuel (1.4.x – 1.6.x, sans contrat) : mode **legacy**, même comportement qu’en 1.16.2.
 - Nouveau job CI **interop-contract** : `tools/validate-interop.php` (manifeste valide et cohérent avec le code,
   `module.json` et `Config/integration.php`, copie du pont identique à son fichier de verrouillage) et les tests du pont
-  lancés sur la copie du module (`interop-bridge/tests/fs-interop.test.js`).
+  lancés sur la copie du module (tests de `altmenorg/fs-interop` v1.0.0).
 
 ## [1.16.2] — 2026-10-20
 

@@ -2,16 +2,20 @@
 /*
  * Updates RefreshGlobal's copy of the shared FreeScout Interop bridge from a release of the bridge repository.
  *
- *   php tools/sync-bridge.php [path/to/fs-interop.js] [source label]
+ *   php tools/sync-bridge.php path/to/fs-interop.js "https://github.com/altmenorg/fs-interop/releases/tag/vX.Y.Z"
  *
- * Default source: interop-bridge/fs-interop.js (the staging folder, until the shared repository exists). The file is
+ * Source: fs-interop.js of a release of https://github.com/altmenorg/fs-interop (never an edited file). The file is
  * copied UNCHANGED to RefreshGlobal/Public/js/fs-interop.js and RefreshGlobal/Public/js/fs-interop.lock.json records
  * its bridge release, protocol, SHA-256 and source. tools/validate-interop.php (CI) refuses a copy that differs from
  * its lock file: a module's copy is never edited by hand.
  */
 $root = dirname(__DIR__);
-$source = $argv[1] ?? $root.'/interop-bridge/fs-interop.js';
-$label = $argv[2] ?? 'interop-bridge/ (staging, until the shared repository is created)';
+if (count($argv) < 3) {
+    fwrite(STDERR, "usage: php tools/sync-bridge.php path/to/fs-interop.js <release URL>\n");
+    exit(1);
+}
+$source = $argv[1];
+$label = $argv[2];
 
 $code = @file_get_contents($source);
 if ($code === false) {

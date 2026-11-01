@@ -12,7 +12,7 @@ return [
     // Version ranges that were tested (COMPATIBILITY.md). Outside them: warning only.
     'versions' => [
         'freescout' => ['min' => '1.8.0', 'max_exclusive' => '1.9.0', 'tested' => '1.8.245'],
-        'refresh'   => ['min' => '1.4.0', 'max_exclusive' => '1.7.0', 'tested' => '1.6.0'],
+        'refresh'   => ['min' => '1.4.0', 'max_exclusive' => '1.10.0', 'tested' => '1.9.0'],
     ],
 
     // Refresh module (third party). Only read, never modified.

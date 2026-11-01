@@ -113,10 +113,6 @@ if (!is_array($bridgeLock)) {
     if (($bridgeLock['protocol'] ?? '') !== $manifest->protocol()) {
         $problems[] = 'the bridge copy speaks protocol '.($bridgeLock['protocol'] ?? '?').' but interop.protocol is '.$manifest->protocol();
     }
-    // while the shared repository is staged here, the staged file and the module's copy are the same release
-    if (is_file($root.'/interop-bridge/fs-interop.js') && hash_file('sha256', $root.'/interop-bridge/fs-interop.js') !== ($bridgeLock['sha256'] ?? '')) {
-        $problems[] = 'interop-bridge/fs-interop.js and the module copy differ: run php tools/sync-bridge.php';
-    }
 }
 
 if ($problems) {

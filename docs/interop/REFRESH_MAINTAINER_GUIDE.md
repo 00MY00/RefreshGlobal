@@ -2,7 +2,7 @@
 
 RefreshGlobal 1.17.0 implements its side of the contract **as agreed on 2026-10-22** ([DECISIONS.md](DECISIONS.md)):
 protocol 1.0.0 = navigation, ticket toolbar, swipe and navigation context; bridge in its own repository; dashboard and
-SLA through public hooks; search later (UpdateGuard: only an idea for later, nothing in the contract). It waits for a testable Refresh 1.9.0 before being released.
+SLA through public hooks; search later (UpdateGuard: only an idea for later, nothing in the contract). Refresh 1.9.0 implements its side; both were tested together before RefreshGlobal 1.17.0 was released.
 Nothing here requires RefreshGlobal: every step keeps Refresh fully independent, and Refresh keeps working exactly as
 today if you do none of them.
 
@@ -16,7 +16,7 @@ Contract reference: [../INTEROPERABILITY.md](../INTEROPERABILITY.md). Design: [A
 
 ## 1. Ship the bridge (5 minutes)
 
-The bridge has its own repository (being created; its content is staged in RefreshGlobal's `interop-bridge/` folder).
+The bridge has its own repository: https://github.com/altmenorg/fs-interop (releases `vX.Y.Z`).
 Copy `fs-interop.js` of a **release tag** unchanged into Refresh (e.g. `Public/js/fs-interop.js`) and load it first in
 your `javascripts` filter; FreeScout installs modules one by one, so each module ships the file — never as a module to
 install. It is plain ES5, has no dependency and is idempotent: if RefreshGlobal's copy loaded first, yours keeps its

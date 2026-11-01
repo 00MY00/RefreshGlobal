@@ -8,7 +8,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) — versions: [
 Every published change gets a new version number: FreeScout's Manage › Modules page and UpdateGuard only offer an
 update when the version changes.
 
-## [1.17.0] — unreleased (waiting for the review of Refresh's maintainer)
+## [1.17.0] — 2026-11-01
 
 ### Added
 - **RefreshGlobal works fully without Refresh** (contract §2.1): the dashboard of all mailboxes, its quick views
@@ -30,10 +30,10 @@ update when the version changes.
   Refresh's maintainer): endpoint `GET /refresh-global/search?q=&limit=&mb[]=` (JSON, read-only, the user's rights,
   schema `search-results` 1.0), `RefreshGlobalInterop.search()` in the browser, server filters
   `fsinterop.search.providers` and `fsinterop.search.results` (declared with `"extension": true`).
-- **Shared bridge repository, prepared**: the content of the future repository of `fs-interop.js` is staged in
-  `interop-bridge/` (file, tests, CI, README, changelog); RefreshGlobal ships an unchanged copy of a bridge release
-  recorded in `Public/js/fs-interop.lock.json` (version, protocol, SHA-256), updated by `tools/sync-bridge.php` and
-  checked by the CI. Decisions with Refresh's maintainer: [docs/interop/DECISIONS.md](docs/interop/DECISIONS.md).
+- **Shared bridge**: `fs-interop.js` comes from its own repository, [altmenorg/fs-interop](https://github.com/altmenorg/fs-interop)
+  (release v1.0.0), also used by Refresh 1.9.0. RefreshGlobal ships an unchanged copy recorded in
+  `Public/js/fs-interop.lock.json` (version, protocol, SHA-256), updated by `tools/sync-bridge.php`; the CI refuses a
+  modified copy and runs the bridge's tests on it. Decisions with Refresh's maintainer: [docs/interop/DECISIONS.md](docs/interop/DECISIONS.md).
 - **Server contexts** (contract Phase 4): filter `fsinterop.navigation.context` — which module renders which surface
   on the current page (context-aware ownership, §11; RefreshGlobal registers its browser surfaces from it instead of
   guessing from the HTML); filter `fsinterop.conversation.context` — what each module knows about a ticket for a user
@@ -78,11 +78,13 @@ update when the version changes.
 
 ### Compatibility
 - Protocol **1.0.0** as validated by Refresh's maintainer: navigation, ticket toolbar, swipe and navigation context.
-  Refresh's side comes in Refresh 1.9.0; until then RefreshGlobal works in **legacy** mode with Refresh.
+  **Refresh 1.9.0 implements its side: mode native**, tested together (navigation, ticket origin, ticket toolbar,
+  swipe, dashboard handoff, SLA targets). With Refresh 1.4 – 1.8 (no contract): mode **legacy**, same behaviour as
+  1.16.2. Tested Refresh range extended to `>=1.4.0 <1.10.0` (tested 1.9.0; every integration check passes).
 - With today's Refresh (1.4.x – 1.6.x, no contract): mode **legacy**, same behaviour as 1.16.2.
 - New CI job **interop-contract**: `tools/validate-interop.php` (manifest valid and consistent with the code,
   `module.json` and `Config/integration.php`, bridge copy identical to its lock file) and the bridge's tests run on the
-  module's copy (`interop-bridge/tests/fs-interop.test.js`).
+  module's copy (tests of `altmenorg/fs-interop` v1.0.0).
 
 ## [1.16.2] — 2026-10-20
 

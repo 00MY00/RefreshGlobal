@@ -116,7 +116,7 @@ class InteropTest extends TestCase
         $this->assertSame(['native', 'COMPATIBLE', false], [$s['mode'], $s['compatibility'], $s['legacy_fallbacks']]);
 
         // native but a capability missing: that one is unavailable (version outside the tested legacy range), degraded
-        $s = $this->cooperation(['version' => '1.9.0'], $this->peer('1.0.0', array_diff_key($all, ['swipe-actions' => 1])));
+        $s = $this->cooperation(['version' => '1.10.0'], $this->peer('1.0.0', array_diff_key($all, ['swipe-actions' => 1])));
         $this->assertSame(['native', 'DEGRADED', 'unavailable'], [$s['mode'], $s['compatibility'], $s['capabilities']['swipe-actions']]);
 
         // an explicit conflict of the manifest: incompatible, integration off
@@ -128,7 +128,7 @@ class InteropTest extends TestCase
         $this->assertSame(['unavailable', 'DEGRADED'], [$s['mode'], $s['compatibility']]);
 
         // an untested version without contract: unknown (warning), DOM fallbacks still tried in the supported range
-        $s = $this->cooperation(['version' => '1.9.0']);
+        $s = $this->cooperation(['version' => '1.10.0']);
         $this->assertSame(['legacy', 'UNKNOWN'], [$s['mode'], $s['compatibility']]);
     }
 
@@ -183,17 +183,16 @@ class InteropTest extends TestCase
 
     public function testSlaTargetsHook()
     {
-        $this->assertNotSame('hook:refresh', Sla::source());
-        // a module (Refresh with the contract) declares its targets: they win over every other source
+        // a module declares its targets (late priority: after Refresh 1.9+, which answers too): they win over every other source
         \Eventy::addFilter('fsinterop.sla.targets', function ($targets) {
-            return ['schema' => '1.0', 'source_module' => 'refresh', 'first_response_hours' => 8, 'resolution_hours' => 40];
-        }, 20, 1);
-        $this->assertSame(['first_response_hours' => 8, 'resolution_hours' => 40, 'source' => 'hook:refresh'], Sla::targets());
+            return ['schema' => '1.0', 'source_module' => 'test-module', 'first_response_hours' => 8, 'resolution_hours' => 40];
+        }, 1000, 1);
+        $this->assertSame(['first_response_hours' => 8, 'resolution_hours' => 40, 'source' => 'hook:test-module'], Sla::targets());
         // invalid answers are ignored
         \Eventy::addFilter('fsinterop.sla.targets', function ($targets) {
             return ['first_response_hours' => 0, 'resolution_hours' => 'x'];
-        }, 30, 1);
-        $this->assertNotSame('hook:refresh', Sla::source());
+        }, 1001, 1);
+        $this->assertStringStartsNotWith('hook:', Sla::source());
     }
 
     public function testNavigationContext()
@@ -205,7 +204,9 @@ class InteropTest extends TestCase
         $this->assertSame('global-mailboxes', $ctx['context']);
         $this->assertSame('refresh-global', $ctx['owners']['saved-views@global-mailboxes']);
         $mailbox = NavigationContext::resolve(NavigationContext::base('mailboxes.view', ['id' => (string) $this->s['support']->id], $bob->id));
-        $this->assertSame(['mailbox', $this->s['support']->id, []], [$mailbox['context'], $mailbox['mailbox_id'], $mailbox['owners']]);
+        $this->assertSame(['mailbox', $this->s['support']->id], [$mailbox['context'], $mailbox['mailbox_id']]);
+        // on a mailbox page RefreshGlobal claims nothing (Refresh 1.9+ claims its own surfaces there)
+        $this->assertNotContains('refresh-global', $mailbox['owners']);
         $ticket = NavigationContext::base('conversations.view', ['id' => '42'], $bob->id);
         $this->assertSame(['conversation', 42], [$ticket['context'], $ticket['conversation_id']]);
 

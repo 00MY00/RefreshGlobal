@@ -45,8 +45,14 @@ jobs:
           node-version: '22'
       - name: interop.json
         run: php tools/validate-interop.php
+      # tests of the shared bridge (altmenorg/fs-interop, the release recorded in fs-interop.lock.json) on the module's copy
+      - uses: actions/checkout@v5
+        with:
+          repository: altmenorg/fs-interop
+          ref: v1.0.0
+          path: fs-interop
       - name: FreeScoutInterop bridge
-        run: FS_INTEROP_FILE=RefreshGlobal/Public/js/fs-interop.js node interop-bridge/tests/fs-interop.test.js
+        run: FS_INTEROP_FILE=RefreshGlobal/Public/js/fs-interop.js node fs-interop/tests/fs-interop.test.js
 
   module-tests:
     runs-on: ubuntu-24.04

@@ -76,6 +76,10 @@ class DashboardStandaloneTest extends TestCase
 
     public function testOverdueAndNewFollowTheSla()
     {
+        // Refresh is switched off in memory only, its listeners stay registered: silence its SLA answer, as without Refresh
+        \Eventy::addFilter('fsinterop.sla.targets', function () {
+            return null;
+        }, 1000, 1);
         $old = Fixtures::conversation($this->s['support'], 'sla old', ['created_at' => Carbon::now()->subHours(Sla::DEFAULT_RESOLUTION_HOURS + 2)]);
         $fresh = Fixtures::conversation($this->s['support'], 'sla fresh');
         $ids = function ($view) {

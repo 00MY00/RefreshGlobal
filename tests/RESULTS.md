@@ -560,3 +560,17 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
   `RefreshGlobal-main/RefreshGlobal/`), page 200 ensuite ; `install.sh --update` sans release installe la branche.
 - shellcheck : 0 remarque. Adresses réelles vérifiées : `raw.githubusercontent.com/…/main/RefreshGlobal/module.json`
   et `github.com/…/archive/refs/heads/main.zip` répondent 200.
+
+### 36 d. Avec Refresh 1.9.0 publié (2026-11-01) — sortie de la 1.17.0
+
+- Revue de sécurité de Refresh 1.9.0 (diff depuis 1.6.0, 30 fichiers) et de `altmenorg/fs-interop` v1.0.0 : aucune
+  exécution de commande, `eval`, code obscurci ni appel réseau externe ; nouvelles routes (`refresh.collision`,
+  `refresh.forward`) derrière `auth` + rôles et `ConversationPolicy::view` ; identifiants de la requête vérifiés.
+  `fs-interop.js` identique à notre copie (SHA-256 `ab1dd931…b0e7`), 12/12 tests.
+- `refreshglobal:check` avec Refresh 1.9.0 : tous les contrôles OK (plage testée étendue à `>=1.4.0 <1.10.0`).
+- PHPUnit : **172 tests, 2425 assertions, 0 échec** (2 ignorés) avec Refresh 1.9.0 (tests rendus indépendants des
+  réponses de Refresh aux hooks).
+- Navigateur, **mode natif réel** : 6 capacités natives ; tableau de bord ajouté par RefreshGlobal (placement `native`),
+  bloc de Refresh absent ; entrée « Toutes les boîtes » une seule fois dans la barre ; origine du ticket dans le fil
+  d’Ariane de Refresh ; bouton « Move » rendu par Refresh sur un ticket IMAP, qui ouvre la fenêtre de RefreshGlobal ;
+  téléphone sans défilement horizontal ; aucune erreur JavaScript.
