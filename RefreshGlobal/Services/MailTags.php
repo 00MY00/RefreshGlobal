@@ -397,7 +397,7 @@ class MailTags
      *
      * @return array ['tagged' => new tags, 'seen' => e-mails read, 'errors' => [...]]
      */
-    public static function recalc(callable $out = null, callable $clientFactory = null)
+    public static function recalc(?callable $out = null, ?callable $clientFactory = null)
     {
         $out = $out ?: function () {
         };

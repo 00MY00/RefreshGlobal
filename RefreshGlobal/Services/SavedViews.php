@@ -422,7 +422,7 @@ class SavedViews
      * Default view for this user: his own choice ("my default"), else a view an administrator set as default for
      * everyone (global) or for the users it is shared with. Null: the whole list.
      */
-    public static function defaultFor($user, array $visible = null)
+    public static function defaultFor($user, ?array $visible = null)
     {
         $visible = $visible === null ? self::visibleFor($user) : $visible;
         foreach ($visible as $v) {

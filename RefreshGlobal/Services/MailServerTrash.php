@@ -147,7 +147,7 @@ class MailServerTrash
      * Moves the pending e-mails (scheduled task). $client_factory (tests) returns an IMAP client for a mailbox.
      * Returns ['moved' => n, 'not_found' => n, 'failed' => n, 'skipped' => n].
      */
-    public static function process(callable $out = null, callable $client_factory = null)
+    public static function process(?callable $out = null, ?callable $client_factory = null)
     {
         $out = $out ?: function () {
         };

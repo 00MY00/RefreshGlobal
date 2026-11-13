@@ -27,7 +27,7 @@ class CompatibilityChecker
     /** @var \Nwidart\Modules\Module|null|false */
     protected $refresh = false;
 
-    public function __construct($user = null, array $integration = null)
+    public function __construct($user = null, ?array $integration = null)
     {
         $this->user = $user;
         $this->integration = $integration !== null ? $integration : (array) config('refreshglobal_integration', []);
@@ -244,7 +244,7 @@ class CompatibilityChecker
         return $report;
     }
 
-    public static function cacheKey(CompatibilityChecker $checker = null)
+    public static function cacheKey(?CompatibilityChecker $checker = null)
     {
         $checker = $checker ?: new self();
 

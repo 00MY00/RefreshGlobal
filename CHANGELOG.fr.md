@@ -5,6 +5,27 @@ sont tenus à jour ensemble à chaque version.
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.17.1] — 2026-11-13
+
+### Corrigé
+- **PHP 8.4 : la suppression définitive de tickets échouait** (par exemple avec le module Community CleanUp, ou
+  « Vider la corbeille ») : « `MailServerTrash::process(): Implicitly marking parameter $out as nullable is
+  deprecated` ». PHP 8.4 déprécie les paramètres typés dont la valeur par défaut est `null` sans `?`, et FreeScout
+  (Laravel 5.5) transforme cette dépréciation en erreur dès le chargement du fichier. Les 10 signatures concernées
+  utilisent maintenant un type nullable explicite (`?callable`, `?array`…) : `MailServerTrash::process()`,
+  `MailTags::recalc()`, `CompatibilityChecker::__construct()` / `cacheKey()`, `PeerStatus::evaluate()`,
+  `MailMove::move()`, `RemoteImages::modeFor()`, `SavedViews::defaultFor()`. Toujours compatible PHP 7.1.
+- **PHP 8.4 : export CSV** — `fputcsv()` reçoit maintenant son caractère d’échappement explicitement (PHP 8.4 déprécie
+  l’usage de sa valeur par défaut) ; le fichier exporté est identique.
+
+### Modifié
+- CI : le contrôle de syntaxe PHP (7.1, 8.2, 8.4) échoue maintenant aussi sur toute dépréciation, et couvre les tests
+  et les outils.
+
+### Compatibilité
+- Vérifié avec PHP 8.4.26 : suppression définitive de tickets comme le fait un module de nettoyage, et toutes les
+  commandes du module (`refreshglobal:check`, `health`, `mail-trash`, `mail-tags`, `trash`), sans aucune dépréciation ;
+  PHPCompatibility (PHP 7.1 – 8.4) ne trouve rien d’autre.
 ## [1.17.0] — 2026-11-01
 
 ### Ajouté

@@ -21,10 +21,13 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           tools: none
-      - name: php -l (module)
+      # a syntax error OR a deprecation fails the job: FreeScout (Laravel 5.5) turns deprecations into errors, e.g. the
+      # implicitly nullable parameters deprecated by PHP 8.4 broke the deletion of tickets in 1.17.0
+      - name: php -l (module, tests, tools)
         run: |
           set -e
-          find RefreshGlobal -name '*.php' -not -path '*/Tests/*' -print0 | xargs -0 -n1 php -l > /dev/null
+          out=$(find RefreshGlobal tools -name '*.php' -print0 | xargs -0 -n1 php -d error_reporting=E_ALL -d display_errors=stdout -l 2>&1)
+          if echo "$out" | grep -E "Deprecated|Parse error|Fatal error"; then exit 1; fi
       - name: shellcheck
         if: matrix.php == '8.2'
         run: |

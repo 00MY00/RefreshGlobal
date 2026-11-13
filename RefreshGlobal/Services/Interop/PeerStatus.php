@@ -35,7 +35,7 @@ class PeerStatus
      * @return array ['peer', 'installed', 'active', 'version', 'manifest', 'protocol', 'mode', 'compatibility',
      *                'capabilities', 'legacy_fallbacks', 'reasons']
      */
-    public static function evaluate(Manifest $own, $peer, array $facts, Manifest $peerManifest = null)
+    public static function evaluate(Manifest $own, $peer, array $facts, ?Manifest $peerManifest = null)
     {
         $consumes = $own->consumes($peer) ?: ['protocol' => '', 'capabilities' => []];
         $compat = $own->peerCompatibility($peer) ?: [];

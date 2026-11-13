@@ -66,7 +66,7 @@ class RemoteImages
     }
 
     /** Mode of a message with these origin tags. */
-    public static function modeFor(array $tags, array $rules = null, $default = null)
+    public static function modeFor(array $tags, ?array $rules = null, $default = null)
     {
         $rules = $rules === null ? self::rules() : $rules;
         $default = $default === null ? Settings::remoteImages() : self::normalizeMode($default);

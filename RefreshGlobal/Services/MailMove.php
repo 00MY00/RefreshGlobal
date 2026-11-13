@@ -126,7 +126,7 @@ class MailMove
      * @return array ['moved' => n, 'not_found' => n, 'previous' => [thread id => folder], 'target' => path, 'label' => label]
      * @throws \RuntimeException not an IMAP mailbox, unknown folder, server error
      */
-    public static function move(Conversation $conversation, $target, array $only = null)
+    public static function move(Conversation $conversation, $target, ?array $only = null)
     {
         $mailbox = $conversation->mailbox;
         if (!self::supported($mailbox)) {

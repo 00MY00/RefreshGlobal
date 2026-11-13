@@ -8,6 +8,26 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) — versions: [
 Every published change gets a new version number: FreeScout's Manage › Modules page and UpdateGuard only offer an
 update when the version changes.
 
+## [1.17.1] — 2026-11-13
+
+### Fixed
+- **PHP 8.4: deleting tickets for good failed** (for example with the Community CleanUp module, or “Empty the trash”):
+  “`MailServerTrash::process(): Implicitly marking parameter $out as nullable is deprecated`”. PHP 8.4 deprecates
+  typed parameters that default to `null` without `?`, and FreeScout (Laravel 5.5) turns that deprecation into an
+  error as soon as the file is loaded. The 10 signatures concerned now use an explicit nullable type (`?callable`,
+  `?array`…): `MailServerTrash::process()`, `MailTags::recalc()`, `CompatibilityChecker::__construct()` /
+  `cacheKey()`, `PeerStatus::evaluate()`, `MailMove::move()`, `RemoteImages::modeFor()`, `SavedViews::defaultFor()`.
+  Still compatible with PHP 7.1.
+- **PHP 8.4: CSV export** — `fputcsv()` now receives its escape character explicitly (PHP 8.4 deprecates relying on
+  its default); the exported file is unchanged.
+
+### Changed
+- CI: the PHP lint (7.1, 8.2, 8.4) now also fails on any deprecation, and covers the tests and tools.
+
+### Compatibility
+- Checked with PHP 8.4.26: deleting tickets for good the way a cleanup module does, and every command of the module
+  (`refreshglobal:check`, `health`, `mail-trash`, `mail-tags`, `trash`), without any deprecation;
+  PHPCompatibility (PHP 7.1 – 8.4) finds nothing else.
 ## [1.17.0] — 2026-11-01
 
 ### Added

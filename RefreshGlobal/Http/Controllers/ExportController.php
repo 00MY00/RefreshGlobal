@@ -16,6 +16,12 @@ class ExportController extends Controller
 {
     const CHUNK = 500;
 
+    /**
+     * Escape character of fputcsv(), given explicitly: PHP 8.4 deprecates relying on its default (which will change).
+     * Same value as the old default, so the file is unchanged ("" would be RFC 4180 but needs PHP 7.4).
+     */
+    const ESCAPE = '\\';
+
     public function export(Request $request)
     {
         return $this->safely(function () use ($request) {
@@ -46,7 +52,7 @@ class ExportController extends Controller
             return response()->stream(function () use ($query, $max, $delimiter, $tz) {
                 $out = fopen('php://output', 'w');
                 fwrite($out, "\xEF\xBB\xBF"); // UTF-8 BOM for Excel
-                fputcsv($out, self::header(), $delimiter);
+                fputcsv($out, self::header(), $delimiter, '"', self::ESCAPE);
                 $written = 0;
                 $page = 1;
                 try {
@@ -60,7 +66,7 @@ class ExportController extends Controller
                             if ($written >= $max) {
                                 break;
                             }
-                            fputcsv($out, self::row($conversation, $tz), $delimiter);
+                            fputcsv($out, self::row($conversation, $tz), $delimiter, '"', self::ESCAPE);
                             $written++;
                         }
                         if (count($rows) < self::CHUNK) {
@@ -71,7 +77,7 @@ class ExportController extends Controller
                 } catch (\Throwable $e) {
                     // headers are already sent: the error is written in the file and in the log
                     \Log::error('[RefreshGlobal] [RG-ERR-01] CSV export interrupted: '.$e->getMessage());
-                    fputcsv($out, ['[RG-ERR-01] '.__('refreshglobal::messages.export_interrupted')], $delimiter);
+                    fputcsv($out, ['[RG-ERR-01] '.__('refreshglobal::messages.export_interrupted')], $delimiter, '"', self::ESCAPE);
                 }
                 fclose($out);
             }, 200, [

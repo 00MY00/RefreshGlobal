@@ -574,3 +574,17 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
   bloc de Refresh absent ; entrée « Toutes les boîtes » une seule fois dans la barre ; origine du ticket dans le fil
   d’Ariane de Refresh ; bouton « Move » rendu par Refresh sur un ticket IMAP, qui ouvre la fenêtre de RefreshGlobal ;
   téléphone sans défilement horizontal ; aucune erreur JavaScript.
+
+## 37. PHP 8.4 : paramètres nullables implicites, export CSV (1.17.1, 2026-11-13)
+
+- Signalement : suppression définitive avec le module Community CleanUp en échec sous PHP 8.4
+  (`MailServerTrash::process()` … implicitly nullable). **Reproduit** avec l’ancien code dans un conteneur PHP 8.4.26
+  branché sur l’instance de test (suppression de 3 tickets par `Conversation::deleteConversationsForever()`), puis
+  **corrigé** : la même suppression passe ; commandes `refreshglobal:check`, `health`, `mail-trash`,
+  `mail-tags --requested`, `trash --scheduled` sans dépréciation sous PHP 8.4.
+- `php -l` sous PHP 8.4 sur tout le module : aucun « Deprecated » (11 avant) ; PHPCompatibility 7.1 – 8.4 : seul
+  `fputcsv()` sans `$escape` restait, corrigé. Nouveau contrôle CI vérifié : il refuse un fichier fautif, accepte le
+  module sous PHP 7.1 et 8.4.
+- PHPUnit sous PHP 8.2 : **172 tests, 0 échec** (2 ignorés). Sous PHP 8.4, les 106 tests HTTP s’arrêtent sur une
+  dépréciation de Laravel 5.5 lui-même (`TestResponse::assertJsonStructure()`, outil de test de FreeScout, jamais
+  chargé en production) ; les autres passent.

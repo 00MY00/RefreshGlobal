@@ -28,7 +28,7 @@ class InteropTest extends TestCase
             'interop' => ['protocol' => $protocol, 'provides' => ['capabilities' => $capabilities]]], sys_get_temp_dir());
     }
 
-    protected function cooperation(array $facts, Manifest $peer = null, array $override = [])
+    protected function cooperation(array $facts, ?Manifest $peer = null, array $override = [])
     {
         $data = Manifest::own()->data();
         foreach ($override as $path => $value) {
