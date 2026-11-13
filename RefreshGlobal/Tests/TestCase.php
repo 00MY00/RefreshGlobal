@@ -61,6 +61,21 @@ abstract class TestCase extends \Illuminate\Foundation\Testing\TestCase
         restore_exception_handler();
     }
 
+    /**
+     * Logs a user in for the next requests. FreeScout 1.8.250+ adds Laravel's AuthenticateSession middleware
+     * (app/Http/Kernel.php:38), which keeps the logged-in user's password hash in the session and logs out when another
+     * user shows up in the same session: when a test switches users, the previous user's hash is dropped first, as a
+     * real logout / login would do.
+     */
+    public function actingAs(\Illuminate\Contracts\Auth\Authenticatable $user, $driver = null)
+    {
+        if ($this->app->bound('session.store')) {
+            $this->app['session.store']->forget('password_hash');
+        }
+
+        return parent::actingAs($user, $driver);
+    }
+
     /** Changes one entry of the integration list (simulates a missing component). */
     protected function integration($key, $value)
     {

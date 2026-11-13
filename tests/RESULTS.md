@@ -588,3 +588,8 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
 - PHPUnit sous PHP 8.2 : **172 tests, 0 échec** (2 ignorés). Sous PHP 8.4, les 106 tests HTTP s’arrêtent sur une
   dépréciation de Laravel 5.5 lui-même (`TestResponse::assertJsonStructure()`, outil de test de FreeScout, jamais
   chargé en production) ; les autres passent.
+- CI de la 1.17.1 : FreeScout **1.8.250** (dernière version) active `AuthenticateSession` ; les tests qui changent
+  d’utilisateur dans une même session étaient déconnectés (artefact des tests, pas de la production). Reproduit sur
+  l’instance de test passée en 1.8.250, corrigé dans `Tests/TestCase.php` (`actingAs()`). Avec FreeScout 1.8.250 et
+  Refresh 1.9.4 : **172 tests, 0 échec** sous PHP 8.2 **et sous PHP 8.4** (FreeScout 1.8.250 corrige aussi
+  `TestResponse`) ; navigateur en mode natif sans erreur.

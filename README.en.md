@@ -103,7 +103,7 @@ view) and a sort of “All mailboxes”. It **never changes a ticket** and **nev
 
 | | Tested | Supported |
 |---|---|---|
-| FreeScout | 1.8.245 | 1.8.x (warning otherwise) |
+| FreeScout | 1.8.250 | 1.8.x (warning otherwise) |
 | Refresh (optional) | 1.6.0 | 1.4.0 to 1.6.x (warning otherwise); without Refresh: FreeScout's standard look |
 | PHP | 8.2 | 7.1+ (like FreeScout) |
 | Database | MariaDB 10.11 | FreeScout's (MySQL/MariaDB; PostgreSQL supported by the code but not tested) |

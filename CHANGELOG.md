@@ -8,7 +8,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) — versions: [
 Every published change gets a new version number: FreeScout's Manage › Modules page and UpdateGuard only offer an
 update when the version changes.
 
-## [1.17.1] — 2026-11-13
+## [1.17.2] — 2026-11-13
+
+1.17.1 was tagged but never released (its CI failed on the tests with FreeScout 1.8.250): update from 1.17.0
+directly to 1.17.2.
 
 ### Fixed
 - **PHP 8.4: deleting tickets for good failed** (for example with the Community CleanUp module, or “Empty the trash”):
@@ -23,11 +26,20 @@ update when the version changes.
 
 ### Changed
 - CI: the PHP lint (7.1, 8.2, 8.4) now also fails on any deprecation, and covers the tests and tools.
+- Tests: compatible with FreeScout 1.8.250, which enables Laravel's `AuthenticateSession` middleware (a test that
+  switches users now drops the previous user's password hash from the session, as a real logout / login does).
+  No change for users: each user has their own session.
 
 ### Compatibility
 - Checked with PHP 8.4.26: deleting tickets for good the way a cleanup module does, and every command of the module
   (`refreshglobal:check`, `health`, `mail-trash`, `mail-tags`, `trash`), without any deprecation;
   PHPCompatibility (PHP 7.1 – 8.4) finds nothing else.
+- Tested with FreeScout **1.8.250** and Refresh **1.9.4** (native mode): full test suite under PHP 8.2 and PHP 8.4.
+
+## [1.17.1] — 2026-11-13 (tag only, not released)
+
+Tagged but never released: its CI failed on the tests with FreeScout 1.8.250. Its content is released in 1.17.2.
+
 ## [1.17.0] — 2026-11-01
 
 ### Added

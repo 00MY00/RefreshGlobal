@@ -4,7 +4,7 @@
 
 | Composant | Version testée | Plage acceptée par `refreshglobal:check` | Hors plage |
 |---|---|---|---|
-| FreeScout | **1.8.245** (commit `f92cb04`, 2026-10-03) | `>= 1.8.0` et `< 1.9.0` | avertissement RG-ENV-01 |
+| FreeScout | **1.8.250** (tag `1.8.250`) ; 1.8.245 testé avec les versions précédentes | `>= 1.8.0` et `< 1.9.0` | avertissement RG-ENV-01 |
 | Refresh | **1.9.0** (tag `v1.9.0`, mode natif du contrat) ; 1.6.0 et 1.4.3 testés avec les versions précédentes | `>= 1.4.0` et `< 1.10.0` | avertissement RG-REF-02 |
 | Workflow Packs (facultatif) | **1.14.0** (release `v1.14.0`) | table `workflowpacks_ticket_folders` présente | sans elle : dossiers automatiques non affichés (RG-DB-09) |
 | Laravel (fourni par FreeScout) | 5.5.40 + surcharges FreeScout | — | — |

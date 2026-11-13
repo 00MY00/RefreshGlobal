@@ -128,7 +128,7 @@ assignation, ni dossier) et **ne donne jamais accès à une boîte**.
 
 | | Testé | Pris en charge |
 |---|---|---|
-| FreeScout | 1.8.245 | 1.8.x (avertissement en dehors) |
+| FreeScout | 1.8.250 | 1.8.x (avertissement en dehors) |
 | Refresh (facultatif) | 1.6.0 | 1.4.0 à 1.6.x (avertissement en dehors) ; sans Refresh : style FreeScout standard |
 | PHP | 8.2 | 7.1 et plus (comme FreeScout) |
 | Base de données | MariaDB 10.11, MySQL 8 (installation complète) | celles de FreeScout (MySQL/MariaDB, PostgreSQL) |

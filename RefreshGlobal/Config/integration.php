@@ -11,7 +11,7 @@
 return [
     // Version ranges that were tested (COMPATIBILITY.md). Outside them: warning only.
     'versions' => [
-        'freescout' => ['min' => '1.8.0', 'max_exclusive' => '1.9.0', 'tested' => '1.8.245'],
+        'freescout' => ['min' => '1.8.0', 'max_exclusive' => '1.9.0', 'tested' => '1.8.250'],
         'refresh'   => ['min' => '1.4.0', 'max_exclusive' => '1.10.0', 'tested' => '1.9.0'],
     ],
 

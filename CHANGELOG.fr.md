@@ -5,7 +5,10 @@ sont tenus à jour ensemble à chaque version.
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
-## [1.17.1] — 2026-11-13
+## [1.17.2] — 2026-11-13
+
+La 1.17.1 a été taguée mais jamais publiée (sa CI a échoué sur les tests avec FreeScout 1.8.250) : mettre à jour
+directement de la 1.17.0 vers la 1.17.2.
 
 ### Corrigé
 - **PHP 8.4 : la suppression définitive de tickets échouait** (par exemple avec le module Community CleanUp, ou
@@ -21,11 +24,20 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions :
 ### Modifié
 - CI : le contrôle de syntaxe PHP (7.1, 8.2, 8.4) échoue maintenant aussi sur toute dépréciation, et couvre les tests
   et les outils.
+- Tests : compatibles avec FreeScout 1.8.250, qui active le middleware `AuthenticateSession` de Laravel (un test qui
+  change d’utilisateur retire maintenant l’empreinte du mot de passe du précédent de la session, comme une vraie
+  déconnexion / connexion). Rien ne change pour les utilisateurs : chacun a sa propre session.
 
 ### Compatibilité
 - Vérifié avec PHP 8.4.26 : suppression définitive de tickets comme le fait un module de nettoyage, et toutes les
   commandes du module (`refreshglobal:check`, `health`, `mail-trash`, `mail-tags`, `trash`), sans aucune dépréciation ;
   PHPCompatibility (PHP 7.1 – 8.4) ne trouve rien d’autre.
+- Testé avec FreeScout **1.8.250** et Refresh **1.9.4** (mode natif) : suite de tests complète sous PHP 8.2 et PHP 8.4.
+
+## [1.17.1] — 2026-11-13 (tag seulement, non publiée)
+
+Taguée mais jamais publiée : sa CI a échoué sur les tests avec FreeScout 1.8.250. Son contenu est publié dans la 1.17.2.
+
 ## [1.17.0] — 2026-11-01
 
 ### Ajouté
