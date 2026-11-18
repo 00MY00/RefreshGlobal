@@ -51,7 +51,7 @@ Console: `RefreshGlobalInterop.status()`, `RefreshGlobalInterop.mode()`.
 |---|---|---|---|
 | `navigation` | places the `refreshglobal.all-mailboxes` navigation intent (rail, phone tab bar, drawer, `replaces`) | rail link order, phone tab, hides Refresh's “Tickets” if the setting says so | RG-HOOK-13, 14 |
 | `navigation-context` | shows the conversation origin (breadcrumb, back arrow, “← All mailboxes (N)” landmark) | rewrites the breadcrumb / back arrow, adds the landmark | RG-HOOK-25…27 |
-| `ticket-toolbar` | renders the toolbar intents (`refreshglobal.move-to-folder`, `refreshglobal.delete-forever`) desktop and phone | button next to “Close”, entries in the phone “Ticket actions” sheet | RG-HOOK-23, 40 |
+| `ticket-toolbar` | renders the toolbar intents (`refreshglobal.back-to-list`, `refreshglobal.move-to-folder`, `refreshglobal.delete-forever`) desktop and phone | “← All mailboxes” first in the toolbar, button next to “Close”, entries in the phone “Ticket actions” sheet; without Refresh, “← All mailboxes” in FreeScout's own toolbar | RG-HOOK-23, 40, 41 |
 | `swipe-actions` | offers the swipe intents (`refreshglobal.move-to-folder`, direction `left`) in its gesture handling | its own left-swipe handler on the cards | — |
 | `conversation-ui` | reserved (ticket page enhancements) | — | — |
 
@@ -129,6 +129,7 @@ dashboard was really rendered.
 | navigation | `refreshglobal.all-mailboxes` | label (translated), href, icon (SVG URL), placements `desktop-sidebar` / `mobile-drawer` / `mobile-bottom-bar`, `position.after: "tickets"`, `active`, `replaces` when the administrator chose to replace Refresh's “Tickets” (`navigation-entry` 1.0) |
 | toolbar | `refreshglobal.move-to-folder` | “Move to a folder”, icon `folder`, context `conversation`, `position.after: "close"`; handler opens RefreshGlobal's own dialog (`toolbar-action` 1.0) |
 | toolbar | `refreshglobal.delete-forever` | only on a ticket in the trash, context `conversation-deleted`; handler clicks FreeScout's own button (its confirmation and rights) |
+| toolbar | `refreshglobal.back-to-list` | “← All mailboxes” (label of the list), icon `arrow-left`, `position.before: "star"`, contexts `conversation` and `conversation-deleted`, extra field `href`: the list last shown in the tab with its filters, at the ticket; on every ticket page. When the tab came from that list (also after going on to other tickets: next ticket after closing / deleting, arrows), the conversation origin is given again for each ticket, so the breadcrumb and back arrow stay on the list |
 | swipe | `refreshglobal.move-to-folder` | direction `left`, context `ticket-list` (`swipe-action` 1.0) |
 
 Handlers receive a plain context: `{conversationId, mailboxId, userId, mobile}`.

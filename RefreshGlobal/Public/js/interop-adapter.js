@@ -305,4 +305,105 @@
             announceOpening(box ? box.value : null);
         }, true);
     }
+
+    /* ------------------------------------------------------------------ 7. way back to "All mailboxes" from a ticket */
+
+    /*
+     * The list of "All mailboxes" last shown in this browser tab is remembered (sessionStorage "rg-back", the same record
+     * Public/js/shell.js reads in legacy mode). On every ticket page:
+     *  - the ticket toolbar gets "← All mailboxes" (intent refreshglobal.back-to-list), back to that list at the ticket;
+     *  - when the tab came from that list — directly, or by going on to other tickets: next ticket after closing or
+     *    deleting one, previous / next arrows — the origin is given for THIS ticket too, so that the module rendering
+     *    the ticket page (Refresh) keeps its breadcrumb, back arrow and landmark on the list instead of losing them.
+     * Opening another list (a mailbox folder, a Refresh view, the dashboard) ends that "came from the list" state, as the
+     * legacy fallback always did; the toolbar button stays.
+     */
+    var BACK = 'rg-back';
+    var BACK_MAX_AGE = 12 * 3600 * 1000;
+
+    function readBack() {
+        try {
+            var b = JSON.parse(root.sessionStorage.getItem(BACK) || 'null');
+            return b && b.url && Date.now() - (b.at || 0) <= BACK_MAX_AGE ? b : null;
+        } catch (e) {
+            return null; // storage blocked (private mode): the default list is used
+        }
+    }
+
+    function writeBack(b) {
+        try {
+            root.sessionStorage.setItem(BACK, JSON.stringify(b));
+        } catch (e) {
+            // storage blocked: nothing remembered
+        }
+    }
+
+    /** The "All mailboxes" page: remember the list shown (its filters, saved view and label). */
+    function rememberList() {
+        var list = listState();
+        if (list && list.href) {
+            writeBack({ url: list.href.split('#')[0], label: list.label || cfg.navigation.label, count: list.count, fromList: true, at: Date.now() });
+        }
+    }
+
+    /** Another list of tickets (mailbox folder, Refresh view, dashboard): its tickets were not opened from ours. */
+    function leaveList() {
+        var b = readBack();
+        if (b && b.fromList !== false) {
+            b.fromList = false;
+            writeBack(b);
+        }
+    }
+
+    /** Where "← All mailboxes" leads from a ticket: the remembered list (or the whole list), at that ticket. */
+    function backTarget(conversationId) {
+        var b = readBack();
+        var url = b ? b.url : (cfg.navigation && cfg.navigation.href) || '';
+        return url ? { href: url + '#rg-back=' + conversationId, label: (b && b.label) || cfg.navigation.label, fromList: !!(b && b.fromList !== false), count: b ? b.count : '' } : null;
+    }
+
+    /** Native: the origin given for the ticket opened from the list is given again for this ticket (see above). */
+    function keepOrigin(conversationId, target) {
+        if (!target.fromList || FI.context.getConversationOrigin(conversationId)) {
+            return;
+        }
+        FI.context.setConversationOrigin({
+            schema: '1.0',
+            sourceModule: cfg.module.id,
+            conversationId: conversationId,
+            mailboxId: null,
+            origin: { id: 'refreshglobal.all-mailboxes', label: target.label, href: target.href, count: target.count === '' || target.count === undefined ? null : parseInt(target.count, 10) }
+        });
+    }
+
+    /** "← All mailboxes" in the ticket toolbar, first (the module rendering the toolbar places it; standalone: shell.js). */
+    function registerBackButton(target) {
+        FI.toolbar.register({
+            id: 'refreshglobal.back-to-list',
+            owner: cfg.module.id,
+            label: target.label,
+            icon: 'arrow-left',
+            contexts: ['conversation', 'conversation-deleted'],
+            position: { before: 'star' },
+            order: 0,
+            href: target.href,
+            handler: function () {
+                root.location.href = target.href;
+            }
+        });
+    }
+
+    var context = cfg.page && cfg.page.context;
+    var conversationId = cfg.page && cfg.page.conversation_id;
+    if (page === 'tickets') {
+        document.addEventListener('DOMContentLoaded', rememberList);
+    } else if (context === 'mailbox' || context === 'dashboard') {
+        leaveList();
+    } else if (context === 'conversation' && conversationId) {
+        var target = backTarget(conversationId);
+        if (target) {
+            keepOrigin(conversationId, target);
+            registerBackButton(target);
+        }
+    }
 })(window);

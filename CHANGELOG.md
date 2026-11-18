@@ -8,6 +8,30 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) — versions: [
 Every published change gets a new version number: FreeScout's Manage › Modules page and UpdateGuard only offer an
 update when the version changes.
 
+## [1.18.0] — 2026-11-18
+
+### Added
+- **“← All mailboxes” button on every ticket page**, first in the ticket toolbar, on desktop, tablet and phone: back to
+  the “All mailboxes” list last shown in the browser tab, **with its filters and saved view**, at the ticket.
+  - With Refresh 1.9+ it is a toolbar intent of the FreeScout Interop contract (`refreshglobal.back-to-list`), rendered
+    by Refresh (desktop toolbar, phone “Ticket actions” sheet; on a phone Refresh's back arrow leads there too).
+  - With an older Refresh, or without Refresh (FreeScout's own ticket page), RefreshGlobal draws the button itself.
+
+### Fixed
+- **The way back to “All mailboxes” was lost after moving on to another ticket**: closing or deleting a ticket with
+  FreeScout's “Next active conversation” setting, or the previous / next arrows, opened a ticket whose breadcrumb,
+  phone back arrow and landmark led to the mailbox again — the browser's back button then went through every ticket.
+  The origin is now kept for every ticket reached from the list in the same tab (until another list is opened).
+- **Dashboard of all mailboxes, “Today's trends”**: with an `APP_TIMEZONE` other than UTC (e.g. Europe/Zurich), the
+  days were shifted by the time zone offset (dates are stored in the application time zone, the bounds were converted
+  to UTC): tickets created or closed late in the evening counted on the wrong day.
+
+### Compatibility
+- Interop contract: one more toolbar intent, `refreshglobal.back-to-list` (protocol unchanged, 1.0.0).
+- Tested with FreeScout 1.8.250 and Refresh 1.9.4 (native), Refresh 1.6.0 (legacy) and without Refresh, desktop /
+  tablet / phone: open a ticket from a filtered list, go on to other tickets, come back with the button or the back
+  arrow — always to the same list, never blocked.
+
 ## [1.17.2] — 2026-11-13
 
 1.17.1 was tagged but never released (its CI failed on the tests with FreeScout 1.8.250): update from 1.17.0

@@ -5,6 +5,35 @@ sont tenus à jour ensemble à chaque version.
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.18.0] — 2026-11-18
+
+### Ajouté
+- **Bouton « ← Toutes les boîtes » sur chaque page de ticket**, en tête de la barre du ticket, sur ordinateur, tablette
+  et téléphone : retour à la liste « Toutes les boîtes » affichée en dernier dans l’onglet, **avec ses filtres et sa vue
+  enregistrée**, à la hauteur du ticket.
+  - Avec Refresh 1.9+, c’est une action de barre d’outils du contrat FreeScout Interop (`refreshglobal.back-to-list`),
+    affichée par Refresh (barre du ticket sur ordinateur, feuille « Actions du ticket » sur téléphone ; sur téléphone,
+    la flèche retour de Refresh y mène aussi).
+  - Avec un Refresh plus ancien, ou sans Refresh (page de ticket de FreeScout), RefreshGlobal affiche le bouton lui-même.
+
+### Corrigé
+- **Le retour à « Toutes les boîtes » était perdu après être passé à un autre ticket** : fermer ou supprimer un ticket
+  avec le réglage FreeScout « Conversation active suivante », ou les flèches précédent / suivant, ouvrait un ticket dont
+  le fil d’Ariane, la flèche retour du téléphone et le repère menaient de nouveau à la boîte — le bouton retour du
+  navigateur repassait alors par chaque ticket. L’origine est maintenant gardée pour chaque ticket atteint depuis la
+  liste dans le même onglet (jusqu’à l’ouverture d’une autre liste).
+- **Tableau de bord de toutes les boîtes, « Tendances du jour »** : avec un `APP_TIMEZONE` autre qu’UTC (par exemple
+  Europe/Zurich), les journées étaient décalées du fuseau horaire (les dates sont enregistrées dans le fuseau de
+  l’application, les bornes étaient converties en UTC) : les tickets créés ou fermés tard le soir comptaient le mauvais
+  jour.
+
+### Compatibilité
+- Contrat d’interopérabilité : une action de barre d’outils de plus, `refreshglobal.back-to-list` (protocole inchangé,
+  1.0.0).
+- Testé avec FreeScout 1.8.250 et Refresh 1.9.4 (natif), Refresh 1.6.0 (legacy) et sans Refresh, sur ordinateur /
+  tablette / téléphone : ouvrir un ticket depuis une liste filtrée, passer à d’autres tickets, revenir avec le bouton ou
+  la flèche retour — toujours vers la même liste, jamais bloqué.
+
 ## [1.17.2] — 2026-11-13
 
 La 1.17.1 a été taguée mais jamais publiée (sa CI a échoué sur les tests avec FreeScout 1.8.250) : mettre à jour

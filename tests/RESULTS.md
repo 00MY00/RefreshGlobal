@@ -593,3 +593,19 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
   l’instance de test passée en 1.8.250, corrigé dans `Tests/TestCase.php` (`actingAs()`). Avec FreeScout 1.8.250 et
   Refresh 1.9.4 : **172 tests, 0 échec** sous PHP 8.2 **et sous PHP 8.4** (FreeScout 1.8.250 corrige aussi
   `TestResponse`) ; navigateur en mode natif sans erreur.
+
+## 38. Retour à « Toutes les boîtes » depuis un ticket, journées du tableau de bord (1.18.0, 2026-11-18)
+
+- **Reproduit** (FreeScout 1.8.250, Refresh 1.9.4 natif, 224 tickets ouverts) : ticket ouvert depuis une liste filtrée,
+  puis ticket suivant (flèche, ou ticket suivant après fermeture / suppression) → fil d’Ariane « All tickets » de la boîte,
+  plus de chemin vers la liste.
+- **Corrigé**, scénario navigateur (base sauvegardée puis restaurée) en mode **natif** (Refresh 1.9.4), **legacy**
+  (Refresh 1.6.0) et **sans Refresh**, sur ordinateur 1440 px, tablette 900 px et téléphone 390 px : bouton
+  « ← All mailboxes » présent (en tête de la barre ; sur téléphone avec Refresh : flèche retour), toujours présent sur le
+  ticket suivant / un autre ticket, fil d’Ariane et flèche retour toujours vers la liste ; le bouton ramène à la liste
+  **avec ses filtres** ; aucune erreur JavaScript. 3 × 3 combinaisons : RESULT all OK.
+- Tableau de bord : avec `APP_TIMEZONE=Europe/Zurich`, les bornes de la journée étaient converties en UTC (dates
+  enregistrées dans le fuseau de l’application, vérifié par un ticket témoin). Test ajouté avec Pacific/Auckland :
+  **échoue avec l’ancien code**, passe avec la correction.
+- PHPUnit : **174 tests, 0 échec** (2 ignorés) ; `php -l` PHP 7.1 et 8.4 sans erreur ni dépréciation ;
+  `tools/validate-interop.php` OK.

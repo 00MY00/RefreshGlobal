@@ -402,6 +402,39 @@
         }
     }
     /*
+     * "← All mailboxes" on a ticket page when no module renders the ticket toolbar intents (Refresh absent, or a Refresh
+     * without the contract — legacy): the intent refreshglobal.back-to-list declared by Public/js/interop-adapter.js
+     * (the list last shown in "All mailboxes", at this ticket) is drawn here, first in the toolbar:
+     *  - Refresh without the contract: its toolbar, the parent of .rf-tb-close (RefreshServiceProvider.php:1476);
+     *  - FreeScout alone: its own toolbar #conv-toolbar .conv-actions (resources/views/conversations/view.blade.php:29).
+     * With a Refresh that cooperates natively, Refresh renders the intent itself (desktop toolbar, phone sheet).
+     */
+    $(function () {
+        var FI = window.FreeScoutInterop;
+        var intent = FI && FI.toolbar ? FI.toolbar.get('refreshglobal.back-to-list') : null;
+        if (!intent || !intent.href || !legacy('ticket-toolbar')) {
+            return;
+        }
+        var tries = 0;
+        var place = function () {
+            if ($('.rg-back-button').length) {
+                return;
+            }
+            var link = $('<a class="rg-back-button"></a>').attr({ href: intent.href, title: intent.label, 'aria-label': intent.label })
+                .append('<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>', $('<span class="rg-back-label"></span>').text(intent.label));
+            var close = $('.rf-tb-close').first();
+            if (close.length) {
+                link.addClass('rf-btn').prependTo(close.parent());
+            } else if ($('#conv-toolbar .conv-actions').length && !$('body').hasClass('rf-conv')) {
+                link.addClass('btn btn-default btn-sm').prependTo($('#conv-toolbar .conv-actions').first());
+            } else if (++tries < 30) {
+                // Refresh builds its toolbar on the same "ready" event, maybe a little later
+                setTimeout(place, 100);
+            }
+        };
+        place();
+    });
+    /*
      * "Send an e-mail" / "New ticket" (FreeScout's create form, rebuilt by Refresh's new.js): the address to send from,
      * among ALL the addresses allowed to the user (<meta name="refreshglobal-from">, Services/SendFrom.php): the address
      * of each of his mailboxes and, for an e-mail, the aliases of these mailboxes.

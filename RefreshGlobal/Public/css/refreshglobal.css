@@ -354,3 +354,9 @@
     .rg-move-search { font-size: 16px; height: 40px; }
     .rg-toast { bottom: 84px; }
 }
+
+/* "← All mailboxes" on a ticket page, drawn by the module when no other module renders the toolbar intents
+   (Public/js/shell.js; with Refresh 1.9+ Refresh renders it itself) */
+.rg-back-button { display: inline-flex; align-items: center; gap: 6px; max-width: 220px; white-space: nowrap; }
+.rg-back-button .rg-back-label { overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 767px) { .rg-back-button { max-width: 160px; } }

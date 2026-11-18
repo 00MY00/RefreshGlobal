@@ -103,7 +103,9 @@ FreeScoutInterop.toolbar.list(function (a) {
 ```
 
 RefreshGlobal registers `refreshglobal.move-to-folder` (opens its own dialog) and, on a ticket in the trash,
-`refreshglobal.delete-forever` (clicks FreeScout's own button — your sheet had no deletion in that case).
+`refreshglobal.delete-forever` (clicks FreeScout's own button — your sheet had no deletion in that case). Since
+RefreshGlobal 1.18.0 it also registers `refreshglobal.back-to-list` (“← All mailboxes”, `position.before: "star"`, on
+every ticket page), and gives the conversation origin again for each ticket reached from its list in the same tab.
 
 ## 7. `swipe-actions` — offer swipe actions
 

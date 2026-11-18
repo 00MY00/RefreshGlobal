@@ -120,6 +120,36 @@ class DashboardStandaloneTest extends TestCase
         $this->assertSame(100, $summary['stats']['sla'][0]);
     }
 
+    /**
+     * "Today" follows the time zone FreeScout stores its dates in (APP_TIMEZONE), whatever it is: a ticket created just
+     * after midnight counts today, one created just before midnight counts yesterday (until 1.17.2 the bounds were
+     * converted to UTC, shifting the day by the offset).
+     */
+    public function testDaysFollowTheApplicationTimeZone()
+    {
+        $previous = config('app.timezone');
+        config(['app.timezone' => 'Pacific/Auckland']); // +12/+13: any UTC conversion would be visible
+        date_default_timezone_set('Pacific/Auckland');
+        try {
+            $mailbox = Fixtures::mailbox($this->s['prefix'].' TZ');
+            $today = Carbon::now('Pacific/Auckland')->startOfDay();
+            $afterMidnight = Fixtures::conversation($mailbox, 'tz after midnight', ['created_at' => $today->copy()->addMinutes(10)->toDateTimeString()]);
+            $beforeMidnight = Fixtures::conversation($mailbox, 'tz before midnight', ['created_at' => $today->copy()->subMinutes(10)->toDateTimeString()]);
+            $stats = new \Modules\RefreshGlobal\Services\Dashboard\Statistics(function () use ($mailbox) {
+                return \App\Conversation::where('mailbox_id', $mailbox->id);
+            });
+            $this->assertSame(1, $stats->received($today), 'the ticket created at 00:10 counts today');
+            $this->assertSame(1, $stats->received($today->copy()->subDay()), 'the ticket created at 23:50 counts yesterday');
+            $hours = $stats->createdPerHour($today);
+            $this->assertSame(1, $hours[0], 'created during hour 0 of today');
+            $this->assertNotNull($afterMidnight->id);
+            $this->assertNotNull($beforeMidnight->id);
+        } finally {
+            config(['app.timezone' => $previous]);
+            date_default_timezone_set($previous);
+        }
+    }
+
     public function testChartAndFormats()
     {
         $svg = Chart::hourly(array_fill(0, 24, 2), array_fill(0, 24, 1), 5);

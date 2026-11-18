@@ -22,10 +22,17 @@ class Statistics
     /** @var string time zone of the days and hours */
     protected $tz;
 
+    /**
+     * @var string time zone the dates are STORED in: FreeScout's application time zone (config app.timezone, APP_TIMEZONE),
+     * which Eloquent uses for created_at / closed_at — not necessarily UTC
+     */
+    protected $storageTz;
+
     public function __construct(callable $base, $tz = null)
     {
         $this->base = $base;
-        $this->tz = $tz ?: config('app.timezone');
+        $this->storageTz = config('app.timezone') ?: date_default_timezone_get();
+        $this->tz = $tz ?: $this->storageTz;
     }
 
     /**
@@ -57,7 +64,7 @@ class Statistics
     {
         $hours = array_fill(0, 24, 0);
         foreach ($this->query()->whereBetween('created_at', $this->range($day))->pluck('created_at') as $created) {
-            $hours[(int) Carbon::parse($created)->setTimezone($this->tz)->format('G')]++;
+            $hours[(int) Carbon::parse($created, $this->storageTz)->setTimezone($this->tz)->format('G')]++;
         }
 
         return $hours;
@@ -134,10 +141,14 @@ class Statistics
         return call_user_func($this->base);
     }
 
-    /** [start, end] of a local day, in UTC (dates are stored in UTC). */
+    /**
+     * [start, end] of a day, in the time zone the dates are stored in (compared as plain date-times by the database).
+     * Until 1.17.2 the bounds were converted to UTC: with an APP_TIMEZONE other than UTC, "today" was shifted by the
+     * time zone offset (tickets created late in the evening counted on the wrong day).
+     */
     protected function range(Carbon $day)
     {
-        return [$day->copy()->setTimezone('UTC'), $day->copy()->endOfDay()->setTimezone('UTC')];
+        return [$day->copy()->setTimezone($this->storageTz), $day->copy()->endOfDay()->setTimezone($this->storageTz)];
     }
 
     /** Due date of a closed ticket (see resolvedWithinSlaPercent()). */

@@ -52,7 +52,7 @@ class InteropTest extends TestCase
         $this->assertSame('1.0.0', $manifest->protocol());
         // single source of truth: what the module declares is what it gives the browser
         $this->assertArrayHasKey('global-ticket-list', $manifest->capabilities());
-        $this->assertSame(['refreshglobal.move-to-folder', 'refreshglobal.delete-forever'], $manifest->registrations('toolbar'));
+        $this->assertSame(['refreshglobal.move-to-folder', 'refreshglobal.delete-forever', 'refreshglobal.back-to-list'], $manifest->registrations('toolbar'));
     }
 
     public function testValidationFindsProblems()
@@ -256,6 +256,24 @@ class InteropTest extends TestCase
         $ctx = ConversationContext::resolve($ticket, $this->s['bob']);
         $this->assertSame(['x' => 1], $ctx['modules']['other-module']);
         $this->assertSame($this->s['support']->id, $ctx['mailbox_id']);
+    }
+
+    /**
+     * A ticket page gives the browser what "← All mailboxes" needs (Public/js/interop-adapter.js, section 7): the page
+     * context "conversation" with the ticket's id, the default list, and the toolbar intent declared in the manifest.
+     */
+    public function testTicketPageGivesTheWayBackToTheList()
+    {
+        $ticket = $this->s['t_support_open'];
+        $r = $this->followingRedirects()->actingAs($this->s['bob'])->get(route('conversations.view', ['id' => $ticket->id]));
+        $r->assertStatus(200);
+        preg_match('/<meta name="refreshglobal-interop" content="([^"]+)"/', $r->getContent(), $m);
+        $cfg = json_decode(html_entity_decode($m[1] ?? '', ENT_QUOTES), true);
+        $this->assertSame('conversation', $cfg['page']['context']);
+        $this->assertSame($ticket->id, $cfg['page']['conversation_id']);
+        $this->assertSame(route('refreshglobal.tickets'), $cfg['navigation']['href']);
+        $this->assertContains('refreshglobal.back-to-list', Manifest::own()->registrations('toolbar'));
+        $this->assertStringContainsString("id: 'refreshglobal.back-to-list'", (string) file_get_contents(dirname(__DIR__, 2).'/Public/js/interop-adapter.js'));
     }
 
     public function testPagesGiveTheContractToTheBrowser()
