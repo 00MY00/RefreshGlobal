@@ -59,8 +59,9 @@ class DeleteTest extends TestCase
     public function testNextTicketOfTheList()
     {
         Settings::setDeleteGoesNext(true);
-        // support, oldest first: OPEN, PENDING, CLOSED (same dates: by id)
-        $this->ticketsPage($this->s['admin'], ['mb' => [$this->s['support']->id], 'sort' => 'created', 'order' => 'asc'])->assertStatus(200);
+        // support, oldest first: OPEN, PENDING, CLOSED (same dates: by id); closed tickets asked for (1.22.0: the page
+        // opens on open and pending ones)
+        $this->ticketsPage($this->s['admin'], ['mb' => [$this->s['support']->id], 'status' => [1, 2, 3], 'sort' => 'created', 'order' => 'asc'])->assertStatus(200);
         $r = $this->deleteTicket($this->s['t_support_open']);
         $this->assertSame(route('conversations.view', ['id' => $this->s['t_support_pending']->id]), $r->json()['redirect_url']);
 

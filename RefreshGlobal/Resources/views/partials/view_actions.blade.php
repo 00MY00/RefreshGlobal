@@ -1,5 +1,6 @@
 {{--
-    Saved views: save the filters shown (private, shared with users, for everyone), and the open view's actions (pin,
+    Saved views: "+ New view" (dialog partials/new_view_dialog: the filters shown, private, shared with users, for
+    everyone), and the open view's actions (pin,
     my default, duplicate, export, rename, share, delete) according to the user's rights (Services/SavedViews.php).
     Plain forms + CSRF token: everything works without a script; stacked fields for phones.
 --}}
@@ -11,20 +12,8 @@
     @if (!$saved_views_ok)
         <p class="rg-muted">[RG-DB-05] {{ __('refreshglobal::messages.views_unavailable') }}</p>
     @else
-        <details class="rg-details" id="rg-save-view">
-            <summary>{{ __('refreshglobal::messages.save_view') }}</summary>
-            <form method="post" action="{{ route('refreshglobal.views.store') }}" class="rg-form rg-view-form">
-                {{ csrf_field() }}
-                @include('refreshglobal::partials.view_filter_fields')
-                <label class="rg-label" for="rg-view-name">{{ __('refreshglobal::messages.view_name') }}</label>
-                <input type="text" id="rg-view-name" name="name" maxlength="100" required class="form-control input-sm"
-                    @if ($active_view && !empty($rg_view['modified'])) value="{{ __('refreshglobal::messages.view_copy_name', ['name' => $active_view->name]) }}" @endif>
-                @include('refreshglobal::partials.view_sharing_fields', ['rg_f' => 'rg-sv-new', 'rg_vis' => 'private', 'rg_users' => [], 'rg_editors' => [],
-                    'rg_dup' => true, 'rg_scope' => '', 'rg_can_global' => \Modules\RefreshGlobal\Services\SavedViews::canPublishGlobal(auth()->user()), 'rg_shareable' => $rg_shareable])
-                <label class="rg-check"><input type="checkbox" name="is_default" value="1"> {{ __('refreshglobal::messages.make_default') }}</label>
-                <button type="submit" class="btn btn-primary btn-sm">{{ __('refreshglobal::messages.save') }}</button>
-            </form>
-        </details>
+        {{-- 1.22.0: creating a view is the dialog partials/new_view_dialog ("+ New view" of "My views", here too) --}}
+        <button type="button" class="btn btn-default btn-sm rg-new-view-open rg-new-view-btn"><i class="glyphicon glyphicon-plus"></i> {{ __('refreshglobal::messages.new_view') }}</button>
         @if ($active_view && $rg_view)
             <details class="rg-details" id="rg-manage-view">
                 <summary>{{ __('refreshglobal::messages.manage_view', ['name' => $active_view->name]) }}</summary>

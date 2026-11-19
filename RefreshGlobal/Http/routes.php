@@ -43,6 +43,7 @@ Route::group([
     Route::get('/views', $users + ['uses' => 'SavedViewsController@index'])->name('refreshglobal.views');
     Route::post('/views', $users + ['uses' => 'SavedViewsController@store'])->name('refreshglobal.views.store');
     Route::post('/views/import', $users + ['uses' => 'SavedViewsController@import'])->name('refreshglobal.views.import');
+    Route::post('/views/order', $users + ['uses' => 'SavedViewsController@order'])->name('refreshglobal.views.order');
     Route::post('/views/{id}/update', $users + ['uses' => 'SavedViewsController@update'])->where('id', '[0-9]+')->name('refreshglobal.views.update');
     Route::post('/views/{id}/rename', $users + ['uses' => 'SavedViewsController@rename'])->where('id', '[0-9]+')->name('refreshglobal.views.rename');
     Route::post('/views/{id}/share', $users + ['uses' => 'SavedViewsController@share'])->where('id', '[0-9]+')->name('refreshglobal.views.share');

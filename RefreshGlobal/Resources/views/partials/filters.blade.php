@@ -64,7 +64,7 @@
         </div>
         <div class="@if ($rg_is_refresh) rf-f @else form-group rg-f @endif">
             <label for="rg-status">{{ __('refreshglobal::messages.status') }}</label>
-            <select id="rg-status" name="status[]" multiple class="@if ($rg_is_refresh) rf-multi @else form-control @endif rg-multi" data-placeholder="{{ __('refreshglobal::messages.any_status_but_spam') }}">
+            <select id="rg-status" name="status[]" multiple class="@if ($rg_is_refresh) rf-multi @else form-control @endif rg-multi" data-placeholder="{{ $active_view ? __('refreshglobal::messages.any_status_but_spam') : __('refreshglobal::messages.status_default') }}">
                 @foreach ($rg_statuses as $code => $label)
                     <option value="{{ $code }}" {{ $rg_sel($filters['status'], $code) }}>{{ $label }}@if (isset($counts_by_status[$code])) ({{ $counts_by_status[$code] }})@endif</option>
                 @endforeach

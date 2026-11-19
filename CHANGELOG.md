@@ -8,6 +8,33 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) — versions: [
 Every published change gets a new version number: FreeScout's Manage › Modules page and UpdateGuard only offer an
 update when the version changes.
 
+## [1.22.0] — 2026-11-19
+
+### Added
+- **“+ New view”**, easy to find: at the end of *My views* in the views panel (phone: in the views drawer), “Save as a
+  view” next to the active filters, “Save as new” of an open view and “+ New view” on the *Saved views* page all open
+  one dialog. It says what a view is, lists the filters the view will keep (with “Change the filters first”), and
+  asks only for a name; sharing is optional and folded (private by default). Escape, × or a click outside close it.
+- **Reorder “My views” by drag and drop**: “Reorder” (from two views of one's own) turns *My views* into an ordered
+  list: drag the ⠿ handle with the mouse, a pen or a finger (the list scrolls near its edges), or use the ↑ ↓ arrows
+  or the arrow keys. Each change is saved at once (new route `POST /refresh-global/views/order`,
+  `refreshglobal.views.order`: only the user's own views are taken, any other id is ignored); “Done” puts the panel
+  back in the new order. Handles and arrows are 44 px on phones.
+
+### Changed
+- **“All mailboxes” opens on open and pending tickets**: closed tickets are no longer shown by default. They appear
+  when “Closed” is chosen (status filter, *Statuses* section, a saved view, a quick view of the dashboard such as
+  “Closed today” / “Closed”). The default statuses are not counted as a filter, not shown as a chip and not written in
+  the links. The export, the automatic refresh, the way back from a ticket and “next ticket” follow the same list.
+- Saved views keep what they were saved with: a view saved without a status still shows every status but spam; a
+  view saved from the list as it now opens keeps “Open, Pending” explicitly.
+- The “Save these filters as a view” form at the bottom of the views panel is replaced by the dialog.
+
+### Compatibility
+- Behaviour change: anyone who relied on “All mailboxes” showing closed tickets can save a view with the statuses
+  Open, Pending and Closed and make it their default view.
+- No migration. The FreeScout Interop contract is unchanged (the new route is internal to the module's page).
+
 ## [1.21.1] — 2026-11-19
 
 ### Fixed

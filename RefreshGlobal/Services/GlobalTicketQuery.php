@@ -10,7 +10,8 @@ use App\Conversation;
  *
  * Filters (already cleaned by normalize()):
  *   mailboxes int[]   empty = every allowed mailbox
- *   status    int[]   empty = every status except spam (like FreeScout's folders and Refresh's "All tickets")
+ *   status    int[]   empty = every status except spam (like FreeScout's folders and Refresh's "All tickets"); the
+ *                     page itself opens on listDefaultStatuses() (1.22.0: no closed tickets unless asked for)
  *   assignee  string  '' any | 'me' | 'none' | user id
  *   q         string  subject, customer name, customer e-mail, ticket number
  *   rview     string  '' | a quick view of the dashboard (GlobalDashboard::VIEWS, Dashboard\TicketViews) (URL parameter rv)
@@ -130,6 +131,24 @@ class GlobalTicketQuery
         $f['order'] = $order === 'asc' ? 'asc' : 'desc';
 
         return $f;
+    }
+
+    /**
+     * Statuses of the "All mailboxes" page when none is asked for (1.22.0): open and pending, closed tickets only when
+     * the user picks "Closed" (status filter, "Statuses" of the views panel, a saved view, a quick view of the dashboard).
+     */
+    public static function listDefaultStatuses()
+    {
+        return [Conversation::STATUS_ACTIVE, Conversation::STATUS_PENDING];
+    }
+
+    /** The list as it opens: default statuses and no quick view (the status is then not counted as a filter). */
+    public static function isListDefault(array $f)
+    {
+        $status = array_map('intval', (array) ($f['status'] ?? []));
+        sort($status);
+
+        return $status === self::listDefaultStatuses() && ($f['rview'] ?? '') === '';
     }
 
     /** Filters as URL parameters (shareable link, saved view). */

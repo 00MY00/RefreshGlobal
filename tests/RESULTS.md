@@ -657,3 +657,26 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
   (FreeScout plus ancien que la 1.8.250 de l'instance de test). « Nouveau dossier » passe par `MailMove::utf7()` :
   l'outil de FreeScout s'il existe, sinon `mb_convert_encoding()` de PHP (même résultat, vérifié par
   `MailMoveTest::testCreateFolder`) ; contrôle RG-CORE-27 retiré.
+
+## 43. Vues : « + Nouvelle vue », réorganiser par glisser-déposer, liste sans fermés par défaut (1.22.0, 2026-11-19)
+
+- PHPUnit : `ViewsUxTest` (3 tests : liste sans fermés, « + Nouvelle vue », réorganiser) ; tests adaptés au nouveau
+  comportement voulu : `DeleteTest::testNextTicketOfTheList` (liste avec les fermés demandés),
+  `AutoFoldersTest::testFolderBannerAndBackWithoutTheFolder` (compte de la liste de retour sans fermés) ; suite
+  complète **193 tests, 0 échec** (2 ignorés) ; `php -l` PHP 7.1 et 8.4 ; `validate-interop` OK (contrat inchangé).
+- **Utilisation simulée dans le navigateur** (instance de test, avec Refresh : ordinateur 1440 et téléphone 390 ;
+  sans Refresh : ordinateur 1280) :
+  - liste à l'ouverture = ouverts + en attente (14, comme `status=1,2` ; 46 avec les fermés), aucune puce de filtre ;
+  - « + Nouvelle vue » visible à la fin de *Mes vues* (tiroir des vues sur téléphone, 44 px) ; la fenêtre s'ouvre
+    (tiroir fermé, nom sélectionné, tient dans l'écran), Échap et × la ferment, « Modifier d'abord les filtres » ouvre
+    les filtres (feuille « Filtrer » de Refresh sur téléphone) ; trois vues créées avec le nom seul, la dernière
+    ouverte ; la page de gestion mène à la fenêtre ;
+  - « Réorganiser » : la dernière vue glissée en tête **à la souris et au doigt**, flèches, « Ordre enregistré »,
+    « Terminé » remet le panneau dans le nouvel ordre, ordre gardé après rechargement, les liens des vues marchent
+    ensuite (pas de page bloquée) ; poignées et flèches de 44 px sur téléphone ;
+  - aucune erreur JavaScript.
+- Corrigé pendant ces essais : le glisser-déposer ne remontait que d'une place (l'élément tiré, déplacé dans la page,
+  perdait le pointeur : ses voisins bougent maintenant autour de lui) ; « Modifier d'abord les filtres » sans effet
+  sur téléphone ; fenêtre sous la barre d'onglets de Refresh sur téléphone (placée à la racine de la page) ; éléments
+  du panneau encore visibles pendant la réorganisation dans le tiroir de Refresh.
+- Vues de test supprimées, Refresh réactivé.

@@ -5,6 +5,37 @@ sont tenus à jour ensemble à chaque version.
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.22.0] — 2026-11-19
+
+### Ajouté
+- **« + Nouvelle vue »**, facile à trouver : à la fin de *Mes vues* dans le panneau des vues (téléphone : dans le
+  tiroir des vues), « Enregistrer comme vue » à côté des filtres actifs, « Enregistrer comme nouvelle » d'une vue
+  ouverte et « + Nouvelle vue » de la page *Vues enregistrées* ouvrent la même fenêtre. Elle explique ce qu'est une
+  vue, liste les filtres que la vue gardera (avec « Modifier d'abord les filtres ») et ne demande que le nom ; le
+  partage est facultatif et replié (privée par défaut). Échap, × ou un clic à côté la ferment.
+- **Réorganiser « Mes vues » par glisser-déposer** : « Réorganiser » (à partir de deux vues à soi) transforme *Mes
+  vues* en liste ordonnée : glisser la poignée ⠿ à la souris, au stylet ou au doigt (la liste défile près de ses
+  bords), ou utiliser les flèches ↑ ↓ ou les touches fléchées. Chaque changement est enregistré aussitôt (nouvelle
+  route `POST /refresh-global/views/order`, `refreshglobal.views.order` : seules les vues de l'utilisateur sont
+  prises, tout autre identifiant est ignoré) ; « Terminé » remet le panneau dans le nouvel ordre. Poignées et flèches
+  de 44 px sur téléphone.
+
+### Modifié
+- **« Toutes les boîtes » s'ouvre sur les tickets ouverts et en attente** : les tickets fermés ne sont plus affichés
+  par défaut. Ils apparaissent quand « Fermé » est choisi (filtre de statut, section *Statuts*, une vue enregistrée,
+  une vue rapide du tableau de bord comme « Fermés aujourd'hui » / « Fermés »). Les statuts par défaut ne comptent pas
+  comme filtre, n'ont pas de puce et ne sont pas écrits dans les liens. L'export, l'actualisation automatique, le
+  retour depuis un ticket et « ticket suivant » suivent la même liste.
+- Les vues enregistrées gardent ce qu'elles avaient : une vue enregistrée sans statut montre toujours tous les
+  statuts sauf spam ; une vue enregistrée depuis la liste telle qu'elle s'ouvre maintenant garde « Actif, En attente »
+  explicitement.
+- Le formulaire « Enregistrer ces filtres comme vue » en bas du panneau des vues est remplacé par la fenêtre.
+
+### Compatibilité
+- Changement de comportement : pour retrouver les fermés dans « Toutes les boîtes », enregistrer une vue avec les
+  statuts Actif, En attente et Fermé et en faire sa vue par défaut.
+- Aucune migration. Le contrat FreeScout Interop ne change pas (la nouvelle route est interne à la page du module).
+
 ## [1.21.1] — 2026-11-19
 
 ### Corrigé

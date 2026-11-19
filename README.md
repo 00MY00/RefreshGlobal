@@ -109,8 +109,9 @@ Une **vue** est un ensemble enregistré de filtres (boîtes, statut, assigné à
 d'e-mail, vue Refresh) et d'un tri de « Toutes les boîtes ». Elle **ne modifie jamais un ticket** (ni statut, ni
 assignation, ni dossier) et **ne donne jamais accès à une boîte**.
 
-- **Enregistrer** : filtrer la liste, puis « Enregistrer ces filtres comme vue » (panneau des vues) : nom, puis
-  **Visible par** : *Moi seul (privée)*, *Utilisateurs choisis* (liste filtrable des utilisateurs de vos boîtes ; un
+- **Créer** : **« + Nouvelle vue »** à la fin de *Mes vues* (aussi « Enregistrer comme vue » à côté des filtres
+  actifs, et « + Nouvelle vue » de la page *Vues enregistrées*). La fenêtre montre les filtres que la vue gardera
+  (« Modifier d'abord les filtres » si besoin) ; seul le nom est demandé. Partage facultatif, **Visible par** : *Moi seul (privée)*, *Utilisateurs choisis* (liste filtrable des utilisateurs de vos boîtes ; un
   administrateur voit tous les utilisateurs et peut cocher « peut modifier ») ou *Tout le monde*.
 - **Ouvrir** : sections du panneau *Vues épinglées*, *Mes vues*, *Partagées avec moi*, *Pour tous*. Changer un filtre
   garde la vue ouverte avec « * Modifications non enregistrées » : *Mettre à jour la vue* (si vous pouvez la
@@ -125,6 +126,10 @@ assignation, ni dossier) et **ne donne jamais accès à une boîte**.
   tous* (Gérer › Paramètres › RefreshGlobal).
 - **Boîtes** : une vue « Support + Facturation » ouverte par quelqu'un qui n'a que « Support » ne montre que
   Support (avec un message) ; une boîte, un agent, un dossier ou un tag qui n'existe plus est ignoré avec un message.
+- **Ordre** : **« Réorganiser »** dans *Mes vues* : glisser ⠿ à la souris ou au doigt, ou les flèches ↑ ↓ ;
+  chaque changement est enregistré, « Terminé » remet le panneau.
+- **« Toutes les boîtes »** s'ouvre sur les tickets **ouverts et en attente** ; les fermés quand on choisit le statut
+  « Fermé » (filtre, section *Statuts*, une vue, une tuile du tableau de bord).
 - **Gérer** : page *Vues enregistrées* (`/refresh-global/views`) : toutes vos vues, ordre (↑ ↓), export / import JSON
   (les boîtes voyagent par adresse e-mail, aucun identifiant d'utilisateur), journal des vues partagées (admins).
 

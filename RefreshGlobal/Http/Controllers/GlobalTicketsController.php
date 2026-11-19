@@ -63,6 +63,10 @@ class GlobalTicketsController extends Controller
             $query = new GlobalTicketQuery($access, $filters);
 
             $params = GlobalTicketQuery::toQueryParams($filters);
+            // 1.22.0: the default statuses are what the page opens on, not written in its addresses
+            if (!$active_view && GlobalTicketQuery::isListDefault($filters)) {
+                unset($params['status']);
+            }
             if ($active_view) {
                 $params['view'] = $active_view->id;
                 if ($resolved['changed']) {
@@ -117,7 +121,9 @@ class GlobalTicketsController extends Controller
                 'rg_sync'           => \Modules\RefreshGlobal\Services\SyncNow::mailboxes($user, $filters['mailboxes']),
                 // fingerprint of this list when shown (automatic refresh compares with it)
                 'rg_fp'             => \Modules\RefreshGlobal\Services\Settings::autoRefresh() ? $query->fingerprint() : '',
-                'filters_count'     => GlobalTicketQuery::activeCount($filters),
+                // the default statuses of the page are not a filter of the user's (1.22.0)
+                'filters_count'     => GlobalTicketQuery::activeCount($filters) - (!$active_view && GlobalTicketQuery::isListDefault($filters) ? 1 : 0),
+                'rg_default_status' => !$active_view && GlobalTicketQuery::isListDefault($filters),
                 'mailboxes'         => $access->mailboxes(),
                 'rg_users'          => $access->assignableUsers(),
                 'only_assigned'     => $access->onlyAssigned(),
@@ -274,6 +280,15 @@ class GlobalTicketsController extends Controller
                 $out['filters'] = $of_view;
             }
         } else {
+            // 1.22.0: without a status asked for (nor a quick view of the dashboard, which has its own), the page opens
+            // on open and pending tickets; closed ones when "Closed" is chosen
+            $status = array_filter((array) ($input['status'] ?? []), function ($v) {
+                return $v !== null && $v !== '';
+            });
+            $rv = $input['rv'] ?? '';
+            if (!$status && ($rv === null || $rv === '' || $rv === [])) {
+                $input['status'] = GlobalTicketQuery::listDefaultStatuses();
+            }
             $out['filters'] = GlobalTicketQuery::normalize($input, $access);
         }
 

@@ -689,6 +689,39 @@ class SavedViews
         return true;
     }
 
+    /**
+     * New order of the user's own views (1.22.0, drag and drop of "My views"): $ids in the wanted order. Only the user's
+     * own views are taken (any other id is ignored); his views missing from $ids keep their order, after the others.
+     *
+     * @return int number of the user's views ordered
+     */
+    public static function reorder($user, array $ids)
+    {
+        $own = SavedView::where('user_id', $user->id)->orderBy('sort_order')->orderBy('name')->orderBy('id')
+            ->pluck('id')->map(function ($id) {
+                return (int) $id;
+            })->all();
+        $wanted = [];
+        foreach ($ids as $id) {
+            $id = is_scalar($id) ? (int) $id : 0;
+            if ($id > 0 && in_array($id, $own, true) && !in_array($id, $wanted, true)) {
+                $wanted[] = $id;
+            }
+        }
+        if (!$wanted) {
+            return 0;
+        }
+        $final = array_merge($wanted, array_values(array_diff($own, $wanted)));
+        \DB::transaction(function () use ($final) {
+            foreach ($final as $n => $id) {
+                SavedView::where('id', $id)->update(['sort_order' => ($n + 1) * 10]);
+            }
+        });
+        self::bump();
+
+        return count($final);
+    }
+
     /* ------------------------------------------------------------------ export / import */
 
     /**

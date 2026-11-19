@@ -101,6 +101,8 @@
 
         viewForms();
         filtersPanel();
+        newViewDialog();
+        viewOrder();
         longPressGuard();
 
         if (state.attr('data-keep-position') === '1') {
@@ -129,7 +131,7 @@
     /*
      * Forms of the saved views (save, share, management page): the fields of a visibility are shown only when it is
      * chosen (data-rg-show-for), the list of users can be filtered by name or address, "may edit" only next to a chosen
-     * user, and "Save as new" opens the save form. Without this script every field stays visible and usable.
+     * user. Without this script every field stays visible and usable.
      */
     function viewForms() {
         var sync = function (fs) {
@@ -149,18 +151,288 @@
                 $(this).toggle(!q || ($(this).attr('data-label') || '').indexOf(q) >= 0);
             });
         });
-        $(document).on('click', '.rg-save-as-new', function (e) {
-            var d = $('#rg-save-view');
-            if (!d.length) {
+    }
+
+    /*
+     * 1.22.0: "New view" dialog (Resources/views/partials/new_view_dialog.blade.php), opened by every .rg-new-view-open
+     * ("+ New view" of "My views", "Save as a view" of the active filters bar, "Save as new" of an open view) and by the
+     * address #rg-new-view (button of the management page). Escape, × or a click outside close it; the focus comes back
+     * to the button. "Change the filters first" closes it and opens the filters panel.
+     */
+    function newViewDialog() {
+        var dlg = $('#rg-new-view');
+        if (!dlg.length) {
+            return;
+        }
+        // at the root of the page: above Refresh's phone bars, whatever the containers of the content
+        dlg.appendTo(document.body);
+        var opener = null;
+        var close = function () {
+            if (dlg.prop('hidden')) {
                 return;
             }
+            dlg.prop('hidden', true);
+            $('body').removeClass('rg-dialog-open');
+            if (opener && opener.focus) { opener.focus(); }
+            if (window.location.hash === '#rg-new-view' && window.history && window.history.replaceState) {
+                window.history.replaceState(null, '', window.location.pathname + window.location.search);
+            }
+        };
+        var open = function (from) {
+            opener = from || document.activeElement;
+            // phones: the views drawer of Refresh stays under the dialog; it is closed first when it is open
+            if ($('body').hasClass('rf-m-drawer')) {
+                $('body').removeClass('rf-m-overlay rf-m-drawer');
+            }
+            dlg.prop('hidden', false);
+            $('body').addClass('rg-dialog-open');
+            setTimeout(function () { dlg.find('#rg-view-name').trigger('focus').select(); }, 30);
+        };
+        $(document).on('click', '.rg-new-view-open', function (e) {
             e.preventDefault();
-            d.prop('open', true);
-            // phones: the form is in the drawer of the views panel (Refresh's .rf-m-menu button opens it)
-            if (window.innerWidth < 768) { $('.rf-m-menu').first().trigger('click'); }
-            if (d[0].scrollIntoView) { d[0].scrollIntoView({ block: 'center' }); }
-            d.find('input[name="name"]').trigger('focus').select();
+            open(this);
         });
+        dlg.on('click', '[data-rg-dialog-close]', close);
+        dlg.on('click', function (e) { if (e.target === dlg[0]) { close(); } });
+        $(document).on('keydown', function (e) {
+            if ((e.key === 'Escape' || e.keyCode === 27) && !dlg.prop('hidden')) {
+                close();
+            }
+            // focus kept inside the dialog (Tab / Shift+Tab)
+            if (e.key === 'Tab' && !dlg.prop('hidden')) {
+                var f = dlg.find('a[href], button, input, select, textarea, summary').filter(':visible').not(':disabled');
+                if (!f.length) { return; }
+                if (e.shiftKey && document.activeElement === f[0]) { e.preventDefault(); f.last().trigger('focus'); }
+                else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f.first().trigger('focus'); }
+            }
+        });
+        dlg.on('click', '.rg-new-view-edit', function () {
+            close();
+            // phone with Refresh: its own "Filter" button opens the filters sheet
+            var m = $('.rf-m-filtbtn:visible').first();
+            if (m.length) { m.trigger('click'); return; }
+            var af = $('.rg-af-edit:visible').first();
+            if (af.length) { af.trigger('click'); return; }
+            var btn = $('.rf-toolbar .rf-toggle-filters, .rg-toggle-filters').filter(':visible').first();
+            if (btn.length && ($('.rg-list-layout').hasClass('rf-filters-closed') || !btn.hasClass('rf-toggle-filters') || $('body').hasClass('rf-m'))) {
+                btn.trigger('click');
+            }
+            setTimeout(function () { $('#rg-filters').find('input, select').filter(':visible').first().trigger('focus'); }, 250);
+        });
+        dlg.on('submit', 'form', function () {
+            dlg.find('.rg-new-view-save').prop('disabled', true);
+        });
+        if (window.location.hash === '#rg-new-view') {
+            open(null);
+        }
+    }
+
+    /*
+     * 1.22.0: "Reorder" of "My views" (Resources/views/partials/views_sections.blade.php). The user's own views become an
+     * ordered list: drag them by the handle (mouse, pen or finger: pointer events, the list scrolls near its edges), or
+     * use the arrows / the keyboard (arrow keys on the handle). Each change is saved at once
+     * (POST refreshglobal.views.order, the server keeps only the user's own views); "Done" puts the panel back, in the
+     * new order. A failed save puts the previous order back with a message.
+     */
+    function viewOrder() {
+        $(document).on('click', '.rg-views-order', function (e) {
+            e.preventDefault();
+            var btn = $(this);
+            var list = btn.closest('.rf-views-list, ul');
+            if (!list.length || list.hasClass('rg-ordering')) {
+                return;
+            }
+            start(btn, list);
+        });
+
+        var token = function () { return (document.querySelector('meta[name="csrf-token"]') || {}).content || ''; };
+        var say = function (type, text) {
+            if (typeof window.showFloatingAlert === 'function') { window.showFloatingAlert(type, text); } else if (type === 'error') { window.alert(text); }
+        };
+
+        function start(btn, list) {
+            var t = function (k) { return btn.attr('data-t-' + k) || ''; };
+            var items = list.children('[data-rg-view-id]');
+            var box = $('<div class="rg-order" role="region"></div>').attr('aria-label', btn.text().trim());
+            box.append($('<p class="rg-order-help"></p>').text(t('help')));
+            var ol = $('<ol class="rg-order-list"></ol>');
+            items.each(function () {
+                var id = $(this).attr('data-rg-view-id'), name = $(this).attr('data-rg-view-name') || '';
+                var li = $('<li class="rg-order-item"></li>').attr('data-id', id);
+                li.append($('<span class="rg-order-handle" role="button" tabindex="0"></span>').attr('aria-label', t('handle').replace(':name', name))
+                    .attr('title', t('handle').replace(':name', name)).text('⠿'));
+                li.append($('<span class="rg-order-name"></span>').text(name));
+                li.append($('<button type="button" class="rg-order-up"></button>').attr('aria-label', t('up') + ' : ' + name).attr('title', t('up')).text('↑'));
+                li.append($('<button type="button" class="rg-order-down"></button>').attr('aria-label', t('down') + ' : ' + name).attr('title', t('down')).text('↓'));
+                ol.append(li);
+            });
+            var done = $('<button type="button" class="btn btn-primary btn-sm rg-order-done"></button>').text(t('done'));
+            var status = $('<span class="rg-order-status" aria-live="polite"></span>');
+            box.append(ol, $('<div class="rg-order-foot"></div>').append(done, status));
+            // the panel's own items stay in place, hidden (inline: Refresh's phone drawer forces its items visible);
+            // the editable list goes at the top of "My views"
+            list.addClass('rg-ordering').children().each(function () {
+                this.style.setProperty('display', 'none', 'important');
+                this.setAttribute('data-rg-hid', '1');
+            });
+            if (list.is('ul')) {
+                box = $('<li class="rg-order-li"></li>').append(box);
+            }
+            list.prepend(box);
+            ol.find('.rg-order-handle').first().trigger('focus');
+
+            var saved = ids();
+            var timer = null;
+            function ids() { return ol.children().map(function () { return $(this).attr('data-id'); }).get(); }
+            function refreshArrows() {
+                var lis = ol.children();
+                lis.find('.rg-order-up, .rg-order-down').prop('disabled', false);
+                lis.first().find('.rg-order-up').prop('disabled', true);
+                lis.last().find('.rg-order-down').prop('disabled', true);
+            }
+            function save() {
+                clearTimeout(timer);
+                timer = setTimeout(function () {
+                    var now = ids();
+                    if (now.join(',') === saved.join(',')) { return; }
+                    status.text('…');
+                    $.ajax({ url: btn.attr('data-url'), method: 'POST', dataType: 'json', data: { _token: token(), ids: now } }).done(function (r) {
+                        if (r && r.status === 'success') {
+                            saved = now;
+                            status.text(t('saved'));
+                        } else { fail(r && r.message); }
+                    }).fail(function (xhr) { fail(xhr.responseJSON && xhr.responseJSON.message); });
+                }, 250);
+            }
+            function fail(message) {
+                // back to the last order the server has
+                $.each(saved, function (i, id) { ol.append(ol.children('[data-id="' + id + '"]')); });
+                refreshArrows();
+                status.text('');
+                say('error', message || t('error'));
+            }
+            function moveBy(li, dir) {
+                if (dir < 0 && li.prev().length) { li.insertBefore(li.prev()); }
+                else if (dir > 0 && li.next().length) { li.insertAfter(li.next()); }
+                else { return; }
+                refreshArrows();
+                save();
+            }
+            refreshArrows();
+
+            ol.on('click', '.rg-order-up', function () { moveBy($(this).closest('li'), -1); $(this).closest('li').find('.rg-order-up:not(:disabled), .rg-order-handle').first().trigger('focus'); });
+            ol.on('click', '.rg-order-down', function () { moveBy($(this).closest('li'), 1); $(this).closest('li').find('.rg-order-down:not(:disabled), .rg-order-handle').first().trigger('focus'); });
+            ol.on('keydown', '.rg-order-handle', function (e) {
+                if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    moveBy($(this).closest('li'), e.key === 'ArrowUp' ? -1 : 1);
+                    $(this).trigger('focus');
+                }
+            });
+
+            // drag and drop with pointer events: mouse, pen and touch alike
+            var drag = null;
+            var scroller = function (el) {
+                for (var n = el.parentElement; n && n !== document.body; n = n.parentElement) {
+                    var st = window.getComputedStyle(n);
+                    if (/(auto|scroll)/.test(st.overflowY) && n.scrollHeight > n.clientHeight) { return n; }
+                }
+                return null;
+            };
+            ol.on('pointerdown', '.rg-order-handle', function (ev) {
+                var e = ev.originalEvent || ev;
+                if (e.button !== undefined && e.button !== 0) { return; }
+                ev.preventDefault();
+                var li = $(this).closest('li')[0];
+                try { this.setPointerCapture(e.pointerId); } catch (x) { /* old browsers */ }
+                drag = { li: li, handle: this, id: e.pointerId, startY: e.clientY, top: li.offsetTop, sc: scroller(li), y: e.clientY, raf: 0 };
+                li.classList.add('rg-order-dragging');
+                ol.addClass('rg-order-active');
+                drag.raf = window.requestAnimationFrame(edgeScroll);
+            });
+            // moves and release followed on the document: moving items in the page may drop the pointer capture
+            var onMove = function (ev) {
+                var e = ev.originalEvent || ev;
+                if (!drag || e.pointerId !== drag.id) { return; }
+                ev.preventDefault();
+                drag.y = e.clientY;
+                place();
+            };
+            var stop = function (ev) {
+                var e = ev && (ev.originalEvent || ev);
+                if (!drag || (e && e.pointerId !== undefined && e.pointerId !== drag.id)) { return; }
+                window.cancelAnimationFrame(drag.raf);
+                drag.li.style.transform = '';
+                drag.li.classList.remove('rg-order-dragging');
+                ol.removeClass('rg-order-active');
+                try { drag.handle.releasePointerCapture(drag.id); } catch (x) { /* already released */ }
+                drag = null;
+                $(document).off('pointermove.rgorder pointerup.rgorder pointercancel.rgorder');
+                refreshArrows();
+                save();
+            };
+            ol.on('pointerdown', '.rg-order-handle', function () {
+                $(document).off('pointermove.rgorder pointerup.rgorder pointercancel.rgorder')
+                    .on('pointermove.rgorder', onMove).on('pointerup.rgorder pointercancel.rgorder', stop);
+            });
+            function place() {
+                var li = drag.li;
+                // the dragged item is never taken out of the page (that would end the drag): its neighbours move
+                // around it, until the pointer is between the middles of the items before and after it
+                var prev = li.previousElementSibling, next = li.nextElementSibling, guard = 0;
+                while (prev && guard++ < 200) {
+                    var rp = prev.getBoundingClientRect();
+                    if (drag.y >= rp.top + rp.height / 2) { break; }
+                    ol[0].insertBefore(prev, li.nextSibling);
+                    prev = li.previousElementSibling;
+                }
+                while (next && guard++ < 400) {
+                    var rn = next.getBoundingClientRect();
+                    if (drag.y <= rn.top + rn.height / 2) { break; }
+                    ol[0].insertBefore(next, li);
+                    next = li.nextElementSibling;
+                }
+                // follows the pointer between its new neighbours
+                li.style.transform = 'translateY(' + ((drag.y - drag.startY) - (li.offsetTop - drag.top)) + 'px)';
+            }
+            function edgeScroll() {
+                if (!drag) { return; }
+                var sc = drag.sc;
+                var r = sc ? sc.getBoundingClientRect() : { top: 0, bottom: window.innerHeight };
+                var step = drag.y < r.top + 40 ? -8 : (drag.y > r.bottom - 40 ? 8 : 0);
+                if (step) {
+                    if (sc) { sc.scrollTop += step; } else { window.scrollBy(0, step); }
+                    place();
+                }
+                drag.raf = window.requestAnimationFrame(edgeScroll);
+            }
+
+            done.on('click', function () {
+                clearTimeout(timer);
+                var go = function () {
+                    // the panel's items in the new order (before "+ New view"), then the normal panel back
+                    var tools = list.children('.rg-views-tools').first();
+                    $.each(ids(), function (i, id) {
+                        var item = list.children('[data-rg-view-id="' + id + '"]');
+                        if (tools.length) { item.insertBefore(tools); } else { list.append(item); }
+                    });
+                    box.remove();
+                    list.removeClass('rg-ordering').children('[data-rg-hid]').each(function () {
+                        this.style.removeProperty('display');
+                        this.removeAttribute('data-rg-hid');
+                    });
+                    btn.trigger('focus');
+                };
+                if (ids().join(',') !== saved.join(',')) {
+                    // a change still to send: sent now, the panel comes back once it is saved
+                    $.ajax({ url: btn.attr('data-url'), method: 'POST', dataType: 'json', data: { _token: token(), ids: ids() } })
+                        .done(function (r) { if (r && r.status === 'success') { saved = ids(); go(); } else { fail(r && r.message); } })
+                        .fail(function (xhr) { fail(xhr.responseJSON && xhr.responseJSON.message); });
+                } else {
+                    go();
+                }
+            });
+        }
     }
 
     function longPressGuard() {

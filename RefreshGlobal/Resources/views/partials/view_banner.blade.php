@@ -21,7 +21,7 @@
                         <button type="submit" class="btn btn-primary btn-xs">{{ $rg_view['visibility'] === 'private' ? __('refreshglobal::messages.view_update') : __('refreshglobal::messages.view_update_shared') }}</button>
                     </form>
                 @endif
-                <a href="#rg-save-view" class="btn btn-default btn-xs rg-save-as-new">{{ __('refreshglobal::messages.view_save_as_new') }}</a>
+                <a href="#rg-new-view" class="btn btn-default btn-xs rg-save-as-new rg-new-view-open">{{ __('refreshglobal::messages.view_save_as_new') }}</a>
                 <a href="{{ $rg_view['reset_url'] }}" class="btn btn-link btn-xs">{{ __('refreshglobal::messages.view_reset') }}</a>
             </span>
         @endif

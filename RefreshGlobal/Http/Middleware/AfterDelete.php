@@ -113,8 +113,13 @@ class AfterDelete
             return $params;
         }
         $filters['wfolder'] = '';
+        $back = GlobalTicketQuery::toQueryParams($filters);
+        // 1.22.0: the default statuses of the page are not written in its addresses
+        if (!isset($params['view']) && !isset($params['status'])) {
+            unset($back['status']);
+        }
 
-        return GlobalTicketQuery::toQueryParams($filters);
+        return $back;
     }
 
     /** Successful JSON answer of the controller (with a redirect_url when $redirect). */

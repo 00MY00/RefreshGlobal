@@ -236,6 +236,27 @@ class SavedViewsController extends Controller
         });
     }
 
+    /**
+     * New order of the user's own views (1.22.0, "Reorder" of "My views": drag and drop or arrows), JSON for
+     * Public/js/refreshglobal.js. Ids of views that are not the user's are ignored (SavedViews::reorder()).
+     */
+    public function order(Request $request)
+    {
+        $this->validate($request, ['ids' => 'required|array|max:500', 'ids.*' => 'required|integer|min:1']);
+        if (!SavedViews::available()) {
+            return response()->json(['status' => 'error', 'message' => __('refreshglobal::messages.views_unavailable')], 503);
+        }
+        try {
+            $n = SavedViews::reorder(auth()->user(), (array) $request->input('ids'));
+        } catch (\Throwable $e) {
+            \Log::warning('[RefreshGlobal] [views] order: '.get_class($e));
+
+            return response()->json(['status' => 'error', 'message' => __('refreshglobal::messages.views_order_error')], 500);
+        }
+
+        return response()->json(['status' => 'success', 'ordered' => $n, 'message' => __('refreshglobal::messages.views_order_saved')]);
+    }
+
     /** Definition as a JSON file (mailboxes by address, no user id). */
     public function export(Request $request, $id)
     {

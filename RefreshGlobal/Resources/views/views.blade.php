@@ -33,6 +33,8 @@
         <div class="alerts">@include('partials/flash_messages')</div>
         <div class="section-heading"><i class="glyphicon glyphicon-filter"></i> {{ __('refreshglobal::messages.views_manage_title') }}</div>
         <p class="rg-buttons">
+            {{-- 1.22.0: the "New view" dialog of the list (a view keeps the filters shown there) --}}
+            <a class="btn btn-primary btn-sm rg-views-page-new" href="{{ route('refreshglobal.tickets') }}#rg-new-view"><i class="glyphicon glyphicon-plus"></i> {{ __('refreshglobal::messages.new_view') }}</a>
             <a class="btn btn-default btn-sm" href="{{ route('refreshglobal.tickets') }}"><i class="glyphicon glyphicon-inbox"></i> {{ __('refreshglobal::messages.open_page') }}</a>
         </p>
         <p class="rg-muted">{{ __('refreshglobal::messages.views_manage_help') }}</p>

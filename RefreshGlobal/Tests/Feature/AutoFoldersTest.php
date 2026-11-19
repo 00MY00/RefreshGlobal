@@ -231,7 +231,9 @@ class AutoFoldersTest extends TestCase
         // list a ticket opened here goes back to: the same filters, without the folder; its number of tickets
         $this->seeIn($page, 'data-back-url="'.e(route('refreshglobal.tickets', ['mb' => $mb])).'"');
         $this->seeIn($page, 'data-back-label="'.e(__('refreshglobal::messages.title')).'"');
-        $all = (new \Modules\RefreshGlobal\Services\GlobalTicketQuery(new \Modules\RefreshGlobal\Services\MailboxAccess($this->s['admin']), ['mailboxes' => $mb]))->base()->count();
+        // (1.22.0: that list opens on open and pending tickets)
+        $all = (new \Modules\RefreshGlobal\Services\GlobalTicketQuery(new \Modules\RefreshGlobal\Services\MailboxAccess($this->s['admin']),
+            ['mailboxes' => $mb, 'status' => \Modules\RefreshGlobal\Services\GlobalTicketQuery::listDefaultStatuses()]))->base()->count();
         $this->seeIn($page, 'data-back-count="'.$all.'"');
         // no folder: no banner, back to the same list
         $page = $this->ticketsPage($this->s['admin'], ['mb' => $mb]);

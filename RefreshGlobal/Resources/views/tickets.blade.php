@@ -21,6 +21,10 @@
 
 @php
     $rg_base = \Modules\RefreshGlobal\Services\GlobalTicketQuery::toQueryParams($filters);
+    // 1.22.0: the default statuses (open, pending) are not written in the links: a link without status opens on them
+    if (!empty($rg_default_status)) {
+        unset($rg_base['status']);
+    }
     // an open saved view stays open when a filter is changed, marked "unsaved changes" (?vm=1)
     $rg_keep = $active_view ? ['view' => $active_view->id, 'vm' => 1] : [];
     $rg_url = function (array $override = [], array $remove = []) use ($rg_base, $rg_keep) {
@@ -44,6 +48,46 @@
     $rg_single_status = count($filters['status']) === 1 ? (int) $filters['status'][0] : 0;
     $rg_layout_table = ($_COOKIE['rf_layout'] ?? '') === 'table';
     $rg_filters_closed = !empty($_COOKIE['rf_filters_closed']);
+    $rg_default_status = !empty($rg_default_status);
+    // one chip per filter: active filters bar (partials/active_filters) and summary of "New view" (partials/new_view_dialog)
+    $rg_minus = function ($key, $value) use ($rg_base, $rg_url) {
+        $left = array_values(array_filter((array) ($rg_base[$key] ?? []), function ($v) use ($value) {
+            return (string) $v !== (string) $value;
+        }));
+        return $left ? $rg_url([$key => $left], ['page']) : $rg_url([], [$key, 'page']);
+    };
+    $rg_chips = [];
+    if ($filters['q'] !== '') {
+        $rg_chips[] = [__('refreshglobal::messages.search'), '« '.$filters['q'].' »', $rg_url([], ['q', 'page']), ''];
+    }
+    foreach ($filters['mailboxes'] as $rg_id) {
+        $rg_mb = $mailboxes->first(function ($m) use ($rg_id) { return (int) $m->id === (int) $rg_id; });
+        $rg_chips[] = [__('refreshglobal::messages.mailboxes'), $rg_mb ? $rg_mb->name : '#'.$rg_id, $rg_minus('mb', $rg_id), ''];
+    }
+    // 1.22.0: the default statuses of the page (open, pending) are not a chip
+    foreach ($rg_default_status ? [] : $filters['status'] as $rg_code) {
+        $rg_chips[] = [__('refreshglobal::messages.status'), $rg_statuses[$rg_code] ?? $rg_code, $rg_minus('status', $rg_code), ''];
+    }
+    if ($filters['assignee'] !== '') {
+        if ($filters['assignee'] === 'me') {
+            $rg_who = __('refreshglobal::messages.me');
+        } elseif ($filters['assignee'] === 'none') {
+            $rg_who = __('refreshglobal::messages.unassigned');
+        } else {
+            $rg_u = $rg_users->first(function ($u) use ($filters) { return (string) $u->id === $filters['assignee']; });
+            $rg_who = $rg_u ? $rg_u->getFullName() : '#'.$filters['assignee'];
+        }
+        $rg_chips[] = [__('refreshglobal::messages.assigned_to'), $rg_who, $rg_url([], ['assignee', 'page']), ''];
+    }
+    if ($filters['rview'] !== '') {
+        $rg_chips[] = [__('refreshglobal::messages.refresh_view'), \Modules\RefreshGlobal\Services\GlobalDashboard::viewLabel($filters['rview']), $rg_url([], ['rv', 'page']), ''];
+    }
+    if ($filters['mailtag'] !== '') {
+        $rg_chips[] = [__('refreshglobal::messages.mail_tag'), $filters['mailtag'], $rg_url([], ['mt', 'page']), ''];
+    }
+    if ($filters['wfolder'] !== '') {
+        $rg_chips[] = [__('refreshglobal::messages.auto_folder'), $rg_folder_label, $rg_url([], ['wf', 'page']), 'folder'];
+    }
 @endphp
 
 @section('sidebar')
@@ -180,6 +224,7 @@
 @endsection
 
 @section('content')
+    @include('refreshglobal::partials.new_view_dialog')
     <div class="alerts">
         @include('partials/flash_messages')
         @include('refreshglobal::partials.notices')

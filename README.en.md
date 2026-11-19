@@ -84,7 +84,9 @@ contexts (`fsinterop.navigation.context`, `fsinterop.conversation.context`), alw
 A **view** is a saved set of filters (mailboxes, status, assigned to, search, automatic folder, e-mail tag, Refresh
 view) and a sort of “All mailboxes”. It **never changes a ticket** and **never gives access to a mailbox**.
 
-- **Save**: filter the list, then “Save these filters as a view”: name and **Visible to**: *Only me (private)*,
+- **Create**: **“+ New view”** at the end of *My views* (also “Save as a view” next to the active filters, and
+  “+ New view” on the *Saved views* page). The dialog shows the filters the view will keep (“Change the filters
+  first” if needed); only the name is asked. Optional sharing, **Visible to**: *Only me (private)*,
   *Users I choose* (searchable list of the users of your mailboxes; an administrator sees every user and can tick
   “may edit”) or *Everyone*.
 - **Open**: sections *Pinned views*, *My views*, *Shared with me*, *For everyone* of the views panel. Changing a
@@ -98,6 +100,10 @@ view) and a sort of “All mailboxes”. It **never changes a ticket** and **nev
   *Only administrators publish views for everyone* (Manage › Settings › RefreshGlobal).
 - **Mailboxes**: a “Support + Billing” view opened by someone who only has Support shows Support only (with a note);
   a mailbox, agent, folder or tag that no longer exists is ignored with a note.
+- **Order**: **“Reorder”** in *My views*: drag ⠿ with the mouse or a finger, or the ↑ ↓ arrows; each change is
+  saved, “Done” puts the panel back.
+- **“All mailboxes”** opens on **open and pending** tickets; closed ones when the status “Closed” is chosen (filter,
+  *Statuses* section, a view, a tile of the dashboard).
 - **Manage**: page *Saved views* (`/refresh-global/views`): order (↑ ↓), JSON export / import (mailboxes travel by
   e-mail address, no user id), audit of the shared views (admins).
 
