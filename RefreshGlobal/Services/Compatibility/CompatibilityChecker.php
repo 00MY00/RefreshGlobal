@@ -129,6 +129,31 @@ class CompatibilityChecker
         return $min !== null && $min !== '' && $version !== '' && version_compare($version, (string) $min, '<');
     }
 
+    /**
+     * Another optional module (Config/integration.php 'module' + 'module_min'): its folder when it is active and at
+     * least at that version, else '' (its checks are then not applicable: RefreshGlobal does not offer the feature).
+     */
+    public function optionalModulePath($alias, $min = null)
+    {
+        try {
+            if (!\App\Module::isActive($alias)) {
+                return '';
+            }
+            $module = \Module::findByAlias($alias);
+            if (!$module) {
+                return '';
+            }
+            $version = (string) $module->get('version');
+            if ($min !== null && $min !== '' && ($version === '' || version_compare($version, (string) $min, '<'))) {
+                return '';
+            }
+
+            return rtrim($module->getPath(), '/\\');
+        } catch (\Throwable $e) {
+            return '';
+        }
+    }
+
     /** Refresh present AND active: the checks of its files, views and hooks make sense. */
     public function refreshUsable()
     {

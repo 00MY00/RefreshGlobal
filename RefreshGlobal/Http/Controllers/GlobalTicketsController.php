@@ -101,6 +101,8 @@ class GlobalTicketsController extends Controller
                 'rg_mail_tags'      => $mail_tags,
                 'rg_folders'        => $auto_folders['tree'],
                 'rg_folder_label'   => $auto_folders['label'],
+                // flows of Workflow Packs 3.20+ (Services/WorkflowPacksLink.php): links shown only when it is there
+                'rg_flows'          => \Modules\RefreshGlobal\Services\WorkflowPacksLink::available() && \Modules\RefreshGlobal\Services\FlowChanges::tableExists(),
 
                 'skin'              => $report['skin'],
                 'report'            => $report,

@@ -29,7 +29,7 @@ class TranslationsTest extends TestCase
             return $d[0] !== '.' && is_dir($dir.'/'.$d);
         }));
         $this->assertGreaterThanOrEqual(7, count($locales));
-        foreach (['messages', 'compat'] as $file) {
+        foreach (['messages', 'compat', 'flows'] as $file) {
             $reference = self::flatten(require $dir.'/en/'.$file.'.php');
             foreach ($locales as $locale) {
                 $keys = self::flatten(require $dir.'/'.$locale.'/'.$file.'.php');
@@ -42,7 +42,7 @@ class TranslationsTest extends TestCase
     public function testPlaceholdersAreKept()
     {
         $dir = __DIR__.'/../../Resources/lang';
-        foreach (['messages', 'compat'] as $file) {
+        foreach (['messages', 'compat', 'flows'] as $file) {
             $en = require $dir.'/en/'.$file.'.php';
             foreach (glob($dir.'/*/'.$file.'.php') as $path) {
                 $other = require $path;

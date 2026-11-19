@@ -62,6 +62,12 @@ Dans Gérer › Modules :
   récent) est installé : section « Dossiers automatiques » dans le panneau des vues (arbre des dossiers de toutes
   vos boîtes, avec le nombre de tickets, un clic filtre la liste), badge dossier sur chaque ticket et page « Vue
   d'ensemble » (tickets et tickets ouverts par dossier et par boîte, dernier classement, nettoyage automatique).
+- **Statistiques des flux** si [Workflow Packs](https://github.com/00MY00/WorkflowPacks) 3.20 ou plus récent est
+  installé avec son moteur allumé : tickets touchés et fermés par chaque flux, changements par type, par boîte, par
+  origine et sur N jours (flux supprimés et temporaires signalés), « Rattraper l'historique » pour les administrateurs ;
+  page **E-mails non traités** (aucun flux n'y a rien changé) avec, pour les administrateurs, « Traiter avec un flux
+  temporaire » (ouvre l'éditeur de Workflow Packs). Chacun ne voit que ses boîtes. Sans Workflow Packs 3.20+, rien
+  n'apparaît.
 - **Adresse d'envoi au choix** sur « Envoyer un e-mail » / « Nouveau ticket » : toutes les adresses de vos boîtes et
   leurs alias ; une autre boîte ouvre son formulaire en gardant ce qui est saisi ; adresse proposée selon la liste
   ou la dernière utilisée.

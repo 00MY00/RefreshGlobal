@@ -24,6 +24,15 @@ class HookCheck extends Check
                 }
                 $path = $this->checker->refreshPath().'/'.$def['file'];
                 $shown = 'Modules/Refresh/'.$def['file'];
+            } elseif (!empty($def['module'])) {
+                // a hook fired by another optional module (e.g. Workflow Packs 3.20+): only when it is there
+                $dir = $this->checker->optionalModulePath($def['module'], $def['module_min'] ?? null);
+                if ($dir === '') {
+                    $results[] = $this->result($code, $family, $def['severity'], null, $def['hook'], '', ['file' => $def['file']]);
+                    continue;
+                }
+                $path = $dir.'/'.$def['file'];
+                $shown = 'Modules/'.basename($dir).'/'.$def['file'];
             } else {
                 $path = base_path($def['file']);
                 $shown = $def['file'];

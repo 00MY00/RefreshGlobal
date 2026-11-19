@@ -619,3 +619,18 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
   débordement horizontal ; chaque tuile ouvre la liste avec la pastille de la vue et le même total (2 et 35) ;
   aucune erreur JavaScript.
 - PHPUnit : **175 tests, 0 échec** (2 ignorés) ; `php -l` PHP 7.1 et 8.4 sans erreur.
+
+## 40. Statistiques des flux de Workflow Packs, e-mails non traités, flux temporaires (1.20.0, 2026-11-19)
+
+- PHPUnit (Workflow Packs simulé par son contrat Eventy) : `FlowStatsTest` 12 tests ; suite complète **187 tests,
+  0 échec** (2 ignorés) avec Workflow Packs 2.2.0 installé (API absente : rien ne s'affiche) ; `php -l` PHP 7.1 et 8.4.
+- **Essai réel avec Workflow Packs 3.20.0** (instance de test, base et module sauvegardés puis restaurés) :
+  `workflowpacks.info` → disponible ; flux temporaire réel (bloc « statut : fermé ») lancé sur 3 tickets non traités,
+  traité par `workflowpacks:engine-tick` : les 3 changements `status → closed` (origine `temporary`) enregistrés par
+  l'écouteur, identiques à `workflowpacks.ticket_changes` ; rattrapage `refreshglobal:flow-history --days=30` :
+  3 enregistrés, puis 0 au second passage ; `refreshglobal:check` : RG-HOOK-42…49, RG-CORE-25, RG-DB-16/17 OK.
+- Navigateur (ordinateur 1440, tablette 900, téléphone 390) : lien dans « Toutes les boîtes », page des statistiques
+  (3 fermés par le flux, badge « temporaire »), page des non traités (11 tickets), aucun débordement horizontal,
+  boutons d'au moins 36 px (44 px sur téléphone), bouton retour visible ; « Traiter avec un flux temporaire » → éditeur
+  de Workflow Packs sur ce site, flux listé « Brouillon » ; « Rattraper l'historique » → demandé, page qui se
+  recharge ; aucune erreur JavaScript.

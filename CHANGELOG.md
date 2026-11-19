@@ -8,6 +8,38 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) — versions: [
 Every published change gets a new version number: FreeScout's Manage › Modules page and UpdateGuard only offer an
 update when the version changes.
 
+## [1.20.0] — 2026-11-19
+
+### Added
+- **Flow statistics** (only with Workflow Packs 3.20+ and its engine on): page “Flow statistics” (link in the views
+  panel of “All mailboxes”, section “Workflow Packs flows”). Per flow, per mailbox and per origin (new e-mail, applied
+  to existing tickets, AI agent, temporary flow) over N days: tickets touched, **tickets closed by the flows**, changes
+  per type (status, assignee, folder, note, deleted, notification, other). Deleted flows and temporary flows are marked.
+  - Every change announced by Workflow Packs (`workflowpacks.ticket_changed`) is validated and recorded once in the new
+    table `refreshglobal_flow_changes` (unique step + field). Rows of a ticket deleted for good are removed.
+  - **“Catch up on the history”** (administrators) and command `php artisan refreshglobal:flow-history [--days=30]
+    [--mailbox=ID]`: reads what the flows did before, by batches of 1000 tickets, with progress; safe to run again.
+- **Untreated e-mails** page: tickets no flow ever changed (definition of Workflow Packs), for the user's mailboxes.
+  Administrators get **“Handle with a temporary flow”**: the list is computed again on the server (5000 at most),
+  Workflow Packs creates the flow without launching it and the editor of Workflow Packs opens. Each error code has its
+  translated message; the state of the temporary flows and their end are shown.
+
+### Security
+- Rights checked on every request: a user only sees the statistics and untreated tickets of the mailboxes they may
+  view (and their own tickets with “only assigned”); temporary flows and the catch-up are for administrators only
+  (route and controller). The editor address returned by Workflow Packs is followed only when it points to this
+  FreeScout. No text of an e-mail or note is stored.
+
+### Compatibility
+- Without Workflow Packs, before 3.20, or with its engine off: nothing appears, no error, no request to its tables,
+  no listener, no scheduled task; RefreshGlobal works as before. Integration checks RG-HOOK-42…49 (not applicable
+  then), RG-CORE-25, RG-DB-16/17.
+
+### Migration
+- New tables `refreshglobal_flow_changes` and `refreshglobal_temp_flows` (created by the module's migration on
+  install / update). To count what the flows did before this version: “Catch up on the history” on the statistics
+  page, or `php artisan refreshglobal:flow-history --days=N`.
+
 ## [1.19.0] — 2026-11-19
 
 ### Added

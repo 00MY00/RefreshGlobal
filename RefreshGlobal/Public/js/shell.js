@@ -1024,4 +1024,17 @@
             }
         });
     });
+    // Flow pages (1.20.0): while a history backfill or a temporary flow is running, the page reloads itself every
+    // N seconds (data-rg-reload) to show the progress; only when the tab is visible
+    $(function () {
+        var el = document.querySelector('[data-rg-page="flows"] [data-rg-reload]');
+        var s = el ? parseInt(el.getAttribute('data-rg-reload'), 10) : 0;
+        if (s >= 3) {
+            setInterval(function () {
+                if (!document.hidden) {
+                    window.location.reload();
+                }
+            }, s * 1000);
+        }
+    });
 })(window.jQuery);

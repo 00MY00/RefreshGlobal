@@ -274,4 +274,16 @@ return [
         'effect' => 'Los demás módulos no reciben datos de RefreshGlobal sobre un ticket (fsinterop.conversation.context). El resto funciona.',
         'action' => 'Actualizar RefreshGlobal a una versión prevista para esta versión de FreeScout y ejecutar php artisan refreshglobal:check.',
     ],
+    'hook_flows' => [
+        'check'  => 'API de flujos de Workflow Packs presente: :item',
+        'label'  => 'Falta un elemento de la API de flujos de Workflow Packs 3.20+ que usan las estadísticas de los flujos: :item.',
+        'effect' => 'Las estadísticas de los flujos, la página de correos sin tratar o los flujos temporales pueden no funcionar. El resto funciona.',
+        'action' => 'Actualice Workflow Packs (3.20.0 o posterior) y RefreshGlobal, y luego ejecute php artisan refreshglobal:check.',
+    ],
+    'db_flows' => [
+        'check'  => 'Tabla y columnas de las estadísticas de los flujos presentes: :item',
+        'label'  => 'Falta una tabla o columna de las estadísticas de los flujos: :item.',
+        'effect' => 'Las estadísticas de los flujos y los flujos temporales no están disponibles. El resto funciona.',
+        'action' => 'Ejecute php artisan migrate y luego php artisan refreshglobal:check.',
+    ],
 ];

@@ -47,6 +47,7 @@ class RefreshGlobalServiceProvider extends ServiceProvider
             \Modules\RefreshGlobal\Console\SelfTestCommand::class,
             \Modules\RefreshGlobal\Console\TrashCommand::class,
             \Modules\RefreshGlobal\Console\MailTrashCommand::class,
+            \Modules\RefreshGlobal\Console\FlowHistoryCommand::class,
         ]);
     }
 
@@ -73,6 +74,22 @@ class RefreshGlobalServiceProvider extends ServiceProvider
         \Eventy::addAction('conversations.before_delete_forever', function ($conversation_ids) {
             \Modules\RefreshGlobal\Services\MailServerTrash::queue($conversation_ids);
         }, 20, 1);
+
+        // Flow statistics (Workflow Packs 3.20+, Services/FlowChanges.php): the rows of a ticket deleted for good go too
+        \Eventy::addAction('conversations.before_delete_forever', function ($conversation_ids) {
+            \Modules\RefreshGlobal\Services\FlowChanges::forget($conversation_ids);
+        }, 20, 1);
+        // Listening to Workflow Packs only once every module has booted (it registers workflowpacks.info in its own
+        // boot(), after RefreshGlobal's), and only when its flows API is there with the engine on.
+        $this->app->booted(function () {
+            try {
+                if (\Modules\RefreshGlobal\Services\WorkflowPacksLink::available() && \Modules\RefreshGlobal\Services\FlowChanges::tableExists()) {
+                    \Modules\RefreshGlobal\Services\FlowChanges::register();
+                }
+            } catch (\Throwable $e) {
+                // optional feature: RefreshGlobal works as without Workflow Packs
+            }
+        });
 
         // Deleting a ticket: where to go next, trash or permanent (Http\Middleware\AfterDelete). Added to the "web"
         // group like Refresh's own middlewares (RefreshServiceProvider.php:55-57); it acts on conversations.ajax only.
@@ -475,6 +492,12 @@ class RefreshGlobalServiceProvider extends ServiceProvider
                 $schedule->command('refreshglobal:mail-tags --requested')
                     ->everyMinute()
                     ->withoutOverlapping();
+                // "Catch up on the history" of the flow statistics (only with Workflow Packs 3.20+, engine on)
+                if (\Modules\RefreshGlobal\Services\WorkflowPacksLink::available()) {
+                    $schedule->command('refreshglobal:flow-history --requested')
+                        ->everyMinute()
+                        ->withoutOverlapping();
+                }
             } catch (\Exception $e) {
                 // no scheduled task rather than a broken scheduler
             }

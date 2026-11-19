@@ -98,6 +98,17 @@
                     </div>
                 </div>
             @endif
+            @if (!empty($rg_flows))
+                {{-- Flows of Workflow Packs 3.20+ (Http/Controllers/FlowsController.php): statistics, untreated e-mails --}}
+                <div class="rf-views-sec rg-flows-sec" data-sec="rg-flows">
+                    <button type="button" class="rf-views-sec-head">{{ __('refreshglobal::flows.section') }}<i class="rf-i rf-i-fd-chevron-down rf-i-sm"></i></button>
+                    <div class="rg-m-sectitle">{{ __('refreshglobal::flows.section') }}</div>
+                    <div class="rf-views-list">
+                        <a href="{{ route('refreshglobal.flows') }}" class="rf-v rg-flows-link" data-label="{{ mb_strtolower(__('refreshglobal::flows.stats_title')) }}"><i class="rf-i rf-i-fd-views"></i><span class="rf-v-label">{{ __('refreshglobal::flows.stats_title') }}</span></a>
+                        <a href="{{ route('refreshglobal.flows.untreated') }}" class="rf-v rg-flows-untreated-link" data-label="{{ mb_strtolower(__('refreshglobal::flows.untreated_title')) }}"><i class="rf-i rf-i-fd-views"></i><span class="rf-v-label">{{ __('refreshglobal::flows.untreated_title') }}</span></a>
+                    </div>
+                </div>
+            @endif
             @if ($rg_mail_tags)
                 {{-- Origin tags of the e-mails (Services/MailTags.php): the list filtered on a tag --}}
                 <div class="rf-views-sec rg-mail-tags" data-sec="rg-mail-tags">
@@ -145,6 +156,13 @@
                     </li>
                 @endforeach
                 <li><a href="{{ route('refreshglobal.folders') }}"><i class="glyphicon glyphicon-th-list"></i> <span class="folder-name">{{ __('refreshglobal::messages.folders_overview') }}</span></a></li>
+            </ul>
+        @endif
+        @if (!empty($rg_flows))
+            <div class="sidebar-title rg-sidebar-subtitle"><span class="sidebar-title-real">{{ __('refreshglobal::flows.section') }}</span></div>
+            <ul class="sidebar-menu rg-sidebar-menu rg-flows-sec">
+                <li><a href="{{ route('refreshglobal.flows') }}" class="rg-flows-link"><i class="glyphicon glyphicon-stats"></i> <span class="folder-name">{{ __('refreshglobal::flows.stats_title') }}</span></a></li>
+                <li><a href="{{ route('refreshglobal.flows.untreated') }}" class="rg-flows-untreated-link"><i class="glyphicon glyphicon-inbox"></i> <span class="folder-name">{{ __('refreshglobal::flows.untreated_title') }}</span></a></li>
             </ul>
         @endif
         @if ($rg_mail_tags)

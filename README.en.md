@@ -43,6 +43,11 @@ otherwise it uses FreeScout's standard look.
   is installed: "Automatic folders" section in the views panel (tree of the folders of all your mailboxes, with
   their number of tickets; a click filters the list), a folder badge on each ticket and an "Overview" page (tickets
   and open tickets per folder and per mailbox, last filing, automatic clean-up).
+- **Flow statistics** when [Workflow Packs](https://github.com/00MY00/WorkflowPacks) 3.20 or newer is installed with
+  its engine on: tickets touched and closed by each flow, changes per type, per mailbox, per origin and over N days
+  (deleted and temporary flows marked), "Catch up on the history" for administrators; an **Untreated e-mails** page
+  (no flow changed anything on them) with, for administrators, "Handle with a temporary flow" (opens the editor of
+  Workflow Packs). Everyone sees their own mailboxes only. Without Workflow Packs 3.20+, nothing appears.
 - **Address to send from** on "Send an e-mail" / "New ticket": every address of your mailboxes and their aliases;
   another mailbox opens its form with what you typed; suggested address from the list or the last one used.
 - **Spam left on the mail server** (default) and **origin tags** of the e-mails in English (`inbox`, `spam`, `trash`,

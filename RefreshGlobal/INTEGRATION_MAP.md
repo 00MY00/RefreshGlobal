@@ -334,3 +334,28 @@ corriger les lignes en échec (et les références de ce document).
 | `ConversationPolicy::view()` | `app/Policies/ConversationPolicy.php:22` | `fsinterop.conversation.context` ne répond que pour un utilisateur qui peut voir le ticket (`Services/Interop/ConversationContext.php`) (RG-CORE-24) |
 | `Conversation::url()`, `getSubject()`, `number` | `app/Conversation.php:1109, 1749, 2683` | résultats de recherche `search-results` 1.0 (`Services/Search/GlobalSearch.php`) ; même recherche que la liste (`GlobalTicketQuery::applySearch()`) (RG-CORE-02) |
 | `App\Option::get($name, $default, $decode, $use_cache)` | `app/Option.php:75` (cache par requête : une valeur absente reste « absente » après `set()`) | objectifs SLA lus sans ce cache (`Sla::own()`) (RG-CORE-07) |
+
+
+## Flux de Workflow Packs 3.20+ — statistiques et flux temporaires (RefreshGlobal 1.20.0)
+
+Contrat documenté par Workflow Packs (`docs/api-flux.md`, release `v3.20.0`), tout par Eventy : aucune classe ni table de
+Workflow Packs n'est lue. Seul point de contact : `Services/WorkflowPacksLink.php` (`available()` : module actif,
+`workflowpacks.info` avec `api >= 1`, version `>= 3.20.0` et moteur allumé ; lu une fois par requête, après le
+démarrage de tous les modules). Sans cela : routes en 404, aucun lien, aucun écouteur, aucune tâche planifiée.
+
+| Élément | Fichier:ligne | Utilisation |
+|---|---|---|
+| filtre `workflowpacks.info` | `Modules/WorkflowPacks/Services/Engine/FlowReport.php:50, 80-84` | détection (`WorkflowPacksLink::available()`) (RG-HOOK-42) |
+| action `workflowpacks.ticket_changed` ($conversationId, $change) | `FlowReport.php:87-101` (clés : `base()` 104-116, `fact()` 119-155) | enregistrement validé et idempotent dans `refreshglobal_flow_changes` (`Services/FlowChanges.php record()`) (RG-HOOK-43) |
+| filtre `workflowpacks.ticket_changes` (1000 tickets, 5000 changements au plus) | `FlowReport.php:53, 159-190` | rattrapage par lots (`FlowChanges::backfill()`, commande `refreshglobal:flow-history`) ; lot coupé en deux s'il atteint 5000 changements (RG-HOOK-44) |
+| filtre `workflowpacks.flow_stats` | `FlowReport.php:58, 197` | flux supprimés depuis (`exists: false`) sur la page des statistiques (RG-HOOK-45) |
+| filtre `workflowpacks.untreated` | `FlowReport.php:63`, `Services/Engine/TempFlows.php:200-215` | e-mails non traités, toujours demandés pour les boîtes permises de l'utilisateur, puis limités par la permission « seulement assignés » (`Services/FlowTemp.php`) (RG-HOOK-46) |
+| filtre `workflowpacks.temp_flow` | `FlowReport.php:68`, `TempFlows.php:221-276` (codes d'erreur `error()` 273, droits `caller()` 266) | flux temporaire sans lancement, liste recalculée côté serveur, `edit_url` suivi seulement s'il pointe vers ce FreeScout (`WorkflowPacksLink::safeUrl()`) (RG-HOOK-47) |
+| filtre `workflowpacks.temp_flow_status` | `FlowReport.php:73`, `TempFlows.php:163-178` | état des flux temporaires créés depuis RefreshGlobal (RG-HOOK-48) |
+| action `workflowpacks.temp_flow_finished` ($flowId, $summary) | `TempFlows.php:153` | fin notée dans `refreshglobal_temp_flows` (RG-HOOK-49) |
+| `App\Module::isActive()`, `App\User::STATUS_ACTIVE` | `app/Module.php:43`, `app/User.php:62` | module actif ; bouton réservé aux administrateurs actifs (RG-CORE-25) |
+| action `conversations.before_delete_forever` | `app/Conversation.php:2174` (FreeScout 1.8.250) | lignes d'un ticket supprimé définitivement effacées (`FlowChanges::forget()`) (RG-HOOK-24) |
+| tables du module `refreshglobal_flow_changes`, `refreshglobal_temp_flows` | `Database/Migrations/2026_11_19_000000_create_refreshglobal_flow_tables.php` | statistiques et flux temporaires (RG-DB-16/17) |
+
+Les contrôles RG-HOOK-42…49 relisent les fichiers de Workflow Packs et sont **non applicables** sans lui ou avant 3.20
+(`module` / `module_min` de `Config/integration.php`, `CompatibilityChecker::optionalModulePath()`).

@@ -5,6 +5,40 @@ sont tenus à jour ensemble à chaque version.
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.20.0] — 2026-11-19
+
+### Ajouté
+- **Statistiques des flux** (seulement avec Workflow Packs 3.20+ et son moteur allumé) : page « Statistiques des flux »
+  (lien dans le panneau des vues de « Toutes les boîtes », section « Flux Workflow Packs »). Par flux, par boîte et par
+  origine (nouvel e-mail, appliqué aux tickets existants, agent IA, flux temporaire) sur N jours : tickets touchés,
+  **tickets fermés par les flux**, changements par type (statut, assignation, dossier, note, suppression, notification,
+  autre). Les flux supprimés et les flux temporaires sont signalés.
+  - Chaque changement annoncé par Workflow Packs (`workflowpacks.ticket_changed`) est validé et enregistré une seule
+    fois dans la nouvelle table `refreshglobal_flow_changes` (étape + champ uniques). Les lignes d’un ticket supprimé
+    définitivement sont effacées.
+  - **« Rattraper l’historique »** (administrateurs) et commande `php artisan refreshglobal:flow-history [--days=30]
+    [--mailbox=ID]` : lit ce que les flux ont fait avant, par lots de 1000 tickets, avec progression ; peut être relancé.
+- Page **E-mails non traités** : tickets qu’aucun flux n’a jamais modifiés (définition de Workflow Packs), pour les
+  boîtes de l’utilisateur. Les administrateurs ont **« Traiter avec un flux temporaire »** : la liste est recalculée
+  côté serveur (5000 au plus), Workflow Packs crée le flux sans le lancer et son éditeur s’ouvre. Chaque code d’erreur a
+  son message traduit ; l’état des flux temporaires et leur fin sont affichés.
+
+### Sécurité
+- Droits vérifiés à chaque requête : un utilisateur ne voit que les statistiques et les tickets non traités des boîtes
+  qu’il peut voir (et seulement ses tickets avec « seulement assignés ») ; flux temporaires et rattrapage réservés aux
+  administrateurs (route et contrôleur). L’adresse de l’éditeur donnée par Workflow Packs n’est suivie que si elle mène
+  à ce FreeScout. Aucun texte d’e-mail ou de note n’est enregistré.
+
+### Compatibilité
+- Sans Workflow Packs, avant 3.20 ou moteur éteint : rien n’apparaît, aucune erreur, aucune requête vers ses tables,
+  aucun écouteur, aucune tâche planifiée ; RefreshGlobal fonctionne comme avant. Contrôles RG-HOOK-42…49 (alors non
+  applicables), RG-CORE-25, RG-DB-16/17.
+
+### Migration
+- Nouvelles tables `refreshglobal_flow_changes` et `refreshglobal_temp_flows` (créées par la migration du module à
+  l’installation / mise à jour). Pour compter ce que les flux ont fait avant cette version : « Rattraper l’historique »
+  sur la page des statistiques, ou `php artisan refreshglobal:flow-history --days=N`.
+
 ## [1.19.0] — 2026-11-19
 
 ### Ajouté

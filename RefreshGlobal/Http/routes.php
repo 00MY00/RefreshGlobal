@@ -21,6 +21,12 @@ Route::group([
     Route::get('/search', $users + ['uses' => 'SearchController@search'])->name('refreshglobal.search');
     // automatic folders of Workflow Packs (when installed): overview
     Route::get('/folders', $users + ['uses' => 'AutoFoldersController@index'])->name('refreshglobal.folders');
+    // flows of Workflow Packs 3.20+ (404 without it): statistics, untreated e-mails; temporary flow and history
+    // backfill for administrators (also checked by the controller)
+    Route::get('/flows', $users + ['uses' => 'FlowsController@index'])->name('refreshglobal.flows');
+    Route::get('/flows/untreated', $users + ['uses' => 'FlowsController@untreated'])->name('refreshglobal.flows.untreated');
+    Route::post('/flows/temp', $admins + ['uses' => 'FlowsController@createTemp'])->name('refreshglobal.flows.temp');
+    Route::post('/flows/backfill', $admins + ['uses' => 'FlowsController@backfill'])->name('refreshglobal.flows.backfill');
     // details and raw text of a message (permission checked by the controller: the user can view the ticket)
     Route::get('/thread/{id}/details', $users + ['uses' => 'ThreadDetailsController@show'])->where('id', '[0-9]+')->name('refreshglobal.thread_details');
     Route::post('/language', $users + ['uses' => 'LanguageController@update'])->name('refreshglobal.language');
