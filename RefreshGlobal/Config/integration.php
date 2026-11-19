@@ -156,9 +156,8 @@ return [
         // optional official Tags module: the origin tags are copied there (Services/MailTags.php mirror())
         // flows of Workflow Packs 3.20+: is the module active, is the user an active administrator (temporary flow)
         'RG-CORE-25' => ['class' => 'App\Module', 'methods' => ['isActive'], 'constants' => ['App\User::STATUS_ACTIVE'], 'family' => 'hook_flows', 'severity' => 'warning', 'source' => 'app/Module.php:43, app/User.php:62'],
-        // new folder in the "Move to a folder" dialog (1.21.0): webklex Client::createFolder() / getFolders(), name in UTF7-IMAP
+        // new folder in the "Move to a folder" dialog (1.21.0): webklex Client::createFolder() / getFolders() (RG-CORE-27, Helper::mbConvertEncoding(), removed in 1.21.1: optional, absent from older FreeScout versions)
         'RG-CORE-26' => ['class' => 'Webklex\PHPIMAP\Client', 'methods' => ['createFolder', 'getFolders'], 'family' => 'hook_move', 'severity' => 'warning', 'source' => 'overrides/webklex/php-imap/src/Client.php:494,608'],
-        'RG-CORE-27' => ['class' => 'App\Misc\Helper', 'methods' => ['mbConvertEncoding'], 'family' => 'hook_move', 'severity' => 'warning', 'source' => 'app/Misc/Helper.php:1695'],
         'RG-CORE-18' => ['class' => 'Modules\Tags\Entities\Tag', 'methods' => ['attachByName'], 'module' => 'tags', 'family' => 'mailtags', 'severity' => 'warning', 'source' => 'Modules/Tags (used as by Modules/Refresh/Http/Controllers/NewTicketController.php:192)'],
     ],
 

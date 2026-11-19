@@ -8,6 +8,18 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) — versions: [
 Every published change gets a new version number: FreeScout's Manage › Modules page and UpdateGuard only offer an
 update when the version changes.
 
+## [1.21.1] — 2026-11-19
+
+### Fixed
+- `refreshglobal:check` reported **RG-CORE-27** (“`App\Misc\Helper::mbConvertEncoding()` missing”) on FreeScout versions
+  older than the one 1.21.0 was tested with. “New folder” now uses FreeScout's helper when it exists and PHP's own
+  `mb_convert_encoding()` otherwise (what older FreeScout versions use for IMAP folder names); the check RG-CORE-27 is
+  removed. “Move to a folder” was not affected.
+
+### Compatibility
+- “New folder” works on older FreeScout versions as long as webklex `Client::createFolder()` exists (RG-CORE-26);
+  otherwise it answers a clear message. No migration.
+
 ## [1.21.0] — 2026-11-19
 
 ### Added

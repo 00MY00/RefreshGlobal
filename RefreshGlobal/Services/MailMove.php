@@ -104,8 +104,8 @@ class MailMove
      * Creates a folder in the mailbox on the mail server (1.21.0), as a sub-folder of $parent (UTF-8 path of an existing
      * folder) or at the top level (''). At the top level, when every folder of the server is under INBOX (servers with
      * the "INBOX." namespace), the new folder goes under INBOX too. webklex Client::createFolder()
-     * (overrides/webklex/php-imap/src/Client.php:608), name in UTF7-IMAP like FreeScout (\Helper::mbConvertEncoding(),
-     * app/Misc/Helper.php:1695, as in \MailHelper::getImapFolder()).
+     * (overrides/webklex/php-imap/src/Client.php:608), name in UTF7-IMAP like FreeScout's \MailHelper::getImapFolder()
+     * (see utf7()).
      *
      * @return array the new folder ['path', 'label', 'tag'] (folders read again, cache renewed)
      * @throws \RuntimeException invalid name, unknown parent, folder already there, server error
@@ -148,7 +148,10 @@ class MailMove
             if (isset($existing[mb_strtolower($path)])) {
                 throw new \RuntimeException(__('refreshglobal::messages.move_new_exists'));
             }
-            $client->createFolder(\Helper::mbConvertEncoding($path, 'UTF7-IMAP', 'UTF-8'), false);
+            if (!method_exists($client, 'createFolder')) {
+                throw new \RuntimeException(__('refreshglobal::messages.move_new_failed'));
+            }
+            $client->createFolder(self::utf7($path), false);
         } finally {
             self::disconnect($client);
         }
@@ -158,6 +161,20 @@ class MailMove
             }
         }
         throw new \RuntimeException(__('refreshglobal::messages.move_new_failed'));
+    }
+
+    /**
+     * UTF-8 folder name to UTF7-IMAP, like \MailHelper::getImapFolder(): FreeScout's \Helper::mbConvertEncoding() when the
+     * installed FreeScout has it (newer versions, app/Misc/Helper.php:1695 in 1.8.250), PHP's own mb_convert_encoding()
+     * otherwise (what older versions of FreeScout used). 1.21.1: older FreeScout versions do not have the helper.
+     */
+    public static function utf7($path)
+    {
+        if (method_exists('App\Misc\Helper', 'mbConvertEncoding')) {
+            return \Helper::mbConvertEncoding($path, 'UTF7-IMAP', 'UTF-8');
+        }
+
+        return mb_convert_encoding($path, 'UTF7-IMAP', 'UTF-8');
     }
 
     /** Parent of a top-level folder: INBOX when every other folder is under it ("INBOX." namespace), else ''. */

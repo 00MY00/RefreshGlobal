@@ -265,6 +265,9 @@ class MailMoveTest extends TestCase
         $this->assertSame('success', $data['status']);
         $this->assertSame('INBOX.Factures.Réglé', $data['folder']['path']);
         $this->assertSame(['INBOX.Factures.R&AOk-gl&AOk-'], $this->server->created, 'UTF7-IMAP like FreeScout');
+        // 1.21.1: same name without FreeScout's helper (older FreeScout versions): PHP's own conversion
+        $this->assertSame('R&AOk-gl&AOk-', MailMove::utf7('Réglé'));
+        $this->assertSame(MailMove::utf7('Réglé'), mb_convert_encoding('Réglé', 'UTF7-IMAP', 'UTF-8'));
         $this->assertContains('INBOX.Factures.Réglé', array_column($data['folders'], 'path'), 'folders read again');
         // then the move into it works
         $r = $this->actingAs($this->s['bob'])->post(route('refreshglobal.move'), ['conversation_id' => $c->id, 'folder' => 'INBOX.Factures.Réglé']);

@@ -5,6 +5,18 @@ sont tenus à jour ensemble à chaque version.
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.21.1] — 2026-11-19
+
+### Corrigé
+- `refreshglobal:check` signalait **RG-CORE-27** (« `App\Misc\Helper::mbConvertEncoding()` introuvable ») sur les
+  versions de FreeScout plus anciennes que celle de test de la 1.21.0. « Nouveau dossier » utilise maintenant l'outil de
+  FreeScout s'il existe, sinon `mb_convert_encoding()` de PHP (ce que les anciennes versions de FreeScout utilisent pour
+  les noms de dossiers IMAP) ; le contrôle RG-CORE-27 est retiré. « Déplacer vers un dossier » n'était pas touché.
+
+### Compatibilité
+- « Nouveau dossier » fonctionne sur les anciennes versions de FreeScout tant que webklex `Client::createFolder()`
+  existe (RG-CORE-26) ; sinon il répond par un message clair. Aucune migration.
+
 ## [1.21.0] — 2026-11-19
 
 ### Ajouté

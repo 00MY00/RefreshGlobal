@@ -650,3 +650,10 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
   l'ouverture de la fenêtre (il couvrait le bouton « Créer » sur téléphone). Données de test remises en état.
 - Carte du tableau de bord : vérifiée par PHPUnit (rendu du tableau de bord) ; pas d'essai navigateur, Workflow Packs
   3.20 n'étant pas installé sur l'instance de test.
+
+## 42. RG-CORE-27 sur les versions plus anciennes de FreeScout (1.21.1, 2026-11-19)
+
+- Signalé sur une installation : `refreshglobal:check` → RG-CORE-27, `App\Misc\Helper::mbConvertEncoding()` absent
+  (FreeScout plus ancien que la 1.8.250 de l'instance de test). « Nouveau dossier » passe par `MailMove::utf7()` :
+  l'outil de FreeScout s'il existe, sinon `mb_convert_encoding()` de PHP (même résultat, vérifié par
+  `MailMoveTest::testCreateFolder`) ; contrôle RG-CORE-27 retiré.
