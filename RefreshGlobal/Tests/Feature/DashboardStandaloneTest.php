@@ -121,6 +121,53 @@ class DashboardStandaloneTest extends TestCase
     }
 
     /**
+     * Closed tickets (1.19.0): "Closed today" = the tickets of the "Resolved" figure, "Closed" = every closed ticket;
+     * both are tiles and quick views of the "All mailboxes" page, within the user's rights.
+     */
+    public function testClosedViews()
+    {
+        $p = $this->s['prefix'];
+        $closed = ['status' => Conversation::STATUS_CLOSED];
+        $today = Fixtures::conversation($this->s['support'], $p.'-CLOSED-TODAY', $closed + ['closed_at' => Carbon::now()->toDateTimeString()]);
+        $old = Fixtures::conversation($this->s['support'], $p.'-CLOSED-OLD', $closed + ['closed_at' => Carbon::now()->subDays(3)->toDateTimeString()]);
+        $hidden = Fixtures::conversation($this->s['billing'], $p.'-CLOSED-BILLING', $closed + ['closed_at' => Carbon::now()->toDateTimeString()]);
+        $base = function () {
+            return GlobalDashboard::baseQuery($this->s['bob'], [$this->s['support']->id, $this->s['sales']->id]);
+        };
+        $ids = function ($view) use ($base) {
+            return TicketViews::apply($base(), $view)->pluck('conversations.id')->all();
+        };
+        $this->assertContains($today->id, $ids('closed-today'));
+        $this->assertNotContains($old->id, $ids('closed-today'));
+        $this->assertContains($today->id, $ids('closed'));
+        $this->assertContains($old->id, $ids('closed'));
+        $this->assertNotContains($hidden->id, $ids('closed'), 'mailbox not allowed');
+        $this->assertTrue(TicketViews::exists('closed-today') && TicketViews::exists('closed'));
+
+        $tiles = [];
+        foreach (GlobalDashboard::tiles($base) as $tile) {
+            $tiles[$tile['key']] = $tile;
+        }
+        $summary = (new \Modules\RefreshGlobal\Services\Dashboard\Statistics($base))->summary();
+        $this->assertSame($summary['stats']['resolved'][0], $tiles['closed-today']['count'], 'same tickets as "Resolved"');
+        $this->assertSame(route('refreshglobal.tickets', ['rv' => 'closed']), $tiles['closed']['url']);
+        $this->assertNotContains($today->id, $ids('unresolved'), 'closed tickets stay out of the other views');
+
+        $r = $this->ticketsPage($this->s['bob'], ['rv' => 'closed-today']);
+        $this->seeIn($r, $p.'-CLOSED-TODAY');
+        $this->dontSeeIn($r, $p.'-CLOSED-OLD');
+        $this->dontSeeIn($r, $p.'-SUPPORT-OPEN');
+        $this->seeIn($r, 'rg-rview-chip');
+        $r = $this->ticketsPage($this->s['bob'], ['rv' => 'closed', 'mb' => [$this->s['billing']->id]]);
+        $this->dontSeeIn($r, $p.'-CLOSED-BILLING');
+        $r = $this->ticketsPage($this->s['bob'], ['rv' => 'closed']);
+        $this->seeIn($r, $p.'-CLOSED-OLD');
+        $this->dontSeeIn($r, $p.'-CLOSED-BILLING');
+
+        $this->seeIn($this->actingAs($this->s['bob'])->get(route('dashboard')), e(route('refreshglobal.tickets', ['rv' => 'closed-today'])));
+    }
+
+    /**
      * "Today" follows the time zone FreeScout stores its dates in (APP_TIMEZONE), whatever it is: a ticket created just
      * after midnight counts today, one created just before midnight counts yesterday (until 1.17.2 the bounds were
      * converted to UTC, shifting the day by the offset).

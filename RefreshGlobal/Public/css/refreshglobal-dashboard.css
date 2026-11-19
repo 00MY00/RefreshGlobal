@@ -19,7 +19,8 @@
 }
 
 /* tiles */
-.rg-dash-standalone .rf-tiles { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin: 0 0 12px; }
+.rg-dash-standalone .rf-tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 0 0 12px; }
+@media (min-width: 1600px) { .rg-dash-standalone .rf-tiles { grid-template-columns: repeat(8, 1fr); } }
 .rg-dash-standalone .rf-tile { display: flex; flex-direction: column; background: var(--rgd-card); border: 1px solid var(--rgd-border); border-radius: 5px; padding: 14px 16px; color: var(--rgd-text); text-decoration: none; transition: box-shadow .15s; }
 .rg-dash-standalone .rf-tile:hover, .rg-dash-standalone .rf-tile:focus { box-shadow: 0 4px 16px rgba(15, 23, 42, .10); color: var(--rgd-text); text-decoration: none; }
 .rg-dash-standalone .rf-tile-label { order: -1; font-size: 14px; font-weight: 500; margin-bottom: 8px; }
@@ -77,7 +78,6 @@
 
 @media (max-width: 1200px) {
     .rg-dash-standalone .rf-trends { grid-template-columns: 1fr; }
-    .rg-dash-standalone .rf-tiles { grid-template-columns: repeat(3, 1fr); }
 }
 @media (max-width: 767px) {
     .rg-dash-standalone .rf-tiles { grid-template-columns: repeat(2, 1fr); }

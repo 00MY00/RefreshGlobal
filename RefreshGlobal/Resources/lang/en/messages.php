@@ -378,6 +378,8 @@ return [
     'dash_axis' => 'Date created - Hour of the day',
     'dash_undelivered_title' => 'Undelivered e-mails',
     'dash_undelivered' => 'Undelivered',
+    'dash_closed_today' => 'Closed today',
+    'dash_closed' => 'Closed',
     'dash_unresolved_tickets' => 'Unresolved tickets',
     'dash_view_all' => 'View all tickets',
     'dash_view_details' => 'View details',

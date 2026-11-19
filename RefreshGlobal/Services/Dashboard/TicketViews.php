@@ -19,7 +19,7 @@ use Carbon\Carbon;
 class TicketViews
 {
     /** Views offered, in the order of the tiles. */
-    const KEYS = ['unresolved', 'overdue', 'due-today', 'open', 'pending', 'unassigned', 'new', 'undelivered'];
+    const KEYS = ['unresolved', 'overdue', 'due-today', 'open', 'pending', 'unassigned', 'new', 'undelivered', 'closed-today', 'closed'];
 
     /** Is this a known view key? */
     public static function exists($view)
@@ -39,6 +39,8 @@ class TicketViews
             'unassigned'  => 'dash_unassigned',
             'new'         => 'dash_new',
             'undelivered' => 'dash_undelivered',
+            'closed-today' => 'dash_closed_today',
+            'closed'      => 'dash_closed',
         ];
 
         return isset($keys[$view]) ? __('refreshglobal::messages.'.$keys[$view]) : (string) $view;
@@ -71,6 +73,10 @@ class TicketViews
                 return self::whereDueToday($query);
             case 'undelivered':
                 return self::whereUndelivered($query);
+            case 'closed-today':
+                return self::whereClosedToday($query);
+            case 'closed':
+                return $query->where('conversations.status', Conversation::STATUS_CLOSED);
         }
 
         return $query;
@@ -110,6 +116,20 @@ class TicketViews
                 $now->copy()->subHours($hours),
                 $now->copy()->endOfDay()->subHours($hours),
             ]);
+    }
+
+    /**
+     * Tickets closed today and still closed: the same tickets as the "Resolved" figure of "Today's trends"
+     * (Statistics::resolved()). The day is FreeScout's application time zone (APP_TIMEZONE), the one closed_at is
+     * stored in.
+     */
+    protected static function whereClosedToday($query)
+    {
+        $tz = config('app.timezone') ?: date_default_timezone_get();
+        $today = Carbon::now($tz);
+
+        return $query->where('conversations.status', Conversation::STATUS_CLOSED)
+            ->whereBetween('conversations.closed_at', [$today->copy()->startOfDay(), $today->copy()->endOfDay()]);
     }
 
     /** No published agent message on the ticket yet. */

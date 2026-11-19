@@ -372,6 +372,8 @@ return [
     'dash_axis' => 'Data di creazione - Ora del giorno',
     'dash_undelivered_title' => 'E-mail non consegnate',
     'dash_undelivered' => 'Non consegnate',
+    'dash_closed_today' => 'Chiusi oggi',
+    'dash_closed' => 'Chiusi',
     'dash_unresolved_tickets' => 'Ticket non risolti',
     'dash_view_all' => 'Vedi tutti i ticket',
     'dash_view_details' => 'Vedi dettagli',

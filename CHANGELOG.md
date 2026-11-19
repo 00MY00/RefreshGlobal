@@ -8,6 +8,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) — versions: [
 Every published change gets a new version number: FreeScout's Manage › Modules page and UpdateGuard only offer an
 update when the version changes.
 
+## [1.19.0] — 2026-11-19
+
+### Added
+- **Closed tickets on the dashboard of all mailboxes**: two new tiles, **“Closed today”** (the tickets counted by the
+  “Resolved” figure of “Today's trends”, day in FreeScout's time zone) and **“Closed”** (every closed ticket). Each
+  opens the “All mailboxes” list on that view (quick views `rv=closed-today` and `rv=closed`, also usable in saved
+  views), within the user's rights (mailboxes, “only assigned” permission). Works with and without Refresh.
+
+### Changed
+- The dashboard now has 8 tiles: two rows of 4 (one row of 8 on screens 1600 px wide or more, two columns on phones).
+
 ## [1.18.0] — 2026-11-18
 
 ### Added

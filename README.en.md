@@ -151,7 +151,7 @@ Updates: `sudo git -C /opt/RefreshGlobal pull`, then the same command with `--up
 | Setting | Default | Effect |
 |---|---|---|
 | "Tickets" entry | off | replaces Refresh's "Tickets" entry by "All mailboxes" |
-| Dashboard of all mailboxes | on | Refresh's "My dashboard" covers all the user's mailboxes; without Refresh, the same dashboard is shown above FreeScout's |
+| Dashboard of all mailboxes | on | Refresh's "My dashboard" covers all the user's mailboxes; without Refresh, the same dashboard is shown above FreeScout's. Tiles open the filtered list, including "Closed today" and "Closed" (1.19.0) |
 | First response / resolution target | 24 h / 72 h | SLA targets of the dashboard ("Overdue", "Due: today", "Resolved within SLA") when Refresh is not active; with Refresh, Refresh's |
 | Mailbox above each ticket | on | name and address of the mailbox above the subject (list and dashboard) |
 | Go to the next ticket | off | after a deletion: off = back to "All mailboxes" (last filters), on = next ticket of that list |

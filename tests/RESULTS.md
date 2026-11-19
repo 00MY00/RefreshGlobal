@@ -609,3 +609,13 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
   **échoue avec l’ancien code**, passe avec la correction.
 - PHPUnit : **174 tests, 0 échec** (2 ignorés) ; `php -l` PHP 7.1 et 8.4 sans erreur ni dépréciation ;
   `tools/validate-interop.php` OK.
+
+## 39. Tickets fermés dans le tableau de bord (1.19.0, 2026-11-19)
+
+- Tuiles « Closed today » et « Closed » ; vues rapides `rv=closed-today` / `rv=closed`. « Closed today » = même nombre
+  que « Resolved » (test), boîte non permise jamais comptée ni listée, même en forçant `mb[]`.
+- Scénario navigateur (base sauvegardée puis restaurée, 2 tickets fermés aujourd’hui et 1 il y a 3 jours) en mode
+  **natif** (Refresh 1.9.4) et **sans Refresh**, à 1700, 1440, 900 et 390 px : 8 tuiles, 1 / 2 / 2 / 4 rangées, aucun
+  débordement horizontal ; chaque tuile ouvre la liste avec la pastille de la vue et le même total (2 et 35) ;
+  aucune erreur JavaScript.
+- PHPUnit : **175 tests, 0 échec** (2 ignorés) ; `php -l` PHP 7.1 et 8.4 sans erreur.

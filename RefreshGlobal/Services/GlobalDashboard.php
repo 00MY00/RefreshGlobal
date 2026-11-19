@@ -66,7 +66,7 @@ class GlobalDashboard
     }
 
     /** Tiles, in their order. */
-    const TILES = ['unresolved', 'overdue', 'due-today', 'open', 'pending', 'unassigned'];
+    const TILES = ['unresolved', 'overdue', 'due-today', 'open', 'pending', 'unassigned', 'closed-today', 'closed'];
 
     /** Quick views the "All mailboxes" page can filter on (parameter rv). */
     const VIEWS = TicketViews::KEYS;

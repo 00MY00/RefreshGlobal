@@ -240,7 +240,8 @@ Everything above works without Refresh (contract §2.1). The dashboard of all ma
 (`Services/Dashboard/`); without Refresh it is shown above FreeScout's dashboard with
 `Public/css/refreshglobal-dashboard.css` (see the table above for the placements and SLA sources). Its quick views
 (`unresolved`, `overdue`, `due-today`, `open`, `pending`, `unassigned`, `new`, `undelivered`) have the same meaning as
-Refresh's views of the same name.
+Refresh's views of the same name; `closed-today` (closed today, the “Resolved” figure) and `closed` (every closed ticket,
+1.19.0) are RefreshGlobal's own.
 
 ## 5. What RefreshGlobal consumes from Refresh (optional)
 

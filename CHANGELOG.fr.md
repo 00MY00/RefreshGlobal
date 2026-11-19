@@ -5,6 +5,19 @@ sont tenus à jour ensemble à chaque version.
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.19.0] — 2026-11-19
+
+### Ajouté
+- **Tickets fermés dans le tableau de bord de toutes les boîtes** : deux nouvelles tuiles, **« Fermés aujourd’hui »**
+  (les tickets comptés par le chiffre « Résolu » des « Tendances du jour », journée dans le fuseau de FreeScout) et
+  **« Fermés »** (tous les tickets fermés). Chacune ouvre la liste « Toutes les boîtes » sur cette vue (vues rapides
+  `rv=closed-today` et `rv=closed`, utilisables aussi dans les vues enregistrées), dans les droits de l’utilisateur
+  (boîtes, permission « seulement assignés »). Fonctionne avec et sans Refresh.
+
+### Modifié
+- Le tableau de bord compte désormais 8 tuiles : deux rangées de 4 (une rangée de 8 sur les écrans de 1600 px ou plus,
+  deux colonnes sur téléphone).
+
 ## [1.18.0] — 2026-11-18
 
 ### Ajouté

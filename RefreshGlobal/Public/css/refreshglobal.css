@@ -360,3 +360,9 @@
 .rg-back-button { display: inline-flex; align-items: center; gap: 6px; max-width: 220px; white-space: nowrap; }
 .rg-back-button .rg-back-label { overflow: hidden; text-overflow: ellipsis; }
 @media (max-width: 767px) { .rg-back-button { max-width: 160px; } }
+
+/* Dashboard of all mailboxes in Refresh's page: 8 tiles (1.19.0, "Closed today" and "Closed") in two even rows of 4,
+   one row on wide screens; Refresh's phone layout (body.rf-m, 2 columns) stays in charge on phones */
+.rf-dash.rg-dash .rf-tiles { grid-template-columns: repeat(4, 1fr); }
+@media (min-width: 1600px) { .rf-dash.rg-dash .rf-tiles { grid-template-columns: repeat(8, 1fr); } }
+@media (max-width: 767px) { .rf-dash.rg-dash .rf-tiles { grid-template-columns: repeat(2, 1fr); } }

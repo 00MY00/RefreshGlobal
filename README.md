@@ -37,7 +37,8 @@ Dans Gérer › Modules :
   colonne en vue tableau) ; peut être masquée dans les réglages.
 - **« Mon tableau de bord » de Refresh sur toutes les boîtes** : Refresh seul n'affiche que la première boîte ; le
   module affiche le même tableau de bord (même présentation) avec les chiffres et les tickets de toutes les boîtes de
-  l'utilisateur. Les tuiles mènent à « Toutes les boîtes », filtrée sur la vue Refresh correspondante.
+  l'utilisateur. Les tuiles mènent à « Toutes les boîtes », filtrée sur la vue correspondante, dont « Fermés
+  aujourd'hui » et « Fermés » (1.19.0).
 - **Suppression d'un ticket** : retour à « Toutes les boîtes » avec les derniers filtres (ou ticket suivant de cette
   liste) ; au choix corbeille (par défaut) ou suppression définitive.
 - **Compteurs** par boîte et par statut, calculés en une requête groupée.

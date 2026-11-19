@@ -372,6 +372,8 @@ return [
     'dash_axis' => 'Aanmaakdatum - Uur van de dag',
     'dash_undelivered_title' => 'Niet-afgeleverde e-mails',
     'dash_undelivered' => 'Niet afgeleverd',
+    'dash_closed_today' => 'Vandaag gesloten',
+    'dash_closed' => 'Gesloten',
     'dash_unresolved_tickets' => 'Onopgeloste tickets',
     'dash_view_all' => 'Alle tickets bekijken',
     'dash_view_details' => 'Details bekijken',
