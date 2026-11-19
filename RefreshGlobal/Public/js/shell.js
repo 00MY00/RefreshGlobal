@@ -832,29 +832,48 @@
             return;
         }
         $('.rg-move').remove();
+        // a message of a previous move would cover the bottom of the dialog on phones
+        $('.rg-toast').remove();
         var box = $('<div class="rg-move" role="dialog" aria-modal="true"></div>');
         var panel = $('<div class="rg-move-panel"></div>');
         var head = $('<div class="rg-move-head"></div>').append($('<strong></strong>').text(ids.length > 1 ? M.t.title_many.replace(':count', ids.length) : M.t.title));
         var x = $('<button type="button" class="rg-move-x" aria-label="×">&times;</button>');
-        head.append(x);
+        // 1.21.0: read the folders again from the mail server (they are kept 10 minutes)
+        var reload = $('<button type="button" class="rg-move-reload"><i class="glyphicon glyphicon-refresh" aria-hidden="true"></i></button>')
+            .attr('title', M.t.refresh || '').attr('aria-label', M.t.refresh || '');
+        head.append($('<span class="rg-move-tools"></span>').append(reload, x));
         var search = $('<input type="search" class="form-control input-sm rg-move-search" autocomplete="off">').attr('placeholder', M.t.search);
         var list = $('<div class="rg-move-list"><p class="rg-muted"><i class="glyphicon glyphicon-refresh glyphicon-spin"></i> ' + '</p></div>');
         var note = $('<p class="rg-muted rg-move-note"></p>').text(M.t.note);
-        panel.append(head, search, list, note);
+        // 1.21.0: new folder on the mail server, then the tickets are moved into it
+        var newBtn = $('<button type="button" class="btn btn-link rg-move-new-btn"><i class="glyphicon glyphicon-plus" aria-hidden="true"></i> </button>');
+        newBtn.append($('<span></span>').text(M.t['new'] || ''));
+        var form = $('<form class="rg-move-new" hidden></form>');
+        var nameIn = $('<input type="text" class="form-control input-sm rg-move-new-name" maxlength="100" required autocomplete="off">')
+            .attr('placeholder', M.t.new_name || '').attr('aria-label', M.t.new_name || '');
+        var parentSel = $('<select class="form-control input-sm rg-move-new-parent"></select>').attr('aria-label', M.t.new_parent || '');
+        var formErr = $('<p class="text-danger rg-move-new-error" hidden></p>');
+        var createBtn = $('<button type="submit" class="btn btn-primary btn-sm rg-move-new-create"></button>').text(M.t.new_create || '');
+        var cancelBtn = $('<button type="button" class="btn btn-default btn-sm rg-move-new-cancel"></button>').text(M.t.cancel || '');
+        form.append(nameIn, $('<label class="rg-move-new-label"></label>').text(M.t.new_parent || '').append(parentSel), formErr,
+            $('<div class="rg-move-new-actions"></div>').append(createBtn, cancelBtn));
+        if (!M.create) {
+            newBtn.hide();
+        }
+        panel.append(head, search, list, newBtn, form, note);
         box.append(panel);
         var close = function () { box.remove(); $(document).off('keydown.rgmove'); };
         x.on('click', close);
         box.on('click', function (e) { if (e.target === box[0]) { close(); } });
         $(document).on('keydown.rgmove', function (e) { if (e.key === 'Escape') { close(); } });
         $('body').append(box);
-        $.ajax({ url: M.folders, data: { conversation_id: ids[0] }, dataType: 'json' }).done(function (r) {
+
+        var current = [];
+        var busy = false;
+        var render = function (folders) {
             list.empty();
-            if (!r || r.status !== 'success') {
-                list.append($('<p class="text-danger"></p>').text((r && r.message) || M.t.error));
-                return;
-            }
-            var current = (r.current || []).map(function (c) { return String(c).toLowerCase(); });
-            $.each(r.folders || [], function (i, f) {
+            parentSel.empty().append($('<option value=""></option>').text(M.t.new_top || ''));
+            $.each(folders || [], function (i, f) {
                 var here = current.indexOf(String(f.path).toLowerCase()) >= 0;
                 var b = $('<button type="button" class="rg-move-folder"></button>').attr('data-path', f.path).attr('data-label', String(f.label).toLowerCase())
                     .append('<i class="glyphicon glyphicon-folder-close" aria-hidden="true"></i> ', $('<span></span>').text(f.label));
@@ -862,19 +881,50 @@
                     b.addClass('rg-move-here').prop('disabled', ids.length === 1).append($('<small></small>').text(M.t.current));
                 }
                 list.append(b);
+                parentSel.append($('<option></option>').attr('value', f.path).text(f.label));
             });
+            search.trigger('input');
+        };
+        var load = function (fresh, quiet) {
+            reload.find('i').addClass('glyphicon-spin');
+            reload.prop('disabled', true);
+            return $.ajax({ url: M.folders, data: { conversation_id: ids[0], fresh: fresh ? 1 : 0 }, dataType: 'json' }).done(function (r) {
+                if (busy) {
+                    return; // a move started meanwhile: keep the list as it is
+                }
+                if (!r || r.status !== 'success') {
+                    if (!quiet) {
+                        list.empty().append($('<p class="text-danger"></p>').text((r && r.message) || M.t.error));
+                    }
+                    return;
+                }
+                current = (r.current || []).map(function (c) { return String(c).toLowerCase(); });
+                render(r.folders);
+            }).fail(function (xhr) {
+                if (!quiet && !busy) {
+                    list.empty().append($('<p class="text-danger"></p>').text((xhr.responseJSON && xhr.responseJSON.message) || M.t.error));
+                }
+            }).always(function () {
+                reload.find('i').removeClass('glyphicon-spin');
+                reload.prop('disabled', false);
+            });
+        };
+        // the folders kept on the server are shown at once, then read again from the mail server (new or renamed folders)
+        load(false, false).done(function (r) {
             search.trigger('focus');
-        }).fail(function (xhr) {
-            list.empty().append($('<p class="text-danger"></p>').text((xhr.responseJSON && xhr.responseJSON.message) || M.t.error));
+            if (r && r.status === 'success') {
+                load(true, true);
+            }
         });
+        reload.on('click', function () { load(true, false); });
         search.on('input', function () {
             var q = $.trim(search.val()).toLowerCase();
             list.find('.rg-move-folder').each(function () { $(this).toggle(!q || $(this).attr('data-label').indexOf(q) >= 0); });
         });
-        list.on('click', '.rg-move-folder', function () {
-            var path = $(this).attr('data-path');
+
+        var moveTo = function (path) {
+            busy = true;
             list.find('.rg-move-folder').prop('disabled', true);
-            $(this).append(' <i class="glyphicon glyphicon-refresh glyphicon-spin"></i>');
             $.ajax({ url: M.move, method: 'POST', dataType: 'json', data: { _token: csrf(), folder: path, conversation_ids: ids } }).done(function (r) {
                 close();
                 if (!r || r.status !== 'success') {
@@ -892,6 +942,42 @@
             }).fail(function (xhr) {
                 close();
                 toast((xhr.responseJSON && xhr.responseJSON.message) || M.t.error);
+            });
+        };
+        list.on('click', '.rg-move-folder', function () {
+            $(this).append(' <i class="glyphicon glyphicon-refresh glyphicon-spin"></i>');
+            moveTo($(this).attr('data-path'));
+        });
+
+        newBtn.on('click', function () {
+            newBtn.hide();
+            form.prop('hidden', false);
+            nameIn.trigger('focus');
+        });
+        cancelBtn.on('click', function () {
+            form.prop('hidden', true);
+            formErr.prop('hidden', true);
+            newBtn.show();
+        });
+        form.on('submit', function (e) {
+            e.preventDefault();
+            var name = $.trim(nameIn.val());
+            if (!name || busy) {
+                return;
+            }
+            formErr.prop('hidden', true);
+            createBtn.prop('disabled', true).prepend('<i class="glyphicon glyphicon-refresh glyphicon-spin"></i> ');
+            $.ajax({ url: M.create, method: 'POST', dataType: 'json', data: { _token: csrf(), conversation_id: ids[0], name: name, parent: parentSel.val() || '' } }).done(function (r) {
+                if (!r || r.status !== 'success' || !r.folder) {
+                    formErr.text((r && r.message) || M.t.error).prop('hidden', false);
+                    return;
+                }
+                render(r.folders);
+                moveTo(r.folder.path);
+            }).fail(function (xhr) {
+                formErr.text((xhr.responseJSON && xhr.responseJSON.message) || M.t.error).prop('hidden', false);
+            }).always(function () {
+                createBtn.prop('disabled', false).find('.glyphicon-spin').remove();
             });
         });
     };

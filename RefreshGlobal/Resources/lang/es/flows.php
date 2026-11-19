@@ -83,4 +83,11 @@ return [
     'state_done'                   => 'Terminado',
     'state_deleted'                => 'Terminado y eliminado',
     'reason_expired'               => 'caducado',
+    // 1.21.0: tile of the statistics page, card of the dashboard of all mailboxes
+    'handled_tickets'              => 'Tickets tratados por los flujos',
+    'dash_handled'                 => 'Tratados',
+    'dash_closed'                  => 'Cerrados',
+    'dash_24h'                     => 'Últimas 24 horas',
+    'dash_days'                    => 'Últimos :days días',
+    'dash_help'                    => 'Tickets que un flujo de Workflow Packs ha modificado (estado, asignación, carpeta, nota…) en sus buzones.',
 ];

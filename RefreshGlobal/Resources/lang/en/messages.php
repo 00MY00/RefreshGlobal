@@ -367,6 +367,18 @@ return [
     'move_nothing' => 'Nothing to move: the e-mails are already in this folder.',
     'move_not_found' => '1 e-mail was not found on the server.|:count e-mails were not found on the server.',
     'move_undone' => 'Move undone.|Move undone (:count e-mails back).',
+    // 1.21.0: refresh the folders, new folder
+    'move_refresh' => 'Refresh the folders',
+    'move_new' => 'New folder',
+    'move_new_name' => 'Name of the new folder',
+    'move_new_parent' => 'Inside',
+    'move_new_top' => 'Top level',
+    'move_new_create' => 'Create and move here',
+    'move_new_cancel' => 'Cancel',
+    'move_new_invalid' => 'Folder name: 1 to :max characters, without the folder separator, * % " or \\.',
+    'move_new_exists' => 'A folder with this name already exists here.',
+    'move_new_failed' => 'The folder was not created on the mail server.',
+    'move_new_done' => 'Folder “:folder” created.',
     // dashboard and list strings of the module's own (before: Refresh's / FreeScout's, fr and de only) (1.16.2)
     'dash_resolved' => 'Resolved',
     'dash_received' => 'Received',

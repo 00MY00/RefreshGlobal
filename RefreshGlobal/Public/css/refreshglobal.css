@@ -338,6 +338,16 @@
 .rg-move-folder small { margin-left: auto; color: #64748b; }
 .rg-move-folder.rg-move-here { color: #64748b; }
 .rg-move-note { margin: 0; }
+.rg-move-tools { display: inline-flex; align-items: center; gap: 4px; }
+.rg-move-reload { border: 0; background: none; color: #64748b; font-size: 15px; line-height: 1; padding: 4px 6px; border-radius: 6px; }
+.rg-move-reload:hover:not(:disabled) { background: #f1f5f9; color: #0f172a; }
+.rg-move-new-btn { align-self: flex-start; padding: 6px 4px; text-decoration: none !important; }
+.rg-move-new { display: flex; flex-direction: column; gap: 6px; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; }
+.rg-move-new[hidden], .rg-move-new-error[hidden] { display: none; }
+.rg-move-new-label { display: flex; flex-direction: column; gap: 4px; margin: 0; font-weight: 500; }
+.rg-move-new-error { margin: 0; }
+.rg-move-new-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.rg-move-new-actions .btn { white-space: normal; }
 .rg-move-btn .glyphicon { margin-right: 2px; }
 .rg-m-move .rg-m-move-icon { width: 22px; text-align: center; color: #475569; font-size: 16px; }
 .rg-moved { display: inline-block; margin: 2px 0 0 6px; padding: 0 6px; border-radius: 9px; background: #e0f2fe; color: #075985; font-size: 11.5px; }
@@ -352,6 +362,10 @@
     .rg-move-panel { width: 100vw; max-height: 85vh; border-radius: 14px 14px 0 0; padding: 16px 16px 24px; }
     .rg-move-folder { padding: 13px 10px; font-size: 16px; }
     .rg-move-search { font-size: 16px; height: 40px; }
+    .rg-move-reload { min-width: 44px; min-height: 44px; }
+    .rg-move-new-btn { min-height: 44px; }
+    .rg-move-new .form-control { font-size: 16px; height: 44px; }
+    .rg-move-new-actions .btn { flex: 1 1 auto; min-height: 44px; }
     .rg-toast { bottom: 84px; }
 }
 
@@ -383,6 +397,24 @@
 .rg-flows-statuses { flex-direction: row; flex-wrap: wrap; align-items: center; border: 0; padding: 0; }
 .rg-flows-statuses legend { width: 100%; font-size: inherit; border: 0; margin: 0 0 4px; font-weight: 500; }
 .rg-flows-check { flex-direction: row !important; align-items: center; gap: 6px !important; font-weight: normal !important; margin-right: 12px !important; }
+/* 1.21.0: "Tickets handled by the flows" card of the dashboard of all mailboxes (Workflow Packs 3.20+ only) */
+.rg-dash .rg-dash-flows { padding: 16px; margin-bottom: 12px; }
+.rg-dash-flows-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.rg-dash-flows-links { display: flex; gap: 8px; flex-wrap: wrap; }
+.rg-dash-flows-links .rf-btn { display: inline-flex; align-items: center; min-height: 32px; padding: 4px 12px; border: 1px solid #cbd5e1; border-radius: 5px; text-decoration: none; white-space: normal; }
+.rg-dash-flows-periods { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.rg-dash-flows-period { display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; border: 1px solid #e2e8f0; border-radius: 5px; color: inherit; text-decoration: none !important; min-width: 0; }
+.rg-dash-flows-period:hover { background: #f8fafc; }
+.rg-dash-flows-label { color: #475569; font-size: 13px; }
+.rg-dash-flows-handled { font-size: 24px; font-weight: 700; }
+.rg-dash-flows-closed { color: #15803d; }
+@media (max-width: 767px) {
+    .rg-dash-flows-periods { grid-template-columns: 1fr; gap: 8px; }
+    .rg-dash-flows-period { flex-direction: row; flex-wrap: wrap; align-items: baseline; justify-content: space-between; min-height: 44px; }
+    .rg-dash-flows-label { width: 100%; }
+    .rg-dash-flows-links, .rg-dash-flows-links .rf-btn { width: 100%; }
+    .rg-dash-flows-links .rf-btn { min-height: 44px; justify-content: center; }
+}
 .rg-flows-tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 12px 0 20px; }
 .rg-flows-tile { display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; background: #fff; border: 1px solid #e2e8f0; border-radius: 5px; }
 .rg-flows-tile-label { color: #475569; }

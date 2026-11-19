@@ -361,6 +361,18 @@ return [
     'move_nothing' => 'Nichts zu verschieben: die E-Mails sind bereits in diesem Ordner.',
     'move_not_found' => '1 E-Mail wurde auf dem Server nicht gefunden.|:count E-Mails wurden auf dem Server nicht gefunden.',
     'move_undone' => 'Verschieben rückgängig gemacht.|Verschieben rückgängig gemacht (:count E-Mails zurück).',
+    // 1.21.0: refresh the folders, new folder
+    'move_refresh' => 'Ordner aktualisieren',
+    'move_new' => 'Neuer Ordner',
+    'move_new_name' => 'Name des neuen Ordners',
+    'move_new_parent' => 'In',
+    'move_new_top' => 'Oberste Ebene',
+    'move_new_create' => 'Erstellen und hierher verschieben',
+    'move_new_cancel' => 'Abbrechen',
+    'move_new_invalid' => 'Ordnername: 1 bis :max Zeichen, ohne Ordnertrennzeichen, * % " oder \\.',
+    'move_new_exists' => 'Ein Ordner mit diesem Namen existiert hier bereits.',
+    'move_new_failed' => 'Der Ordner wurde auf dem Mailserver nicht erstellt.',
+    'move_new_done' => 'Ordner „:folder“ erstellt.',
     // dashboard and list strings of the module's own (before: Refresh's / FreeScout's, fr and de only) (1.16.2)
     'dash_resolved' => 'Gelöst',
     'dash_received' => 'Empfangen',

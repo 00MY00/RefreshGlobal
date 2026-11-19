@@ -361,6 +361,18 @@ return [
     'move_nothing' => 'Niente da spostare: le e-mail sono già in questa cartella.',
     'move_not_found' => '1 e-mail non trovata sul server.|:count e-mail non trovate sul server.',
     'move_undone' => 'Spostamento annullato.|Spostamento annullato (:count e-mail ripristinate).',
+    // 1.21.0: refresh the folders, new folder
+    'move_refresh' => 'Aggiorna le cartelle',
+    'move_new' => 'Nuova cartella',
+    'move_new_name' => 'Nome della nuova cartella',
+    'move_new_parent' => 'Dentro',
+    'move_new_top' => 'Primo livello',
+    'move_new_create' => 'Crea e sposta qui',
+    'move_new_cancel' => 'Annulla',
+    'move_new_invalid' => 'Nome della cartella: da 1 a :max caratteri, senza il separatore di cartelle, * % " o \\.',
+    'move_new_exists' => 'Esiste già una cartella con questo nome qui.',
+    'move_new_failed' => 'La cartella non è stata creata sul server di posta.',
+    'move_new_done' => 'Cartella «:folder» creata.',
     // dashboard and list strings of the module's own (before: Refresh's / FreeScout's, fr and de only) (1.16.2)
     'dash_resolved' => 'Risolti',
     'dash_received' => 'Ricevuti',

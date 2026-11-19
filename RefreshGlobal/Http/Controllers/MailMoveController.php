@@ -34,6 +34,32 @@ class MailMoveController extends Controller
             'current' => array_values(array_unique(array_filter(MailMove::currentFolders($conversation))))]);
     }
 
+    /**
+     * New folder in the mailbox of a ticket (1.21.0): the mailbox comes from the ticket, checked like a move (feature on,
+     * user may change the ticket, IMAP mailbox); answers the new folder and the folders read again.
+     */
+    public function createFolder(Request $request)
+    {
+        $this->validate($request, ['conversation_id' => 'required|integer', 'name' => 'required|string|max:'.MailMove::MAX_NAME,
+            'parent' => 'nullable|string|max:500']);
+        $conversation = $this->conversation($request->input('conversation_id'));
+        if (!$conversation) {
+            return $this->fail(__('refreshglobal::messages.move_forbidden'), 403);
+        }
+        try {
+            $folder = MailMove::createFolder($conversation->mailbox, $request->input('name'), (string) $request->input('parent', ''));
+        } catch (\RuntimeException $e) {
+            return $this->fail($e->getMessage());
+        } catch (\Throwable $e) {
+            \Log::warning('[RefreshGlobal] [mail-move] create folder: '.get_class($e));
+
+            return $this->fail(__('refreshglobal::messages.move_server_error', ['error' => $e->getMessage()]));
+        }
+
+        return response()->json(['status' => 'success', 'folder' => $folder, 'folders' => MailMove::folders($conversation->mailbox),
+            'message' => __('refreshglobal::messages.move_new_done', ['folder' => $folder['label']])]);
+    }
+
     /** Moves the e-mails of one or several tickets (conversation_id or conversation_ids[]) to a folder. */
     public function move(Request $request)
     {

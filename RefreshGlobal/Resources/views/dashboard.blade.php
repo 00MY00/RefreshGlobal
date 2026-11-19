@@ -69,6 +69,31 @@
         </div>
     </div>
 
+    @if (!empty($flows))
+        {{-- Workflow Packs 3.20+ only (GlobalDashboard::flows(), FlowChanges::dashboard()): tickets handled by the flows --}}
+        <div class="rf-card rg-dash-flows">
+            <div class="rg-dash-flows-head">
+                <div>
+                    <div class="rf-card-title">{{ __('refreshglobal::flows.handled_tickets') }}</div>
+                    <div class="rf-widget-sub">{{ __('refreshglobal::flows.dash_help') }}</div>
+                </div>
+                <div class="rg-dash-flows-links">
+                    <a href="{{ route('refreshglobal.flows') }}" class="rf-btn">{{ __('refreshglobal::flows.stats_title') }}</a>
+                    <a href="{{ route('refreshglobal.flows.untreated') }}" class="rf-btn">{{ __('refreshglobal::flows.untreated_title') }}</a>
+                </div>
+            </div>
+            <div class="rg-dash-flows-periods">
+                @foreach ($flows as $fl)
+                    <a href="{{ $fl['url'] }}" class="rg-dash-flows-period" data-days="{{ $fl['days'] }}">
+                        <span class="rg-dash-flows-label">{{ $fl['days'] === 1 ? __('refreshglobal::flows.dash_24h') : __('refreshglobal::flows.dash_days', ['days' => $fl['days']]) }}</span>
+                        <span class="rg-dash-flows-n"><strong class="rg-dash-flows-handled">{{ $fl['tickets'] }}</strong> {{ __('refreshglobal::flows.dash_handled') }}</span>
+                        <span class="rg-dash-flows-c"><strong class="rg-dash-flows-closed">{{ $fl['closed'] }}</strong> {{ __('refreshglobal::flows.dash_closed') }}</span>
+                    </a>
+                @endforeach
+            </div>
+        </div>
+    @endif
+
     <div class="rf-card rf-dash-list">
         <div class="rf-dash-list-heading">
             <h3>{{ __('refreshglobal::messages.dash_unresolved_tickets') }} <small>{{ $conversations->total() }}</small></h3>

@@ -83,4 +83,11 @@ return [
     'state_done'                   => 'Fertig',
     'state_deleted'                => 'Beendet und gelöscht',
     'reason_expired'               => 'abgelaufen',
+    // 1.21.0: tile of the statistics page, card of the dashboard of all mailboxes
+    'handled_tickets'              => 'Von den Flows bearbeitete Tickets',
+    'dash_handled'                 => 'Bearbeitet',
+    'dash_closed'                  => 'Geschlossen',
+    'dash_24h'                     => 'Letzte 24 Stunden',
+    'dash_days'                    => 'Letzte :days Tage',
+    'dash_help'                    => 'Tickets, die ein Workflow-Packs-Flow in Ihren Postfächern geändert hat (Status, Zuweisung, Ordner, Notiz…).',
 ];

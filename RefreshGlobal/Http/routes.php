@@ -37,6 +37,7 @@ Route::group([
     Route::get('/move/folders', $users + ['uses' => 'MailMoveController@folders'])->name('refreshglobal.move.folders');
     Route::post('/move', $users + ['uses' => 'MailMoveController@move'])->name('refreshglobal.move');
     Route::post('/move/undo', $users + ['uses' => 'MailMoveController@undo'])->name('refreshglobal.move.undo');
+    Route::post('/move/folders/create', $users + ['uses' => 'MailMoveController@createFolder'])->name('refreshglobal.move.create');
 
     // saved views: who may see / edit / share each one is checked by Services/SavedViews.php (404 / 403)
     Route::get('/views', $users + ['uses' => 'SavedViewsController@index'])->name('refreshglobal.views');

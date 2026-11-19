@@ -35,7 +35,7 @@ class MailMoveTest extends TestCase
             'INBOX.Factures'         => [],
             'INBOX.[WP] Achats.Livraisons' => [],
             'Junk'                   => [],
-        ], 'moves' => []];
+        ], 'moves' => [], 'created' => []];
         $server = $this->server;
         MailMove::$clientFactory = function () use ($server) {
             return self::fakeClient($server);
@@ -99,6 +99,13 @@ class MailMoveTest extends TestCase
                 return $out;
             }
             public function getFolderByPath($path) { return array_key_exists($path, $this->s->folders) ? $this->folder($path) : null; }
+            public function createFolder($path, $expunge = true)
+            {
+                $this->s->folders[$path] = [];
+                $this->s->created[] = $path;
+
+                return $this->folder($path);
+            }
         };
     }
 
@@ -222,5 +229,75 @@ class MailMoveTest extends TestCase
         $this->assertStringContainsString('name="refreshglobal-move"', $page);
         Settings::setFlag(Settings::MAIL_MOVE, false);
         $this->assertStringNotContainsString('rg-move-bulk', $this->ticketsPage($this->s['bob'])->getContent());
+    }
+
+    /**
+     * 1.21.0: "Refresh the folders" reads them again from the mail server (fresh=1), the cached list otherwise.
+     */
+    public function testRefreshTheFolders()
+    {
+        $c = $this->s['t_support_open'];
+        $paths = function ($fresh) use ($c) {
+            return array_column($this->actingAs($this->s['bob'])->get(route('refreshglobal.move.folders', ['conversation_id' => $c->id, 'fresh' => $fresh]))->json()['folders'], 'path');
+        };
+        $this->assertNotContains('INBOX.Archive', $paths(0));
+        $this->server->folders['INBOX.Archive'] = []; // created on the server by another program
+        $this->assertNotContains('INBOX.Archive', $paths(0), 'kept 10 minutes');
+        $this->assertContains('INBOX.Archive', $paths(1), 'read again');
+        $this->assertContains('INBOX.Archive', $paths(0), 'cache renewed');
+    }
+
+    /**
+     * 1.21.0: new folder of the mail server from the "Move" dialog: under a parent, at the top level (under INBOX on an
+     * "INBOX." server), UTF-8 name sent in UTF7-IMAP; invalid names, duplicates, rights and IMAP checked by the server.
+     */
+    public function testCreateFolder()
+    {
+        $c = $this->s['t_support_open'];
+        $this->thread($c, 'm1@example.test');
+        $create = function ($user, array $data) use ($c) {
+            return $this->actingAs($user)->post(route('refreshglobal.move.create'), $data + ['conversation_id' => $c->id]);
+        };
+
+        $r = $create($this->s['bob'], ['name' => 'Réglé', 'parent' => 'INBOX.Factures']);
+        $r->assertStatus(200);
+        $data = $r->json();
+        $this->assertSame('success', $data['status']);
+        $this->assertSame('INBOX.Factures.Réglé', $data['folder']['path']);
+        $this->assertSame(['INBOX.Factures.R&AOk-gl&AOk-'], $this->server->created, 'UTF7-IMAP like FreeScout');
+        $this->assertContains('INBOX.Factures.Réglé', array_column($data['folders'], 'path'), 'folders read again');
+        // then the move into it works
+        $r = $this->actingAs($this->s['bob'])->post(route('refreshglobal.move'), ['conversation_id' => $c->id, 'folder' => 'INBOX.Factures.Réglé']);
+        $this->assertSame(1, $r->json()['moved']);
+
+        // top level: here "Junk" is outside INBOX, so the folder goes at the top
+        $this->assertSame('Projets', $create($this->s['bob'], ['name' => 'Projets'])->json()['folder']['path']);
+        // an "INBOX." server: every folder under INBOX, the new top-level one too
+        $this->assertSame('INBOX', MailMove::topParent(['INBOX', 'INBOX.Sent', 'INBOX.Trash'], '.'));
+        $this->assertSame('', MailMove::topParent(['INBOX', 'INBOX.Sent', 'Junk'], '.'));
+        $this->assertSame('', MailMove::topParent(['INBOX'], '/'));
+
+        // refused: already there, delimiter, wildcards, empty, unknown parent
+        $this->assertSame('error', $create($this->s['bob'], ['name' => 'Factures', 'parent' => 'INBOX'])->json()['status']);
+        $this->assertSame('error', $create($this->s['bob'], ['name' => 'a.b'])->json()['status']);
+        $this->assertSame('error', $create($this->s['bob'], ['name' => 'a*'])->json()['status']);
+        $this->assertSame('error', $create($this->s['bob'], ['name' => '..'])->json()['status']);
+        $this->assertSame('error', $create($this->s['bob'], ['name' => 'X', 'parent' => 'Nowhere'])->json()['status']);
+        $create($this->s['bob'], ['name' => ''])->assertStatus(302); // validation
+        // rights: carol does not see the mailbox; feature off; not IMAP
+        $create($this->s['carol'], ['name' => 'Carol'])->assertStatus(403);
+        Settings::setFlag(Settings::MAIL_MOVE, false);
+        $create($this->s['bob'], ['name' => 'Off'])->assertStatus(403);
+        Settings::setFlag(Settings::MAIL_MOVE, true);
+        $this->s['support']->in_protocol = 2;
+        $this->s['support']->save();
+        $create($this->s['bob'], ['name' => 'Pop'])->assertStatus(403);
+        $this->assertSame(['INBOX.Factures.R&AOk-gl&AOk-', 'Projets'], $this->server->created);
+
+        // the script gets the address and the texts
+        $this->s['support']->in_protocol = Mailbox::IN_PROTOCOL_IMAP;
+        $this->s['support']->save();
+        $page = $this->ticketsPage($this->s['bob'])->getContent();
+        $this->assertStringContainsString('"create":"'.route('refreshglobal.move.create').'"', html_entity_decode($page));
     }
 }

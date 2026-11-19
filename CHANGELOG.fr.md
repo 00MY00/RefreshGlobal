@@ -5,6 +5,33 @@ sont tenus à jour ensemble à chaque version.
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.21.0] — 2026-11-19
+
+### Ajouté
+- **Tickets traités par les flux dans le tableau de bord** de toutes les boîtes (seulement avec Workflow Packs 3.20+
+  et son moteur allumé) : une carte montre les tickets qu'un flux a modifiés et ceux que les flux ont fermés sur les
+  dernières 24 heures, 7 jours et 30 jours, avec des liens vers « Statistiques des flux » (sur cette période) et
+  « E-mails non traités ». Mêmes droits que la page des statistiques (boîtes de l'utilisateur, ses tickets avec
+  « seulement assignés ») ; sans Workflow Packs 3.20+, la carte est absente et aucune requête n'est faite.
+- **« Déplacer vers un dossier » : actualiser les dossiers.** Les dossiers gardés par le serveur s'affichent tout de
+  suite, puis sont relus sur le serveur mail à chaque ouverture de la fenêtre ; un bouton « Actualiser les dossiers »
+  les relit à la demande.
+- **« Déplacer vers un dossier » : nouveau dossier.** « Nouveau dossier » crée un dossier sur le serveur mail (dans un
+  dossier existant ou au premier niveau — sous INBOX sur les serveurs où tous les dossiers sont sous INBOX), puis y
+  déplace les e-mails. La boîte vient du ticket et les mêmes droits qu'un déplacement s'appliquent (réglage activé,
+  ticket modifiable par l'utilisateur, boîte IMAP) ; les noms invalides (séparateur de dossiers, `*`, `%`, `"`, `\`,
+  `..`, plus de 100 caractères) et les dossiers existants sont refusés avec un message traduit. Nouvelle route
+  `POST /refresh-global/move/folders/create` (`refreshglobal.move.create`).
+
+### Modifié
+- « Statistiques des flux » : la première tuile s'appelle maintenant « Tickets traités par les flux » (avant :
+  « Tickets »).
+
+### Compatibilité
+- Nouveaux contrôles RG-CORE-26 (webklex `Client::createFolder()` / `getFolders()`) et RG-CORE-27
+  (`Helper::mbConvertEncoding()`), FreeScout 1.8.250. Sans eux, seul « Nouveau dossier » échoue, avec un message clair.
+- Aucune migration. PHP 7.1 à 8.4.
+
 ## [1.20.0] — 2026-11-19
 
 ### Ajouté

@@ -361,6 +361,18 @@ return [
     'move_nothing' => 'Nada que mover: los correos ya están en esta carpeta.',
     'move_not_found' => '1 correo no se encontró en el servidor.|:count correos no se encontraron en el servidor.',
     'move_undone' => 'Movimiento deshecho.|Movimiento deshecho (:count correos devueltos).',
+    // 1.21.0: refresh the folders, new folder
+    'move_refresh' => 'Actualizar las carpetas',
+    'move_new' => 'Nueva carpeta',
+    'move_new_name' => 'Nombre de la nueva carpeta',
+    'move_new_parent' => 'Dentro de',
+    'move_new_top' => 'Nivel superior',
+    'move_new_create' => 'Crear y mover aquí',
+    'move_new_cancel' => 'Cancelar',
+    'move_new_invalid' => 'Nombre de carpeta: de 1 a :max caracteres, sin el separador de carpetas, * % " ni \\.',
+    'move_new_exists' => 'Ya existe una carpeta con este nombre aquí.',
+    'move_new_failed' => 'La carpeta no se ha creado en el servidor de correo.',
+    'move_new_done' => 'Carpeta «:folder» creada.',
     // dashboard and list strings of the module's own (before: Refresh's / FreeScout's, fr and de only) (1.16.2)
     'dash_resolved' => 'Resueltos',
     'dash_received' => 'Recibidos',

@@ -97,6 +97,87 @@ class MailMove
         return $out;
     }
 
+    /** longest name of a new folder (one level) */
+    const MAX_NAME = 100;
+
+    /**
+     * Creates a folder in the mailbox on the mail server (1.21.0), as a sub-folder of $parent (UTF-8 path of an existing
+     * folder) or at the top level (''). At the top level, when every folder of the server is under INBOX (servers with
+     * the "INBOX." namespace), the new folder goes under INBOX too. webklex Client::createFolder()
+     * (overrides/webklex/php-imap/src/Client.php:608), name in UTF7-IMAP like FreeScout (\Helper::mbConvertEncoding(),
+     * app/Misc/Helper.php:1695, as in \MailHelper::getImapFolder()).
+     *
+     * @return array the new folder ['path', 'label', 'tag'] (folders read again, cache renewed)
+     * @throws \RuntimeException invalid name, unknown parent, folder already there, server error
+     */
+    public static function createFolder(Mailbox $mailbox, $name, $parent = '')
+    {
+        if (!self::supported($mailbox)) {
+            throw new \RuntimeException(__('refreshglobal::messages.move_not_imap'));
+        }
+        $name = is_scalar($name) ? trim(preg_replace('/\s+/u', ' ', (string) $name)) : '';
+        // control characters, IMAP wildcards and quoting characters are refused; the delimiter is checked below
+        if ($name === '' || mb_strlen($name) > self::MAX_NAME || preg_match('/[\x00-\x1F\x7F*%"\\\\]/u', $name)
+            || $name === '.' || $name === '..') {
+            throw new \RuntimeException(__('refreshglobal::messages.move_new_invalid', ['max' => self::MAX_NAME]));
+        }
+        $client = self::client($mailbox);
+        try {
+            $existing = [];
+            $delimiter = '/';
+            foreach ($client->getFolders(false) as $folder) {
+                $path = MailTags::decode($folder->path);
+                $existing[mb_strtolower($path)] = $path;
+                if (isset($folder->delimiter) && $folder->delimiter !== '' && $folder->delimiter !== null) {
+                    $delimiter = (string) $folder->delimiter;
+                }
+            }
+            if (mb_strpos($name, $delimiter) !== false) {
+                throw new \RuntimeException(__('refreshglobal::messages.move_new_invalid', ['max' => self::MAX_NAME]));
+            }
+            $parent = is_scalar($parent) ? trim((string) $parent) : '';
+            if ($parent !== '') {
+                if (!isset($existing[mb_strtolower($parent)])) {
+                    throw new \RuntimeException(__('refreshglobal::messages.move_unknown_folder'));
+                }
+                $parent = $existing[mb_strtolower($parent)];
+            } else {
+                $parent = self::topParent(array_values($existing), $delimiter);
+            }
+            $path = $parent !== '' ? $parent.$delimiter.$name : $name;
+            if (isset($existing[mb_strtolower($path)])) {
+                throw new \RuntimeException(__('refreshglobal::messages.move_new_exists'));
+            }
+            $client->createFolder(\Helper::mbConvertEncoding($path, 'UTF7-IMAP', 'UTF-8'), false);
+        } finally {
+            self::disconnect($client);
+        }
+        foreach (self::folders($mailbox, true) as $f) {
+            if (mb_strtolower($f['path']) === mb_strtolower($path)) {
+                return $f;
+            }
+        }
+        throw new \RuntimeException(__('refreshglobal::messages.move_new_failed'));
+    }
+
+    /** Parent of a top-level folder: INBOX when every other folder is under it ("INBOX." namespace), else ''. */
+    public static function topParent(array $paths, $delimiter)
+    {
+        $inbox = null;
+        $others = 0;
+        foreach ($paths as $p) {
+            if (mb_strtolower($p) === 'inbox') {
+                $inbox = $p;
+            } elseif (mb_stripos($p, 'inbox'.$delimiter) === 0) {
+                $others++;
+            } else {
+                return '';
+            }
+        }
+
+        return $inbox !== null && $others > 0 ? $inbox : '';
+    }
+
     /** E-mails of the ticket that came from the mail server: customer messages with a Message-ID. */
     protected static function threads(Conversation $conversation)
     {

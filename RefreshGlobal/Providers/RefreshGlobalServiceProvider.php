@@ -245,6 +245,7 @@ class RefreshGlobalServiceProvider extends ServiceProvider
                     'folders' => route('refreshglobal.move.folders'),
                     'move'    => route('refreshglobal.move'),
                     'undo'    => route('refreshglobal.move.undo'),
+                    'create'  => route('refreshglobal.move.create'),
                     // ticket page: only when its mailbox is an IMAP one and the user may change the ticket
                     'ticket'  => false,
                     't'       => [
@@ -256,6 +257,13 @@ class RefreshGlobalServiceProvider extends ServiceProvider
                         'current'    => __('refreshglobal::messages.move_current'),
                         'undo'       => __('refreshglobal::messages.move_undo'),
                         'error'      => __('refreshglobal::messages.move_error'),
+                        'refresh'    => __('refreshglobal::messages.move_refresh'),
+                        'new'        => __('refreshglobal::messages.move_new'),
+                        'new_name'   => __('refreshglobal::messages.move_new_name'),
+                        'new_parent' => __('refreshglobal::messages.move_new_parent'),
+                        'new_top'    => __('refreshglobal::messages.move_new_top'),
+                        'new_create' => __('refreshglobal::messages.move_new_create'),
+                        'cancel'     => __('refreshglobal::messages.move_new_cancel'),
                     ],
                 ];
                 if (\Route::is('conversations.view')) {

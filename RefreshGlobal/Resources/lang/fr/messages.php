@@ -361,6 +361,18 @@ return [
     'move_nothing' => 'Rien à déplacer : les e-mails sont déjà dans ce dossier.',
     'move_not_found' => '1 e-mail n’a pas été trouvé sur le serveur.|:count e-mails n’ont pas été trouvés sur le serveur.',
     'move_undone' => 'Déplacement annulé.|Déplacement annulé (:count e-mails remis).',
+    // 1.21.0: refresh the folders, new folder
+    'move_refresh' => 'Actualiser les dossiers',
+    'move_new' => 'Nouveau dossier',
+    'move_new_name' => 'Nom du nouveau dossier',
+    'move_new_parent' => 'Dans',
+    'move_new_top' => 'Premier niveau',
+    'move_new_create' => 'Créer et déplacer ici',
+    'move_new_cancel' => 'Annuler',
+    'move_new_invalid' => 'Nom du dossier : 1 à :max caractères, sans le séparateur de dossiers, * % " ni \\.',
+    'move_new_exists' => 'Un dossier de ce nom existe déjà à cet endroit.',
+    'move_new_failed' => 'Le dossier n’a pas été créé sur le serveur mail.',
+    'move_new_done' => 'Dossier « :folder » créé.',
     // dashboard and list strings of the module's own (before: Refresh's / FreeScout's, fr and de only) (1.16.2)
     'dash_resolved' => 'Résolu',
     'dash_received' => 'Reçus',

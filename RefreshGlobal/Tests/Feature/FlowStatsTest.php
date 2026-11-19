@@ -218,6 +218,54 @@ class FlowStatsTest extends TestCase
         $this->assertSame(0, $stats['totals']['changes'], 'origin filter');
     }
 
+    /**
+     * 1.21.0: "Tickets handled by the flows" card of the dashboard of all mailboxes: 24 hours / 7 / 30 days, handled
+     * and closed, within the user's mailboxes; absent (and no query on the flow table) without Workflow Packs 3.20+.
+     */
+    public function testDashboardCard()
+    {
+        $this->absent();
+        $this->assertSame([], \Modules\RefreshGlobal\Services\GlobalDashboard::flows($this->s['admin'], (new MailboxAccess($this->s['admin']))->allowedIds()));
+        $this->dontSeeIn($this->actingAs($this->s['admin'])->get(route('dashboard')), 'rg-dash-flows');
+        if ($this->wpWasActive) {
+            \App\Module::setActive('workflowpacks', true, false);
+            $this->wpWasActive = false;
+        }
+
+        $this->present();
+        $support = $this->s['t_support_open'];
+        $pending = $this->s['t_support_pending'];
+        $billing = $this->s['t_billing_carol'];
+        \Eventy::action('workflowpacks.ticket_changed', $support->id, $this->change($support));
+        \Eventy::action('workflowpacks.ticket_changed', $support->id, $this->change($support, ['field' => 'note', 'after' => true]));
+        \Eventy::action('workflowpacks.ticket_changed', $pending->id, $this->change($pending, ['field' => 'folder', 'after' => 'Invoices',
+            'at' => date('Y-m-d H:i:s', strtotime('-3 days'))]));
+        \Eventy::action('workflowpacks.ticket_changed', $billing->id, $this->change($billing, ['at' => date('Y-m-d H:i:s', strtotime('-10 days'))]));
+        \Eventy::action('workflowpacks.ticket_changed', $billing->id, $this->change($billing, ['field' => 'note', 'after' => true,
+            'at' => date('Y-m-d H:i:s', strtotime('-40 days'))]));
+
+        $card = function ($user) {
+            $out = [];
+            foreach (\Modules\RefreshGlobal\Services\GlobalDashboard::flows($user, (new MailboxAccess($user))->allowedIds()) as $row) {
+                $out[$row['days']] = [$row['tickets'], $row['closed']];
+            }
+
+            return $out;
+        };
+        $this->assertSame([1 => [1, 1], 7 => [2, 1], 30 => [3, 2]], $card($this->s['admin']));
+        $this->assertSame([1 => [1, 1], 7 => [2, 1], 30 => [2, 1]], $card($this->s['bob']), 'billing mailbox not allowed');
+        // the mailboxes asked are limited to the allowed ones
+        $this->assertSame(0, FlowChanges::dashboard([$this->s['billing']->id], new MailboxAccess($this->s['bob']))[2]['tickets']);
+
+        \Cache::flush(); // the dashboard's figures are kept one minute per state of the tickets
+        $r = $this->actingAs($this->s['admin'])->get(route('dashboard'));
+        $this->seeIn($r, 'rg-dash-flows');
+        $this->seeIn($r, __('refreshglobal::flows.handled_tickets'));
+        $this->seeIn($r, e(route('refreshglobal.flows', ['days' => 7])));
+        // statistics page: the tile says what it counts
+        $this->seeIn($this->actingAs($this->s['admin'])->get(route('refreshglobal.flows')), __('refreshglobal::flows.handled_tickets'));
+    }
+
     /* ---------------------------------------------------------------- untreated e-mails and temporary flow */
 
     protected function fakeUntreated(array $ids, $truncated = false)

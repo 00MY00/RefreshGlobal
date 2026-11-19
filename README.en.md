@@ -47,7 +47,8 @@ otherwise it uses FreeScout's standard look.
   its engine on: tickets touched and closed by each flow, changes per type, per mailbox, per origin and over N days
   (deleted and temporary flows marked), "Catch up on the history" for administrators; an **Untreated e-mails** page
   (no flow changed anything on them) with, for administrators, "Handle with a temporary flow" (opens the editor of
-  Workflow Packs). Everyone sees their own mailboxes only. Without Workflow Packs 3.20+, nothing appears.
+  Workflow Packs). The dashboard of all mailboxes also shows the **tickets handled by the flows** (and closed) over
+  24 hours, 7 and 30 days. Everyone sees their own mailboxes only. Without Workflow Packs 3.20+, nothing appears.
 - **Address to send from** on "Send an e-mail" / "New ticket": every address of your mailboxes and their aliases;
   another mailbox opens its form with what you typed; suggested address from the list or the last one used.
 - **Spam left on the mail server** (default) and **origin tags** of the e-mails in English (`inbox`, `spam`, `trash`,
@@ -55,7 +56,9 @@ otherwise it uses FreeScout's standard look.
   into the Tags module when installed ([docs/api-tags.md](docs/api-tags.md)).
 - **Details / raw text** of each message (headers, Message-ID, mail server folder, tags).
 - **Move to a folder of the mail server** (ticket, selection bar, swipe to the left on touch screens), with “Undo”;
-  the ticket itself does not change, its tags follow the folder.
+  the ticket itself does not change, its tags follow the folder. The folders are read again from the server each time
+  the dialog opens (button “Refresh the folders”) and **“New folder”** creates a folder on the mail server, then moves
+  the e-mails into it.
 - **Remote images** (tracking pixels): always show, restricted (“Show images” button) or blocked, finely set per
   origin tag of the e-mail.
 - Languages: English, French, German, Spanish, Italian, Dutch, Brazilian Portuguese.

@@ -71,7 +71,7 @@
         </p>
 
         <div class="rg-flows-tiles">
-            <div class="rg-flows-tile"><span class="rg-flows-tile-label">{{ __('refreshglobal::flows.tickets') }}</span><span class="rg-flows-tile-n">{{ $t['tickets'] }}</span></div>
+            <div class="rg-flows-tile rg-flows-tile-handled"><span class="rg-flows-tile-label">{{ __('refreshglobal::flows.handled_tickets') }}</span><span class="rg-flows-tile-n">{{ $t['tickets'] }}</span></div>
             <div class="rg-flows-tile rg-flows-tile-closed"><span class="rg-flows-tile-label">{{ __('refreshglobal::flows.closed') }}</span><span class="rg-flows-tile-n">{{ $t['closed'] }}</span></div>
             <div class="rg-flows-tile"><span class="rg-flows-tile-label">{{ __('refreshglobal::flows.changes') }}</span><span class="rg-flows-tile-n">{{ $t['changes'] }}</span></div>
             <div class="rg-flows-tile"><span class="rg-flows-tile-label">{{ __('refreshglobal::flows.flows') }}</span><span class="rg-flows-tile-n">{{ count($stats['flows']) }}</span></div>

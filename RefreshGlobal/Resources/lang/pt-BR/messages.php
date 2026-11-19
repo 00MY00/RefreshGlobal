@@ -361,6 +361,18 @@ return [
     'move_nothing' => 'Nada a mover: os e-mails já estão nesta pasta.',
     'move_not_found' => '1 e-mail não encontrado no servidor.|:count e-mails não encontrados no servidor.',
     'move_undone' => 'Movimento desfeito.|Movimento desfeito (:count e-mails devolvidos).',
+    // 1.21.0: refresh the folders, new folder
+    'move_refresh' => 'Atualizar as pastas',
+    'move_new' => 'Nova pasta',
+    'move_new_name' => 'Nome da nova pasta',
+    'move_new_parent' => 'Dentro de',
+    'move_new_top' => 'Nível superior',
+    'move_new_create' => 'Criar e mover para cá',
+    'move_new_cancel' => 'Cancelar',
+    'move_new_invalid' => 'Nome da pasta: de 1 a :max caracteres, sem o separador de pastas, * % " ou \\.',
+    'move_new_exists' => 'Já existe uma pasta com este nome aqui.',
+    'move_new_failed' => 'A pasta não foi criada no servidor de e-mail.',
+    'move_new_done' => 'Pasta “:folder” criada.',
     // dashboard and list strings of the module's own (before: Refresh's / FreeScout's, fr and de only) (1.16.2)
     'dash_resolved' => 'Resolvidos',
     'dash_received' => 'Recebidos',

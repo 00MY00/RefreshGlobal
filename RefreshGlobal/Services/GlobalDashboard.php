@@ -112,8 +112,8 @@ class GlobalDashboard
         // one minute per user, mailboxes and language (the data holds translated labels), and per state of the tickets:
         // after any change (new ticket, reply, status…) the figures are computed again, never served from the cache
         $fp = (new GlobalTicketQuery($access, GlobalTicketQuery::normalize([], $access)))->fingerprint();
-        // "v3": figures computed by the module itself since 1.17.0 (links of the undelivered card changed)
-        $key = 'refreshglobal.dash.v3.'.$user->id.'.'.app()->getLocale().'.'.md5(implode(',', $ids)).'.'.$fp;
+        // "v4": "Workflow Packs flows" card since 1.21.0 (figures computed by the module itself since 1.17.0)
+        $key = 'refreshglobal.dash.v4.'.$user->id.'.'.app()->getLocale().'.'.md5(implode(',', $ids)).'.'.$fp;
         $data = \Cache::remember($key, 1, function () use ($user, $mailboxes, $ids) {
             return self::data($user, $mailboxes, $ids);
         });
@@ -152,7 +152,27 @@ class GlobalDashboard
             'tiles'       => self::tiles($base),
             'stats'       => $stats,
             'undelivered' => self::undeliveredPerMailbox($base, $mailboxes),
+            'flows'       => self::flows($user, $ids),
         ];
+    }
+
+    /**
+     * "Workflow Packs flows" card (1.21.0): only when Workflow Packs 3.20+ is there (WorkflowPacksLink::available());
+     * otherwise [] and no query at all. Never breaks the dashboard.
+     */
+    public static function flows($user, array $ids)
+    {
+        try {
+            if (!WorkflowPacksLink::available()) {
+                return [];
+            }
+
+            return FlowChanges::dashboard($ids, new MailboxAccess($user));
+        } catch (\Throwable $e) {
+            \Log::warning('[RefreshGlobal] [flows] dashboard: '.get_class($e));
+
+            return [];
+        }
     }
 
     /**

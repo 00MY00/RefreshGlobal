@@ -83,4 +83,11 @@ return [
     'state_done'                   => 'Klaar',
     'state_deleted'                => 'Klaar en verwijderd',
     'reason_expired'               => 'verlopen',
+    // 1.21.0: tile of the statistics page, card of the dashboard of all mailboxes
+    'handled_tickets'              => 'Tickets behandeld door de flows',
+    'dash_handled'                 => 'Behandeld',
+    'dash_closed'                  => 'Gesloten',
+    'dash_24h'                     => 'Laatste 24 uur',
+    'dash_days'                    => 'Laatste :days dagen',
+    'dash_help'                    => 'Tickets die een Workflow Packs-flow in uw mailboxen heeft gewijzigd (status, toewijzing, map, notitie…).',
 ];

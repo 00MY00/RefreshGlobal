@@ -66,8 +66,9 @@ Dans Gérer › Modules :
   installé avec son moteur allumé : tickets touchés et fermés par chaque flux, changements par type, par boîte, par
   origine et sur N jours (flux supprimés et temporaires signalés), « Rattraper l'historique » pour les administrateurs ;
   page **E-mails non traités** (aucun flux n'y a rien changé) avec, pour les administrateurs, « Traiter avec un flux
-  temporaire » (ouvre l'éditeur de Workflow Packs). Chacun ne voit que ses boîtes. Sans Workflow Packs 3.20+, rien
-  n'apparaît.
+  temporaire » (ouvre l'éditeur de Workflow Packs). Le tableau de bord de toutes les boîtes montre aussi les **tickets
+  traités par les flux** (et fermés) sur 24 heures, 7 et 30 jours. Chacun ne voit que ses boîtes. Sans Workflow Packs
+  3.20+, rien n'apparaît.
 - **Adresse d'envoi au choix** sur « Envoyer un e-mail » / « Nouveau ticket » : toutes les adresses de vos boîtes et
   leurs alias ; une autre boîte ouvre son formulaire en gardant ce qui est saisi ; adresse proposée selon la liste
   ou la dernière utilisée.
@@ -76,7 +77,9 @@ Dans Gérer › Modules :
   modules et copiés dans le module Tags s'il est installé ([docs/api-tags.md](docs/api-tags.md)).
 - **Détails / texte brut** de chaque message (en-têtes, Message-ID, dossier du serveur, tags).
 - **Déplacer vers un dossier du serveur mail** (ticket, barre de sélection, glisser vers la gauche sur écran tactile),
-  avec « Annuler » ; le ticket ne change pas, ses tags suivent le dossier.
+  avec « Annuler » ; le ticket ne change pas, ses tags suivent le dossier. La liste des dossiers est relue sur le
+  serveur à chaque ouverture (bouton « Actualiser les dossiers ») et **« Nouveau dossier »** crée un dossier sur le
+  serveur mail puis y déplace les e-mails.
 - **Images distantes** (pixels de suivi) : toujours afficher, restrictif (bouton « Afficher les images ») ou bloqué,
   réglable finement par tag d'origine de l'e-mail.
 - Traductions : français, anglais, allemand, espagnol, italien, néerlandais, portugais (Brésil).

@@ -634,3 +634,19 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
   boutons d'au moins 36 px (44 px sur téléphone), bouton retour visible ; « Traiter avec un flux temporaire » → éditeur
   de Workflow Packs sur ce site, flux listé « Brouillon » ; « Rattraper l'historique » → demandé, page qui se
   recharge ; aucune erreur JavaScript.
+
+## 41. Tickets traités par les flux dans le tableau de bord, « Déplacer » : actualiser, nouveau dossier (1.21.0, 2026-11-19)
+
+- PHPUnit : `FlowStatsTest::testDashboardCard` (24 h / 7 / 30 jours, traités et fermés, boîtes permises seulement,
+  boîte demandée hors droits ignorée, carte absente sans Workflow Packs 3.20+), `MailMoveTest::testRefreshTheFolders`
+  et `testCreateFolder` (faux serveur IMAP : parent, premier niveau, INBOX sur un serveur « INBOX. », nom UTF-8 envoyé
+  en UTF7-IMAP, refus, droits) ; suite complète **190 tests, 0 échec** (2 ignorés) ; `php -l` PHP 7.1 et 8.4 ;
+  `validate-interop` OK (routes de « Déplacer » internes, contrat inchangé).
+- **Serveur IMAP réel** (GreenMail de l'instance de test, séparateur « . ») et navigateur, ordinateur 1440 et
+  téléphone 390 : la fenêtre « Déplacer » relit les dossiers à l'ouverture ; un dossier créé à côté apparaît après
+  « Actualiser les dossiers » ; « Nouveau dossier » « Réglé … » créé sur le serveur (nom accentué relu correctement),
+  puis l'e-mail du ticket déplacé dedans (« 1 e-mail déplacé ») ; même nom refusé avec message dans le formulaire ;
+  boutons de 44 px sur téléphone, aucun débordement, aucune erreur JavaScript. Message « Annuler » fermé à
+  l'ouverture de la fenêtre (il couvrait le bouton « Créer » sur téléphone). Données de test remises en état.
+- Carte du tableau de bord : vérifiée par PHPUnit (rendu du tableau de bord) ; pas d'essai navigateur, Workflow Packs
+  3.20 n'étant pas installé sur l'instance de test.

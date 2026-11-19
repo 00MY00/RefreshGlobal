@@ -462,6 +462,47 @@ class FlowChanges
         return ['totals' => $totals, 'flows' => $flows, 'mailboxes' => $mailboxes, 'origins' => $origins, 'since' => $since];
     }
 
+    /** periods of the "Workflow Packs flows" card of the dashboard, in days (same meaning as "days" of the page) */
+    const DASHBOARD_DAYS = [1, 7, 30];
+
+    /**
+     * "Workflow Packs flows" card of the dashboard of all mailboxes (1.21.0): tickets handled (any change) and closed by
+     * the flows over the last 1, 7 and 30 days, in one query, within the same rights as the statistics page.
+     *
+     * @param array $ids mailboxes of the dashboard (already limited to the user's allowed ones)
+     * @return array [['days', 'tickets', 'closed', 'url'], …] or [] when the module's table is missing
+     */
+    public static function dashboard(array $ids, MailboxAccess $access)
+    {
+        if (!$ids || !self::tableExists()) {
+            return [];
+        }
+        $allowed = array_values(array_intersect(array_map('intval', $ids), $access->allowedIds()));
+        $max = max(self::DASHBOARD_DAYS);
+        $c = \DB::getTablePrefix().self::TABLE;
+        $select = [];
+        $bindings = [];
+        foreach (self::DASHBOARD_DAYS as $days) {
+            $from = Carbon::now()->subDays($days)->format('Y-m-d H:i:s');
+            $select[] = 'COUNT(DISTINCT CASE WHEN '.$c.'.created_at >= ? THEN '.$c.'.conversation_id END) as t'.$days;
+            $select[] = 'COUNT(DISTINCT CASE WHEN '.$c.'.created_at >= ? AND '.$c.'.field = ? AND '.$c.'.after = ? THEN '.$c.'.conversation_id END) as c'.$days;
+            array_push($bindings, $from, $from, 'status', 'closed');
+        }
+        $r = self::query(['days' => $max, 'mailboxes' => $allowed, 'flow' => 0, 'origin' => ''], $access)
+            ->selectRaw(implode(', ', $select), $bindings)->first();
+        $rows = [];
+        foreach (self::DASHBOARD_DAYS as $days) {
+            $rows[] = [
+                'days'    => $days,
+                'tickets' => (int) ($r->{'t'.$days} ?? 0),
+                'closed'  => (int) ($r->{'c'.$days} ?? 0),
+                'url'     => route('refreshglobal.flows', ['days' => $days]),
+            ];
+        }
+
+        return $rows;
+    }
+
     /** Flows recorded in these mailboxes (permanent ones), for the filters and "copy of a flow": [id => name]. */
     public static function knownFlows(array $mailboxIds)
     {

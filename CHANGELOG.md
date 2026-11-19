@@ -8,6 +8,31 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) — versions: [
 Every published change gets a new version number: FreeScout's Manage › Modules page and UpdateGuard only offer an
 update when the version changes.
 
+## [1.21.0] — 2026-11-19
+
+### Added
+- **Tickets handled by the flows on the dashboard** of all mailboxes (only with Workflow Packs 3.20+ and its engine on):
+  a card shows the tickets a flow changed and the tickets the flows closed over the last 24 hours, 7 days and 30 days,
+  with links to “Flow statistics” (on that period) and “Untreated e-mails”. Same rights as the statistics page (the
+  user's mailboxes, own tickets with “only assigned”); without Workflow Packs 3.20+ the card is absent and no query is
+  made.
+- **“Move to a folder”: refresh the folders.** The folders kept by the server are shown at once, then read again from
+  the mail server each time the dialog opens; a “Refresh the folders” button reads them again on demand.
+- **“Move to a folder”: new folder.** “New folder” creates a folder on the mail server (inside an existing folder or
+  at the top level — under INBOX on servers where every folder is under INBOX), then moves the e-mails into it. The
+  mailbox comes from the ticket and the same rights as a move apply (feature on, user may change the ticket, IMAP
+  mailbox); invalid names (folder separator, `*`, `%`, `"`, `\`, `..`, more than 100 characters) and existing folders
+  are refused with a translated message. New route `POST /refresh-global/move/folders/create`
+  (`refreshglobal.move.create`).
+
+### Changed
+- “Flow statistics”: the first tile is now named “Tickets handled by the flows” (it was “Tickets”).
+
+### Compatibility
+- New integration checks RG-CORE-26 (webklex `Client::createFolder()` / `getFolders()`) and RG-CORE-27
+  (`Helper::mbConvertEncoding()`), FreeScout 1.8.250. Without them only “New folder” fails, with a clear message.
+- No migration. PHP 7.1 to 8.4.
+
 ## [1.20.0] — 2026-11-19
 
 ### Added

@@ -361,6 +361,18 @@ return [
     'move_nothing' => 'Niets te verplaatsen: de e-mails staan al in deze map.',
     'move_not_found' => '1 e-mail niet gevonden op de server.|:count e-mails niet gevonden op de server.',
     'move_undone' => 'Verplaatsen ongedaan gemaakt.|Verplaatsen ongedaan gemaakt (:count e-mails terug).',
+    // 1.21.0: refresh the folders, new folder
+    'move_refresh' => 'Mappen vernieuwen',
+    'move_new' => 'Nieuwe map',
+    'move_new_name' => 'Naam van de nieuwe map',
+    'move_new_parent' => 'In',
+    'move_new_top' => 'Hoogste niveau',
+    'move_new_create' => 'Aanmaken en hierheen verplaatsen',
+    'move_new_cancel' => 'Annuleren',
+    'move_new_invalid' => 'Mapnaam: 1 tot :max tekens, zonder het mapscheidingsteken, * % " of \\.',
+    'move_new_exists' => 'Hier bestaat al een map met deze naam.',
+    'move_new_failed' => 'De map is niet aangemaakt op de mailserver.',
+    'move_new_done' => 'Map ‘:folder’ aangemaakt.',
     // dashboard and list strings of the module's own (before: Refresh's / FreeScout's, fr and de only) (1.16.2)
     'dash_resolved' => 'Opgelost',
     'dash_received' => 'Ontvangen',
