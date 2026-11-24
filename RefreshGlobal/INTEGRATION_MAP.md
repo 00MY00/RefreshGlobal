@@ -369,3 +369,15 @@ Les contrôles RG-HOOK-42…49 relisent les fichiers de Workflow Packs et sont *
 | `App\Option::maybeUnserialize()`, événements Eloquent `saved` / `deleted` | `app/Option.php`, `Illuminate/Database/Eloquent/Concerns/HasEvents.php` | `Services/Settings.php` `option()` : tous les réglages en une requête, relus après un changement (RG-CORE-29) |
 | table du module `refreshglobal_perf` | `Database/Migrations/2026_11_24_000000_create_refreshglobal_perf_table.php` | mesures (RG-DB-18) |
 | `/proc`, `/sys`, `opcache_get_status()`, `sys_getloadavg()`, `information_schema` | système, PHP, base | `Services/Perf/Hardware.php`, `Probe.php` : lecture seule, omis si illisible |
+
+## Réponses (1.24.0)
+
+| Élément | Où (FreeScout 1.8.252) | Utilisé par |
+|---|---|---|
+| `.conv-reply-block` (classes `hidden`, `conv-note-block`, `conv-forward-block`), `#body` (summernote) | `public/js/main.js:1861-1925` (`prepareReplyForm()`, `showReplyForm()`) | `Public/js/shell.js` : texte placé quand une réponse s'ouvre vide (RG-HOOK-52) |
+| `setReplyBody()`, `fs_reply_changed` | `public/js/main.js:5415`, `:13`, `:2060-2176` | écrire le texte sans créer de brouillon (RG-HOOK-50/51) |
+| action `send_reply`, `getRedirectUrl()` | `app/Http/Controllers/ConversationsController.php:2953` | `Http/Middleware/AfterReply.php` : seule la `redirect_url` d'une réponse réussie est changée (RG-HOOK-53) |
+| `Mailbox::getUserSettings()`, `MailboxUser::AFTER_SEND_NEXT` | `app/Mailbox.php`, `app/MailboxUser.php:16` | choix « après l'envoi » de l'agent (RG-CORE-30) |
+| `Conversation::url()`, `isChat()` | `app/Conversation.php` | ticket à garder, pas de texte dans les discussions (RG-CORE-31) |
+| onglets et boutons `[data-native]`, `.rf-m-opt` de Refresh | `Modules/Refresh/Providers/RefreshServiceProvider.php:1785-1860`, `Public/js/mobile.js` | facultatif : texte retiré avant le passage en note ou transfert |
+| `ViewNextRedirect` de Refresh | `Modules/Refresh/Http/Middleware/ViewNextRedirect.php` | jamais appelé : `AfterReply` agit après lui (premier du groupe « web ») |

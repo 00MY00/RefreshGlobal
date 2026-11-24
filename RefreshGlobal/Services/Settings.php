@@ -308,6 +308,17 @@ class Settings
         return self::flag(self::MAIL_MOVE, (bool) config('refreshglobal.mail_move_default', true));
     }
 
+    /**
+     * After a reply ("next active conversation"): next ticket of the "All mailboxes" list last shown (on), or FreeScout's
+     * choice (off, default). Http/Middleware/AfterReply.php.
+     */
+    const REPLY_GOES_NEXT = 'refreshglobal.reply_goes_next';
+
+    public static function replyGoesNext()
+    {
+        return self::flag(self::REPLY_GOES_NEXT, false);
+    }
+
     /** Options shown in Manage › Settings › RefreshGlobal (saved by FreeScout itself) => current value. */
     public static function sectionValues()
     {
@@ -317,6 +328,10 @@ class Settings
             Dashboard\Sla::FIRST_RESPONSE  => Dashboard\Sla::own(Dashboard\Sla::FIRST_RESPONSE, Dashboard\Sla::DEFAULT_FIRST_RESPONSE_HOURS),
             Dashboard\Sla::RESOLUTION      => Dashboard\Sla::own(Dashboard\Sla::RESOLUTION, Dashboard\Sla::DEFAULT_RESOLUTION_HOURS),
             self::SHOW_MAILBOX            => self::showMailbox(),
+            self::REPLY_GOES_NEXT         => self::replyGoesNext(),
+            ReplyStart::ENABLED           => ReplyStart::enabled(),
+            ReplyStart::TEXT              => ReplyStart::text(),
+            ReplyStart::MAILBOXES         => ReplyStart::mailboxTexts(),
             self::DELETE_GOES_NEXT        => self::deleteGoesNext(),
             self::KEEP_POSITION           => self::keepPosition(),
             self::AUTO_REFRESH            => self::autoRefresh(),

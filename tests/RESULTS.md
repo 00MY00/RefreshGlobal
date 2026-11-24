@@ -692,3 +692,13 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
   serveur et navigateur reçues, aucun débordement, aucune erreur JavaScript. Corrigé pendant l'essai : les requêtes de
   FreeScout étaient attribuées aux modules dont un filtre encadre chaque page.
 - Vérification FreeScout 1.8.252 (2026-11-21) : 193 tests, 0 échec, parcours navigateur complet.
+
+## 45. Réponses : texte de début, page après une réponse (1.24.0, 2026-11-24)
+
+- PHPUnit : `ReplyTest` (7 tests) ; suite complète 210 tests ; `php -l` PHP 7.1 et 8.4 ; `validate-interop` OK.
+- Navigateur, avec et sans Refresh, ordinateur 1440 et téléphone 390 : boutons, aperçu et guide des réglages ; texte placé
+  à l'ouverture (« Bonjour Zoé, »), curseur après ; aucun brouillon au bout de 14 s ; envoi du texte seul demandé ;
+  passage en note sans question et sans texte, retour en réponse avec le texte (ordinateur) ; texte complété puis envoyé
+  avec « suivant actif » sans autre ticket actif : on reste sur le ticket ; aucune erreur JavaScript.
+- Corrigé pendant ces essais : FreeScout marque l'éditeur « modifié » à son ouverture, le texte seul devenait un
+  brouillon et bloquait le passage en note.

@@ -8,6 +8,31 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) — versions: [
 Every published change gets a new version number: FreeScout's Manage › Modules page and UpdateGuard only offer an
 update when the version changes.
 
+## [1.24.0] — 2026-11-24
+
+### Added
+- **Text a reply starts with** (*Manage › Settings › RefreshGlobal › Replies*, off by default): “Hello $first_name,” is put
+  in the editor when a reply is opened empty. One text for every mailbox, another one per mailbox (a dash: none).
+  - Variables: `$first_name`, `$last_name`, `$full_name`, `$email`, `$company`, `$subject`, `$ticket_number`, `$mailbox`,
+    `$agent_first_name`, `$agent_last_name`, `$agent_full_name`, `$date`. Without a value the variable and the space
+    before it disappear; replacement text: `$first_name|dear customer|`. Buttons to insert them, preview and guide.
+  - Never in a note, a forward, a draft or a chat; no draft is saved until the agent writes; it goes away when turning to
+    a note or a forward; sending it alone is asked first. Works with and without Refresh, on phones too.
+- Setting **“After a reply, next ticket of All mailboxes”** (off by default): with “Send and next active”, opens the
+  ticket that follows in the list you came from.
+
+### Fixed
+- **Sent back to a list after a reply**: with “Send and next active” (FreeScout's default) and no next ticket, FreeScout
+  or Refresh opened a list. The agent now stays on the ticket, unless the reply closed it. “Stay on page” and “back to
+  folder” are unchanged.
+
+### Security
+- The values of the variables (names given by customers, subjects) are escaped and put on one line; the next ticket is
+  checked again against the agent's rights.
+
+### Compatibility
+- New checks RG-HOOK-50 to RG-HOOK-53, RG-CORE-30, RG-CORE-31. No migration. The FreeScout Interop contract is unchanged.
+
 ## [1.23.0] — 2026-11-24
 
 ### Added

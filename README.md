@@ -53,6 +53,12 @@ Dans Gérer › Modules :
 - **Mises à jour** par la page **Modules** de FreeScout, ou en sécurité par le module
   [UpdateGuard](https://github.com/00MY00/UpdateGuard) (conseillé : SHA-256, sauvegarde, contrôle de santé, retour
   arrière automatique).
+- **Début de réponse** (*Gérer › Paramètres › RefreshGlobal › Réponses*) : un texte placé dans l'éditeur à l'ouverture
+  d'une réponse (« Bonjour $first_name, »), un autre par boîte si besoin, variables en anglais (`$first_name`,
+  `$last_name`, `$full_name`, `$email`, `$company`, `$subject`, `$ticket_number`, `$mailbox`, `$agent_first_name`,
+  `$agent_last_name`, `$agent_full_name`, `$date`), texte de remplacement `$first_name|Madame, Monsieur|`, guide et
+  aperçu dans les réglages. Après une réponse sans ticket suivant, on reste sur le ticket ; option « ticket suivant de
+  Toutes les boîtes ».
 - **Performance** (administrateurs, page de diagnostic › *Performance*) : matériel vu par PHP (processeur, limites du
   conteneur, mémoire, disque, attentes), base de données, OPcache, cache, et **capteurs** activés pour 15 minutes à
   4 heures : temps de chaque page, requêtes SQL par module, requêtes lentes, temps dans le navigateur. Aucune adresse,

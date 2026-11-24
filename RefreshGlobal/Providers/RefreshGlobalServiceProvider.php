@@ -69,6 +69,7 @@ class RefreshGlobalServiceProvider extends ServiceProvider
         $this->registerMailTags();
         $this->registerRemoteImages();
         $this->registerMailMove();
+        $this->registerReplyStart();
         $this->registerInterop();
 
         // Ticket deleted for good: its e-mails are queued for the mail server's trash (Services/MailServerTrash.php).
@@ -96,6 +97,9 @@ class RefreshGlobalServiceProvider extends ServiceProvider
         // Deleting a ticket: where to go next, trash or permanent (Http\Middleware\AfterDelete). Added to the "web"
         // group like Refresh's own middlewares (RefreshServiceProvider.php:55-57); it acts on conversations.ajax only.
         $this->app['router']->pushMiddlewareToGroup('web', \Modules\RefreshGlobal\Http\Middleware\AfterDelete::class);
+        // after a reply: never thrown out to a list for lack of a next ticket (Http\Middleware\AfterReply: once inside, once around)
+        $this->app['router']->pushMiddlewareToGroup('web', \Modules\RefreshGlobal\Http\Middleware\AfterReply::class);
+        $this->app['router']->prependMiddlewareToGroup('web', \Modules\RefreshGlobal\Http\Middleware\AfterReply::class.':outer');
         // "from_alias" of a message checked against the addresses of its mailbox (Http\Middleware\CheckFromAlias)
         $this->app['router']->pushMiddlewareToGroup('web', \Modules\RefreshGlobal\Http\Middleware\CheckFromAlias::class);
     }
@@ -229,6 +233,32 @@ class RefreshGlobalServiceProvider extends ServiceProvider
         \Eventy::addFilter('thread.body_output', function ($body, $thread = null, $conversation = null) {
             return \Modules\RefreshGlobal\Services\RemoteImages::filter($body, $thread, $conversation);
         }, 20, 3);
+    }
+
+    /**
+     * Text a reply starts with (Services/ReplyStart.php): written in <head> of the ticket page ("layout.head") for
+     * Public/js/shell.js, only when there is one and the user may reply (FreeScout's policy).
+     */
+    protected function registerReplyStart()
+    {
+        \Eventy::addAction('layout.head', function () {
+            try {
+                if (!auth()->check() || !\Route::is('conversations.view') || !\Modules\RefreshGlobal\Services\ReplyStart::enabled()) {
+                    return;
+                }
+                $conversation = self::ticket((int) request()->route('id'));
+                if (!$conversation || !\Modules\RefreshGlobal\Services\MailMove::allowed(auth()->user(), $conversation)) {
+                    return;
+                }
+                $html = \Modules\RefreshGlobal\Services\ReplyStart::forTicket($conversation, auth()->user());
+                if ($html !== '') {
+                    echo '<meta name="refreshglobal-reply" content="'.e(json_encode(['html' => $html, 'confirm' => __('refreshglobal::reply.only_start')],
+                        JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)).'">'."\n";
+                }
+            } catch (\Throwable $e) {
+                \Log::warning('[RefreshGlobal] [reply-start] '.get_class($e));
+            }
+        });
     }
 
     /**

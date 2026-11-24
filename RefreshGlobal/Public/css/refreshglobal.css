@@ -474,10 +474,10 @@ body.rg-dialog-open { overflow: hidden; }
 .rg-new-view-chips .rg-af-key::after { content: " :"; }
 .rg-new-view-none { margin: 6px 0 0; }
 .rg-new-view-edit { padding-left: 0; padding-right: 0; }
-.rg-new-view-share > summary { list-style: none; color: var(--fd-brand, #5b4ff5); font-weight: 500; }
-.rg-new-view-share > summary::-webkit-details-marker { display: none; }
-.rg-new-view-share > summary::before { content: "▸"; display: inline-block; width: 1.1em; transition: transform .15s; }
-.rg-new-view-share[open] > summary::before { transform: rotate(90deg); }
+.rg-new-view-share > summary, .rg-reply-start details > summary { list-style: none; color: var(--fd-brand, #5b4ff5); font-weight: 500; }
+.rg-new-view-share > summary::-webkit-details-marker, .rg-reply-start details > summary::-webkit-details-marker { display: none; }
+.rg-new-view-share > summary::before, .rg-reply-start details > summary::before { content: "▸"; display: inline-block; width: 1.1em; transition: transform .15s; }
+.rg-new-view-share[open] > summary::before, .rg-reply-start details[open] > summary::before { transform: rotate(90deg); }
 .rg-dialog-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 .rg-dialog-actions .btn { white-space: normal; }
 .rg-views-tools { margin-top: 2px; }
@@ -529,3 +529,11 @@ button.rf-v.rg-views-order { color: var(--fd-text-2, #475569); }
 .rg-perf td.text-right { white-space: nowrap; }
 .rg-perf-items td:first-child { width: 50%; }
 @media (max-width: 767px) { .rg-perf .btn, .rg-perf-minutes { min-height: 44px; } .rg-perf .btn { display: inline-flex; align-items: center; } }
+
+/* 1.24.0: text a reply starts with (settings) */
+.rg-reply-vars { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.rg-reply-vars .btn { font-family: monospace; }
+.rg-reply-preview { white-space: pre-wrap; overflow-wrap: anywhere; min-height: 42px; padding: 8px 12px; border: 1px dashed #cbd5e1; border-radius: 5px; background: #f8fafc; }
+.rg-reply-preview-title { margin: 10px 0 4px; }
+.rg-reply-mailboxes textarea { margin-bottom: 8px; }
+@media (max-width: 767px) { .rg-reply-vars .btn { min-height: 44px; padding: 8px 10px; font-size: 13px; } .rg-reply-start summary { min-height: 44px; padding: 12px 0 !important; } .rg-reply-guide { overflow-x: auto; } }

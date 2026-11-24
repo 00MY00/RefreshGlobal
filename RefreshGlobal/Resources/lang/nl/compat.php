@@ -298,4 +298,10 @@ return [
         'effect' => 'De prestatiesensoren zijn niet beschikbaar. De rest werkt.',
         'action' => 'Voer php artisan migrate uit en daarna php artisan refreshglobal:check.',
     ],
+    'hook_reply' => [
+        'check' => 'Element gebruikt door de antwoorden aanwezig: :item',
+        'label' => 'Een element gebruikt door de antwoorden ontbreekt: :item.',
+        'effect' => 'De begintekst of de pagina na een antwoord werkt mogelijk niet. De rest werkt.',
+        'action' => 'Werk RefreshGlobal bij naar een versie voor deze FreeScout-versie en voer php artisan refreshglobal:check uit.',
+    ],
 ];

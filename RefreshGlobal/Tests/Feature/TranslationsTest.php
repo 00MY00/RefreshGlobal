@@ -29,7 +29,7 @@ class TranslationsTest extends TestCase
             return $d[0] !== '.' && is_dir($dir.'/'.$d);
         }));
         $this->assertGreaterThanOrEqual(7, count($locales));
-        foreach (['messages', 'compat', 'flows', 'perf'] as $file) {
+        foreach (['messages', 'compat', 'flows', 'perf', 'reply'] as $file) {
             $reference = self::flatten(require $dir.'/en/'.$file.'.php');
             foreach ($locales as $locale) {
                 $keys = self::flatten(require $dir.'/'.$locale.'/'.$file.'.php');

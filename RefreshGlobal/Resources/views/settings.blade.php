@@ -86,6 +86,8 @@
     @include('refreshglobal::partials.switch', ['key' => $rg_s::MAIL_MOVE, 'label' => __('refreshglobal::messages.move_setting'),
         'help' => __('refreshglobal::messages.move_setting_help')])
 
+    @include('refreshglobal::partials.reply_settings')
+
     {{-- Saved views shared with everyone (Services/SavedViews.php) --}}
     <h3 class="subheader">{{ __('refreshglobal::messages.saved_views_title') }}</h3>
     @include('refreshglobal::partials.switch', ['key' => $rg_s::VIEWS_GLOBAL_ADMINS, 'label' => __('refreshglobal::messages.views_global_admins'),

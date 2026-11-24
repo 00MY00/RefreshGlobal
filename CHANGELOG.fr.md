@@ -5,6 +5,35 @@ sont tenus à jour ensemble à chaque version.
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.24.0] — 2026-11-24
+
+### Ajouté
+- **Texte de début de réponse** (*Gérer › Paramètres › RefreshGlobal › Réponses*, désactivé par défaut) : « Bonjour
+  $first_name, » est placé dans l'éditeur quand une réponse s'ouvre vide. Un texte pour toutes les boîtes, un autre par
+  boîte (un tiret : aucun).
+  - Variables : `$first_name`, `$last_name`, `$full_name`, `$email`, `$company`, `$subject`, `$ticket_number`, `$mailbox`,
+    `$agent_first_name`, `$agent_last_name`, `$agent_full_name`, `$date`. Sans valeur, la variable et l'espace qui la
+    précède disparaissent ; texte de remplacement : `$first_name|Madame, Monsieur|`. Boutons pour les insérer, aperçu et
+    guide.
+  - Jamais dans une note, un transfert, un brouillon ou une discussion ; aucun brouillon tant que l'agent n'écrit pas ;
+    retiré en passant à une note ou un transfert ; l'envoyer seul est demandé d'abord. Fonctionne avec et sans Refresh,
+    sur téléphone aussi.
+- Réglage **« Après une réponse, ticket suivant de Toutes les boîtes »** (désactivé par défaut) : avec « Envoyer et
+  suivant actif », ouvre le ticket qui suit dans la liste d'où l'on vient.
+
+### Corrigé
+- **Retour à une liste après une réponse** : avec « Envoyer et suivant actif » (choix par défaut de FreeScout) et sans
+  ticket suivant, FreeScout ou Refresh ouvrait une liste. L'agent reste maintenant sur le ticket, sauf si la réponse l'a
+  fermé. « Rester sur la page » et « retour au dossier » ne changent pas.
+
+### Sécurité
+- Les valeurs des variables (noms donnés par les clients, sujets) sont échappées et mises sur une ligne ; le ticket
+  suivant est revérifié selon les droits de l'agent.
+
+### Compatibilité
+- Nouveaux contrôles RG-HOOK-50 à RG-HOOK-53, RG-CORE-30, RG-CORE-31. Aucune migration. Le contrat FreeScout Interop ne
+  change pas.
+
 ## [1.23.0] — 2026-11-24
 
 ### Ajouté

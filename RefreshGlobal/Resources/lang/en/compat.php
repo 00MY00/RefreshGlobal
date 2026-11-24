@@ -302,4 +302,10 @@ return [
         'effect' => 'The performance sensors are not available. The rest works.',
         'action' => 'Run php artisan migrate, then php artisan refreshglobal:check.',
     ],
+    'hook_reply' => [
+        'check' => 'Element used by the replies present: :item',
+        'label' => 'An element used by the replies is missing: :item.',
+        'effect' => 'The text a reply starts with, or where a reply leads, may not work. The rest works.',
+        'action' => 'Update RefreshGlobal to a version made for this version of FreeScout, then run php artisan refreshglobal:check.',
+    ],
 ];

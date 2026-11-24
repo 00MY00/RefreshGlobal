@@ -35,6 +35,11 @@ otherwise it uses FreeScout's standard look.
 - Filters live in the URL: a filtered list can be shared and the Back button works.
 - **Access rights enforced**: users only see, count and export tickets of their own mailboxes (and only their own
   tickets with the "see only assigned conversations" permission).
+- **Start of a reply** (*Manage › Settings › RefreshGlobal › Replies*): a text put in the editor when a reply is opened
+  (“Hello $first_name,”), another one per mailbox if needed, variables (`$first_name`, `$last_name`, `$full_name`,
+  `$email`, `$company`, `$subject`, `$ticket_number`, `$mailbox`, `$agent_first_name`, `$agent_last_name`,
+  `$agent_full_name`, `$date`), replacement text `$first_name|dear customer|`, guide and preview in the settings. After a
+  reply without a next ticket the agent stays on the ticket; option “next ticket of All mailboxes”.
 - **Performance** (administrators, diagnostic page › *Performance*): hardware as seen by PHP (processor, limits of the
   container, memory, disk, waits), database, OPcache, cache, and **sensors** switched on for 15 minutes to 4 hours: time
   of each page, SQL requests per module, slow requests, time in the browser. No address, no user, no value; plain text

@@ -1142,4 +1142,120 @@
         };
         if (document.readyState === 'complete') { setTimeout(send, 300); } else { $(window).on('load', function () { setTimeout(send, 300); }); }
     });
+
+    /*
+     * 1.24.0: text a reply starts with (Services/ReplyStart.php, <meta name="refreshglobal-reply">), put in FreeScout's reply
+     * editor (public/js/main.js: .conv-reply-block, #body, setReplyBody()) each time it opens EMPTY as a reply: never in a
+     * note, a forward, a draft or a text already written. Until the agent writes, it is not a change: no draft is saved
+     * (fs_reply_changed), and it goes away when the agent turns to a note or a forward. Sending it alone is asked first.
+     */
+    $(function () {
+        var cfg = null;
+        try {
+            cfg = JSON.parse(document.querySelector('meta[name="refreshglobal-reply"]').getAttribute('content'));
+        } catch (e) {
+            return;
+        }
+        var block = document.querySelector('.conv-reply-block');
+        if (!cfg || !cfg.html || !block || typeof window.setReplyBody !== 'function') {
+            return;
+        }
+        var plain = function (html) { return $('<div>').html(html).text().replace(/[\s ​]+/g, ' ').trim(); };
+        var start = plain(cfg.html);
+        var code = function () { try { return $('#body').summernote('code') || ''; } catch (e) { return $('#body').val() || ''; } };
+        var field = function (name) { return $(block).find(':input[name="' + name + '"]').first().val(); };
+        var isReply = function () {
+            return !block.classList.contains('hidden') && !block.classList.contains('conv-note-block') && !block.classList.contains('conv-forward-block')
+                && !field('is_note') && !field('subtype');
+        };
+        var empty = function () { var c = code(); return plain(c) === '' && !/<(img|table|video|iframe)\b/i.test(c); };
+        var untouched = function () { var c = code(); return plain(c) === start && !/<(img|table|video|iframe)\b/i.test(c); };
+        // our own writing is not a change of the agent's; FreeScout also marks the editor as changed while it opens it
+        // (its timer: 100 ms), which would save the text alone as a draft
+        var write = function (html) {
+            window.setReplyBody(html);
+            $.each([0, 120, 250, 500, 900], function (i, ms) {
+                setTimeout(function () {
+                    if (!field('thread_id') && !$(block).find('.thread-attachments li').length && (untouched() || empty())) { window.fs_reply_changed = false; }
+                }, ms);
+            });
+        };
+        var put = function () {
+            if (!isReply() || field('thread_id') || !empty() || (typeof window.isChatMode === 'function' && window.isChatMode())) {
+                return;
+            }
+            write(cfg.html);
+            // the caret on the empty line, after the text
+            var area = block.querySelector('.note-editable');
+            if (area && area.lastElementChild && window.getSelection) {
+                var r = document.createRange();
+                r.setStart(area.lastElementChild, 0);
+                r.collapse(true);
+                var sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(r);
+                try { $('#body').summernote('editor.saveRange'); } catch (e) { /* older editor */ }
+            }
+        };
+        var take = function () {
+            if (isReply() && !field('thread_id') && untouched()) { write('<div><br></div>'); }
+        };
+        new MutationObserver(function () { setTimeout(put, 60); }).observe(block, { attributes: true, attributeFilter: ['class'] });
+        setTimeout(put, 400);
+        // note or forward instead: before FreeScout's and Refresh's handlers (a text would make them ask to discard a draft)
+        document.addEventListener('click', function (e) {
+            var t = e.target && e.target.closest ? e.target : null;
+            if (!t) { return; }
+            if (t.closest('.conv-add-note, .conv-forward, .switch-to-note, [data-native=".conv-add-note"], [data-native=".conv-forward"], .rf-m-sheet .rf-m-opt, .note-btn-discard')) {
+                take();
+            } else if (t.closest('.conv-reply-block .btn-reply-submit, .conv-reply-block .dropdown-after-send a[data-after-send]')
+                && isReply() && untouched() && !$(block).find('.thread-attachments li').length && !asked) {
+                if (window.confirm(cfg.confirm)) {
+                    asked = true;
+                    setTimeout(function () { asked = false; }, 1500);
+                } else {
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                }
+            }
+        }, true);
+        var asked = false;
+        document.addEventListener('keydown', function (e) {
+            var el = document.activeElement;
+            if (/^[nf]$/i.test(e.key || '') && !e.ctrlKey && !e.metaKey && !e.altKey && el && !el.isContentEditable && !/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)) {
+                take();
+            }
+        }, true);
+    });
+
+    /* 1.24.0: settings of the text a reply starts with: buttons of the variables, preview (same rules as ReplyStart::fill()) */
+    $(function () {
+        var main = document.querySelector('textarea[data-sample][data-rg-reply-text]');
+        var preview = document.querySelector('[data-rg-reply-preview]');
+        if (!main || !preview) {
+            return;
+        }
+        var sample = {};
+        try { sample = JSON.parse(main.getAttribute('data-sample')); } catch (e) { /* no preview */ }
+        var last = main;
+        var show = function () {
+            var text = last.value || (last !== main ? main.value : '');
+            preview.textContent = text === '-' ? '' : text.replace(/([ \t]*)\$([a-z_]+)(?:\|([^|\n]*)\|)?/g, function (all, space, name, other) {
+                if (!Object.prototype.hasOwnProperty.call(sample, name)) { return all; }
+                var v = sample[name] || (other || '').trim();
+                return v === '' ? '' : space + v;
+            });
+        };
+        $(document).on('focusin', 'textarea[data-rg-reply-text]', function () { last = this; show(); });
+        $(document).on('input', 'textarea[data-rg-reply-text]', show);
+        $(document).on('click', '[data-rg-var]', function () {
+            var v = this.getAttribute('data-rg-var'), a = last.selectionStart, b = last.selectionEnd;
+            if (last.value.length + v.length > last.maxLength) { return; }
+            last.value = last.value.slice(0, a) + v + last.value.slice(b);
+            last.focus();
+            last.setSelectionRange(a + v.length, a + v.length);
+            show();
+        });
+        show();
+    });
 })(window.jQuery);

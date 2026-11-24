@@ -298,4 +298,10 @@ return [
         'effect' => 'Os sensores de desempenho não estão disponíveis. O resto funciona.',
         'action' => 'Execute php artisan migrate e depois php artisan refreshglobal:check.',
     ],
+    'hook_reply' => [
+        'check' => 'Elemento usado pelas respostas presente: :item',
+        'label' => 'Falta um elemento usado pelas respostas: :item.',
+        'effect' => 'O texto inicial ou a página aberta após uma resposta pode não funcionar. O resto funciona.',
+        'action' => 'Atualize o RefreshGlobal para uma versão prevista para esta versão do FreeScout e execute php artisan refreshglobal:check.',
+    ],
 ];

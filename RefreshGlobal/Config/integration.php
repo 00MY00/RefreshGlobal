@@ -110,6 +110,11 @@ return [
         'RG-HOOK-47' => ['hook' => 'workflowpacks.temp_flow', 'module' => 'workflowpacks', 'module_min' => '3.20.0', 'family' => 'hook_flows', 'file' => 'Services/Engine/FlowReport.php', 'needle' => "\\Eventy::addFilter('workflowpacks.temp_flow'", 'severity' => 'warning', 'source' => 'Modules/WorkflowPacks/Services/Engine/FlowReport.php:68'],
         'RG-HOOK-48' => ['hook' => 'workflowpacks.temp_flow_status', 'module' => 'workflowpacks', 'module_min' => '3.20.0', 'family' => 'hook_flows', 'file' => 'Services/Engine/FlowReport.php', 'needle' => "\\Eventy::addFilter('workflowpacks.temp_flow_status'", 'severity' => 'warning', 'source' => 'Modules/WorkflowPacks/Services/Engine/FlowReport.php:73'],
         'RG-HOOK-49' => ['hook' => 'workflowpacks.temp_flow_finished', 'module' => 'workflowpacks', 'module_min' => '3.20.0', 'family' => 'hook_flows', 'file' => 'Services/Engine/TempFlows.php', 'needle' => "\\Eventy::action('workflowpacks.temp_flow_finished'", 'severity' => 'warning', 'source' => 'Modules/WorkflowPacks/Services/Engine/TempFlows.php:153'],
+        // text a reply starts with (1.24.0): FreeScout's reply editor
+        'RG-HOOK-50' => ['hook' => 'setReplyBody()', 'family' => 'hook_reply', 'file' => 'public/js/main.js', 'needle' => 'function setReplyBody(text)', 'severity' => 'warning', 'source' => 'public/js/main.js:5415'],
+        'RG-HOOK-51' => ['hook' => 'fs_reply_changed', 'family' => 'hook_reply', 'file' => 'public/js/main.js', 'needle' => 'var fs_reply_changed', 'severity' => 'warning', 'source' => 'public/js/main.js:13,2060-2176'],
+        'RG-HOOK-52' => ['hook' => '.conv-reply-block', 'family' => 'hook_reply', 'file' => 'public/js/main.js', 'needle' => '$(".conv-reply-block").removeClass(\'hidden\')', 'severity' => 'warning', 'source' => 'public/js/main.js:1883-1898'],
+        'RG-HOOK-53' => ['hook' => 'send_reply', 'family' => 'hook_reply', 'file' => 'app/Http/Controllers/ConversationsController.php', 'needle' => "case 'send_reply':", 'severity' => 'warning', 'source' => 'app/Http/Controllers/ConversationsController.php:2953 (getRedirectUrl)'],
         'RG-HOOK-35' => ['hook' => 'stylesheets', 'file' => 'resources/views/layouts/app.blade.php', 'needle' => "\Eventy::filter('stylesheets'", 'severity' => 'warning', 'source' => 'resources/views/layouts/app.blade.php:33'],
         'RG-HOOK-07' => ['hook' => 'refresh.rail_items', 'refresh' => true, 'file' => 'Providers/RefreshServiceProvider.php', 'needle' => "'refresh.rail_items'", 'severity' => 'degraded', 'source' => 'Modules/Refresh/Providers/RefreshServiceProvider.php:742'],
     ],
@@ -161,6 +166,9 @@ return [
         // performance sensors (1.23.0): end of a request; changes of the options (Eloquent events)
         'RG-CORE-28' => ['classes' => ['Illuminate\Foundation\Http\Events\RequestHandled'], 'family' => 'core_perf', 'severity' => 'warning', 'source' => 'vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php:128'],
         'RG-CORE-29' => ['class' => 'App\Option', 'methods' => ['maybeUnserialize', 'saved', 'deleted'], 'family' => 'core_perf', 'severity' => 'warning', 'source' => 'app/Option.php (maybeUnserialize), vendor/laravel/framework/src/Illuminate/Database/Eloquent/Concerns/HasEvents.php (saved, deleted)'],
+        // after a reply (1.24.0): the agent's "after send" choice
+        'RG-CORE-30' => ['class' => 'App\Mailbox', 'methods' => ['getUserSettings'], 'constants' => ['App\MailboxUser::AFTER_SEND_NEXT'], 'family' => 'hook_reply', 'severity' => 'warning', 'source' => 'app/MailboxUser.php:16, app/Mailbox.php:761'],
+        'RG-CORE-31' => ['class' => 'App\Conversation', 'methods' => ['url', 'isChat'], 'family' => 'hook_reply', 'severity' => 'warning', 'source' => 'app/Conversation.php'],
         'RG-CORE-18' => ['class' => 'Modules\Tags\Entities\Tag', 'methods' => ['attachByName'], 'module' => 'tags', 'family' => 'mailtags', 'severity' => 'warning', 'source' => 'Modules/Tags (used as by Modules/Refresh/Http/Controllers/NewTicketController.php:192)'],
     ],
 
