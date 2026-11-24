@@ -158,6 +158,9 @@ return [
         'RG-CORE-25' => ['class' => 'App\Module', 'methods' => ['isActive'], 'constants' => ['App\User::STATUS_ACTIVE'], 'family' => 'hook_flows', 'severity' => 'warning', 'source' => 'app/Module.php:43, app/User.php:62'],
         // new folder in the "Move to a folder" dialog (1.21.0): webklex Client::createFolder() / getFolders() (RG-CORE-27, Helper::mbConvertEncoding(), removed in 1.21.1: optional, absent from older FreeScout versions)
         'RG-CORE-26' => ['class' => 'Webklex\PHPIMAP\Client', 'methods' => ['createFolder', 'getFolders'], 'family' => 'hook_move', 'severity' => 'warning', 'source' => 'overrides/webklex/php-imap/src/Client.php:494,608'],
+        // performance sensors (1.23.0): end of a request; changes of the options (Eloquent events)
+        'RG-CORE-28' => ['classes' => ['Illuminate\Foundation\Http\Events\RequestHandled'], 'family' => 'core_perf', 'severity' => 'warning', 'source' => 'vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php:128'],
+        'RG-CORE-29' => ['class' => 'App\Option', 'methods' => ['maybeUnserialize', 'saved', 'deleted'], 'family' => 'core_perf', 'severity' => 'warning', 'source' => 'app/Option.php (maybeUnserialize), vendor/laravel/framework/src/Illuminate/Database/Eloquent/Concerns/HasEvents.php (saved, deleted)'],
         'RG-CORE-18' => ['class' => 'Modules\Tags\Entities\Tag', 'methods' => ['attachByName'], 'module' => 'tags', 'family' => 'mailtags', 'severity' => 'warning', 'source' => 'Modules/Tags (used as by Modules/Refresh/Http/Controllers/NewTicketController.php:192)'],
     ],
 
@@ -201,6 +204,7 @@ return [
         // flow statistics and temporary flows (Workflow Packs 3.20+): the module's own tables
         'RG-DB-16' => ['table' => 'refreshglobal_flow_changes', 'columns' => ['event_id', 'field', 'conversation_id', 'mailbox_id', 'flow_id', 'flow_name', 'after', 'origin', 'temporary', 'created_at'], 'family' => 'db_flows', 'severity' => 'warning', 'source' => 'Modules/RefreshGlobal/Database/Migrations/2026_11_19_000000_create_refreshglobal_flow_tables.php'],
         'RG-DB-17' => ['table' => 'refreshglobal_temp_flows', 'columns' => ['flow_id', 'name', 'user_id', 'tickets', 'handled', 'state', 'reason', 'created_at', 'finished_at'], 'family' => 'db_flows', 'severity' => 'warning', 'source' => 'Modules/RefreshGlobal/Database/Migrations/2026_11_19_000000_create_refreshglobal_flow_tables.php'],
+        'RG-DB-18' => ['table' => 'refreshglobal_perf', 'columns' => ['uid', 'route', 'total', 'sql_n', 'sql_ms', 'b_ttfb', 'b_load', 'details', 'created_at'], 'family' => 'db_perf', 'severity' => 'warning', 'source' => 'Modules/RefreshGlobal/Database/Migrations/2026_11_24_000000_create_refreshglobal_perf_table.php'],
         'RG-DB-15' => ['table' => 'threads', 'columns' => ['conversation_id', 'type', 'state', 'send_status', 'created_by_user_id', 'created_at'], 'family' => 'db_dashboard', 'severity' => 'warning', 'source' => 'database/migrations/2018_07_12_003318_create_threads_table.php:69'],
     ],
 ];

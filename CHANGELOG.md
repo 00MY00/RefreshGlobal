@@ -8,6 +8,40 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) — versions: [
 Every published change gets a new version number: FreeScout's Manage › Modules page and UpdateGuard only offer an
 update when the version changes.
 
+## [1.23.0] — 2026-11-24
+
+### Added
+- **Performance page** (administrators, diagnostic page › *Performance*):
+  - **Sensors**, switched on for 15 minutes, 1 hour or 4 hours, then off by themselves: time of each page (median,
+    95 %), SQL requests and their time per page and per module, repeated and slow requests, and what the browser saw.
+    The page tells where the time goes: database, PHP, network / web server / wait for a PHP process, or browser.
+    Nothing is measured when they are off. No address, no user, no value is kept (route names, SQL texts without values).
+  - **Hardware detection**: kind of machine or container, processor, limits of the container, memory, swap, file system
+    and disks, free space, processor taken by other machines, time spent waiting for the processor, memory and disk.
+    Plain files of `/proc` and `/sys`; never the host name, addresses or serial numbers.
+  - **Server**: answer and write time of the database, its memory compared with the data, OPcache, debugging tools,
+    processor and disk tests, cache, log files, waiting jobs — each warning with its advice — and the time of the heavy
+    parts of the module. Plain text report to copy.
+
+### Changed
+- **Faster pages**:
+  - “Flow statistics” no longer makes Workflow Packs read the whole history of the flows during the click (it only
+    served to mark the deleted flows, now read by the scheduled task every 6 hours): 2.6 s → 0.06 s on a test
+    installation with 24 flows and 28,800 actions, figures kept one minute.
+  - Dashboard: the average first response time reads the tickets changed since that day only (it read every message ever
+    sent); trends and the flows card are kept 2 minutes. Tiles and lists still follow every change.
+  - The settings of the module are read in one request per page (one per setting before); the presence of its tables is
+    kept in the cache; change detection no longer reads the columns of a ticket; the ticket of a page is read once.
+  - The integration checks are kept 60 minutes when everything is OK (5 minutes otherwise, as before):
+    `REFRESHGLOBAL_COMPAT_OK_CACHE_MINUTES`.
+
+### Compatibility
+- New checks RG-CORE-28, RG-CORE-29, RG-DB-18. Verified with FreeScout 1.8.252. The FreeScout Interop contract is
+  unchanged.
+
+### Migration
+- One new table, `refreshglobal_perf` (backward compatible).
+
 ## [1.22.0] — 2026-11-19
 
 ### Added

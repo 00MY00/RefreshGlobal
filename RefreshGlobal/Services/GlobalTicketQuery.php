@@ -301,8 +301,9 @@ class GlobalTicketQuery
      */
     public function fingerprint()
     {
+        // select([]) drops "conversations.*": the columns of a ticket are not needed
         $row = $this->base()->toBase()
-            ->selectRaw('COUNT(*) AS n, MAX(conversations.updated_at) AS u, MAX(conversations.id) AS i, SUM(conversations.id) AS s')
+            ->select([])->selectRaw('COUNT(*) AS n, MAX(conversations.updated_at) AS u, MAX(conversations.id) AS i, SUM(conversations.id) AS s')
             ->first();
 
         return md5(implode('|', [(int) $row->n, (string) $row->u, (int) $row->i, (string) $row->s]));

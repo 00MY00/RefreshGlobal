@@ -189,6 +189,8 @@ class FlowStatsTest extends TestCase
             return ['ok' => true, 'flows' => [['flow_id' => 72, 'exists' => false], ['flow_id' => 71, 'exists' => true]]];
         }, 1000, 2);
 
+        // 1.23.0: read by the scheduled task, not by the page
+        FlowChanges::refreshDeleted(true);
         $r = $this->actingAs($this->s['bob'])->get(route('refreshglobal.flows'));
         $r->assertStatus(200);
         $this->seeIn($r, 'SUPPORT-FLOW');

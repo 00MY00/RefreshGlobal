@@ -39,6 +39,7 @@ class FlowHistoryCommand extends Command
             $this->line(sprintf('%d / %d tickets, %d change(s) recorded', $done, $total, $recorded));
         };
         if ($this->option('requested')) {
+            FlowChanges::refreshDeleted();
             $status = FlowChanges::runRequested($progress);
             if ($status) {
                 $this->info('RefreshGlobal: '.$status['state'].', '.(int) $status['recorded'].' change(s) recorded.');

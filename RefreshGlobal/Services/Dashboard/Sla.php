@@ -69,7 +69,7 @@ class Sla
     {
         try {
             // not FreeScout's per-request option cache: it keeps "not set" even after the value is saved
-            $hours = (int) \App\Option::get($key, $default, true, false);
+            $hours = (int) \Modules\RefreshGlobal\Services\Settings::option($key, $default);
         } catch (\Throwable $e) {
             $hours = $default;
         }

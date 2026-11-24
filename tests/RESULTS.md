@@ -680,3 +680,15 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
   sur téléphone ; fenêtre sous la barre d'onglets de Refresh sur téléphone (placée à la racine de la page) ; éléments
   du panneau encore visibles pendant la réorganisation dans le tiroir de Refresh.
 - Vues de test supprimées, Refresh réactivé.
+
+## 44. Performance : pages plus rapides, capteurs, matériel (1.23.0, 2026-11-24)
+
+- Mesures sur l'instance de test (FreeScout 1.8.252, Refresh 1.9.4, Workflow Packs 4.0.2, UpdateGuard 1.11.2, 24 flux,
+  28 800 actions de flux). Avant : 6 000 tickets fermés ; après : 3 000 (les pages comparées n'en dépendent presque pas).
+  - Statistiques des flux : 2,61 s → 0,06 s. Avec 20 ms de plus par échange avec la base (simulé) : statistiques
+    6,9 → 1,6 s, « Toutes les boîtes » 4,2 → 2,9 s, tableau de bord 3,5 → 2,7 s, ticket 5,3 → 4,7 s.
+- PHPUnit : `PerformanceTest` (10 tests) ; `php -l` PHP 7.1 et 8.4 ; `validate-interop` OK.
+- Navigateur, ordinateur 1440 et téléphone 390 : lien du diagnostic, enregistrement démarré, 18 pages ouvertes, mesures
+  serveur et navigateur reçues, aucun débordement, aucune erreur JavaScript. Corrigé pendant l'essai : les requêtes de
+  FreeScout étaient attribuées aux modules dont un filtre encadre chaque page.
+- Vérification FreeScout 1.8.252 (2026-11-21) : 193 tests, 0 échec, parcours navigateur complet.

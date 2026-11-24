@@ -286,4 +286,16 @@ return [
         'effect' => 'Les statistiques des flux et les flux temporaires ne sont pas disponibles. Le reste fonctionne.',
         'action' => 'Lancez php artisan migrate, puis php artisan refreshglobal:check.',
     ],
+    'core_perf' => [
+        'check' => 'Élément utilisé par les capteurs de performance présent : :item',
+        'label' => 'Un élément utilisé par les capteurs de performance ou les réglages est introuvable : :item.',
+        'effect' => 'Les capteurs de performance peuvent ne pas fonctionner. Le reste fonctionne.',
+        'action' => 'Mettre à jour RefreshGlobal vers une version prévue pour cette version de FreeScout, puis exécuter php artisan refreshglobal:check.',
+    ],
+    'db_perf' => [
+        'check' => 'Table et colonnes des capteurs de performance présentes : :item',
+        'label' => 'Une table ou une colonne des capteurs de performance manque : :item.',
+        'effect' => 'Les capteurs de performance ne sont pas disponibles. Le reste fonctionne.',
+        'action' => 'Exécuter php artisan migrate, puis php artisan refreshglobal:check.',
+    ],
 ];

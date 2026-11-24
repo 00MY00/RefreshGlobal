@@ -290,4 +290,16 @@ return [
         'effect' => 'The flow statistics and the temporary flows are not available. The rest works.',
         'action' => 'Run php artisan migrate, then php artisan refreshglobal:check.',
     ],
+    'core_perf' => [
+        'check' => 'Element used by the performance sensors present: :item',
+        'label' => 'An element used by the performance sensors or the settings is missing: :item.',
+        'effect' => 'The performance sensors may not work. The rest works.',
+        'action' => 'Update RefreshGlobal to a version made for this version of FreeScout, then run php artisan refreshglobal:check.',
+    ],
+    'db_perf' => [
+        'check' => 'Table and columns of the performance sensors present: :item',
+        'label' => 'A table or column of the performance sensors is missing: :item.',
+        'effect' => 'The performance sensors are not available. The rest works.',
+        'action' => 'Run php artisan migrate, then php artisan refreshglobal:check.',
+    ],
 ];

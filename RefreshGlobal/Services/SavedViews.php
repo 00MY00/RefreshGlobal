@@ -52,11 +52,10 @@ class SavedViews
     {
         if (self::$available === null) {
             try {
-                self::$available = \Schema::hasTable('refreshglobal_saved_views')
-                    && \Schema::hasColumn('refreshglobal_saved_views', 'visibility')
-                    && \Schema::hasTable('refreshglobal_view_users')
-                    && \Schema::hasTable('refreshglobal_view_prefs')
-                    && \Schema::hasTable('refreshglobal_view_audit');
+                self::$available = SchemaCache::has('refreshglobal_saved_views', ['visibility'])
+                    && SchemaCache::has('refreshglobal_view_users')
+                    && SchemaCache::has('refreshglobal_view_prefs')
+                    && SchemaCache::has('refreshglobal_view_audit');
             } catch (\Throwable $e) {
                 self::$available = false;
             }

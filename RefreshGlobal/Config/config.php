@@ -17,6 +17,9 @@ return [
     // Minutes the compatibility report is kept in cache (it is also rebuilt when a version changes).
     'compat_cache_minutes' => (int) env('REFRESHGLOBAL_COMPAT_CACHE_MINUTES', 5),
 
+    // Same, when every check passed.
+    'compat_ok_cache_minutes' => (int) env('REFRESHGLOBAL_COMPAT_OK_CACHE_MINUTES', 60),
+
     // Maximum number of saved views per user.
     'max_saved_views' => (int) env('REFRESHGLOBAL_MAX_SAVED_VIEWS', 50),
 

@@ -286,4 +286,16 @@ return [
         'effect' => 'Die Flow-Statistik und die temporären Flows sind nicht verfügbar. Der Rest funktioniert.',
         'action' => 'Führen Sie php artisan migrate und dann php artisan refreshglobal:check aus.',
     ],
+    'core_perf' => [
+        'check' => 'Von den Leistungssensoren verwendetes Element vorhanden: :item',
+        'label' => 'Ein von den Leistungssensoren oder Einstellungen verwendetes Element fehlt: :item.',
+        'effect' => 'Die Leistungssensoren funktionieren möglicherweise nicht. Der Rest funktioniert.',
+        'action' => 'RefreshGlobal auf eine für diese FreeScout-Version vorgesehene Version aktualisieren, dann php artisan refreshglobal:check ausführen.',
+    ],
+    'db_perf' => [
+        'check' => 'Tabelle und Spalten der Leistungssensoren vorhanden: :item',
+        'label' => 'Eine Tabelle oder Spalte der Leistungssensoren fehlt: :item.',
+        'effect' => 'Die Leistungssensoren sind nicht verfügbar. Der Rest funktioniert.',
+        'action' => 'php artisan migrate ausführen, dann php artisan refreshglobal:check.',
+    ],
 ];

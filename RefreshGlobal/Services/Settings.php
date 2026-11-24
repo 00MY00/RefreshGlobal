@@ -4,17 +4,60 @@ namespace Modules\RefreshGlobal\Services;
 
 /**
  * Module settings stored in FreeScout's options table (App\Option, app/Option.php:35,75).
- * Read without Option's in-memory cache: Option::set() does not refresh it.
+ * Read without Option's in-memory cache: Option::set() does not refresh it. Since 1.23.0 all the options of the module
+ * are read in ONE query per request (option()); any change of an option (Eloquent events of App\Option) forgets them.
  */
 class Settings
 {
+    /** @var array|null name => value of every stored option "refreshglobal.…" */
+    protected static $options = null;
+    protected static $optionsAt = 0;
+
+    /** Seconds the options are kept in a long-running process (queue worker). */
+    const OPTIONS_SECONDS = 10;
+
+    /** An option, $default when it is not stored. */
+    public static function option($name, $default = false)
+    {
+        if (strpos((string) $name, 'refreshglobal.') !== 0) {
+            return \App\Option::get($name, $default, true, false);
+        }
+        if (self::$options === null || time() - self::$optionsAt > self::OPTIONS_SECONDS) {
+            $options = [];
+            foreach (\App\Option::where('name', 'like', 'refreshglobal.%')->get() as $option) {
+                $options[$option->name] = \App\Option::maybeUnserialize($option->value);
+            }
+            self::$options = $options;
+            self::$optionsAt = time();
+        }
+
+        return array_key_exists($name, self::$options) ? self::$options[$name] : $default;
+    }
+
+    /** The options are read again at the next call. */
+    public static function forgetOptions()
+    {
+        self::$options = null;
+    }
+
+    /** Called when the module boots: a changed option is seen at once. */
+    public static function listen()
+    {
+        self::forgetOptions();
+        $forget = function () {
+            self::forgetOptions();
+        };
+        \App\Option::saved($forget);
+        \App\Option::deleted($forget);
+    }
+
     /** Hide Refresh's "Tickets" entry (left bar, phone tab bar) and put "All mailboxes" in its place. */
     const REPLACE_REFRESH_TICKETS = 'refreshglobal.replace_refresh_tickets';
 
     public static function replaceRefreshTickets()
     {
         try {
-            return (bool) \App\Option::get(self::REPLACE_REFRESH_TICKETS, (bool) config('refreshglobal.replace_refresh_tickets_default', false), true, false);
+            return (bool) self::option(self::REPLACE_REFRESH_TICKETS, (bool) config('refreshglobal.replace_refresh_tickets_default', false));
         } catch (\Exception $e) {
             return false;
         }
@@ -46,7 +89,7 @@ class Settings
     public static function globalDashboard()
     {
         try {
-            return (bool) \App\Option::get(self::GLOBAL_DASHBOARD, (bool) config('refreshglobal.global_dashboard_default', true), true, false);
+            return (bool) self::option(self::GLOBAL_DASHBOARD, (bool) config('refreshglobal.global_dashboard_default', true));
         } catch (\Exception $e) {
             return false;
         }
@@ -63,7 +106,7 @@ class Settings
     public static function deleteGoesNext()
     {
         try {
-            return (bool) \App\Option::get(self::DELETE_GOES_NEXT, config('refreshglobal.after_delete_default', 'list') === 'next', true, false);
+            return (bool) self::option(self::DELETE_GOES_NEXT, config('refreshglobal.after_delete_default', 'list') === 'next');
         } catch (\Exception $e) {
             return false;
         }
@@ -80,7 +123,7 @@ class Settings
     public static function keepPosition()
     {
         try {
-            return (bool) \App\Option::get(self::KEEP_POSITION, (bool) config('refreshglobal.keep_position_default', true), true, false);
+            return (bool) self::option(self::KEEP_POSITION, (bool) config('refreshglobal.keep_position_default', true));
         } catch (\Exception $e) {
             return true;
         }
@@ -97,7 +140,7 @@ class Settings
     public static function showMailbox()
     {
         try {
-            return (bool) \App\Option::get(self::SHOW_MAILBOX, (bool) config('refreshglobal.show_mailbox_default', true), true, false);
+            return (bool) self::option(self::SHOW_MAILBOX, (bool) config('refreshglobal.show_mailbox_default', true));
         } catch (\Exception $e) {
             return true;
         }
@@ -115,7 +158,7 @@ class Settings
     public static function trashAutoDays()
     {
         try {
-            $days = (int) \App\Option::get(self::TRASH_AUTO_DAYS, (int) config('refreshglobal.trash_auto_days_default', 0), true, false);
+            $days = (int) self::option(self::TRASH_AUTO_DAYS, (int) config('refreshglobal.trash_auto_days_default', 0));
         } catch (\Exception $e) {
             $days = 0;
         }
@@ -136,7 +179,7 @@ class Settings
     public static function serverTrash()
     {
         try {
-            return (bool) \App\Option::get(self::SERVER_TRASH, (bool) config('refreshglobal.server_trash_default', true), true, false);
+            return (bool) self::option(self::SERVER_TRASH, (bool) config('refreshglobal.server_trash_default', true));
         } catch (\Exception $e) {
             return false;
         }
@@ -150,7 +193,7 @@ class Settings
     public static function serverTrashFolder()
     {
         try {
-            return mb_substr(trim((string) \App\Option::get(self::SERVER_TRASH_FOLDER, (string) config('refreshglobal.server_trash_folder_default', ''), true, false)), 0, 200);
+            return mb_substr(trim((string) self::option(self::SERVER_TRASH_FOLDER, (string) config('refreshglobal.server_trash_folder_default', ''))), 0, 200);
         } catch (\Exception $e) {
             return '';
         }
@@ -164,7 +207,7 @@ class Settings
     public static function autoRefresh()
     {
         try {
-            $s = (int) \App\Option::get(self::AUTO_REFRESH, (int) config('refreshglobal.auto_refresh_default', 30), true, false);
+            $s = (int) self::option(self::AUTO_REFRESH, (int) config('refreshglobal.auto_refresh_default', 30));
         } catch (\Exception $e) {
             $s = 0;
         }
@@ -205,7 +248,7 @@ class Settings
     public static function mailTagsFolders()
     {
         try {
-            return mb_substr((string) \App\Option::get(self::MAIL_TAGS_FOLDERS, '', true, false), 0, 5000);
+            return mb_substr((string) self::option(self::MAIL_TAGS_FOLDERS, ''), 0, 5000);
         } catch (\Exception $e) {
             return '';
         }
@@ -219,7 +262,7 @@ class Settings
     protected static function flag($key, $default)
     {
         try {
-            return (bool) \App\Option::get($key, $default, true, false);
+            return (bool) self::option($key, $default);
         } catch (\Exception $e) {
             return $default;
         }
@@ -240,7 +283,7 @@ class Settings
     public static function remoteImages()
     {
         try {
-            $mode = (string) \App\Option::get(self::REMOTE_IMAGES, (string) config('refreshglobal.remote_images_default', 'ask'), true, false);
+            $mode = (string) self::option(self::REMOTE_IMAGES, (string) config('refreshglobal.remote_images_default', 'ask'));
         } catch (\Exception $e) {
             $mode = 'ask';
         }
@@ -251,7 +294,7 @@ class Settings
     public static function remoteImagesRules()
     {
         try {
-            return mb_substr((string) \App\Option::get(self::REMOTE_IMAGES_RULES, "classified_spam = block\nspam = block", true, false), 0, 5000);
+            return mb_substr((string) self::option(self::REMOTE_IMAGES_RULES, "classified_spam = block\nspam = block"), 0, 5000);
         } catch (\Exception $e) {
             return '';
         }
@@ -298,7 +341,7 @@ class Settings
     public static function deletePermanently()
     {
         try {
-            return (bool) \App\Option::get(self::DELETE_PERMANENTLY, (bool) config('refreshglobal.delete_permanently_default', false), true, false);
+            return (bool) self::option(self::DELETE_PERMANENTLY, (bool) config('refreshglobal.delete_permanently_default', false));
         } catch (\Exception $e) {
             return false;
         }

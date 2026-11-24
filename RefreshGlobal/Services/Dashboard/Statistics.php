@@ -114,7 +114,10 @@ class Statistics
         $range = $this->range($day);
         $firstReplies = Thread::select('conversation_id', \DB::raw('MIN(created_at) AS r_at'))
             ->where('type', Thread::TYPE_MESSAGE)->where('state', Thread::STATE_PUBLISHED)->whereNotNull('created_by_user_id')
-            ->whereIn('conversation_id', $this->query()->select('id')->getQuery())
+            // 1.23.0: a ticket replied that day was changed since; without this every message ever sent was read
+            ->whereIn('conversation_id', $this->query()->where(function ($w) use ($range) {
+                $w->where('updated_at', '>=', $range[0])->orWhere('last_reply_at', '>=', $range[0]);
+            })->select('id')->getQuery())
             ->groupBy('conversation_id')
             ->havingRaw('MIN(created_at) BETWEEN ? AND ?', [$range[0]->toDateTimeString(), $range[1]->toDateTimeString()])
             ->get();

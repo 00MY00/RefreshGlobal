@@ -38,7 +38,7 @@ class AutoFolders
         if (self::$available === null) {
             try {
                 self::$available = (self::$assumeActive || \App\Module::isActive(self::ALIAS))
-                    && \Schema::hasTable(self::TABLE) && \Schema::hasColumns(self::TABLE, self::COLUMNS);
+                    && SchemaCache::has(self::TABLE, self::COLUMNS);
             } catch (\Throwable $e) {
                 self::$available = false;
             }

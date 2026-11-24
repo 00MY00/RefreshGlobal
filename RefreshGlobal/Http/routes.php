@@ -54,6 +54,11 @@ Route::group([
     Route::get('/views/{id}/export', $users + ['uses' => 'SavedViewsController@export'])->where('id', '[0-9]+')->name('refreshglobal.views.export');
     Route::delete('/views/{id}', $users + ['uses' => 'SavedViewsController@destroy'])->where('id', '[0-9]+')->name('refreshglobal.views.destroy');
 
+    // performance page and sensors (Services/Perf); browser(): sent by the pages of every user while recording
+    Route::get('/performance', $admins + ['uses' => 'PerformanceController@index'])->name('refreshglobal.performance');
+    Route::post('/performance/record', $admins + ['uses' => 'PerformanceController@record'])->name('refreshglobal.performance.record');
+    Route::post('/performance/clear', $admins + ['uses' => 'PerformanceController@clear'])->name('refreshglobal.performance.clear');
+    Route::post('/performance/browser', $users + ['uses' => 'PerformanceController@browser'])->name('refreshglobal.performance.browser');
     Route::get('/diagnostic', $admins + ['uses' => 'DiagnosticController@index'])->name('refreshglobal.diagnostic');
     Route::post('/mail-tags/recalc', $admins + ['uses' => 'MailTagsController@recalc'])->name('refreshglobal.mail_tags.recalc');
     Route::post('/navigation', $admins + ['uses' => 'DiagnosticController@navigation'])->name('refreshglobal.navigation');

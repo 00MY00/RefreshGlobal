@@ -5,6 +5,44 @@ sont tenus à jour ensemble à chaque version.
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.23.0] — 2026-11-24
+
+### Ajouté
+- **Page Performance** (administrateurs, page de diagnostic › *Performance*) :
+  - **Capteurs**, activés pour 15 minutes, 1 heure ou 4 heures, puis arrêtés seuls : temps de chaque page (médiane,
+    95 %), requêtes SQL et leur temps par page et par module, requêtes répétées et lentes, et ce que voit le
+    navigateur. La page dit où passe le temps : base de données, PHP, réseau / serveur web / attente d'un processus PHP,
+    ou navigateur. Rien n'est mesuré quand ils sont arrêtés. Aucune adresse, aucun utilisateur, aucune valeur n'est
+    gardé (noms de routes, textes SQL sans valeurs).
+  - **Détection du matériel** : type de machine ou de conteneur, processeur, limites du conteneur, mémoire, mémoire
+    d'échange, système de fichiers et disques, espace libre, processeur pris par d'autres machines, temps passé à
+    attendre le processeur, la mémoire et le disque. Simples fichiers de `/proc` et `/sys` ; jamais le nom de la
+    machine, les adresses ni les numéros de série.
+  - **Serveur** : temps de réponse et d'écriture de la base, sa mémoire comparée aux données, OPcache, outils de
+    débogage, tests du processeur et du disque, cache, journaux, tâches en attente — chaque alerte avec son conseil — et
+    temps des parties lourdes du module. Rapport texte à copier.
+
+### Modifié
+- **Pages plus rapides** :
+  - « Statistiques des flux » ne fait plus relire à Workflow Packs tout l'historique des flux pendant le clic (cela ne
+    servait qu'à marquer les flux supprimés, désormais lus par la tâche planifiée toutes les 6 heures) : 2,6 s → 0,06 s
+    sur une installation de test avec 24 flux et 28 800 actions, chiffres gardés une minute.
+  - Tableau de bord : le temps moyen de première réponse ne lit que les tickets modifiés depuis ce jour (il lisait tous
+    les messages envoyés) ; tendances et carte des flux gardées 2 minutes. Les tuiles et les listes suivent toujours
+    chaque changement.
+  - Les réglages du module sont lus en une requête par page (une par réglage avant) ; la présence de ses tables est
+    gardée en cache ; la détection des changements ne lit plus les colonnes des tickets ; le ticket d'une page est lu une
+    seule fois.
+  - Les contrôles d'intégration sont gardés 60 minutes quand tout va bien (5 minutes sinon, comme avant) :
+    `REFRESHGLOBAL_COMPAT_OK_CACHE_MINUTES`.
+
+### Compatibilité
+- Nouveaux contrôles RG-CORE-28, RG-CORE-29, RG-DB-18. Vérifié avec FreeScout 1.8.252. Le contrat FreeScout Interop ne
+  change pas.
+
+### Migration
+- Une nouvelle table, `refreshglobal_perf` (rétrocompatible).
+
 ## [1.22.0] — 2026-11-19
 
 ### Ajouté

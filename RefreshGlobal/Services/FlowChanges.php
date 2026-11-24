@@ -198,7 +198,7 @@ class FlowChanges
         static $exists = null;
         if ($exists === null) {
             try {
-                $exists = \Schema::hasTable(self::TABLE);
+                $exists = SchemaCache::has(self::TABLE);
             } catch (\Throwable $e) {
                 $exists = false;
             }
@@ -290,7 +290,7 @@ class FlowChanges
     public static function backfillStatus()
     {
         try {
-            $s = \App\Option::get(self::OPTION_BACKFILL, [], true, false);
+            $s = Settings::option(self::OPTION_BACKFILL, []);
             if (is_string($s)) {
                 $s = json_decode($s, true);
             }
@@ -389,6 +389,54 @@ class FlowChanges
      */
     public static function stats(array $f, MailboxAccess $access)
     {
+        // kept one minute, and until the next recorded change; the key holds everything the rights depend on
+        $user = $access->user();
+        $key = 'refreshglobal.flowstats.'.md5(json_encode([$f, $access->onlyAssigned() ? ($user ? $user->id : 0) : null,
+            \DB::table(self::TABLE)->max('id'), Compatibility\CompatibilityChecker::moduleVersion()]));
+
+        return \Cache::remember($key, 1, function () use ($f, $access) {
+            return self::computeStats($f, $access);
+        });
+    }
+
+    const CACHE_DELETED = 'refreshglobal.flows_deleted';
+    /** minutes between two readings of the deleted flows */
+    const DELETED_MINUTES = 360;
+
+    /** Ids of the flows Workflow Packs no longer has (as of the last scheduled reading). */
+    public static function deletedFlows()
+    {
+        $row = \Cache::get(self::CACHE_DELETED);
+
+        return is_array($row) && isset($row['ids']) ? array_map('intval', (array) $row['ids']) : [];
+    }
+
+    /**
+     * 1.23.0: asks Workflow Packs which recorded flows were deleted. It reads the whole history of the flows (seconds on
+     * a busy installation): scheduled task only (refreshglobal:flow-history --requested), every 6 hours.
+     */
+    public static function refreshDeleted($force = false)
+    {
+        $row = \Cache::get(self::CACHE_DELETED);
+        if (!$force && is_array($row) && isset($row['at']) && time() - $row['at'] < self::DELETED_MINUTES * 60) {
+            return false;
+        }
+        $known = WorkflowPacksLink::flowStats([
+            'from' => Carbon::now()->subDays(365)->format('Y-m-d'), 'to' => Carbon::now()->format('Y-m-d H:i:s'),
+        ]);
+        $ids = [];
+        foreach ((array) ($known['flows'] ?? []) as $k) {
+            if (is_array($k) && (int) ($k['flow_id'] ?? 0) && array_key_exists('exists', $k) && $k['exists'] === false) {
+                $ids[] = (int) $k['flow_id'];
+            }
+        }
+        \Cache::forever(self::CACHE_DELETED, ['at' => time(), 'ids' => $ids]);
+
+        return true;
+    }
+
+    public static function computeStats(array $f, MailboxAccess $access)
+    {
         $metrics = function ($q) {
             $prefix = \DB::getTablePrefix();
             $c = $prefix.self::TABLE;
@@ -430,18 +478,10 @@ class FlowChanges
                 }
             }
         }
-        // flows deleted since (Workflow Packs keeps their name with each ticket)
-        if ($flows) {
-            $known = WorkflowPacksLink::flowStats([
-                'from' => Carbon::now()->subDays($f['days'])->format('Y-m-d'), 'to' => Carbon::now()->format('Y-m-d H:i:s'),
-                'mailboxes' => $f['mailboxes'],
-            ]);
-            foreach ((array) ($known['flows'] ?? []) as $k) {
-                $id = is_array($k) ? (int) ($k['flow_id'] ?? 0) : 0;
-                if ($id && isset($flows[$id]) && array_key_exists('exists', $k) && $k['exists'] === false) {
-                    $flows[$id]['exists'] = false;
-                }
-            }
+        // flows deleted since: noted by the scheduled task (refreshDeleted()), never asked during a click
+        $deleted = self::deletedFlows();
+        foreach (array_keys($flows) as $id) {
+            $flows[$id]['exists'] = !in_array($id, $deleted, true);
         }
         $flows = array_values($flows);
         usort($flows, function ($a, $b) {

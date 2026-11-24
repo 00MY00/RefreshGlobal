@@ -260,7 +260,9 @@ class CompatibilityChecker
         $report = $checker->run();
         self::log($report);
         try {
-            \Cache::put($key, $report, $minutes);
+            // 1.23.0: nothing to report = kept longer (a click does not pay for the checks every few minutes); with a
+            // problem the report is renewed often, a repair is seen quickly
+            \Cache::put($key, $report, $report['state'] === 'ok' ? max($minutes, (int) config('refreshglobal.compat_ok_cache_minutes', 60)) : $minutes);
             \Cache::forever(self::CACHE_PREFIX.'last_key', $key);
         } catch (\Exception $e) {
             // not fatal

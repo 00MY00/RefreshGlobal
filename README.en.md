@@ -35,6 +35,10 @@ otherwise it uses FreeScout's standard look.
 - Filters live in the URL: a filtered list can be shared and the Back button works.
 - **Access rights enforced**: users only see, count and export tickets of their own mailboxes (and only their own
   tickets with the "see only assigned conversations" permission).
+- **Performance** (administrators, diagnostic page › *Performance*): hardware as seen by PHP (processor, limits of the
+  container, memory, disk, waits), database, OPcache, cache, and **sensors** switched on for 15 minutes to 4 hours: time
+  of each page, SQL requests per module, slow requests, time in the browser. No address, no user, no value; plain text
+  report to copy for a diagnosis.
 - **Compatibility diagnostic**: `php artisan refreshglobal:check` and an admin page, with explicit `RG-xxx` messages
   after a FreeScout or Refresh update.
 - **"Fetch e-mails" button** (circular arrow) when the [SyncNow](https://github.com/rabsym/freescout-syncnow) module

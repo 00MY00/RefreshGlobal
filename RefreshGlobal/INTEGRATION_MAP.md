@@ -359,3 +359,13 @@ démarrage de tous les modules). Sans cela : routes en 404, aucun lien, aucun é
 
 Les contrôles RG-HOOK-42…49 relisent les fichiers de Workflow Packs et sont **non applicables** sans lui ou avant 3.20
 (`module` / `module_min` de `Config/integration.php`, `CompatibilityChecker::optionalModulePath()`).
+
+## Performance (1.23.0)
+
+| Élément | Où | Utilisé par |
+|---|---|---|
+| événement `Illuminate\Foundation\Http\Events\RequestHandled` | `vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php:128` | `Services/Perf/Recorder.php` : une ligne par requête pendant un enregistrement (RG-CORE-28) |
+| `LARAVEL_START` | `public/index.php:19` | début de la requête (facultatif) |
+| `App\Option::maybeUnserialize()`, événements Eloquent `saved` / `deleted` | `app/Option.php`, `Illuminate/Database/Eloquent/Concerns/HasEvents.php` | `Services/Settings.php` `option()` : tous les réglages en une requête, relus après un changement (RG-CORE-29) |
+| table du module `refreshglobal_perf` | `Database/Migrations/2026_11_24_000000_create_refreshglobal_perf_table.php` | mesures (RG-DB-18) |
+| `/proc`, `/sys`, `opcache_get_status()`, `sys_getloadavg()`, `information_schema` | système, PHP, base | `Services/Perf/Hardware.php`, `Probe.php` : lecture seule, omis si illisible |

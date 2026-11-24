@@ -516,3 +516,16 @@ button.rf-v.rg-views-order { color: var(--fd-text-2, #475569); }
     .rg-order-name { font-size: 15px; }
     .rg-order-done { min-height: 44px; padding-left: 18px; padding-right: 18px; }
 }
+
+/* 1.23.0: performance page */
+.rg-perf-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 8px 0 14px; }
+.rg-perf-actions .rg-inline { display: inline-flex; gap: 8px; align-items: center; margin: 0; }
+.rg-perf-minutes { width: auto; }
+.rg-perf-on { padding: 6px 10px; }
+.rg-perf .label { white-space: normal; display: inline-block; text-align: left; line-height: 1.35; padding: 4px 8px; overflow-wrap: anywhere; }
+.rg-perf-slow code { white-space: normal; overflow-wrap: anywhere; }
+.rg-perf-report { font-family: monospace; font-size: 12px; white-space: pre; overflow: auto; }
+.rg-perf-share, .rg-perf-modules { max-width: 620px; }
+.rg-perf td.text-right { white-space: nowrap; }
+.rg-perf-items td:first-child { width: 50%; }
+@media (max-width: 767px) { .rg-perf .btn, .rg-perf-minutes { min-height: 44px; } .rg-perf .btn { display: inline-flex; align-items: center; } }

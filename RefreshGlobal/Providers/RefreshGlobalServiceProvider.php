@@ -58,6 +58,8 @@ class RefreshGlobalServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__.'/../Database/Migrations');
         $this->loadRoutesFrom(__DIR__.'/../Http/routes.php');
 
+        \Modules\RefreshGlobal\Services\Settings::listen();
+        \Modules\RefreshGlobal\Services\Perf\Recorder::register($this->app);
         $this->registerMenu();
         $this->registerMailboxColumn();
         $this->registerSchedule();
@@ -267,7 +269,7 @@ class RefreshGlobalServiceProvider extends ServiceProvider
                     ],
                 ];
                 if (\Route::is('conversations.view')) {
-                    $conversation = \App\Conversation::find((int) request()->route('id'));
+                    $conversation = self::ticket((int) request()->route('id'));
                     $config['ticket'] = $conversation && \Modules\RefreshGlobal\Services\MailMove::supported($conversation->mailbox)
                         && \Modules\RefreshGlobal\Services\MailMove::allowed(auth()->user(), $conversation);
                 }
@@ -663,6 +665,17 @@ class RefreshGlobalServiceProvider extends ServiceProvider
         }, 2);
     }
 
+    /** The ticket of the page, read once per request. */
+    protected static function ticket($id)
+    {
+        $request = request();
+        if (!$request->attributes->has('refreshglobal.ticket.'.$id)) {
+            $request->attributes->set('refreshglobal.ticket.'.$id, \App\Conversation::find($id));
+        }
+
+        return $request->attributes->get('refreshglobal.ticket.'.$id);
+    }
+
     /**
      * Ticket page: its id and the name of its mailbox ("Mailbox: Support"), for the landmark above Refresh's views
      * panel (Public/js/shell.js backToList()); nothing when the user can not see that mailbox.
@@ -671,7 +684,7 @@ class RefreshGlobalServiceProvider extends ServiceProvider
      */
     public static function ticketLandmark($conversation_id, $user)
     {
-        $conversation = \App\Conversation::find((int) $conversation_id);
+        $conversation = self::ticket((int) $conversation_id);
         if (!$conversation || !$conversation->mailbox || !$user
             || !in_array((int) $conversation->mailbox_id, (new \Modules\RefreshGlobal\Services\MailboxAccess($user))->allowedIds(), true)) {
             return [];

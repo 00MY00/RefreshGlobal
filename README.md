@@ -53,6 +53,10 @@ Dans Gérer › Modules :
 - **Mises à jour** par la page **Modules** de FreeScout, ou en sécurité par le module
   [UpdateGuard](https://github.com/00MY00/UpdateGuard) (conseillé : SHA-256, sauvegarde, contrôle de santé, retour
   arrière automatique).
+- **Performance** (administrateurs, page de diagnostic › *Performance*) : matériel vu par PHP (processeur, limites du
+  conteneur, mémoire, disque, attentes), base de données, OPcache, cache, et **capteurs** activés pour 15 minutes à
+  4 heures : temps de chaque page, requêtes SQL par module, requêtes lentes, temps dans le navigateur. Aucune adresse,
+  aucun utilisateur, aucune valeur ; rapport texte à copier pour un diagnostic.
 - **Diagnostic de compatibilité** : `php artisan refreshglobal:check` et page d'administration, avec des messages
   explicites (codes `RG-xxx`) après une mise à jour de FreeScout ou de Refresh.
 - **Bouton « Relever les e-mails »** (flèche en cercle) si le module

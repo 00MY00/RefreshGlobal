@@ -52,7 +52,7 @@ class MailTags
     {
         if (self::$tableExists === null) {
             try {
-                self::$tableExists = \Schema::hasTable(self::TABLE);
+                self::$tableExists = SchemaCache::has(self::TABLE);
             } catch (\Throwable $e) {
                 self::$tableExists = false;
             }
@@ -374,7 +374,7 @@ class MailTags
     {
         try {
             // arrays are serialized by Option::set() and given back by Option::get() (app/Option.php, maybeSerialize)
-            $s = \App\Option::get(self::OPTION_RECALC, [], true, false);
+            $s = Settings::option(self::OPTION_RECALC, []);
             if (is_string($s)) {
                 $s = json_decode($s, true);
             }

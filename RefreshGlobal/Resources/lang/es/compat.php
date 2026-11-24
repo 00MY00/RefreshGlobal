@@ -286,4 +286,16 @@ return [
         'effect' => 'Las estadísticas de los flujos y los flujos temporales no están disponibles. El resto funciona.',
         'action' => 'Ejecute php artisan migrate y luego php artisan refreshglobal:check.',
     ],
+    'core_perf' => [
+        'check' => 'Elemento usado por los sensores de rendimiento presente: :item',
+        'label' => 'Falta un elemento usado por los sensores de rendimiento o los ajustes: :item.',
+        'effect' => 'Los sensores de rendimiento pueden no funcionar. El resto funciona.',
+        'action' => 'Actualice RefreshGlobal a una versión prevista para esta versión de FreeScout y ejecute php artisan refreshglobal:check.',
+    ],
+    'db_perf' => [
+        'check' => 'Tabla y columnas de los sensores de rendimiento presentes: :item',
+        'label' => 'Falta una tabla o columna de los sensores de rendimiento: :item.',
+        'effect' => 'Los sensores de rendimiento no están disponibles. El resto funciona.',
+        'action' => 'Ejecute php artisan migrate y luego php artisan refreshglobal:check.',
+    ],
 ];

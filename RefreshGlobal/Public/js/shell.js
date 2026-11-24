@@ -1123,4 +1123,23 @@
             }, s * 1000);
         }
     });
+
+    /* 1.23.0: performance sensors (Services/Perf/Recorder.php): while an administrator records, the page tells how long
+     * it took in the browser (times only). The meta is written only then. */
+    $(function () {
+        var meta = document.querySelector('meta[name="refreshglobal-perf"]');
+        if (!meta || !window.performance || !performance.getEntriesByType) {
+            return;
+        }
+        var send = function () {
+            try {
+                var c = JSON.parse(meta.getAttribute('content'));
+                var n = performance.getEntriesByType('navigation')[0];
+                if (n && n.loadEventEnd) {
+                    $.post(c.url, { _token: $('meta[name="csrf-token"]').attr('content'), id: c.id, ttfb: n.responseStart, ready: n.domContentLoadedEventEnd, load: n.loadEventEnd });
+                }
+            } catch (e) { /* optional */ }
+        };
+        if (document.readyState === 'complete') { setTimeout(send, 300); } else { $(window).on('load', function () { setTimeout(send, 300); }); }
+    });
 })(window.jQuery);

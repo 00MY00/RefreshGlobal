@@ -65,6 +65,9 @@ class GlobalDashboard
         }
     }
 
+    /** Minutes the trends and the flows card are kept. */
+    const HEAVY_MINUTES = 2;
+
     /** Tiles, in their order. */
     const TILES = ['unresolved', 'overdue', 'due-today', 'open', 'pending', 'unassigned', 'closed-today', 'closed'];
 
@@ -145,14 +148,20 @@ class GlobalDashboard
         $base = function () use ($user, $ids) {
             return self::baseQuery($user, $ids);
         };
-        $stats = (new Statistics($base))->summary();
+        // 1.23.0: the trends are kept HEAVY_MINUTES whatever happens to the tickets; tiles and lists follow each change
+        $scope = $user->id.'.'.((new MailboxAccess($user))->onlyAssigned() ? 1 : 0).'.'.md5(implode(',', $ids));
+        $stats = \Cache::remember('refreshglobal.dash.trends.v1.'.$scope, self::HEAVY_MINUTES, function () use ($base) {
+            return (new Statistics($base))->summary();
+        });
         $stats['by_agent'] = self::unresolvedByAgent($base());
 
         return [
             'tiles'       => self::tiles($base),
             'stats'       => $stats,
             'undelivered' => self::undeliveredPerMailbox($base, $mailboxes),
-            'flows'       => self::flows($user, $ids),
+            'flows'       => \Cache::remember('refreshglobal.dash.flows.v1.'.$scope, self::HEAVY_MINUTES, function () use ($user, $ids) {
+                return self::flows($user, $ids);
+            }),
         ];
     }
 

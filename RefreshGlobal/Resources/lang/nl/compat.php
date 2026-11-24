@@ -286,4 +286,16 @@ return [
         'effect' => 'De flowstatistieken en de tijdelijke flows zijn niet beschikbaar. De rest werkt.',
         'action' => 'Voer php artisan migrate uit en daarna php artisan refreshglobal:check.',
     ],
+    'core_perf' => [
+        'check' => 'Element gebruikt door de prestatiesensoren aanwezig: :item',
+        'label' => 'Een element gebruikt door de prestatiesensoren of de instellingen ontbreekt: :item.',
+        'effect' => 'De prestatiesensoren werken mogelijk niet. De rest werkt.',
+        'action' => 'Werk RefreshGlobal bij naar een versie voor deze FreeScout-versie en voer php artisan refreshglobal:check uit.',
+    ],
+    'db_perf' => [
+        'check' => 'Tabel en kolommen van de prestatiesensoren aanwezig: :item',
+        'label' => 'Een tabel of kolom van de prestatiesensoren ontbreekt: :item.',
+        'effect' => 'De prestatiesensoren zijn niet beschikbaar. De rest werkt.',
+        'action' => 'Voer php artisan migrate uit en daarna php artisan refreshglobal:check.',
+    ],
 ];
