@@ -550,8 +550,18 @@ button.rf-v.rg-views-order { color: var(--fd-text-2, #475569); }
 .rg-reply-form > label { display: block; font-weight: 500; margin: 8px 0; }
 .rg-reply-boxes { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 8px; max-height: 220px; overflow-y: auto; }
 .rg-reply-boxes label { font-weight: 400; margin: 0; overflow-wrap: anywhere; }
-.rg-reply-choice { display: flex; align-items: center; gap: 8px; padding: 6px 10px; }
-.rg-reply-choice span { flex: none; white-space: nowrap; }
-.rg-reply-choice select { width: auto; max-width: 320px; min-width: 0; }
-@media (max-width: 767px) { .rg-reply-row { flex-wrap: wrap; } .rg-reply-sum { flex-basis: 100%; } .rg-reply-acts .btn, .rg-reply-boxes label, [data-rg-reply-add] { min-height: 44px; min-width: 44px; } .rg-reply-boxes label { display: flex; align-items: center; gap: 8px; } .rg-reply-choice select { flex: 1 1 auto; min-height: 44px; font-size: 16px; } }
+.rg-reply-choice { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; padding: 6px 10px; }
+.rg-reply-choice .dropdown { position: relative; max-width: 100%; }
+.rg-reply-choice .btn { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.rg-reply-choice .dropdown-menu { max-height: 280px; overflow-y: auto; max-width: 88vw; }
+.rg-reply-choice .dropdown-menu a { white-space: normal; overflow-wrap: anywhere; }
+@media (max-width: 1024px) and (pointer: coarse) { .rg-reply-acts .btn, .rg-reply-foot .btn, .rg-reply-save, .rg-reply-choice .btn { min-height: 44px; } }
+.rg-reply-choice-label, .rg-reply-guess { font-weight: 400; color: #64748b; }
+.rg-lang { display: inline-block; padding: 0 6px; border-radius: 4px; background: #dfe7fb; color: #1e3a8a; font-size: 11px; font-weight: 700; line-height: 18px; vertical-align: middle; }
+.rg-reply-chips .rg-lang { margin: 0 6px 4px 0; }
+.rg-reply-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 8px 0; }
+.rg-reply-dirty { color: #7a4a00; }
+.rg-reply-dirty[hidden] { display: none; }
+.rg-reply-save { margin-top: 12px; }
+@media (max-width: 767px) { .rg-reply-row { flex-wrap: wrap; } .rg-reply-sum { flex-basis: 100%; } .rg-reply-acts .btn, .rg-reply-boxes label, [data-rg-reply-add] { min-height: 44px; min-width: 44px; } .rg-reply-boxes label { display: flex; align-items: center; gap: 8px; } .rg-reply-foot .btn { flex: 1 1 100%; min-height: 44px; } .rg-reply-choice .btn, .rg-reply-choice .dropdown-menu a { min-height: 44px; padding-top: 11px; padding-bottom: 11px; } }
 @media (max-width: 767px) { .rg-reply-vars .btn { min-height: 44px; padding: 8px 10px; font-size: 13px; } .rg-reply-start summary { min-height: 44px; padding: 12px 0 !important; } .rg-reply-guide { overflow-x: auto; } }

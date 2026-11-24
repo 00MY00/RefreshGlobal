@@ -383,3 +383,4 @@ Les contrôles RG-HOOK-42…49 relisent les fichiers de Workflow Packs et sont *
 | `ViewNextRedirect` de Refresh | `Modules/Refresh/Http/Middleware/ViewNextRedirect.php` | jamais appelé : `AfterReply` agit après lui (premier du groupe « web ») |
 | `Thread::TYPE_CUSTOMER`, `body`, `created_by_customer_id` (1.25.0) | `app/Thread.php:31` | `Services/CustomerName.php` : signature des derniers messages du client (RG-CORE-32) |
 | `.note-editor` (summernote) | dans `.conv-reply-block` | liste de choix du texte, placée avant ; absente, la liste n'apparaît pas |
+| `.dropdown` / `data-toggle="dropdown"` (Bootstrap 3 de FreeScout) (1.26.0) | `public/js/bootstrap.js` | bouton de choix du profil ; absent, le menu ne s'ouvre pas, le reste fonctionne |

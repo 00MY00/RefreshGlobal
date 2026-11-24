@@ -5,6 +5,29 @@ sont tenus à jour ensemble à chaque version.
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.26.0] — 2026-11-25
+
+### Ajouté
+- **Langue d'un profil** (texte de début de réponse) : le profil dans la langue du dernier message du client est placé,
+  sinon un profil pour toutes les langues ; jamais un profil d'une autre langue. La langue est trouvée dans le texte du
+  message, sur votre serveur (28 langues ; messages cités et avertissements ignorés), puis dans les messages plus anciens
+  et le sujet. En cas de doute : le premier profil pour toutes les langues, sinon le premier.
+- **Bouton dans la réponse**, au-dessus de l'éditeur : profil utilisé avec sa langue (FR, DE…), autres profils, et langue
+  trouvée dans le message. Affiché même avec un seul profil.
+- Le tableau des boîtes montre le profil de chaque langue.
+
+### Modifié
+- **Boutons Enregistrer** dans chaque profil et sous la liste des profils (téléphone, tablette, ordinateur), avec un
+  avertissement pour les modifications non enregistrées ; la page revient aux profils. Le seul bouton était tout en bas.
+
+### Corrigé
+- Choisir un autre profil après avoir écrit : le brouillon de FreeScout, enregistré à ce moment, pouvait manquer le
+  nouveau texte.
+
+### Compatibilité
+- Aucune migration, aucun nouveau contrôle. Les profils de 1.25.0 sont pour toutes les langues. Le contrat FreeScout
+  Interop ne change pas.
+
 ## [1.25.0] — 2026-11-24
 
 ### Ajouté

@@ -28,6 +28,14 @@
         </div>
         <p class="rg-reply-preview-title"><strong>{{ __('refreshglobal::reply.preview') }}</strong></p>
         <div class="rg-reply-preview" data-rg-reply-preview></div>
+        <label>{{ __('refreshglobal::reply.lang') }}
+            <select name="{{ $rg_n }}[lang]" class="form-control" data-rg-reply-lang>
+                <option value="">{{ __('refreshglobal::reply.lang_any') }}</option>
+                @foreach (\Modules\RefreshGlobal\Services\LanguageGuess::LANGUAGES as $code => $language)
+                    <option value="{{ $code }}" @if ($row['lang'] === $code) selected @endif>{{ strtoupper($code) }} – {{ $language }}</option>
+                @endforeach
+            </select></label>
+        <p class="form-help">{{ __('refreshglobal::reply.lang_help') }}</p>
         <label>{{ __('refreshglobal::reply.where') }}
             <select name="{{ $rg_n }}[where]" class="form-control" data-rg-reply-where>
                 @foreach ([$rg_r::ALL, $rg_r::ONLY, $rg_r::EXCEPT] as $w)
@@ -39,5 +47,6 @@
                 <label><input type="checkbox" name="{{ $rg_n }}[mailboxes][]" value="{{ $mb->id }}" @if (in_array((int) $mb->id, $row['mailboxes'], true)) checked @endif> <span>{{ $mb->name }}</span></label>
             @endforeach
         </div>
+        <button type="submit" class="btn btn-primary rg-reply-save" data-rg-reply-save>{{ __('refreshglobal::messages.save') }}</button>
     </div>
 </div>

@@ -5,7 +5,7 @@
     $rg_r = '\Modules\RefreshGlobal\Services\ReplyStart';
     $rg_texts = is_array($settings[$rg_r::TEXTS] ?? null) ? array_values($settings[$rg_r::TEXTS]) : [];
     $rg_boxes = \App\Mailbox::orderBy('name')->get(['id', 'name']);
-    $rg_blank = ['name' => '', 'text' => '', 'where' => $rg_r::ALL, 'mailboxes' => []];
+    $rg_blank = ['name' => '', 'text' => '', 'where' => $rg_r::ALL, 'mailboxes' => [], 'lang' => ''];
 @endphp
 <h3 class="subheader" id="rg-replies">{{ __('refreshglobal::reply.title') }}</h3>
 @include('refreshglobal::partials.switch', ['key' => $rg_s::REPLY_GOES_NEXT, 'label' => __('refreshglobal::reply.goes_next'),
@@ -22,14 +22,18 @@
         <input type="hidden" name="settings[{{ $rg_r::TEXTS }}]" value="">
         <div class="rg-reply-list" data-rg-reply-list data-max="{{ $rg_r::MAX_TEXTS }}" data-sample="{{ json_encode($rg_r::SAMPLE) }}"
             data-texts="{{ json_encode(['unnamed' => __('refreshglobal::reply.unnamed'), 'all' => __('refreshglobal::reply.where_all'), 'except' => __('refreshglobal::reply.where_except'),
-                'nowhere' => __('refreshglobal::reply.nowhere'), 'none' => __('refreshglobal::reply.none')]) }}">
+                'others' => __('refreshglobal::reply.lang_others'), 'nowhere' => __('refreshglobal::reply.nowhere'), 'none' => __('refreshglobal::reply.none')]) }}">
             @foreach ($rg_texts as $i => $row)
                 @include('refreshglobal::partials.reply_text', ['i' => $i, 'row' => $row])
             @endforeach
         </div>
         <p class="rg-reply-none" data-rg-reply-none @if ($rg_texts) hidden @endif>{{ __('refreshglobal::reply.no_profile') }}</p>
         <template data-rg-reply-new>@include('refreshglobal::partials.reply_text', ['i' => '__i__', 'row' => $rg_blank])</template>
-        <button type="button" class="btn btn-default btn-sm" data-rg-reply-add>+ {{ __('refreshglobal::reply.add') }}</button>
+        <div class="rg-reply-foot">
+            <button type="button" class="btn btn-default btn-sm" data-rg-reply-add>+ {{ __('refreshglobal::reply.add') }}</button>
+            <button type="submit" class="btn btn-primary btn-sm" data-rg-reply-save>{{ __('refreshglobal::messages.save') }}</button>
+            <span class="rg-reply-dirty" data-rg-reply-dirty role="status" hidden>{{ __('refreshglobal::reply.unsaved') }}</span>
+        </div>
         <p class="rg-reply-preview-title"><strong>{{ __('refreshglobal::reply.by_mailbox') }}</strong></p>
         <p class="form-help">{{ __('refreshglobal::reply.by_mailbox_help') }}</p>
         <table class="table table-condensed rg-reply-used" data-rg-reply-used>

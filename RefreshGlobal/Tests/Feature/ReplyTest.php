@@ -105,6 +105,75 @@ class ReplyTest extends TestCase
         $this->assertStringNotContainsString('name="refreshglobal-reply"', $this->actingAs($this->s['bob'])->get($c->url())->getContent());
     }
 
+    public function testProfilePerLanguage()
+    {
+        $row = function ($name, $lang, $where = 'all', $ids = []) {
+            return ['name' => $name, 'text' => $name, 'where' => $where, 'mailboxes' => $ids, 'lang' => $lang];
+        };
+        $c = $this->s['t_support_open'];
+        $own = [$this->s['support']->id];
+        \App\Option::set(ReplyStart::ENABLED, 1);
+        \App\Option::set(ReplyStart::TEXTS, [$row('FR', 'fr'), $row('DE', 'de'), $row('Any', ''), $row('FR own', 'fr', 'only', $own), $row('Bad', 'xx')]);
+        $this->assertSame(['fr', 'de', '', 'fr', ''], array_column(ReplyStart::texts(), 'lang'), 'unknown code: any language');
+        $names = function ($lang) use ($c) {
+            return implode(',', array_column(ReplyStart::rank(ReplyStart::textsFor($c->mailbox_id), $lang), 'name'));
+        };
+        $this->assertSame('FR own,FR,Any,Bad,DE', $names('fr'));
+        $this->assertSame('DE,Any,Bad,FR own,FR', $names('de'));
+        $this->assertSame('Any,Bad,FR own,FR,DE', $names('it'));
+        $this->assertSame('Any,Bad,FR own,FR,DE', $names(''));
+        // a profile in another language is never put in by itself, but can be chosen
+        $rank = ReplyStart::rank([$row('FR', 'fr')], 'de');
+        $this->assertFalse($rank[0]['auto']);
+        $this->assertTrue(ReplyStart::rank([$row('FR', 'fr')], '')[0]['auto']);
+
+        // from the message of the customer
+        $thread = \App\Thread::where('conversation_id', $c->id)->where('type', \App\Thread::TYPE_CUSTOMER)->orderBy('id', 'desc')->first() ?: new \App\Thread();
+        $thread->forceFill(['conversation_id' => $c->id, 'type' => \App\Thread::TYPE_CUSTOMER, 'status' => 1, 'state' => 2, 'source_via' => 1, 'source_type' => 1, 'customer_id' => $c->customer_id,
+            'created_by_customer_id' => $c->customer_id, 'body' => '<div>Guten Tag, ich habe meine Rechnung noch nicht erhalten.</div><blockquote>Bonjour, votre facture est prête, merci pour votre patience et à bientôt.</blockquote>']);
+        $thread->save();
+        $texts = ReplyStart::forTicket($c->fresh(), $this->s['bob'], $lang);
+        $this->assertSame(['de', 'DE', true], [$lang, $texts[0]['name'], $texts[0]['auto']]);
+        $this->assertStringContainsString('&quot;lang&quot;:&quot;de&quot;', $this->actingAs($this->s['bob'])->get($c->url())->getContent());
+        $r = $this->actingAs($this->s['admin'])->get(route('settings', ['section' => 'refreshglobal']));
+        $this->seeIn($r, 'data-rg-reply-save');
+        $this->seeIn($r, '[0][lang]');
+    }
+
+    public function testLanguageOfAMessage()
+    {
+        foreach ([
+            'fr' => ['Bonjour, je n’ai pas reçu ma commande, pouvez-vous vérifier ?', 'Merci pour votre réponse', 'Bonjour, ça ne marche pas'],
+            'de' => ['Guten Tag, ich habe eine Frage zu meiner Rechnung.', 'Vielen Dank für Ihre Antwort', 'Grüezi, können Sie mir bitte helfen? Danke'],
+            'en' => ['Hello, I have not received my order, could you please check?', 'Thanks for your help', 'It does not work'],
+            'it' => ['Buongiorno, non ho ricevuto la mia fattura, potete verificare?', 'Grazie per la vostra risposta'],
+            'es' => ['Hola, no he recibido mi pedido, ¿pueden comprobarlo?', 'Muchas gracias por su ayuda, estoy muy contento'],
+            'pt' => ['Olá, não recebi a minha encomenda, podem verificar?', 'Obrigado pela sua ajuda, está tudo bem'],
+            'nl' => ['Goedemiddag, ik heb mijn bestelling nog niet ontvangen, kunt u dit controleren?', 'Bedankt voor uw antwoord'],
+            'da' => ['Hej, jeg har ikke modtaget min ordre, hvornår kommer den? Venlig hilsen'], 'sv' => ['Hej, jag har inte fått min beställning, när kommer den?'],
+            'no' => ['Hei, jeg har ikke mottatt bestillingen min, når kommer den? Takk'], 'fi' => ['Hei, en ole saanut tilaustani, voitteko tarkistaa? Kiitos'],
+            'pl' => ['Dzień dobry, nie otrzymałem mojego zamówienia, proszę o sprawdzenie.'], 'cs' => ['Dobrý den, ještě jsem nedostal svou objednávku, děkuji.'], 'sk' => ['Dobrý deň, ešte som nedostal svoju objednávku, ďakujem.'],
+            'hu' => ['Jó napot, még nem kaptam meg a rendelésemet, köszönöm.'], 'ro' => ['Bună ziua, nu am primit comanda mea, vă rog să verificați.'], 'hr' => ['Dobar dan, još nisam dobio narudžbu, molim provjerite. Hvala'],
+            'tr' => ['Merhaba, siparişim gelmedi, kontrol eder misiniz lütfen? Teşekkürler'], 'ru' => ['Здравствуйте, я не получил мой заказ, это возможно проверить?'], 'uk' => ['Добрий день, я не отримав моє замовлення, будь ласка, перевірте. Дякую'],
+            'bg' => ['Здравейте, не съм получил моята поръчка, моля проверете.'], 'el' => ['Καλημέρα, δεν έλαβα την παραγγελία μου.'], 'ar' => ['مرحبا، لم أستلم طلبي'], 'he' => ['שלום, לא קיבלתי את ההזמנה שלי'],
+            'zh' => ['您好，我还没有收到我的订单。'], 'ja' => ['こんにちは、注文した商品がまだ届いていません。'], 'ko' => ['안녕하세요, 주문을 아직 받지 못했습니다.'], 'th' => ['สวัสดี ฉันยังไม่ได้รับสินค้า'],
+        ] as $code => $texts) {
+            foreach ($texts as $text) {
+                $this->assertSame($code, \Modules\RefreshGlobal\Services\LanguageGuess::find(['<p>'.$text.'</p>']), $text);
+            }
+        }
+        $guess = function ($body, $subject = '') {
+            return \Modules\RefreshGlobal\Services\LanguageGuess::find((array) $body, $subject);
+        };
+        foreach (['', 'OK', '12345', 'https://example.test/the/for/you', 'Zoé Dupont', "\xff\xfe"] as $text) {
+            $this->assertSame('', $guess($text), $text);
+        }
+        $this->assertSame('de', $guess(['OK', '<p>Ich habe noch eine Frage zu meiner Rechnung.</p>']), 'an older message');
+        $this->assertSame('fr', $guess('OK', 'Votre facture est dans mon dossier'), 'the subject');
+        $this->assertSame('fr', $guess('<p>Bonjour, je vous remercie pour votre réponse.</p><p>-- </p><p>This e-mail is confidential and is only for the person that it is addressed to. If you are not this person please do not use it.</p>'), 'not the disclaimer');
+        $this->assertSame('', $guess('<p>OK</p><blockquote>Bonjour, je vous remercie pour votre réponse</blockquote>'), 'not the quoted message');
+    }
+
     public function testSettingsShowTheGuide()
     {
         $r = $this->actingAs($this->s['admin'])->get(route('settings', ['section' => 'refreshglobal']));

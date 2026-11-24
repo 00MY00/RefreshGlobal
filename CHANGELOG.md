@@ -8,6 +8,27 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) — versions: [
 Every published change gets a new version number: FreeScout's Manage › Modules page and UpdateGuard only offer an
 update when the version changes.
 
+## [1.26.0] — 2026-11-25
+
+### Added
+- **Language of a profile** (text a reply starts with): the profile in the language of the customer's last message is put
+  in, else a profile for all languages; never one in another language. The language is found in the text of the message,
+  on your server (28 languages; quoted messages and disclaimers ignored); then older messages and the subject. In doubt:
+  the first profile for all languages, else the first one.
+- **Button in the reply**, above the editor: profile in use with its language (FR, DE…), the other profiles, and the
+  language found in the message. Shown even with one profile.
+- The table of the mailboxes shows the profile of each language.
+
+### Changed
+- **Save buttons** in each profile and under the list of profiles (phone, tablet, computer), with a notice for changes not
+  saved yet; the page comes back to the profiles. The only button was at the very bottom of the page.
+
+### Fixed
+- Choosing another profile after writing: FreeScout's draft, saved at that moment, could miss the new text.
+
+### Compatibility
+- No migration, no new check. Profiles of 1.25.0 are for all languages. The FreeScout Interop contract is unchanged.
+
 ## [1.25.0] — 2026-11-24
 
 ### Added

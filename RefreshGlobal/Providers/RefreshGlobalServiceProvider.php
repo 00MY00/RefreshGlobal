@@ -250,10 +250,11 @@ class RefreshGlobalServiceProvider extends ServiceProvider
                 if (!$conversation || !\Modules\RefreshGlobal\Services\MailMove::allowed(auth()->user(), $conversation)) {
                     return;
                 }
-                $texts = \Modules\RefreshGlobal\Services\ReplyStart::forTicket($conversation, auth()->user());
+                $texts = \Modules\RefreshGlobal\Services\ReplyStart::forTicket($conversation, auth()->user(), $lang);
                 if ($texts) {
                     echo '<meta name="refreshglobal-reply" content="'.e(json_encode(['texts' => $texts, 'confirm' => __('refreshglobal::reply.only_start'),
-                        'choose' => __('refreshglobal::reply.choose'), 'none' => __('refreshglobal::reply.none')],
+                        'choose' => __('refreshglobal::reply.choose'), 'none' => __('refreshglobal::reply.none'),
+                        'lang' => $lang, 'lang_label' => __('refreshglobal::reply.lang_message')],
                         JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)).'">'."\n";
                 }
             } catch (\Throwable $e) {

@@ -711,3 +711,13 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
   par boîte, ordre, enregistrement, suppression (ordinateur) ; dans la réponse : autre profil, aucun, retour au premier
   sans brouillon, texte écrit gardé au changement ; note, confirmation, envoi ; aucune erreur JavaScript.
 - Corrigé pendant ces essais : libellé de la liste rogné par le style de Refresh.
+
+## 47. Langue des profils, bouton de choix, boutons Enregistrer (1.26.0, 2026-11-25)
+
+- PHPUnit : `ReplyTest` (10 tests) ; suite complète 218 tests, 0 échec, 2 ignorés ; `php -l` PHP 7.1 et 8.4 ;
+  `validate-interop` OK. Détection aussi essayée sur une cinquantaine de phrases courtes inventées : celles qui restent
+  ambiguës ne donnent aucune langue.
+- Navigateur, avec et sans Refresh, ordinateur 1440, tablette 820, téléphone 390 (83 vérifications) : boutons Enregistrer
+  visibles et utilisés, profils, tableau par langue ; dans la réponse : profil de la langue du message placé, bouton, menu,
+  langue affichée, autre profil, aucun, texte écrit gardé ; aucune erreur JavaScript.
+- Corrigé pendant ces essais : brouillon enregistré au clic sur le bouton, sans le profil choisi ensuite.

@@ -74,21 +74,27 @@ class CustomerName
     /** these only in capitals: "Sa" is a name */
     const LEGAL_CAPITALS = ['SA', 'AG', 'NV', 'BV', 'SL', 'SPA', 'SE', 'AS'];
 
+    /** Last messages of the customer in the ticket (html, the newest first). */
+    public static function bodies($conversation)
+    {
+        $customer = $conversation->customer;
+        if (!$customer) {
+            return [];
+        }
+        try {
+            return \App\Thread::where('conversation_id', $conversation->id)->where('type', \App\Thread::TYPE_CUSTOMER)
+                ->where('created_by_customer_id', $customer->id)->orderBy('id', 'desc')->limit(self::MESSAGES)->pluck('body')->all();
+        } catch (\Throwable $e) {
+            return [];
+        }
+    }
+
     /** @return array ['first' => , 'last' => , 'full' => ] of the customer of a ticket ('' when not known) */
-    public static function forTicket($conversation)
+    public static function forTicket($conversation, array $bodies)
     {
         $customer = $conversation->customer;
         $first = $customer ? self::squeeze($customer->first_name) : '';
         $last = $customer ? self::squeeze($customer->last_name) : '';
-        $bodies = [];
-        if ($customer) {
-            try {
-                $bodies = \App\Thread::where('conversation_id', $conversation->id)->where('type', \App\Thread::TYPE_CUSTOMER)
-                    ->where('created_by_customer_id', $customer->id)->orderBy('id', 'desc')->limit(self::MESSAGES)->pluck('body')->all();
-            } catch (\Throwable $e) {
-                $bodies = [];
-            }
-        }
         try {
             return self::find($first, $last, (string) $conversation->customer_email, $bodies, $customer ? (string) $customer->company : '');
         } catch (\Throwable $e) {
@@ -249,7 +255,7 @@ class CustomerName
     }
 
     /** Lines of the message itself: without quoted messages, scripts and empty lines. */
-    protected static function lines($html)
+    public static function lines($html)
     {
         $html = mb_strcut($html, 0, self::MAX_BODY, 'UTF-8');
         $html = preg_replace('#<(script|style|head)\b.*?</\1>#isu', ' ', $html) ?: '';

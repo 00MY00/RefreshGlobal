@@ -1164,7 +1164,7 @@
         // parsed in an inert document: nothing in it is loaded or run
         var plain = function (html) { return tidy(new DOMParser().parseFromString(html, 'text/html').body.textContent || ''); };
         // the text in use: the first one, or the agent's choice in the reply ('' for none)
-        var current = cfg.texts[0].html, start = plain(current);
+        var current = cfg.texts[0].auto === false ? '' : cfg.texts[0].html, start = plain(current);
         var code = function () { try { return $('#body').summernote('code') || ''; } catch (e) { return $('#body').val() || ''; } };
         var field = function (name) { return $(block).find(':input[name="' + name + '"]').first().val(); };
         var isReply = function () {
@@ -1204,19 +1204,29 @@
                 try { $('#body').summernote('editor.saveRange'); } catch (e) { /* older editor */ }
             }
         };
-        // several texts (1.25.0): list above the editor, in replies only
+        // button above the editor, in replies only (1.25.0, 1.26.0): the profile in use and its language, the other ones, and
+        // the language of the customer's message
         var list = null;
+        var badge = function (code) { return code ? $('<span class="rg-lang">').text(code.toUpperCase()) : $(); };
+        var label = function (t) {
+            list.find('[data-rg-current]').empty().append(document.createTextNode(t ? t.name : cfg.none), ' ', badge(t && t.lang));
+        };
         var bar = function () {
-            if (cfg.texts.length < 2) { return; }
             var editor = block.querySelector('.note-editor');
             if (!list && editor) {
-                list = $('<div class="rg-reply-choice"><span></span> <select class="form-control input-sm"></select></div>');
-                list.find('span').text(cfg.choose);
-                var select = list.find('select').attr('aria-label', cfg.choose);
-                $.each(cfg.texts, function (i, t) { $('<option>').val(i).text(t.name).appendTo(select); });
-                $('<option>').val(-1).text(cfg.none).appendTo(select);
-                select.on('change', function () { choose(cfg.texts[parseInt(this.value, 10)]); });
+                list = $('<div class="rg-reply-choice"><div class="dropdown"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="rg-reply-choice-label"></span> <strong data-rg-current></strong> <span class="caret"></span></button><ul class="dropdown-menu"></ul></div></div>');
+                list.find('.rg-reply-choice-label').text(cfg.choose);
+                var menu = list.find('ul');
+                $.each(cfg.texts.concat([null]), function (i, t) {
+                    $('<a href="#">').append($('<span>').text(t ? t.name : cfg.none), ' ', badge(t && t.lang)).on('click', function (e) {
+                        e.preventDefault();
+                        label(t);
+                        choose(t);
+                    }).appendTo($('<li>').appendTo(menu));
+                });
+                if (cfg.lang) { $('<span class="rg-reply-guess">').text(cfg.lang_label + ' ').append(badge(cfg.lang)).appendTo(list); }
                 list.insertBefore(editor);
+                label(current ? cfg.texts[0] : null);
             }
             if (list) { list.toggle(isReply() && !(typeof window.isChatMode === 'function' && window.isChatMode())); }
         };
@@ -1239,7 +1249,10 @@
             current = html;
             start = plain(html);
             window.setReplyBody(body.html());
-            window.fs_reply_changed = true;
+            // leaving the editor saves a draft (FreeScout): its answer must not mark this later change as saved
+            $.each([0, 400, 1500, 4000], function (i, ms) {
+                setTimeout(function () { if (isReply()) { window.fs_reply_changed = true; } }, ms);
+            });
         };
         var take = function () {
             if (isReply() && !field('thread_id') && untouched()) { write('<div><br></div>'); }
@@ -1303,7 +1316,7 @@
             var ids = {}, names = [];
             $(find(el, 'boxes')).find('input:checked').each(function () { ids[this.value] = true; names.push($(this).next().text()); });
             var text = find(el, 'text').value.trim();
-            return { name: find(el, 'name').value.trim() || fill(text).replace(/\s+/g, ' ').slice(0, 60) || texts.unnamed, text: text, where: find(el, 'where').value, ids: ids, names: names };
+            return { lang: find(el, 'lang').value, name: find(el, 'name').value.trim() || fill(text).replace(/\s+/g, ' ').slice(0, 60) || texts.unnamed, text: text, where: find(el, 'where').value, ids: ids, names: names };
         };
         var show = function () {
             var all = items(), read_ = all.map(read);
@@ -1315,6 +1328,7 @@
                 find(el, 'preview').textContent = fill(r.text);
                 find(el, 'boxes').style.display = r.where === 'all' ? 'none' : '';
                 var labels = r.where === 'all' || (r.where === 'except' && !r.names.length) ? [texts.all] : (r.where === 'only' ? (r.names.length ? r.names : [texts.nowhere]) : [texts.except + ' ' + r.names.join(', ')]);
+                if (r.lang) { $('<span class="rg-lang">').text(r.lang.toUpperCase()).appendTo(chips); }
                 labels.forEach(function (t) { $('<span class="rg-reply-chip">').text(t).toggleClass('rg-reply-chip-none', t === texts.nowhere).appendTo(chips); });
                 find(el, 'up').disabled = i === 0;
                 find(el, 'down').disabled = i === all.length - 1;
@@ -1326,14 +1340,32 @@
                 var id = this.getAttribute('data-rg-mailbox'), own = [], general = [];
                 read_.forEach(function (r) {
                     if (r.text === '') { return; }
-                    if (r.where === 'only') { if (r.ids[id]) { own.push(r.name); } } else if (r.where === 'all' || !r.ids[id]) { general.push(r.name); }
+                    if (r.where === 'only') { if (r.ids[id]) { own.push(r); } } else if (r.where === 'all' || !r.ids[id]) { general.push(r); }
                 });
-                var names = own.concat(general);
-                $(this.cells[1]).text(names.length ? names[0] : texts.none).toggleClass('text-muted', !names.length);
-                $(this.cells[2]).text(names.slice(1).join(', ') || '–');
+                // per language the first one, then the first one for any language (ReplyStart::rank())
+                var rows = own.concat(general), used = [], taken = {}, cell = $(this.cells[1]).empty();
+                rows.forEach(function (r) { if (!taken[r.lang]) { taken[r.lang] = true; used.push(r); } });
+                used.sort(function (a, b) { return (a.lang === '' ? 1 : 0) - (b.lang === '' ? 1 : 0); });
+                used.forEach(function (r) {
+                    $('<div>').append(r.lang ? $('<span class="rg-lang">').text(r.lang.toUpperCase()) : (used.length > 1 ? $('<span class="text-muted">').text(texts.others + ' ') : $()), ' ', document.createTextNode(r.name)).appendTo(cell);
+                });
+                if (!used.length) { cell.text(texts.none); }
+                cell.toggleClass('text-muted', !used.length);
+                $(this.cells[2]).text(rows.filter(function (r) { return used.indexOf(r) < 0; }).map(function (r) { return r.name; }).join(', ') || '–');
             });
         };
-        $(list).on('input change', ':input', show);
+        var dirty = function () { document.querySelector('[data-rg-reply-dirty]').hidden = false; };
+        $(list).on('input change', ':input', function () { dirty(); show(); });
+        // the save buttons of the profiles come back here
+        $(document).on('click', '[data-rg-reply-save]', function () {
+            try { window.sessionStorage.setItem('rg-reply-saved', '1'); } catch (e) { /* optional */ }
+        });
+        try {
+            if (window.sessionStorage.getItem('rg-reply-saved')) {
+                window.sessionStorage.removeItem('rg-reply-saved');
+                setTimeout(function () { list.scrollIntoView({ block: 'center' }); }, 150);
+            }
+        } catch (e) { /* optional */ }
         $(document).on('click', '[data-rg-reply-add]', function () {
             $(list).append(blank.innerHTML.replace(/__i__/g, 'n' + (++count)));
             items().forEach(function (el) { open(el, el === list.lastElementChild); });
@@ -1346,12 +1378,14 @@
         });
         $(list).on('click', '[data-rg-reply-remove]', function () {
             $(item(this)).remove();
+            dirty();
             show();
         });
         $(list).on('click', '[data-rg-reply-up], [data-rg-reply-down]', function () {
             var el = item(this), up = this.hasAttribute('data-rg-reply-up');
             if (up && el.previousElementSibling) { list.insertBefore(el, el.previousElementSibling); }
             if (!up && el.nextElementSibling) { list.insertBefore(el.nextElementSibling, el); }
+            dirty();
             show();
             if (!this.disabled) { this.focus(); }
         });
@@ -1361,6 +1395,7 @@
             t.value = t.value.slice(0, a) + v + t.value.slice(b);
             t.focus();
             t.setSelectionRange(a + v.length, a + v.length);
+            dirty();
             show();
         });
         items().forEach(function (el) { open(el, false); });
