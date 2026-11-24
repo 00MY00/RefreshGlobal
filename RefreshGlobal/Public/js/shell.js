@@ -1157,11 +1157,14 @@
             return;
         }
         var block = document.querySelector('.conv-reply-block');
-        if (!cfg || !cfg.html || !block || typeof window.setReplyBody !== 'function') {
+        if (!cfg || !cfg.texts || !cfg.texts.length || !block || typeof window.setReplyBody !== 'function') {
             return;
         }
-        var plain = function (html) { return $('<div>').html(html).text().replace(/[\s ​]+/g, ' ').trim(); };
-        var start = plain(cfg.html);
+        var tidy = function (text) { return text.replace(/[\s ​]+/g, ' ').trim(); };
+        // parsed in an inert document: nothing in it is loaded or run
+        var plain = function (html) { return tidy(new DOMParser().parseFromString(html, 'text/html').body.textContent || ''); };
+        // the text in use: the first one, or the agent's choice in the reply ('' for none)
+        var current = cfg.texts[0].html, start = plain(current);
         var code = function () { try { return $('#body').summernote('code') || ''; } catch (e) { return $('#body').val() || ''; } };
         var field = function (name) { return $(block).find(':input[name="' + name + '"]').first().val(); };
         var isReply = function () {
@@ -1169,7 +1172,7 @@
                 && !field('is_note') && !field('subtype');
         };
         var empty = function () { var c = code(); return plain(c) === '' && !/<(img|table|video|iframe)\b/i.test(c); };
-        var untouched = function () { var c = code(); return plain(c) === start && !/<(img|table|video|iframe)\b/i.test(c); };
+        var untouched = function () { var c = code(); return start !== '' && plain(c) === start && !/<(img|table|video|iframe)\b/i.test(c); };
         // our own writing is not a change of the agent's; FreeScout also marks the editor as changed while it opens it
         // (its timer: 100 ms), which would save the text alone as a draft
         var write = function (html) {
@@ -1181,11 +1184,15 @@
             });
         };
         var put = function () {
-            if (!isReply() || field('thread_id') || !empty() || (typeof window.isChatMode === 'function' && window.isChatMode())) {
+            bar();
+            if (!current || !isReply() || field('thread_id') || !empty() || (typeof window.isChatMode === 'function' && window.isChatMode())) {
                 return;
             }
-            write(cfg.html);
-            // the caret on the empty line, after the text
+            write(current);
+            caret();
+        };
+        // the caret on the empty line, after the text
+        var caret = function () {
             var area = block.querySelector('.note-editable');
             if (area && area.lastElementChild && window.getSelection) {
                 var r = document.createRange();
@@ -1196,6 +1203,43 @@
                 sel.addRange(r);
                 try { $('#body').summernote('editor.saveRange'); } catch (e) { /* older editor */ }
             }
+        };
+        // several texts (1.25.0): list above the editor, in replies only
+        var list = null;
+        var bar = function () {
+            if (cfg.texts.length < 2) { return; }
+            var editor = block.querySelector('.note-editor');
+            if (!list && editor) {
+                list = $('<div class="rg-reply-choice"><span></span> <select class="form-control input-sm"></select></div>');
+                list.find('span').text(cfg.choose);
+                var select = list.find('select').attr('aria-label', cfg.choose);
+                $.each(cfg.texts, function (i, t) { $('<option>').val(i).text(t.name).appendTo(select); });
+                $('<option>').val(-1).text(cfg.none).appendTo(select);
+                select.on('change', function () { choose(cfg.texts[parseInt(this.value, 10)]); });
+                list.insertBefore(editor);
+            }
+            if (list) { list.toggle(isReply() && !(typeof window.isChatMode === 'function' && window.isChatMode())); }
+        };
+        // what the agent wrote is kept: only the former text, when it is still at the top, is replaced
+        var choose = function (t) {
+            var html = t ? t.html : '';
+            if (untouched() || empty()) {
+                current = html;
+                start = plain(html);
+                write(html || '<div><br></div>');
+                caret();
+                return;
+            }
+            var body = $(new DOMParser().parseFromString(code(), 'text/html').body), lines = $('<div>').html(current).children(), kids = body.contents(), n = Math.max(0, lines.length - 1), same = n > 0;
+            for (var i = 0; i < n && same; i++) {
+                same = !!kids[i] && tidy($(kids[i]).text()) === tidy($(lines[i]).text());
+            }
+            if (same) { kids.slice(0, n).remove(); }
+            body.prepend($('<div>').html(html).children().slice(0, -1));
+            current = html;
+            start = plain(html);
+            window.setReplyBody(body.html());
+            window.fs_reply_changed = true;
         };
         var take = function () {
             if (isReply() && !field('thread_id') && untouched()) { write('<div><br></div>'); }
@@ -1228,34 +1272,98 @@
         }, true);
     });
 
-    /* 1.24.0: settings of the text a reply starts with: buttons of the variables, preview (same rules as ReplyStart::fill()) */
+    /* 1.24.0, 1.25.0: settings of the texts a reply starts with: list, variables, previews (same rules as ReplyStart::fill()) */
     $(function () {
-        var main = document.querySelector('textarea[data-sample][data-rg-reply-text]');
-        var preview = document.querySelector('[data-rg-reply-preview]');
-        if (!main || !preview) {
+        var list = document.querySelector('[data-rg-reply-list]');
+        var blank = document.querySelector('template[data-rg-reply-new]');
+        if (!list || !blank) {
             return;
         }
-        var sample = {};
-        try { sample = JSON.parse(main.getAttribute('data-sample')); } catch (e) { /* no preview */ }
-        var last = main;
-        var show = function () {
-            var text = last.value || (last !== main ? main.value : '');
-            preview.textContent = text === '-' ? '' : text.replace(/([ \t]*)\$([a-z_]+)(?:\|([^|\n]*)\|)?/g, function (all, space, name, other) {
+        var sample = {}, texts = {}, count = 0;
+        try {
+            sample = JSON.parse(list.getAttribute('data-sample'));
+            texts = JSON.parse(list.getAttribute('data-texts'));
+        } catch (e) { /* no preview */ }
+        var fill = function (text) {
+            return text.replace(/([ \t]*)\$([a-z_]+)(?:\|([^|\n]*)\|)?/g, function (all, space, name, other) {
                 if (!Object.prototype.hasOwnProperty.call(sample, name)) { return all; }
                 var v = sample[name] || (other || '').trim();
                 return v === '' ? '' : space + v;
             });
         };
-        $(document).on('focusin', 'textarea[data-rg-reply-text]', function () { last = this; show(); });
-        $(document).on('input', 'textarea[data-rg-reply-text]', show);
-        $(document).on('click', '[data-rg-var]', function () {
-            var v = this.getAttribute('data-rg-var'), a = last.selectionStart, b = last.selectionEnd;
-            if (last.value.length + v.length > last.maxLength) { return; }
-            last.value = last.value.slice(0, a) + v + last.value.slice(b);
-            last.focus();
-            last.setSelectionRange(a + v.length, a + v.length);
+        var find = function (el, name) { return el.querySelector('[data-rg-reply-' + name + ']'); };
+        var item = function (el) { return el.closest('[data-rg-reply-item]'); };
+        var items = function () { return Array.prototype.slice.call(list.querySelectorAll('[data-rg-reply-item]')); };
+        var open = function (el, on) {
+            find(el, 'form').hidden = !on;
+            find(el, 'edit').setAttribute('aria-expanded', on ? 'true' : 'false');
+        };
+        // what a profile says, for its row and for the table of the mailboxes
+        var read = function (el) {
+            var ids = {}, names = [];
+            $(find(el, 'boxes')).find('input:checked').each(function () { ids[this.value] = true; names.push($(this).next().text()); });
+            var text = find(el, 'text').value.trim();
+            return { name: find(el, 'name').value.trim() || fill(text).replace(/\s+/g, ' ').slice(0, 60) || texts.unnamed, text: text, where: find(el, 'where').value, ids: ids, names: names };
+        };
+        var show = function () {
+            var all = items(), read_ = all.map(read);
+            all.forEach(function (el, i) {
+                var r = read_[i], chips = $(find(el, 'chips')).empty();
+                el.setAttribute('aria-label', r.name);
+                find(el, 'title').textContent = r.name;
+                find(el, 'line').textContent = fill(r.text).replace(/\s+/g, ' ');
+                find(el, 'preview').textContent = fill(r.text);
+                find(el, 'boxes').style.display = r.where === 'all' ? 'none' : '';
+                var labels = r.where === 'all' || (r.where === 'except' && !r.names.length) ? [texts.all] : (r.where === 'only' ? (r.names.length ? r.names : [texts.nowhere]) : [texts.except + ' ' + r.names.join(', ')]);
+                labels.forEach(function (t) { $('<span class="rg-reply-chip">').text(t).toggleClass('rg-reply-chip-none', t === texts.nowhere).appendTo(chips); });
+                find(el, 'up').disabled = i === 0;
+                find(el, 'down').disabled = i === all.length - 1;
+            });
+            document.querySelector('[data-rg-reply-add]').disabled = all.length >= parseInt(list.getAttribute('data-max'), 10);
+            document.querySelector('[data-rg-reply-none]').hidden = all.length > 0;
+            // same order as ReplyStart::textsFor()
+            $('[data-rg-reply-used] [data-rg-mailbox]').each(function () {
+                var id = this.getAttribute('data-rg-mailbox'), own = [], general = [];
+                read_.forEach(function (r) {
+                    if (r.text === '') { return; }
+                    if (r.where === 'only') { if (r.ids[id]) { own.push(r.name); } } else if (r.where === 'all' || !r.ids[id]) { general.push(r.name); }
+                });
+                var names = own.concat(general);
+                $(this.cells[1]).text(names.length ? names[0] : texts.none).toggleClass('text-muted', !names.length);
+                $(this.cells[2]).text(names.slice(1).join(', ') || '–');
+            });
+        };
+        $(list).on('input change', ':input', show);
+        $(document).on('click', '[data-rg-reply-add]', function () {
+            $(list).append(blank.innerHTML.replace(/__i__/g, 'n' + (++count)));
+            items().forEach(function (el) { open(el, el === list.lastElementChild); });
+            show();
+            find(list.lastElementChild, 'name').focus();
+        });
+        $(list).on('click', '[data-rg-reply-edit], [data-rg-reply-toggle]', function () {
+            var el = item(this), on = find(el, 'form').hidden;
+            items().forEach(function (other) { open(other, other === el && on); });
+        });
+        $(list).on('click', '[data-rg-reply-remove]', function () {
+            $(item(this)).remove();
             show();
         });
+        $(list).on('click', '[data-rg-reply-up], [data-rg-reply-down]', function () {
+            var el = item(this), up = this.hasAttribute('data-rg-reply-up');
+            if (up && el.previousElementSibling) { list.insertBefore(el, el.previousElementSibling); }
+            if (!up && el.nextElementSibling) { list.insertBefore(el.nextElementSibling, el); }
+            show();
+            if (!this.disabled) { this.focus(); }
+        });
+        $(list).on('click', '[data-rg-var]', function () {
+            var t = find(item(this), 'text'), v = this.getAttribute('data-rg-var'), a = t.selectionStart, b = t.selectionEnd;
+            if (t.value.length + v.length > t.maxLength) { return; }
+            t.value = t.value.slice(0, a) + v + t.value.slice(b);
+            t.focus();
+            t.setSelectionRange(a + v.length, a + v.length);
+            show();
+        });
+        items().forEach(function (el) { open(el, false); });
         show();
     });
 })(window.jQuery);

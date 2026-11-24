@@ -36,7 +36,8 @@ otherwise it uses FreeScout's standard look.
 - **Access rights enforced**: users only see, count and export tickets of their own mailboxes (and only their own
   tickets with the "see only assigned conversations" permission).
 - **Start of a reply** (*Manage › Settings › RefreshGlobal › Replies*): a text put in the editor when a reply is opened
-  (“Hello $first_name,”), another one per mailbox if needed, variables (`$first_name`, `$last_name`, `$full_name`,
+  (“Hello $first_name,”), several profiles with their mailboxes (list, order, table per mailbox), choice in the
+  reply, name of the customer looked for in the signature too, variables (`$first_name`, `$last_name`, `$full_name`,
   `$email`, `$company`, `$subject`, `$ticket_number`, `$mailbox`, `$agent_first_name`, `$agent_last_name`,
   `$agent_full_name`, `$date`), replacement text `$first_name|dear customer|`, guide and preview in the settings. After a
   reply without a next ticket the agent stays on the ticket; option “next ticket of All mailboxes”.

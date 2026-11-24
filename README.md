@@ -54,7 +54,8 @@ Dans Gérer › Modules :
   [UpdateGuard](https://github.com/00MY00/UpdateGuard) (conseillé : SHA-256, sauvegarde, contrôle de santé, retour
   arrière automatique).
 - **Début de réponse** (*Gérer › Paramètres › RefreshGlobal › Réponses*) : un texte placé dans l'éditeur à l'ouverture
-  d'une réponse (« Bonjour $first_name, »), un autre par boîte si besoin, variables en anglais (`$first_name`,
+  d'une réponse (« Bonjour $first_name, »), plusieurs profils avec leurs boîtes (liste, ordre, tableau par boîte), choix dans la
+  réponse, nom du client cherché aussi dans sa signature, variables en anglais (`$first_name`,
   `$last_name`, `$full_name`, `$email`, `$company`, `$subject`, `$ticket_number`, `$mailbox`, `$agent_first_name`,
   `$agent_last_name`, `$agent_full_name`, `$date`), texte de remplacement `$first_name|Madame, Monsieur|`, guide et
   aperçu dans les réglages. Après une réponse sans ticket suivant, on reste sur le ticket ; option « ticket suivant de

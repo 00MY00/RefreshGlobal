@@ -4,7 +4,8 @@ namespace Modules\RefreshGlobal\Services;
 
 /**
  * Text a reply starts with (1.24.0): "Hello $first_name," put in FreeScout's reply editor when it opens empty
- * (Public/js/shell.js). One text for every mailbox, and another one per mailbox; plain text with variables.
+ * (Public/js/shell.js). Several texts (1.25.0), each one with a name and its mailboxes: the first one that suits the
+ * mailbox is put in, the agent may choose another one in the reply. Plain text with variables.
  *
  *   $first_name            the value, or nothing: the spaces before it go too ("Hello $first_name," -> "Hello,")
  *   $first_name|customer|  the value, or "customer" when it is empty
@@ -16,9 +17,19 @@ class ReplyStart
     const ENABLED = 'refreshglobal.reply_start';
     const TEXT = 'refreshglobal.reply_start_text';
     const MAILBOXES = 'refreshglobal.reply_start_mailboxes';
+    /** 1.25.0: list of ['name', 'text', 'where', 'mailboxes']; TEXT and MAILBOXES (1.24.0) are read until it is saved */
+    const TEXTS = 'refreshglobal.reply_start_texts';
+    /** name of the customer looked for in the signature too (Services/CustomerName.php), on by default */
+    const DETECT = 'refreshglobal.reply_start_detect';
     const MAX = 2000;
-    /** text of a mailbox that wants nothing */
+    const MAX_NAME = 60;
+    const MAX_TEXTS = 30;
+    /** 1.24.0: text of a mailbox that wants nothing */
     const NONE = '-';
+    /** where a text is used: every mailbox, only these, every mailbox except these */
+    const ALL = 'all';
+    const ONLY = 'only';
+    const EXCEPT = 'except';
 
     const VARIABLES = ['first_name', 'last_name', 'full_name', 'email', 'company', 'subject', 'ticket_number', 'mailbox',
         'agent_first_name', 'agent_last_name', 'agent_full_name', 'date'];
@@ -37,35 +48,90 @@ class ReplyStart
         }
     }
 
-    public static function text()
+    public static function detect()
     {
-        return self::clean(Settings::option(self::TEXT, ''));
+        try {
+            return (bool) Settings::option(self::DETECT, true);
+        } catch (\Throwable $e) {
+            return false;
+        }
     }
 
-    /** @return array mailbox id => text (only the mailboxes that have their own) */
-    public static function mailboxTexts()
+    /** @return array the texts in their order: ['name' => , 'text' => , 'where' => all|only|except, 'mailboxes' => int[]] */
+    public static function texts()
     {
+        $stored = Settings::option(self::TEXTS, null);
+        if ($stored === null) {
+            return self::texts124();
+        }
         $out = [];
-        $stored = Settings::option(self::MAILBOXES, []);
-        foreach (is_array($stored) ? $stored : [] as $id => $text) {
-            $text = self::clean($text);
-            if ((int) $id > 0 && $text !== '') {
-                $out[(int) $id] = $text;
+        foreach (is_array($stored) ? $stored : [] as $row) {
+            $text = is_array($row) ? self::clean($row['text'] ?? '') : '';
+            if ($text === '' || count($out) >= self::MAX_TEXTS) {
+                continue;
             }
+            $where = $row['where'] ?? '';
+            $ids = [];
+            foreach (is_array($row['mailboxes'] ?? null) ? $row['mailboxes'] : [] as $id) {
+                if (is_scalar($id) && (int) $id > 0) {
+                    $ids[(int) $id] = (int) $id;
+                }
+            }
+            $name = is_scalar($row['name'] ?? '') ? trim(preg_replace('/\s+/u', ' ', (string) ($row['name'] ?? ''))) : '';
+            $out[] = [
+                'name'      => mb_substr($name, 0, self::MAX_NAME),
+                'text'      => $text,
+                // anything unknown is used nowhere rather than everywhere
+                'where'     => in_array($where, [self::ALL, self::EXCEPT], true) ? $where : self::ONLY,
+                'mailboxes' => array_values($ids),
+            ];
         }
 
         return $out;
     }
 
-    /** Text of a mailbox: its own, else the common one; '' for none. */
-    public static function textFor($mailbox_id)
+    /** Settings of 1.24.0 (a common text, another one per mailbox, "-" for none) as a list: same result for every mailbox. */
+    protected static function texts124()
     {
-        $own = self::mailboxTexts()[(int) $mailbox_id] ?? '';
-        if ($own === self::NONE) {
-            return '';
+        $out = [];
+        $none = [];
+        $stored = Settings::option(self::MAILBOXES, []);
+        foreach (is_array($stored) ? $stored : [] as $id => $text) {
+            $text = self::clean($text);
+            if ((int) $id <= 0 || $text === '') {
+                continue;
+            }
+            if ($text === self::NONE) {
+                $none[] = (int) $id;
+            } else {
+                $out[] = ['name' => '', 'text' => $text, 'where' => self::ONLY, 'mailboxes' => [(int) $id]];
+            }
+        }
+        $common = self::clean(Settings::option(self::TEXT, ''));
+        if ($common !== '') {
+            $out[] = ['name' => '', 'text' => $common, 'where' => $none ? self::EXCEPT : self::ALL, 'mailboxes' => $none];
         }
 
-        return $own !== '' ? $own : self::text();
+        return $out;
+    }
+
+    /** Texts of a mailbox: those made for it first, then the general ones, each in the order of the settings. */
+    public static function textsFor($mailbox_id)
+    {
+        $own = [];
+        $general = [];
+        foreach (self::texts() as $row) {
+            $in = in_array((int) $mailbox_id, $row['mailboxes'], true);
+            if ($row['where'] === self::ONLY) {
+                if ($in) {
+                    $own[] = $row;
+                }
+            } elseif ($row['where'] === self::ALL || !$in) {
+                $general[] = $row;
+            }
+        }
+
+        return array_merge($own, $general);
     }
 
     protected static function clean($text)
@@ -82,10 +148,17 @@ class ReplyStart
             return trim((string) $v);
         };
 
+        if (self::detect()) {
+            $person = CustomerName::forTicket($conversation);
+        } else {
+            $person = ['first' => $customer ? $name($customer->first_name) : '', 'last' => $customer ? $name($customer->last_name) : ''];
+            $person['full'] = trim($person['first'].' '.$person['last']);
+        }
+
         return [
-            'first_name'       => $customer ? $name($customer->first_name) : '',
-            'last_name'        => $customer ? $name($customer->last_name) : '',
-            'full_name'        => $customer ? trim($name($customer->first_name).' '.$name($customer->last_name)) : '',
+            'first_name'       => $person['first'],
+            'last_name'        => $person['last'],
+            'full_name'        => $person['full'],
             'email'            => $name($conversation->customer_email),
             'company'          => $customer ? $name($customer->company) : '',
             'subject'          => $name($conversation->subject),
@@ -130,14 +203,29 @@ class ReplyStart
         return $html.'<div><br></div>';
     }
 
-    /** What the editor of this ticket starts with, for this agent ('' for nothing: off, chat, no text). */
+    /**
+     * The texts for the editor of this ticket and this agent, the one put in first ([] for nothing: off, chat, no text).
+     *
+     * @return array of ['name' => plain text, 'html' => escaped html]
+     */
     public static function forTicket($conversation, $user)
     {
         if (!self::enabled() || !$conversation || !$user || $conversation->isChat()) {
-            return '';
+            return [];
         }
-        $text = self::textFor($conversation->mailbox_id);
+        $out = [];
+        $values = null;
+        foreach (self::textsFor($conversation->mailbox_id) as $row) {
+            $values = $values ?: self::values($conversation, $user);
+            $text = self::fill($row['text'], $values);
+            $html = self::html($text);
+            if ($html !== '') {
+                // without a name: the text itself, on one line
+                $name = $row['name'] !== '' ? $row['name'] : mb_substr(trim(preg_replace('/\s+/u', ' ', $text)), 0, self::MAX_NAME);
+                $out[] = ['name' => $name, 'html' => $html];
+            }
+        }
 
-        return $text === '' ? '' : self::html(self::fill($text, self::values($conversation, $user)));
+        return $out;
     }
 }

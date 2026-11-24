@@ -702,3 +702,12 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
   avec « suivant actif » sans autre ticket actif : on reste sur le ticket ; aucune erreur JavaScript.
 - Corrigé pendant ces essais : FreeScout marque l'éditeur « modifié » à son ouverture, le texte seul devenait un
   brouillon et bloquait le passage en note.
+
+## 46. Profils de début de réponse, nom du client (1.25.0, 2026-11-24)
+
+- PHPUnit : `CustomerNameTest` (5 tests), `ReplyTest` (8 tests) ; suite complète 216 tests, 0 échec, 2 ignorés ; `php -l`
+  PHP 7.1 et 8.4 ; `validate-interop` OK.
+- Navigateur, avec et sans Refresh, ordinateur 1440 et téléphone 390 (49 vérifications) : profil créé, boîtes, tableau
+  par boîte, ordre, enregistrement, suppression (ordinateur) ; dans la réponse : autre profil, aucun, retour au premier
+  sans brouillon, texte écrit gardé au changement ; note, confirmation, envoi ; aucune erreur JavaScript.
+- Corrigé pendant ces essais : libellé de la liste rogné par le style de Refresh.

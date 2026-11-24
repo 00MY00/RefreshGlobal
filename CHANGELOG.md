@@ -8,6 +8,26 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) — versions: [
 Every published change gets a new version number: FreeScout's Manage › Modules page and UpdateGuard only offer an
 update when the version changes.
 
+## [1.25.0] — 2026-11-24
+
+### Added
+- **Several profiles for the text a reply starts with** (*Manage › Settings › RefreshGlobal › Replies*): list of the
+  profiles (name, text, mailboxes concerned; edit, order, remove), each one for all mailboxes, only some, or all except
+  some. A table shows what each mailbox uses. The profiles made for a mailbox come before the general ones; the first one
+  is put in.
+- **Choice in the reply**: with several profiles for the mailbox, a list above the editor changes the text (or removes
+  it); what the agent wrote is kept.
+- **Name of the customer looked for in the signature** (on by default): the record is completed or corrected with the
+  signature of the customer's last 3 messages in the ticket (closing words of about 30 languages, titles, “DOE Jane”,
+  “Doe, Jane”, particles, capitals). Companies, departments and functions are not names; quoted messages are ignored; the
+  e-mail address only confirms or completes. In doubt no name is used. Nothing is stored, the record is not changed.
+
+### Compatibility
+- New check RG-CORE-32. No migration of the database. The FreeScout Interop contract is unchanged.
+
+### Migration
+- The common text and the texts per mailbox of 1.24.0 are taken over as profiles, with the same result.
+
 ## [1.24.0] — 2026-11-24
 
 ### Added

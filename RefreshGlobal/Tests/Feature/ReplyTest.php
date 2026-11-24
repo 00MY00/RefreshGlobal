@@ -42,27 +42,60 @@ class ReplyTest extends TestCase
         $customer->save();
         \App\Option::set(ReplyStart::ENABLED, 1);
         \App\Option::set(ReplyStart::TEXT, 'Hello $first_name,');
-        $html = ReplyStart::forTicket($c->fresh(), $this->s['bob']);
+        Settings::setFlag(ReplyStart::DETECT, false);
+        $html = ReplyStart::forTicket($c->fresh(), $this->s['bob'])[0]['html'];
         $this->assertStringNotContainsString('<script', $html);
         $this->assertStringContainsString('&lt;script', $html);
     }
 
-    public function testTextPerMailboxAndWhere()
+    protected function htmls($c)
+    {
+        return array_column(ReplyStart::forTicket($c, $this->s['bob']), 'html');
+    }
+
+    /** Settings saved by 1.24.0 keep the same result until the list is saved. */
+    public function testSettingsOf124()
     {
         $c = $this->s['t_support_open'];
         $sales = $this->s['t_sales_open'];
-        $this->assertSame('', ReplyStart::forTicket($c, $this->s['bob']), 'off by default');
-        $this->actingAs($this->s['admin'])->post(route('settings.save', ['section' => 'refreshglobal']), ['settings' => [
-            ReplyStart::ENABLED => '1', ReplyStart::TEXT => "Bonjour,\r\nticket \$ticket_number",
-            ReplyStart::MAILBOXES => [$this->s['sales']->id => 'Sales: $mailbox / $agent_first_name', $this->s['support']->id => ''],
-        ]])->assertStatus(302);
-        $this->assertSame('<div>Bonjour,</div><div>ticket '.$c->number.'</div><div><br></div>', ReplyStart::forTicket($c, $this->s['bob']));
-        $this->assertStringContainsString('Sales: '.$this->s['sales']->name.' / '.$this->s['bob']->first_name, html_entity_decode(ReplyStart::forTicket($sales, $this->s['bob']), ENT_QUOTES));
+        \App\Option::set(ReplyStart::ENABLED, 1);
+        \App\Option::set(ReplyStart::TEXT, 'Common');
+        \App\Option::set(ReplyStart::MAILBOXES, [$this->s['sales']->id => 'Sales']);
+        $this->assertSame(['<div>Common</div><div><br></div>'], $this->htmls($c));
+        $this->assertSame('<div>Sales</div><div><br></div>', $this->htmls($sales)[0]);
         \App\Option::set(ReplyStart::MAILBOXES, [$this->s['sales']->id => '-']);
-        $this->assertSame('', ReplyStart::forTicket($sales->fresh(), $this->s['bob']), 'dash: nothing for this mailbox');
+        $this->assertSame([], $this->htmls($sales), 'dash: nothing for this mailbox');
+        $this->assertCount(1, $this->htmls($c));
+        // saved empty: the former settings do not come back
+        $this->actingAs($this->s['admin'])->post(route('settings.save', ['section' => 'refreshglobal']), ['settings' => [ReplyStart::ENABLED => '1', ReplyStart::TEXTS => '']])->assertStatus(302);
+        $this->assertSame([], $this->htmls($c));
+    }
+
+    public function testTextsPerMailboxAndWhere()
+    {
+        $c = $this->s['t_support_open'];
+        $sales = $this->s['t_sales_open'];
+        $this->assertSame([], $this->htmls($c), 'off by default');
+        $this->actingAs($this->s['admin'])->post(route('settings.save', ['section' => 'refreshglobal']), ['settings' => [
+            ReplyStart::ENABLED => '1', ReplyStart::TEXTS => [
+                'n2' => ['name' => 'General', 'text' => "Bonjour,\r\nticket \$ticket_number", 'where' => 'all'],
+                0    => ['name' => ' Sales  team ', 'text' => 'Sales: $mailbox / $agent_first_name', 'where' => 'only', 'mailboxes' => [(string) $this->s['sales']->id]],
+                'n1' => ['name' => '', 'text' => 'Not sales', 'where' => 'except', 'mailboxes' => [(string) $this->s['sales']->id]],
+                'n3' => ['name' => 'Nowhere', 'text' => 'x', 'where' => 'only'],
+                'n4' => ['name' => 'Wrong', 'text' => 'x', 'where' => 'bad'],
+                'n5' => ['name' => 'Empty', 'text' => ' ', 'where' => 'all'],
+                'n6' => 'not an array',
+            ],
+        ]])->assertStatus(302);
+        $this->assertSame(['General', 'Sales team', '', 'Nowhere', 'Wrong'], array_column(ReplyStart::texts(), 'name'), 'order of the form');
+        $this->assertSame(['<div>Bonjour,</div><div>ticket '.$c->number.'</div><div><br></div>', '<div>Not sales</div><div><br></div>'], $this->htmls($c));
+        $this->assertSame(['General', 'Not sales'], array_column(ReplyStart::forTicket($c, $this->s['bob']), 'name'), 'no name: the text');
+        // those of the mailbox before the general ones
+        $this->assertSame(['Sales team', 'General'], array_column(ReplyStart::forTicket($sales, $this->s['bob']), 'name'));
+        $this->assertStringContainsString('Sales: '.$this->s['sales']->name.' / '.$this->s['bob']->first_name, html_entity_decode($this->htmls($sales)[0], ENT_QUOTES));
         $chat = $c->fresh();
         $chat->type = Conversation::TYPE_CHAT;
-        $this->assertSame('', ReplyStart::forTicket($chat, $this->s['bob']), 'not in chats');
+        $this->assertSame([], $this->htmls($chat), 'not in chats');
 
         // on the ticket page only
         $page = $this->actingAs($this->s['bob'])->get($c->url())->getContent();
@@ -79,7 +112,9 @@ class ReplyTest extends TestCase
         foreach (ReplyStart::VARIABLES as $name) {
             $this->seeIn($r, 'data-rg-var="$'.$name.'"');
         }
-        $this->seeIn($r, 'name="settings['.ReplyStart::MAILBOXES.']['.$this->s['support']->id.']"');
+        $this->seeIn($r, 'name="settings['.ReplyStart::TEXTS.'][__i__][mailboxes][]" value="'.$this->s['support']->id.'"');
+        $this->seeIn($r, 'data-rg-reply-add');
+        $this->seeIn($r, 'data-rg-mailbox="'.$this->s['support']->id.'"');
         $this->dontSeeIn($r, 'refreshglobal::reply.');
         // the variables are never translated
         foreach (glob(__DIR__.'/../../Resources/lang/*/reply.php') as $file) {

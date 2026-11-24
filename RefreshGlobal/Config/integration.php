@@ -169,6 +169,8 @@ return [
         // after a reply (1.24.0): the agent's "after send" choice
         'RG-CORE-30' => ['class' => 'App\Mailbox', 'methods' => ['getUserSettings'], 'constants' => ['App\MailboxUser::AFTER_SEND_NEXT'], 'family' => 'hook_reply', 'severity' => 'warning', 'source' => 'app/MailboxUser.php:16, app/Mailbox.php:761'],
         'RG-CORE-31' => ['class' => 'App\Conversation', 'methods' => ['url', 'isChat'], 'family' => 'hook_reply', 'severity' => 'warning', 'source' => 'app/Conversation.php'],
+        // name of the customer in the signature (1.25.0): body of the customer's messages
+        'RG-CORE-32' => ['class' => 'App\Thread', 'constants' => ['App\Thread::TYPE_CUSTOMER'], 'family' => 'hook_reply', 'severity' => 'warning', 'source' => 'app/Thread.php'],
         'RG-CORE-18' => ['class' => 'Modules\Tags\Entities\Tag', 'methods' => ['attachByName'], 'module' => 'tags', 'family' => 'mailtags', 'severity' => 'warning', 'source' => 'Modules/Tags (used as by Modules/Refresh/Http/Controllers/NewTicketController.php:192)'],
     ],
 

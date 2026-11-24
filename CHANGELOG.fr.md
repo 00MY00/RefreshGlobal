@@ -5,6 +5,27 @@ sont tenus à jour ensemble à chaque version.
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.25.0] — 2026-11-24
+
+### Ajouté
+- **Plusieurs profils pour le texte de début de réponse** (*Gérer › Paramètres › RefreshGlobal › Réponses*) : liste des
+  profils (nom, texte, boîtes concernées ; modifier, ordonner, supprimer), chacun pour toutes les boîtes, seulement
+  certaines, ou toutes sauf certaines. Un tableau montre ce que chaque boîte utilise. Les profils prévus pour une boîte
+  passent avant les généraux ; le premier est placé.
+- **Choix dans la réponse** : avec plusieurs profils pour la boîte, une liste au-dessus de l'éditeur change le texte (ou
+  l'enlève) ; ce que l'agent a écrit est gardé.
+- **Nom du client cherché dans la signature** (activé par défaut) : la fiche est complétée ou corrigée avec la signature
+  des 3 derniers messages du client dans le ticket (formules de politesse d'une trentaine de langues, titres, « DOE
+  Jane », « Doe, Jane », particules, majuscules). Sociétés, services et fonctions ne sont pas des noms ; les messages
+  cités sont ignorés ; l'adresse e-mail ne fait que confirmer ou compléter. En cas de doute, aucun nom n'est utilisé.
+  Rien n'est enregistré, la fiche n'est pas modifiée.
+
+### Compatibilité
+- Nouveau contrôle RG-CORE-32. Aucune migration de base de données. Le contrat FreeScout Interop ne change pas.
+
+### Migration
+- Le texte commun et les textes par boîte de 1.24.0 sont repris comme profils, avec le même résultat.
+
 ## [1.24.0] — 2026-11-24
 
 ### Ajouté

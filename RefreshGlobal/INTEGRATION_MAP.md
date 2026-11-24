@@ -381,3 +381,5 @@ Les contrôles RG-HOOK-42…49 relisent les fichiers de Workflow Packs et sont *
 | `Conversation::url()`, `isChat()` | `app/Conversation.php` | ticket à garder, pas de texte dans les discussions (RG-CORE-31) |
 | onglets et boutons `[data-native]`, `.rf-m-opt` de Refresh | `Modules/Refresh/Providers/RefreshServiceProvider.php:1785-1860`, `Public/js/mobile.js` | facultatif : texte retiré avant le passage en note ou transfert |
 | `ViewNextRedirect` de Refresh | `Modules/Refresh/Http/Middleware/ViewNextRedirect.php` | jamais appelé : `AfterReply` agit après lui (premier du groupe « web ») |
+| `Thread::TYPE_CUSTOMER`, `body`, `created_by_customer_id` (1.25.0) | `app/Thread.php:31` | `Services/CustomerName.php` : signature des derniers messages du client (RG-CORE-32) |
+| `.note-editor` (summernote) | dans `.conv-reply-block` | liste de choix du texte, placée avant ; absente, la liste n'apparaît pas |
