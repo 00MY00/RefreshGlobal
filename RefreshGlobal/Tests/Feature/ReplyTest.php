@@ -122,10 +122,6 @@ class ReplyTest extends TestCase
         $this->assertSame('DE,Any,Bad,FR own,FR', $names('de'));
         $this->assertSame('Any,Bad,FR own,FR,DE', $names('it'));
         $this->assertSame('Any,Bad,FR own,FR,DE', $names(''));
-        // a profile in another language is never put in by itself, but can be chosen
-        $rank = ReplyStart::rank([$row('FR', 'fr')], 'de');
-        $this->assertFalse($rank[0]['auto']);
-        $this->assertTrue(ReplyStart::rank([$row('FR', 'fr')], '')[0]['auto']);
 
         // from the message of the customer
         $thread = \App\Thread::where('conversation_id', $c->id)->where('type', \App\Thread::TYPE_CUSTOMER)->orderBy('id', 'desc')->first() ?: new \App\Thread();
@@ -133,9 +129,14 @@ class ReplyTest extends TestCase
             'created_by_customer_id' => $c->customer_id, 'body' => '<div>Guten Tag, ich habe meine Rechnung noch nicht erhalten.</div><blockquote>Bonjour, votre facture est prête, merci pour votre patience et à bientôt.</blockquote>']);
         $thread->save();
         $texts = ReplyStart::forTicket($c->fresh(), $this->s['bob'], $lang);
-        $this->assertSame(['de', 'DE', true], [$lang, $texts[0]['name'], $texts[0]['auto']]);
+        $this->assertSame(['de', 'DE'], [$lang, $texts[0]['name']]);
         $this->assertStringContainsString('&quot;lang&quot;:&quot;de&quot;', $this->actingAs($this->s['bob'])->get($c->url())->getContent());
+        // 1.27.0: no profile in the language of the message nor for all languages: the first one of the mailbox
+        \App\Option::set(ReplyStart::TEXTS, [$row('FR', 'fr'), $row('IT', 'it'), $row('FR own', 'fr', 'only', $own)]);
+        $this->assertSame(['FR own', 'FR', 'IT'], array_column(ReplyStart::forTicket($c->fresh(), $this->s['bob'], $lang), 'name'));
+        $this->assertSame('de', $lang);
         $r = $this->actingAs($this->s['admin'])->get(route('settings', ['section' => 'refreshglobal']));
+        $this->seeIn($r, 'data-rg-reply-off');
         $this->seeIn($r, 'data-rg-reply-save');
         $this->seeIn($r, '[0][lang]');
     }

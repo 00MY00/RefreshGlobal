@@ -1164,7 +1164,7 @@
         // parsed in an inert document: nothing in it is loaded or run
         var plain = function (html) { return tidy(new DOMParser().parseFromString(html, 'text/html').body.textContent || ''); };
         // the text in use: the first one, or the agent's choice in the reply ('' for none)
-        var current = cfg.texts[0].auto === false ? '' : cfg.texts[0].html, start = plain(current);
+        var current = cfg.texts[0].html, start = plain(current);
         var code = function () { try { return $('#body').summernote('code') || ''; } catch (e) { return $('#body').val() || ''; } };
         var field = function (name) { return $(block).find(':input[name="' + name + '"]').first().val(); };
         var isReply = function () {
@@ -1177,15 +1177,23 @@
         // (its timer: 100 ms), which would save the text alone as a draft
         var write = function (html) {
             window.setReplyBody(html);
-            $.each([0, 120, 250, 500, 900], function (i, ms) {
-                setTimeout(function () {
-                    if (!field('thread_id') && !$(block).find('.thread-attachments li').length && (untouched() || empty())) { window.fs_reply_changed = false; }
-                }, ms);
-            });
+            // often: the draft FreeScout saves 500 ms after the editor is left could fall between two of these
+            var clean = function () {
+                if (window.fs_reply_changed && !field('thread_id') && !$(block).find('.thread-attachments li').length && (untouched() || empty())) { window.fs_reply_changed = false; }
+            };
+            clean();
+            var timer = setInterval(clean, 25);
+            setTimeout(function () { clearInterval(timer); clean(); }, 1200);
         };
+        // the agent wrote, erased or chose something since the reply opened: nothing is put in any more
+        var touched = false, wasReply = false;
+        $(block).on('keydown paste drop', '.note-editable', function () { touched = true; });
         var put = function () {
+            var is = isReply();
+            if (is && !wasReply) { touched = false; }
+            wasReply = is;
             bar();
-            if (!current || !isReply() || field('thread_id') || !empty() || (typeof window.isChatMode === 'function' && window.isChatMode())) {
+            if (!current || touched || !isReply() || field('thread_id') || !empty() || (typeof window.isChatMode === 'function' && window.isChatMode())) {
                 return;
             }
             write(current);
@@ -1226,13 +1234,14 @@
                 });
                 if (cfg.lang) { $('<span class="rg-reply-guess">').text(cfg.lang_label + ' ').append(badge(cfg.lang)).appendTo(list); }
                 list.insertBefore(editor);
-                label(current ? cfg.texts[0] : null);
+                label(cfg.texts[0]);
             }
             if (list) { list.toggle(isReply() && !(typeof window.isChatMode === 'function' && window.isChatMode())); }
         };
         // what the agent wrote is kept: only the former text, when it is still at the top, is replaced
         var choose = function (t) {
             var html = t ? t.html : '';
+            touched = true;
             if (untouched() || empty()) {
                 current = html;
                 start = plain(html);
@@ -1255,10 +1264,15 @@
             });
         };
         var take = function () {
+            touched = true;
             if (isReply() && !field('thread_id') && untouched()) { write('<div><br></div>'); }
         };
-        new MutationObserver(function () { setTimeout(put, 60); }).observe(block, { attributes: true, attributeFilter: ['class'] });
-        setTimeout(put, 400);
+        // several times: FreeScout or another module may empty the editor, or be slow to prepare it, while the reply opens
+        var opened = function () {
+            $.each([60, 300, 800, 1600], function (i, ms) { setTimeout(put, ms); });
+        };
+        new MutationObserver(opened).observe(block, { attributes: true, attributeFilter: ['class'] });
+        setTimeout(opened, 340);
         // note or forward instead: before FreeScout's and Refresh's handlers (a text would make them ask to discard a draft)
         document.addEventListener('click', function (e) {
             var t = e.target && e.target.closest ? e.target : null;
@@ -1292,7 +1306,8 @@
         if (!list || !blank) {
             return;
         }
-        var sample = {}, texts = {}, count = 0;
+        var sample = {}, texts = {}, count = 0, onoff = document.getElementById(list.getAttribute('data-switch'));
+        $(onoff).on('change', function () { dirty(); show(); });
         try {
             sample = JSON.parse(list.getAttribute('data-sample'));
             texts = JSON.parse(list.getAttribute('data-texts'));
@@ -1335,6 +1350,8 @@
             });
             document.querySelector('[data-rg-reply-add]').disabled = all.length >= parseInt(list.getAttribute('data-max'), 10);
             document.querySelector('[data-rg-reply-none]').hidden = all.length > 0;
+            // profiles that nothing uses: the switch is off
+            document.querySelector('[data-rg-reply-off]').hidden = !all.length || !onoff || onoff.checked;
             // same order as ReplyStart::textsFor()
             $('[data-rg-reply-used] [data-rg-mailbox]').each(function () {
                 var id = this.getAttribute('data-rg-mailbox'), own = [], general = [];
@@ -1346,6 +1363,8 @@
                 var rows = own.concat(general), used = [], taken = {}, cell = $(this.cells[1]).empty();
                 rows.forEach(function (r) { if (!taken[r.lang]) { taken[r.lang] = true; used.push(r); } });
                 used.sort(function (a, b) { return (a.lang === '' ? 1 : 0) - (b.lang === '' ? 1 : 0); });
+                // none for any language: the first one also serves for the other languages
+                if (used.length && used[used.length - 1].lang !== '') { used.push({ name: rows[0].name, lang: '' }); }
                 used.forEach(function (r) {
                     $('<div>').append(r.lang ? $('<span class="rg-lang">').text(r.lang.toUpperCase()) : (used.length > 1 ? $('<span class="text-muted">').text(texts.others + ' ') : $()), ' ', document.createTextNode(r.name)).appendTo(cell);
                 });

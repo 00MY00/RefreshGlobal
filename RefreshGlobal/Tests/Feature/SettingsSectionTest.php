@@ -59,6 +59,16 @@ class SettingsSectionTest extends TestCase
         $this->assertTrue(Settings::deletePermanently());
     }
 
+    /** 1.27.0: "RefreshGlobal" in the Manage menu (gear of Refresh), administrators only, with the module's logo */
+    public function testEntryOfTheManageMenu()
+    {
+        $html = $this->actingAs($this->s['admin'])->get(route('refreshglobal.tickets'))->getContent();
+        $this->assertSame(1, preg_match('~<li class="rg-manage-item"><a href="'.preg_quote(e(route('settings', ['section' => 'refreshglobal'])), '~').'"><img [^>]*module\.svg[^>]*> RefreshGlobal</a>~', $html));
+        $this->assertStringContainsString('rg-manage-item active', $this->actingAs($this->s['admin'])->get(route('settings', ['section' => 'refreshglobal']))->getContent());
+        $this->assertStringNotContainsString('rg-manage-item active', $this->actingAs($this->s['admin'])->get(route('settings', ['section' => 'general']))->getContent());
+        $this->assertStringNotContainsString('rg-manage-item', $this->actingAs($this->s['bob'])->get(route('refreshglobal.tickets'))->getContent());
+    }
+
     public function testRegularUserHasNoAccess()
     {
         $this->actingAs($this->s['bob'])->get(route('settings', ['section' => 'refreshglobal']))->assertStatus(403);

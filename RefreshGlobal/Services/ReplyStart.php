@@ -206,14 +206,13 @@ class ReplyStart
     }
 
     /**
-     * In the order of textsFor(): those in the language of the message, those for any language, then the others. "auto": may
-     * be put in by itself. A text in another language than the message never is; language not known: the first one is.
+     * In the order of textsFor(): those in the language of the message, those for any language, then the others: the
+     * first one is put in, so that a mailbox with profiles always gets one (1.27.0).
      */
     public static function rank(array $rows, $lang)
     {
         $groups = [[], [], []];
         foreach ($rows as $row) {
-            $row['auto'] = $lang === '' || $row['lang'] === '' || $row['lang'] === $lang;
             $groups[$row['lang'] === '' ? 1 : ($row['lang'] === $lang ? 0 : 2)][] = $row;
         }
 
@@ -221,10 +220,10 @@ class ReplyStart
     }
 
     /**
-     * The texts for the editor of this ticket and this agent, the one put in first when it is "auto" ([] for nothing: off,
+     * The texts for the editor of this ticket and this agent, the one put in first ([] for nothing: off,
      * chat, no text).
      *
-     * @return array of ['name' => plain text, 'html' => escaped html, 'lang' => code or '', 'auto' => bool]
+     * @return array of ['name' => plain text, 'html' => escaped html, 'lang' => code or '']
      */
     public static function forTicket($conversation, $user, &$lang = '')
     {
@@ -250,7 +249,7 @@ class ReplyStart
             if ($html !== '') {
                 // without a name: the text itself, on one line
                 $name = $row['name'] !== '' ? $row['name'] : mb_substr(trim(preg_replace('/\s+/u', ' ', $text)), 0, self::MAX_NAME);
-                $out[] = ['name' => $name, 'html' => $html, 'lang' => $row['lang'], 'auto' => $row['auto']];
+                $out[] = ['name' => $name, 'html' => $html, 'lang' => $row['lang']];
             }
         }
 

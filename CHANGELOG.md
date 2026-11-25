@@ -8,6 +8,24 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) — versions: [
 Every published change gets a new version number: FreeScout's Manage › Modules page and UpdateGuard only offer an
 update when the version changes.
 
+## [1.27.0] — 2026-11-25
+
+### Added
+- **Settings one click away**: “RefreshGlobal”, with the module's logo, in the Manage menu (the gear of Refresh's left
+  bar; the Administration section of the account page on phones). Administrators only.
+
+### Changed
+- **A reply always starts with a text when the mailbox has profiles**: without a profile in the language of the message nor
+  one for all languages, the first profile of the mailbox is put in (1.26.0 put nothing). The table shows it.
+- The text is put in again if something empties the editor while the reply opens, never after the agent wrote or erased.
+- A notice in the settings when there are profiles but “Start replies with a text” is off.
+
+### Fixed
+- After choosing a profile, FreeScout's automatic save could now and then store the text alone as a draft.
+
+### Compatibility
+- New check RG-HOOK-54 (warning). No migration. The FreeScout Interop contract is unchanged.
+
 ## [1.26.0] — 2026-11-25
 
 ### Added

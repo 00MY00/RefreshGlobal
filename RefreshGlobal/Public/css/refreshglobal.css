@@ -565,3 +565,7 @@ button.rf-v.rg-views-order { color: var(--fd-text-2, #475569); }
 .rg-reply-save { margin-top: 12px; }
 @media (max-width: 767px) { .rg-reply-row { flex-wrap: wrap; } .rg-reply-sum { flex-basis: 100%; } .rg-reply-acts .btn, .rg-reply-boxes label, [data-rg-reply-add] { min-height: 44px; min-width: 44px; } .rg-reply-boxes label { display: flex; align-items: center; gap: 8px; } .rg-reply-foot .btn { flex: 1 1 100%; min-height: 44px; } .rg-reply-choice .btn, .rg-reply-choice .dropdown-menu a { min-height: 44px; padding-top: 11px; padding-bottom: 11px; } }
 @media (max-width: 767px) { .rg-reply-vars .btn { min-height: 44px; padding: 8px 10px; font-size: 13px; } .rg-reply-start summary { min-height: 44px; padding: 12px 0 !important; } .rg-reply-guide { overflow-x: auto; } }
+/* "RefreshGlobal" in the Manage menu: the module's logo instead of the icon Refresh adds to every entry */
+.rg-manage-logo { width: 16px; height: 16px; flex: none; vertical-align: -3px; margin-right: 4px; }
+.rf-rail-menu .rg-manage-logo { margin-right: 0; }
+.rg-manage-item > a > .rf-i { display: none !important; }

@@ -42,6 +42,7 @@ Hooks utiles au module, tous dans `resources/views/layouts/app.blade.php` sauf m
 | `body.class` | action | `layouts/app.blade.php:43` | classes du `<body>` |
 | `menu.mailboxes` | filtre | `layouts/app.blade.php:74` | liste des boîtes du menu |
 | `mailbox.url` | filtre | `layouts/app.blade.php:77, 85` | adresse d'une boîte dans le menu (Refresh la redirige vers sa vue) |
+| **`menu.manage.after_mailboxes`** (1.27.0) | action | **`layouts/app.blade.php:110`** (FreeScout 1.8.252) ; Refresh déplace ce menu sous l'engrenage et ajoute une icône `.rf-i` à chaque entrée : `Modules/Refresh/Providers/RefreshServiceProvider.php:1036-1052` | **entrée « RefreshGlobal » (réglages) du menu « Gérer » → utilisé (RG-HOOK-54)** |
 | `menu.manage.append` | action | `layouts/app.blade.php:117` | fin du menu « Gérer » |
 | **`menu.append`** | action | **`layouts/app.blade.php:121`** | **ajouter une entrée à la barre de navigation → utilisé** |
 | `layout.body_bottom` | action | `layouts/app.blade.php:278` | bas de page |

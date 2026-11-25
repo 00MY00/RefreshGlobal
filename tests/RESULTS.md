@@ -721,3 +721,13 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
   visibles et utilisés, profils, tableau par langue ; dans la réponse : profil de la langue du message placé, bouton, menu,
   langue affichée, autre profil, aucun, texte écrit gardé ; aucune erreur JavaScript.
 - Corrigé pendant ces essais : brouillon enregistré au clic sur le bouton, sans le profil choisi ensuite.
+
+## 48. Entrée du menu Gérer, texte de début toujours placé (1.27.0, 2026-11-25)
+
+- PHPUnit : suite complète 219 tests, 0 échec, 2 ignorés ; `php -l` PHP 7.1 et 8.4 ; RG-HOOK-54 OK.
+- Navigateur, avec et sans Refresh, ordinateur, tablette, téléphone : entrée « RefreshGlobal » (logo, une seule icône) et
+  ouverture des réglages ; texte placé pour un message dans une langue sans profil, replacé si l'éditeur est vidé à
+  l'ouverture, jamais après un effacement ; avis quand l'option est désactivée ; aucune erreur JavaScript.
+- Corrigé pendant ces essais : après un changement de profil, l'enregistrement automatique de FreeScout pouvait parfois
+  tomber avant la remise à zéro de l'indicateur « modifié » (brouillon du texte seul, passage en note sans effet).
+- Un essai sur quatre passages s'est arrêté sans trouver le bouton de réponse ; cause non trouvée, aucune erreur serveur.

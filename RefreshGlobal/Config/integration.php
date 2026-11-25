@@ -115,6 +115,7 @@ return [
         'RG-HOOK-51' => ['hook' => 'fs_reply_changed', 'family' => 'hook_reply', 'file' => 'public/js/main.js', 'needle' => 'var fs_reply_changed', 'severity' => 'warning', 'source' => 'public/js/main.js:13,2060-2176'],
         'RG-HOOK-52' => ['hook' => '.conv-reply-block', 'family' => 'hook_reply', 'file' => 'public/js/main.js', 'needle' => '$(".conv-reply-block").removeClass(\'hidden\')', 'severity' => 'warning', 'source' => 'public/js/main.js:1883-1898'],
         'RG-HOOK-53' => ['hook' => 'send_reply', 'family' => 'hook_reply', 'file' => 'app/Http/Controllers/ConversationsController.php', 'needle' => "case 'send_reply':", 'severity' => 'warning', 'source' => 'app/Http/Controllers/ConversationsController.php:2953 (getRedirectUrl)'],
+        'RG-HOOK-54' => ['hook' => 'menu.manage.after_mailboxes', 'file' => 'resources/views/layouts/app.blade.php', 'needle' => "@action('menu.manage.after_mailboxes')", 'severity' => 'warning', 'source' => 'resources/views/layouts/app.blade.php:110'],
         'RG-HOOK-35' => ['hook' => 'stylesheets', 'file' => 'resources/views/layouts/app.blade.php', 'needle' => "\Eventy::filter('stylesheets'", 'severity' => 'warning', 'source' => 'resources/views/layouts/app.blade.php:33'],
         'RG-HOOK-07' => ['hook' => 'refresh.rail_items', 'refresh' => true, 'file' => 'Providers/RefreshServiceProvider.php', 'needle' => "'refresh.rail_items'", 'severity' => 'degraded', 'source' => 'Modules/Refresh/Providers/RefreshServiceProvider.php:742'],
     ],

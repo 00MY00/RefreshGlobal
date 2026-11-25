@@ -265,7 +265,8 @@ Sans l'installeur, il n'y a ni sauvegarde automatique ni retour arrière.
 |---|---|
 | ![Onglet](docs/screenshots/mobile-onglet.png) | ![Remplacé](docs/screenshots/mobile-onglet-remplace.png) |
 
-**Réglages du module** : **Gérer › Paramètres › RefreshGlobal** (administrateurs).
+**Réglages du module** : **Gérer › RefreshGlobal** (engrenage de Refresh) ou **Gérer › Paramètres › RefreshGlobal**
+(administrateurs).
 
 ![Gérer › Paramètres › RefreshGlobal](docs/screenshots/parametres.png)
 

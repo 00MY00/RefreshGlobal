@@ -18,9 +18,10 @@
     <label class="col-sm-2 control-label">{{ __('refreshglobal::reply.texts') }}</label>
     <div class="col-sm-9">
         <p class="form-help">{{ __('refreshglobal::reply.texts_help') }}</p>
+        <p class="alert alert-warning" data-rg-reply-off role="status" hidden>{{ __('refreshglobal::reply.off', ['switch' => __('refreshglobal::reply.enabled')]) }}</p>
         {{-- posted alone when every text was removed --}}
         <input type="hidden" name="settings[{{ $rg_r::TEXTS }}]" value="">
-        <div class="rg-reply-list" data-rg-reply-list data-max="{{ $rg_r::MAX_TEXTS }}" data-sample="{{ json_encode($rg_r::SAMPLE) }}"
+        <div class="rg-reply-list" data-rg-reply-list data-switch="rg-sw-{{ md5($rg_r::ENABLED) }}" data-max="{{ $rg_r::MAX_TEXTS }}" data-sample="{{ json_encode($rg_r::SAMPLE) }}"
             data-texts="{{ json_encode(['unnamed' => __('refreshglobal::reply.unnamed'), 'all' => __('refreshglobal::reply.where_all'), 'except' => __('refreshglobal::reply.where_except'),
                 'others' => __('refreshglobal::reply.lang_others'), 'nowhere' => __('refreshglobal::reply.nowhere'), 'none' => __('refreshglobal::reply.none')]) }}">
             @foreach ($rg_texts as $i => $row)

@@ -5,6 +5,24 @@ sont tenus à jour ensemble à chaque version.
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.27.0] — 2026-11-25
+
+### Ajouté
+- **Réglages en un clic** : « RefreshGlobal », avec le logo du module, dans le menu Gérer (l'engrenage de la barre de
+  gauche de Refresh ; la section Administration de la page du compte sur téléphone). Administrateurs seulement.
+
+### Modifié
+- **Une réponse commence toujours par un texte quand la boîte a des profils** : sans profil dans la langue du message ni
+  pour toutes les langues, le premier profil de la boîte est placé (la 1.26.0 ne plaçait rien). Le tableau le montre.
+- Le texte est replacé si quelque chose vide l'éditeur pendant l'ouverture, jamais après une saisie ou un effacement.
+- Un avis dans les réglages quand il y a des profils mais que « Commencer les réponses par un texte » est désactivé.
+
+### Corrigé
+- Après le choix d'un profil, l'enregistrement automatique de FreeScout pouvait parfois garder le texte seul en brouillon.
+
+### Compatibilité
+- Nouvelle vérification RG-HOOK-54 (avertissement). Aucune migration. Le contrat FreeScout Interop ne change pas.
+
 ## [1.26.0] — 2026-11-25
 
 ### Ajouté

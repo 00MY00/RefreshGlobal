@@ -11,6 +11,7 @@ use Illuminate\Support\ServiceProvider;
  * - adds its own routes, views, translations, migration and command;
  * - listens to Eventy hooks found during the audit (INTEGRATION_MAP.md):
  *     menu.append (resources/views/layouts/app.blade.php:121)                 → "All mailboxes" menu entry
+ *     menu.manage.after_mailboxes (same file:110)                              → "RefreshGlobal" (settings) in Manage
  *     refresh.rail_items (Modules/Refresh/Providers/RefreshServiceProvider.php:742) → same entry in Refresh's left bar
  *     conversations_table.col/th/td_before_conv_number
  *       (resources/views/conversations/conversations_table.blade.php:83,118,206) → "Mailbox" column, on its page only;
@@ -581,6 +582,22 @@ class RefreshGlobalServiceProvider extends ServiceProvider
                     .e(__('refreshglobal::messages.menu')).'</a></li>';
             } catch (\Exception $e) {
                 // the menu entry is optional: never break the layout
+            }
+        });
+
+        // "Manage" menu (the gear of Refresh's left bar, which moves that menu there): settings of the module, admins only
+        \Eventy::addAction('menu.manage.after_mailboxes', function () {
+            try {
+                $user = auth()->user();
+                if (!$user || !$user->isAdmin()) {
+                    return;
+                }
+                $active = \Route::is('settings') && request()->route('section') === self::ALIAS;
+                echo '<li class="rg-manage-item'.($active ? ' active' : '').'"><a href="'.e(route('settings', ['section' => self::ALIAS])).'">'
+                    .'<img class="rg-manage-logo" src="'.e(asset(\Module::getPublicPath(self::ALIAS).'/img/module.svg')).'" width="16" height="16" alt=""> '
+                    .'RefreshGlobal</a></li>';
+            } catch (\Throwable $e) {
+                // optional entry: never break the layout
             }
         });
 

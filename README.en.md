@@ -170,7 +170,7 @@ Updates: `sudo git -C /opt/RefreshGlobal pull`, then the same command with `--up
 - Menu **"All mailboxes"**, or `https://your-helpdesk/refresh-global/tickets`.
 - Check: `cd /var/www/html && sudo -u www-data php artisan refreshglobal:check` (exit code 0 OK, 1 degraded, 2 blocking).
 - Admin diagnostic page: `https://your-helpdesk/refresh-global/diagnostic`.
-- Settings: **Manage › Settings › RefreshGlobal** (admins).
+- Settings: **Manage › RefreshGlobal** (Refresh's gear) or **Manage › Settings › RefreshGlobal** (admins).
 
 | Setting | Default | Effect |
 |---|---|---|
