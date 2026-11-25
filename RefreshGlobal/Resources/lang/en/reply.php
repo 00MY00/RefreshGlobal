@@ -3,6 +3,8 @@
 // Replies (1.24.0): Services/ReplyStart.php, Http/Middleware/AfterReply.php. Variables ($first_name…) are never translated.
 return [
     'title' => 'Replies',
+    'stays' => 'Stay on the ticket after a reply',
+    'stays_help' => 'With “Send and next active” (FreeScout’s default): the ticket stays open, even closed. “Send and stay” and “Send and back to folder” do not change. The option below comes first when it finds a next ticket.',
     'goes_next' => 'After a reply, next ticket of “All mailboxes”',
     'goes_next_help' => 'With “Send and next active”: opens the ticket that follows in the “All mailboxes” list you came from. Off: FreeScout chooses. In both cases, without a next ticket you stay on the ticket instead of going back to a list.',
     'history' => 'Previous messages',

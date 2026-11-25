@@ -5,6 +5,13 @@ sont tenus à jour ensemble à chaque version.
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.32.0] — 2026-11-25
+
+### Modifié
+- **Une réponse reste sur le ticket** avec « Envoyer et suivant actif » de FreeScout (son défaut), même si le ticket est
+  fermé. Interrupteur « Rester sur le ticket après une réponse » dans Paramètres › RefreshGlobal › Réponses (activé par
+  défaut). « Ticket suivant de Toutes les boîtes », s'il est activé et trouve un ticket, passe avant.
+
 ## [1.31.0] — 2026-11-25
 
 ### Ajouté

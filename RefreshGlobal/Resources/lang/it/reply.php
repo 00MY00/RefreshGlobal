@@ -3,6 +3,8 @@
 // Replies (1.24.0): Services/ReplyStart.php, Http/Middleware/AfterReply.php. Variables ($first_name…) are never translated.
 return [
     'title' => 'Risposte',
+    'stays' => 'Restare nel ticket dopo una risposta',
+    'stays_help' => 'Con «Invia e prossimo attivo» (predefinito di FreeScout): il ticket resta aperto, anche chiuso. «Invia e resta» e «Invia e torna alla cartella» non cambiano. L’opzione sotto ha la precedenza quando trova un ticket successivo.',
     'goes_next' => 'Dopo una risposta, ticket successivo di «Tutte le caselle»',
     'goes_next_help' => 'Con «Invia e successivo attivo»: apre il ticket che segue nell’elenco «Tutte le caselle» da cui provieni. Disattivato: sceglie FreeScout. In entrambi i casi, senza un ticket successivo resti sul ticket invece di tornare a un elenco.',
     'history' => 'Messaggi precedenti',

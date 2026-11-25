@@ -8,6 +8,8 @@
     $rg_blank = ['name' => '', 'text' => '', 'where' => $rg_r::ALL, 'mailboxes' => [], 'lang' => ''];
 @endphp
 <h3 class="subheader" id="rg-replies">{{ __('refreshglobal::reply.title') }}</h3>
+@include('refreshglobal::partials.switch', ['key' => $rg_s::REPLY_STAYS, 'label' => __('refreshglobal::reply.stays'),
+    'help' => __('refreshglobal::reply.stays_help')])
 @include('refreshglobal::partials.switch', ['key' => $rg_s::REPLY_GOES_NEXT, 'label' => __('refreshglobal::reply.goes_next'),
     'help' => __('refreshglobal::reply.goes_next_help')])
 <div class="form-group">

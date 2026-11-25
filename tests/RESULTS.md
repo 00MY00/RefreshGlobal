@@ -760,3 +760,9 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
 ## 52. Variable `$br` (1.31.0, 2026-11-25)
 
 - PHPUnit `ReplyTest` : réussi ; php -l PHP 7.1 et 8.4. Navigateur non relancé.
+
+## 53. Rester sur le ticket après une réponse (1.32.0, 2026-11-25)
+
+- PHPUnit : suite complète 226 tests (seul `ReplyTest` relancé après la dernière correction du test : 13 tests OK) ; php -l PHP 7.1 et 8.4.
+- Cas couverts : suivant de FreeScout remplacé par le ticket, ticket fermé, option désactivée, choix « rester » / « dossier » inchangés.
+  Navigateur non relancé.

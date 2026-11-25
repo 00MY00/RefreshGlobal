@@ -108,7 +108,9 @@ class AfterReply
                 }
             }
         }
-        if ($url === null && !preg_match('#/conversation/\d+#', $data['redirect_url'])
+        if ($url === null && Settings::replyStays()) {
+            $url = $todo['url'];
+        } elseif ($url === null && !preg_match('#/conversation/\d+#', $data['redirect_url'])
             && (int) Conversation::where('id', $todo['id'])->value('status') !== Conversation::STATUS_CLOSED) {
             $url = $todo['url'];
         }

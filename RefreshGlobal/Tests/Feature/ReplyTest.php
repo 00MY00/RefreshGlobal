@@ -296,6 +296,10 @@ B", ReplyStart::fill('A $br|x|B', $v));
         $bob = $this->s['bob'];
         $this->assertSame($c->url(), $this->reply($bob, $c, $list));
         $this->assertSame($c->url(), $this->reply($bob, $c, url('/mailbox/'.$c->mailbox_id.'/tickets/unresolved')), 'a view of Refresh too');
+        // 1.32.0: on by default, the next ticket of FreeScout too, and a closed ticket
+        $this->assertSame($c->url(), $this->reply($bob, $c, $next));
+        Settings::setFlag(Settings::REPLY_STAYS, false);
+        $this->assertSame($c->url(), $this->reply($bob, $c, $list));
         $this->assertSame($next, $this->reply($bob, $c, $next), 'a next ticket is kept');
         // choices of the agent
         $this->assertSame($list, $this->reply($bob, $c, $list, MailboxUser::AFTER_SEND_FOLDER));
@@ -304,11 +308,14 @@ B", ReplyStart::fill('A $br|x|B', $v));
         $this->assertSame($list, $this->reply($bob, $c, $list, MailboxUser::AFTER_SEND_NEXT, ['action' => 'conversation_change_status']));
         $this->assertSame($list, $this->reply($bob, $c, $list, MailboxUser::AFTER_SEND_NEXT, ['is_create' => 1]));
         $this->assertSame($list, $this->reply($bob, $c, $list, MailboxUser::AFTER_SEND_NEXT, [], true));
+        Settings::setFlag(Settings::REPLY_STAYS, true);
+        $this->assertSame($c->url(), $this->reply($bob, $c, $list), '1.32.0: a closed ticket too');
     }
 
     public function testNextTicketOfTheList()
     {
         Settings::setFlag(Settings::REPLY_GOES_NEXT, true);
+        Settings::setFlag(Settings::REPLY_STAYS, false);
         $bob = $this->s['bob'];
         $c = $this->s['t_support_open'];
         $pending = $this->s['t_support_pending'];

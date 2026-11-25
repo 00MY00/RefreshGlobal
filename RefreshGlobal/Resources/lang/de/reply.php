@@ -3,6 +3,8 @@
 // Replies (1.24.0): Services/ReplyStart.php, Http/Middleware/AfterReply.php. Variables ($first_name…) are never translated.
 return [
     'title' => 'Antworten',
+    'stays' => 'Nach einer Antwort im Ticket bleiben',
+    'stays_help' => 'Mit „Senden und nächstes aktives“ (Standard von FreeScout): das Ticket bleibt offen, auch geschlossen. „Senden und bleiben“ und „Senden und zurück zum Ordner“ ändern sich nicht. Die Option unten geht vor, wenn sie ein nächstes Ticket findet.',
     'goes_next' => 'Nach einer Antwort: nächstes Ticket aus „Alle Postfächer“',
     'goes_next_help' => 'Mit „Senden und nächstes aktives“: öffnet das Ticket, das in der Liste „Alle Postfächer“ folgt, aus der Sie kommen. Aus: FreeScout wählt. In beiden Fällen bleiben Sie ohne nächstes Ticket auf dem Ticket, statt zu einer Liste zurückzukehren.',
     'history' => 'Frühere Nachrichten',

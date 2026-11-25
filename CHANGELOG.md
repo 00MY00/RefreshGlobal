@@ -8,6 +8,13 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) — versions: [
 Every published change gets a new version number: FreeScout's Manage › Modules page and UpdateGuard only offer an
 update when the version changes.
 
+## [1.32.0] — 2026-11-25
+
+### Changed
+- **A reply stays on the ticket** with FreeScout's “Send and next active” (its default), even when the ticket is closed.
+  Switch “Stay on the ticket after a reply” in Settings › RefreshGlobal › Replies (on by default). “Next ticket of All
+  mailboxes”, when on and a next ticket is found, comes first.
+
 ## [1.31.0] — 2026-11-25
 
 ### Added

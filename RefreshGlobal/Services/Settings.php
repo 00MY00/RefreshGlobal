@@ -320,6 +320,17 @@ class Settings
     }
 
     /**
+     * 1.32.0: with FreeScout's "next active conversation" (its default), a reply stays on the ticket, even closed, unless
+     * "next ticket of All mailboxes" finds one. On by default.
+     */
+    const REPLY_STAYS = 'refreshglobal.reply_stays';
+
+    public static function replyStays()
+    {
+        return self::flag(self::REPLY_STAYS, true);
+    }
+
+    /**
      * Previous messages sent with a reply (1.29.0): FreeScout's own choice of the reply form ("conv_history"), put in it
      * when a reply opens and shown above the editor. "global": FreeScout's setting (Manage › Settings › General).
      */
@@ -361,6 +372,7 @@ class Settings
             Dashboard\Sla::FIRST_RESPONSE  => Dashboard\Sla::own(Dashboard\Sla::FIRST_RESPONSE, Dashboard\Sla::DEFAULT_FIRST_RESPONSE_HOURS),
             Dashboard\Sla::RESOLUTION      => Dashboard\Sla::own(Dashboard\Sla::RESOLUTION, Dashboard\Sla::DEFAULT_RESOLUTION_HOURS),
             self::SHOW_MAILBOX            => self::showMailbox(),
+            self::REPLY_STAYS             => self::replyStays(),
             self::REPLY_GOES_NEXT         => self::replyGoesNext(),
             self::REPLY_HISTORY           => self::replyHistory(),
             self::REPLY_BRANDING          => self::replyBranding(),

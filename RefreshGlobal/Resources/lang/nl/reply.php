@@ -3,6 +3,8 @@
 // Replies (1.24.0): Services/ReplyStart.php, Http/Middleware/AfterReply.php. Variables ($first_name…) are never translated.
 return [
     'title' => 'Antwoorden',
+    'stays' => 'Na een antwoord in het ticket blijven',
+    'stays_help' => 'Met “Verzenden en volgende actieve” (standaard van FreeScout): het ticket blijft open, ook gesloten. “Verzenden en blijven” en “Verzenden en terug naar map” veranderen niet. De optie hieronder gaat voor wanneer ze een volgend ticket vindt.',
     'goes_next' => 'Na een antwoord: volgend ticket van ‘Alle mailboxen’',
     'goes_next_help' => 'Met ‘Verzenden en volgende actieve’: opent het ticket dat volgt in de lijst ‘Alle mailboxen’ waar u vandaan komt. Uit: FreeScout kiest. In beide gevallen blijft u zonder volgend ticket op het ticket in plaats van terug te gaan naar een lijst.',
     'history' => 'Vorige berichten',
