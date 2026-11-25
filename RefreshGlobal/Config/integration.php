@@ -116,6 +116,7 @@ return [
         'RG-HOOK-52' => ['hook' => '.conv-reply-block', 'family' => 'hook_reply', 'file' => 'public/js/main.js', 'needle' => '$(".conv-reply-block").removeClass(\'hidden\')', 'severity' => 'warning', 'source' => 'public/js/main.js:1883-1898'],
         'RG-HOOK-53' => ['hook' => 'send_reply', 'family' => 'hook_reply', 'file' => 'app/Http/Controllers/ConversationsController.php', 'needle' => "case 'send_reply':", 'severity' => 'warning', 'source' => 'app/Http/Controllers/ConversationsController.php:2953 (getRedirectUrl)'],
         'RG-HOOK-54' => ['hook' => 'menu.manage.after_mailboxes', 'file' => 'resources/views/layouts/app.blade.php', 'needle' => "@action('menu.manage.after_mailboxes')", 'severity' => 'warning', 'source' => 'resources/views/layouts/app.blade.php:110'],
+        'RG-HOOK-55' => ['hook' => 'conv_history', 'family' => 'hook_reply', 'file' => 'resources/views/conversations/view.blade.php', 'needle' => 'name="conv_history"', 'severity' => 'warning', 'source' => 'resources/views/conversations/view.blade.php:272'],
         'RG-HOOK-35' => ['hook' => 'stylesheets', 'file' => 'resources/views/layouts/app.blade.php', 'needle' => "\Eventy::filter('stylesheets'", 'severity' => 'warning', 'source' => 'resources/views/layouts/app.blade.php:33'],
         'RG-HOOK-07' => ['hook' => 'refresh.rail_items', 'refresh' => true, 'file' => 'Providers/RefreshServiceProvider.php', 'needle' => "'refresh.rail_items'", 'severity' => 'degraded', 'source' => 'Modules/Refresh/Providers/RefreshServiceProvider.php:742'],
     ],
@@ -172,6 +173,7 @@ return [
         'RG-CORE-31' => ['class' => 'App\Conversation', 'methods' => ['url', 'isChat'], 'family' => 'hook_reply', 'severity' => 'warning', 'source' => 'app/Conversation.php'],
         // name of the customer in the signature (1.25.0): body of the customer's messages
         'RG-CORE-32' => ['class' => 'App\Thread', 'constants' => ['App\Thread::TYPE_CUSTOMER'], 'family' => 'hook_reply', 'severity' => 'warning', 'source' => 'app/Thread.php'],
+        'RG-CORE-33' => ['class' => 'App\Conversation', 'methods' => ['getEmailHistoryName'], 'family' => 'hook_reply', 'severity' => 'warning', 'source' => 'app/Conversation.php:2613'],
         'RG-CORE-18' => ['class' => 'Modules\Tags\Entities\Tag', 'methods' => ['attachByName'], 'module' => 'tags', 'family' => 'mailtags', 'severity' => 'warning', 'source' => 'Modules/Tags (used as by Modules/Refresh/Http/Controllers/NewTicketController.php:192)'],
     ],
 

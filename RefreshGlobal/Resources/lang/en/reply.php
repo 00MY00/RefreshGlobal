@@ -5,6 +5,8 @@ return [
     'title' => 'Replies',
     'goes_next' => 'After a reply, next ticket of “All mailboxes”',
     'goes_next_help' => 'With “Send and next active”: opens the ticket that follows in the “All mailboxes” list you came from. Off: FreeScout chooses. In both cases, without a next ticket you stay on the ticket instead of going back to a list.',
+    'history' => 'Previous messages',
+    'history_help' => 'Messages of the ticket sent below a reply (never the internal notes). Can be changed or removed above the editor, for each reply.',
     'enabled' => 'Start replies with a text',
     'enabled_help' => 'Puts the text of a profile below in the editor each time a reply is opened. Not in notes, forwards, drafts or chats. It can be changed or deleted before sending, and no draft is saved until you write.',
     'text' => 'Text',

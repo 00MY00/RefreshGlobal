@@ -5,6 +5,8 @@ return [
     'title' => 'Réponses',
     'goes_next' => 'Après une réponse, ticket suivant de « Toutes les boîtes »',
     'goes_next_help' => 'Avec « Envoyer et suivant actif » : ouvre le ticket qui suit dans la liste « Toutes les boîtes » d’où vous venez. Désactivé : FreeScout choisit. Dans les deux cas, sans ticket suivant, vous restez sur le ticket au lieu de revenir à une liste.',
+    'history' => 'Messages précédents',
+    'history_help' => 'Messages du ticket envoyés sous une réponse (jamais les notes internes). À changer ou à retirer au-dessus de l’éditeur, pour chaque réponse.',
     'enabled' => 'Commencer les réponses par un texte',
     'enabled_help' => 'Place le texte d’un des profils ci-dessous dans l’éditeur à chaque ouverture d’une réponse. Pas dans les notes, transferts, brouillons ni discussions. Il peut être modifié ou effacé avant l’envoi, et aucun brouillon n’est enregistré tant que vous n’écrivez pas.',
     'text' => 'Texte',

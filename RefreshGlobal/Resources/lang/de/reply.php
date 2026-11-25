@@ -5,6 +5,8 @@ return [
     'title' => 'Antworten',
     'goes_next' => 'Nach einer Antwort: nächstes Ticket aus „Alle Postfächer“',
     'goes_next_help' => 'Mit „Senden und nächstes aktives“: öffnet das Ticket, das in der Liste „Alle Postfächer“ folgt, aus der Sie kommen. Aus: FreeScout wählt. In beiden Fällen bleiben Sie ohne nächstes Ticket auf dem Ticket, statt zu einer Liste zurückzukehren.',
+    'history' => 'Frühere Nachrichten',
+    'history_help' => 'Nachrichten des Tickets, die unter einer Antwort mitgesendet werden (nie die internen Notizen). Über dem Editor für jede Antwort änderbar oder entfernbar.',
     'enabled' => 'Antworten mit einem Text beginnen',
     'enabled_help' => 'Setzt den Text eines der folgenden Profile bei jedem Öffnen einer Antwort in den Editor. Nicht in Notizen, Weiterleitungen, Entwürfen oder Chats. Er kann vor dem Senden geändert oder gelöscht werden; es wird kein Entwurf gespeichert, solange Sie nichts schreiben.',
     'text' => 'Text',

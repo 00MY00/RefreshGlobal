@@ -5,6 +5,8 @@ return [
     'title' => 'Antwoorden',
     'goes_next' => 'Na een antwoord: volgend ticket van ‘Alle mailboxen’',
     'goes_next_help' => 'Met ‘Verzenden en volgende actieve’: opent het ticket dat volgt in de lijst ‘Alle mailboxen’ waar u vandaan komt. Uit: FreeScout kiest. In beide gevallen blijft u zonder volgend ticket op het ticket in plaats van terug te gaan naar een lijst.',
+    'history' => 'Vorige berichten',
+    'history_help' => 'Berichten van het ticket die onder een antwoord worden meegestuurd (nooit de interne notities). Boven de editor per antwoord te wijzigen of te verwijderen.',
     'enabled' => 'Antwoorden met een tekst beginnen',
     'enabled_help' => 'Zet de tekst van een van de onderstaande profielen in de editor telkens wanneer een antwoord wordt geopend. Niet in notities, doorsturen, concepten of chats. De tekst kan vóór verzending worden gewijzigd of gewist; er wordt geen concept opgeslagen zolang u niets schrijft.',
     'text' => 'Tekst',

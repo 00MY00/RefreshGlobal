@@ -10,7 +10,7 @@ namespace Modules\RefreshGlobal\Services;
  *
  *   show   always shown (FreeScout's behaviour)
  *   ask    not loaded; a "Show images" button per message loads them (the addresses stay in data-rg-* attributes)
- *   block  not loaded and can not be shown (the addresses are removed from the page)
+ *   block  not loaded; the same button, after a confirmation (1.28.1: the button is always there)
  *
  * The mode is chosen per message from its origin tags (Services/MailTags.php): rules "tag = mode" of the settings
  * (exact tag, or a prefix ending with "*": "folder:clients-*"); when several rules match, the most restrictive wins;
@@ -95,7 +95,7 @@ class RemoteImages
             if ($mode === self::SHOW) {
                 return $body;
             }
-            list($html, $count) = self::neutralize($body, $mode === self::ASK);
+            list($html, $count) = self::neutralize($body, true);
             if (!$count) {
                 return $body;
             }
@@ -159,6 +159,7 @@ class RemoteImages
         $html = preg_replace_callback('#<[a-z][a-z0-9]*\b[^>]*>#i', function ($m) use (&$count, $keep, $attr) {
             $tag = $m[0];
             $changed = false;
+            $before = $count;
             // src / srcset (images), background (tables of old e-mails)
             $tag = preg_replace_callback('#\s(src|srcset|background)\s*=\s*("([^"]*)"|\'([^\']*)\'|([^\s>]+))#i', function ($a) use (&$count, &$changed, $keep, $attr) {
                 $name = strtolower($a[1]);
@@ -204,6 +205,8 @@ class RemoteImages
                 return $attr('style', $clean).($keep ? $attr('data-rg-style', $style) : '');
             }, $tag);
             if ($changed) {
+                // only a srcset or a background: one image too, or the message would be shown as it is, without the button
+                $count = max($count, $before + 1);
                 $tag = preg_replace('#^<([a-z][a-z0-9]*)#i', '<$1 data-rg-remote', $tag);
             }
 
@@ -218,9 +221,11 @@ class RemoteImages
         $text = trans_choice('refreshglobal::messages.remote_images_blocked', $count, ['count' => $count]);
         $html = '<div class="rg-remote-images rg-ri-'.$mode.'" data-rg-ri><i class="glyphicon glyphicon-picture" aria-hidden="true"></i> '
             .'<span class="rg-ri-text">'.e($text).'</span>';
-        if ($mode === self::ASK) {
-            $html .= ' <button type="button" class="btn btn-default btn-xs rg-ri-show">'.e(__('refreshglobal::messages.remote_images_load')).'</button>';
-        } else {
+        // not a <button>: FreeScout's cleaning of the body (Helper::stripDangerousTags(), app/Misc/Helper.php:677-699) removes it
+        $html .= ' <span role="button" tabindex="0" class="btn btn-default btn-xs rg-ri-show"'
+            .($mode === self::BLOCK ? ' data-rg-confirm="'.e(__('refreshglobal::messages.remote_images_confirm')).'"' : '').'>'
+            .e(__('refreshglobal::messages.remote_images_load')).'</span>';
+        if ($mode === self::BLOCK) {
             $html .= ' <span class="rg-ri-note">'.e(__('refreshglobal::messages.remote_images_never')).'</span>';
         }
 

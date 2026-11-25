@@ -5,6 +5,8 @@ return [
     'title' => 'Respuestas',
     'goes_next' => 'Tras una respuesta, siguiente ticket de «Todos los buzones»',
     'goes_next_help' => 'Con «Enviar y siguiente activo»: abre el ticket que sigue en la lista «Todos los buzones» de la que viene. Desactivado: elige FreeScout. En ambos casos, sin ticket siguiente se queda en el ticket en lugar de volver a una lista.',
+    'history' => 'Mensajes anteriores',
+    'history_help' => 'Mensajes del ticket enviados debajo de una respuesta (nunca las notas internas). Se pueden cambiar o quitar encima del editor, en cada respuesta.',
     'enabled' => 'Empezar las respuestas con un texto',
     'enabled_help' => 'Pone el texto de uno de los perfiles siguientes en el editor cada vez que se abre una respuesta. No en notas, reenvíos, borradores ni chats. Se puede cambiar o borrar antes de enviar, y no se guarda ningún borrador hasta que escriba.',
     'text' => 'Texto',

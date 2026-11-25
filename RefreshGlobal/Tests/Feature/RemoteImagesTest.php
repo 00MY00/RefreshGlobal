@@ -50,7 +50,12 @@ class RemoteImagesTest extends TestCase
     public function testAskKeepsTheAddressesBehindAButton()
     {
         list($html, $n) = RemoteImages::neutralize(self::PIXEL_MAIL, true);
-        $this->assertSame(3, $n); // 2 images (src) + 1 url() of a style; srcset / background are neutralized too
+        $this->assertSame(4, $n); // 2 images (src), 1 background, 1 url() of a style; srcset is neutralized too
+        foreach (['<img srcset="https://cdn.example.org/a.png 2x">', '<td background="//cdn.example.org/b.png">x</td>'] as $only) {
+            $shown = RemoteImages::filter($only);
+            $this->assertStringContainsString('rg-ri-show', $shown);
+            $this->assertDoesNotMatchRegularExpression('#\s(srcset|background)=#', $shown);
+        }
         $this->assertDoesNotMatchRegularExpression('#[^-]src="https://track#', $html);
         $this->assertStringContainsString('data-rg-src="https://track.example.org/open?u=1"', $html);
         $this->assertStringContainsString('data-rg-srcset="https://cdn.example.org/logo@2x.png 2x"', $html);
@@ -97,11 +102,14 @@ class RemoteImagesTest extends TestCase
         $this->assertStringContainsString('data-rg-src=', $out);
         // after FreeScout's own cleaning (safe_raw_html), the attributes are still there
         $this->assertStringContainsString('data-rg-src=', safe_raw_html($out));
+        $this->assertStringContainsString('rg-ri-show', safe_raw_html($out));
 
         $out = \Eventy::filter('thread.body_output', self::PIXEL_MAIL, $spam, $c, $c->mailbox);
         $this->assertStringContainsString('rg-ri-block', $out);
-        $this->assertStringNotContainsString('rg-ri-show', $out);
-        $this->assertStringNotContainsString('track.example.org', $out);
+        // 1.28.1: the button too, after a confirmation; nothing active before
+        $this->assertStringContainsString('rg-ri-show', $out);
+        $this->assertStringContainsString('data-rg-confirm=', safe_raw_html($out));
+        $this->assertDoesNotMatchRegularExpression('#[^-]src="https://track#', $out);
 
         \App\Option::set(Settings::REMOTE_IMAGES, 'show');
         \App\Option::set(Settings::REMOTE_IMAGES_RULES, '');

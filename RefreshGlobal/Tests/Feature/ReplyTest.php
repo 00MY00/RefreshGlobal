@@ -105,6 +105,21 @@ class ReplyTest extends TestCase
         $this->assertStringNotContainsString('name="refreshglobal-reply"', $this->actingAs($this->s['bob'])->get($c->url())->getContent());
     }
 
+    /** 1.29.0: previous messages sent with a reply */
+    public function testPreviousMessages()
+    {
+        \App\Option::remove(Settings::REPLY_HISTORY);
+        $this->assertSame('full', Settings::replyHistory());
+        \App\Option::set(Settings::REPLY_HISTORY, 'bad');
+        $this->assertSame('global', Settings::replyHistory());
+        $this->actingAs($this->s['admin'])->post(route('settings.save', ['section' => 'refreshglobal']), ['settings' => [Settings::REPLY_HISTORY => 'last']])->assertStatus(302);
+        $this->assertSame('last', Settings::replyHistory());
+        $html = $this->actingAs($this->s['bob'])->get($this->s['t_support_open']->url())->getContent();
+        $this->assertStringContainsString('name="refreshglobal-history" content="{&quot;value&quot;:&quot;last&quot;', $html);
+        $this->assertStringContainsString('name="conv_history"', $html);
+        $this->seeIn($this->actingAs($this->s['admin'])->get(route('settings', ['section' => 'refreshglobal'])), 'id="rg-reply-history"');
+    }
+
     public function testProfilePerLanguage()
     {
         $row = function ($name, $lang, $where = 'all', $ids = []) {

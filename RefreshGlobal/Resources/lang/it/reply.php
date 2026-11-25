@@ -5,6 +5,8 @@ return [
     'title' => 'Risposte',
     'goes_next' => 'Dopo una risposta, ticket successivo di «Tutte le caselle»',
     'goes_next_help' => 'Con «Invia e successivo attivo»: apre il ticket che segue nell’elenco «Tutte le caselle» da cui provieni. Disattivato: sceglie FreeScout. In entrambi i casi, senza un ticket successivo resti sul ticket invece di tornare a un elenco.',
+    'history' => 'Messaggi precedenti',
+    'history_help' => 'Messaggi del ticket inviati sotto una risposta (mai le note interne). Modificabili o rimovibili sopra l’editor, per ogni risposta.',
     'enabled' => 'Iniziare le risposte con un testo',
     'enabled_help' => 'Inserisce il testo di uno dei profili seguenti nell’editor ogni volta che si apre una risposta. Non in note, inoltri, bozze o chat. Può essere modificato o cancellato prima dell’invio, e nessuna bozza viene salvata finché non scrivi.',
     'text' => 'Testo',

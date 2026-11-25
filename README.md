@@ -60,6 +60,7 @@ Dans Gérer › Modules :
   `$agent_last_name`, `$agent_full_name`, `$date`), texte de remplacement `$first_name|Madame, Monsieur|`, guide et
   aperçu dans les réglages. Après une réponse sans ticket suivant, on reste sur le ticket ; option « ticket suivant de
   Toutes les boîtes ».
+- **Messages précédents** joints aux réponses : choix au-dessus de l'éditeur (tous, dernier, aucun), défaut dans les réglages.
 - **Temps restant dans un flux** (Workflow Packs 3.20+) : badge « 30 min → Statut : Fermé » dans les listes et sur le ticket,
   détails au survol ou en touchant.
 - **Performance** (administrateurs, page de diagnostic › *Performance*) : matériel vu par PHP (processeur, limites du

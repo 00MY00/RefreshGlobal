@@ -319,6 +319,24 @@ class Settings
         return self::flag(self::REPLY_GOES_NEXT, false);
     }
 
+    /**
+     * Previous messages sent with a reply (1.29.0): FreeScout's own choice of the reply form ("conv_history"), put in it
+     * when a reply opens and shown above the editor. "global": FreeScout's setting (Manage › Settings › General).
+     */
+    const REPLY_HISTORY = 'refreshglobal.reply_history';
+    const REPLY_HISTORY_VALUES = ['full', 'last', 'none', 'global'];
+
+    public static function replyHistory()
+    {
+        try {
+            $value = self::option(self::REPLY_HISTORY, 'full');
+        } catch (\Exception $e) {
+            $value = 'global';
+        }
+
+        return in_array($value, self::REPLY_HISTORY_VALUES, true) ? $value : 'global';
+    }
+
     /** Options shown in Manage › Settings › RefreshGlobal (saved by FreeScout itself) => current value. */
     public static function sectionValues()
     {
@@ -329,6 +347,7 @@ class Settings
             Dashboard\Sla::RESOLUTION      => Dashboard\Sla::own(Dashboard\Sla::RESOLUTION, Dashboard\Sla::DEFAULT_RESOLUTION_HOURS),
             self::SHOW_MAILBOX            => self::showMailbox(),
             self::REPLY_GOES_NEXT         => self::replyGoesNext(),
+            self::REPLY_HISTORY           => self::replyHistory(),
             ReplyStart::ENABLED           => ReplyStart::enabled(),
             ReplyStart::DETECT            => ReplyStart::detect(),
             ReplyStart::TEXTS             => ReplyStart::texts(),

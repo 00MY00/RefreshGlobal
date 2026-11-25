@@ -5,6 +5,31 @@ sont tenus à jour ensemble à chaque version.
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.29.0] — 2026-11-25
+
+### Ajouté
+- **Messages précédents d'une réponse** : un choix au-dessus de l'éditeur (toute la conversation, dernier message, aucun),
+  auparavant caché dans le menu d'envoi de FreeScout, avec un réglage par défaut dans Paramètres › RefreshGlobal › Réponses.
+
+### Modifié
+- **Les réponses joignent maintenant toute la conversation par défaut** (messages seulement, jamais les notes internes ; les
+  destinataires en copie les reçoivent aussi). Pour revenir au réglage de FreeScout : choisir « Par défaut » dans
+  Paramètres › RefreshGlobal › Réponses.
+- **« Afficher les images » est toujours là** sur un message avec des images distantes, aussi en mode « Bloqué » (après une
+  confirmation). Rien n'est chargé avant le clic.
+
+### Corrigé
+- Les versions récentes de FreeScout retirent `<button>` des messages : « Afficher les images » manquait. Ce n'est plus un
+  `<button>`.
+
+### Sécurité
+- Un e-mail dont les images distantes étaient seulement un `srcset` ou un `background` était laissé tel quel, sans
+  bouton (FreeScout retire lui-même la plupart de ces attributs).
+- En mode « Bloqué », les adresses restent maintenant dans la page, inactives, pour le bouton.
+
+### Compatibilité
+- Aucune migration. Nouvelles vérifications RG-HOOK-55 et RG-CORE-33 (avertissements). Le contrat FreeScout Interop ne change pas.
+
 ## [1.28.0] — 2026-11-25
 
 ### Ajouté

@@ -577,3 +577,8 @@ button.rf-v.rg-views-order { color: var(--fd-text-2, #475569); }
 .rg-timer-part + .rg-timer-part { padding-top: 6px; border-top: 1px solid #e2e8f0; }
 .rg-timer-part ul { margin: 2px 0; padding-left: 18px; }
 .rg-timer-dep { color: #64748b; }
+/* previous messages sent with a reply */
+.rg-history { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; padding: 4px 10px; }
+.rg-history-label { color: #64748b; }
+.rg-history select.form-control { width: auto; max-width: 100%; display: inline-block; }
+@media (max-width: 1024px) and (pointer: coarse) { .rg-history select.form-control { height: 44px; font-size: 16px; } }

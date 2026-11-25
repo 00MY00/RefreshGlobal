@@ -5,6 +5,8 @@ return [
     'title' => 'Respostas',
     'goes_next' => 'Após uma resposta, próximo ticket de “Todas as caixas”',
     'goes_next_help' => 'Com “Enviar e próximo ativo”: abre o ticket que vem em seguida na lista “Todas as caixas” de onde você veio. Desativado: o FreeScout escolhe. Nos dois casos, sem próximo ticket você fica no ticket em vez de voltar a uma lista.',
+    'history' => 'Mensagens anteriores',
+    'history_help' => 'Mensagens do ticket enviadas abaixo de uma resposta (nunca as notas internas). Podem ser alteradas ou removidas acima do editor, em cada resposta.',
     'enabled' => 'Começar as respostas com um texto',
     'enabled_help' => 'Coloca o texto de um dos perfis abaixo no editor sempre que uma resposta é aberta. Não em notas, encaminhamentos, rascunhos ou chats. Pode ser alterado ou apagado antes do envio, e nenhum rascunho é salvo enquanto você não escrever.',
     'text' => 'Texto',

@@ -780,7 +780,12 @@
      * Remote images of the e-mails (Services/RemoteImages.php, mode "ask"): "Show images" loads the images of that
      * message only (their addresses were kept in data-rg-* attributes).
      */
+    $(document).on('keydown', '.rg-ri-show', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $(this).trigger('click'); }
+    });
     $(document).on('click', '.rg-ri-show', function () {
+        var ask = this.getAttribute('data-rg-confirm');
+        if (ask && !window.confirm(ask)) { return; }
         var box = $(this).closest('.rg-remote-images');
         var scope = box.parent();
         scope.find('[data-rg-remote]').each(function () {
@@ -1297,6 +1302,52 @@
                 take();
             }
         }, true);
+    });
+
+    /* 1.29.0: previous messages sent with a reply: FreeScout's hidden choice ("conv_history" of the reply form, its "Conversation
+       History" window) shown above the editor, with the default of the settings. Notes and forwards are left alone. */
+    $(function () {
+        var cfg, block = document.querySelector('.conv-reply-block');
+        try { cfg = JSON.parse(document.querySelector('meta[name="refreshglobal-history"]').getAttribute('content')); } catch (e) { return; }
+        var field = block && $(block).find(':input[name="conv_history"]').first();
+        if (!field || !field.length) { return; }
+        var first = cfg.value === 'global' ? '' : cfg.value, was = false, bar = null, select = null, mine = null;
+        var get = function (name) { return $(block).find(':input[name="' + name + '"]').first().val(); };
+        var isReply = function () {
+            return !block.classList.contains('hidden') && !block.classList.contains('conv-note-block') && !block.classList.contains('conv-forward-block')
+                && !get('is_note') && !get('subtype') && !(typeof window.isChatMode === 'function' && window.isChatMode());
+        };
+        var sync = function () {
+            var v = field.val();
+            if (select) { select.val(!v || v === 'global' ? cfg.global : v); }
+            $('#email_history').val(v || 'global');
+        };
+        var update = function () {
+            var is = isReply();
+            if (is && !was) {
+                if (mine === null) { mine = field.val() || first; }
+                field.val(mine);
+            } else if (!is && was) {
+                // a forward always takes the whole conversation unless its own choice says otherwise
+                mine = field.val();
+                field.val('');
+            }
+            was = is;
+            var editor = block.querySelector('.note-editor');
+            if (!bar && editor) {
+                bar = $('<div class="rg-history"></div>');
+                select = $('<select class="form-control input-sm parsley-exclude">').attr('aria-label', cfg.label).on('change', function () { field.val(this.value); sync(); });
+                $.each(cfg.options, function (code, name) { $('<option>').val(code).text(name).appendTo(select); });
+                // not a <label>: Refresh's style of the form would clip it
+                bar.append($('<span class="rg-history-label">').text(cfg.label), select).insertBefore(editor);
+            }
+            if (bar) { bar.toggle(is); }
+            sync();
+        };
+        new MutationObserver(function () { setTimeout(update, 60); }).observe(block, { attributes: true, attributeFilter: ['class'] });
+        setTimeout(update, 400);
+        $(document).on('hidden.bs.modal', '#conv-settings-modal', function () { setTimeout(sync, 50); });
+        $(document).on('click', '#conv-settings-modal .button-save-settings', function () { setTimeout(sync, 50); });
     });
 
     /* 1.28.0: tickets waiting in a flow of Workflow Packs (Services/FlowTimers.php): time left kept up to date, details on hover,

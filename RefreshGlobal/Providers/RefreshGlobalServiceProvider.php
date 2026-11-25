@@ -243,6 +243,25 @@ class RefreshGlobalServiceProvider extends ServiceProvider
      */
     protected function registerReplyStart()
     {
+        // previous messages sent with a reply (Settings::replyHistory()): the choice of FreeScout's reply form, shown above the editor
+        \Eventy::addAction('layout.head', function () {
+            try {
+                if (!auth()->check() || !\Route::is('conversations.view')) {
+                    return;
+                }
+                $options = [];
+                foreach (\Modules\RefreshGlobal\Services\Settings::REPLY_HISTORY_VALUES as $code) {
+                    if ($code !== 'global') {
+                        $options[$code] = \App\Conversation::getEmailHistoryName($code);
+                    }
+                }
+                $value = \Modules\RefreshGlobal\Services\Settings::replyHistory();
+                echo '<meta name="refreshglobal-history" content="'.e(json_encode(['value' => $value, 'options' => $options,
+                    'global' => (string) config('app.email_conv_history'), 'label' => __('refreshglobal::reply.history')], JSON_UNESCAPED_UNICODE)).'">'."\n";
+            } catch (\Throwable $e) {
+                // optional
+            }
+        });
         \Eventy::addAction('layout.head', function () {
             try {
                 if (!auth()->check() || !\Route::is('conversations.view') || !\Modules\RefreshGlobal\Services\ReplyStart::enabled()) {

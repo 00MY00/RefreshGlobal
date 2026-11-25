@@ -8,6 +8,29 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) — versions: [
 Every published change gets a new version number: FreeScout's Manage › Modules page and UpdateGuard only offer an
 update when the version changes.
 
+## [1.29.0] — 2026-11-25
+
+### Added
+- **Previous messages of a reply**: a choice above the editor (whole conversation, last message, none), which was hidden in
+  FreeScout's send menu, with a default in Settings › RefreshGlobal › Replies.
+
+### Changed
+- **Replies now take the whole conversation by default** (messages only, never internal notes; CC recipients get them too). To
+  go back to FreeScout's own setting: choose “Default” in Settings › RefreshGlobal › Replies.
+- **“Show images” is always there** on a message with remote images, also in “Blocked” mode (after a confirmation). Nothing is
+  loaded before the click.
+
+### Fixed
+- Recent FreeScout versions remove `<button>` from the messages: “Show images” was missing. It is not a `<button>` any more.
+
+### Security
+- An e-mail whose remote images were only a `srcset` or a `background` was left as it is, without
+  the button (FreeScout itself removes most of these attributes).
+- In “Blocked” mode the addresses now stay in the page, inactive, for the button.
+
+### Compatibility
+- No migration. New checks RG-HOOK-55 and RG-CORE-33 (warnings). The FreeScout Interop contract is unchanged.
+
 ## [1.28.0] — 2026-11-25
 
 ### Added

@@ -10,6 +10,17 @@
 <h3 class="subheader" id="rg-replies">{{ __('refreshglobal::reply.title') }}</h3>
 @include('refreshglobal::partials.switch', ['key' => $rg_s::REPLY_GOES_NEXT, 'label' => __('refreshglobal::reply.goes_next'),
     'help' => __('refreshglobal::reply.goes_next_help')])
+<div class="form-group">
+    <label for="rg-reply-history" class="col-sm-2 control-label">{{ __('refreshglobal::reply.history') }}</label>
+    <div class="col-sm-6">
+        <select id="rg-reply-history" name="settings[{{ $rg_s::REPLY_HISTORY }}]" class="form-control input-sized">
+            @foreach ($rg_s::REPLY_HISTORY_VALUES as $rg_h)
+                <option value="{{ $rg_h }}" @if ($rg_s::replyHistory() === $rg_h) selected @endif>{{ \App\Conversation::getEmailHistoryName($rg_h) }}</option>
+            @endforeach
+        </select>
+        <p class="form-help">{{ __('refreshglobal::reply.history_help') }}</p>
+    </div>
+</div>
 @include('refreshglobal::partials.switch', ['key' => $rg_r::ENABLED, 'label' => __('refreshglobal::reply.enabled'),
     'help' => __('refreshglobal::reply.enabled_help')])
 @include('refreshglobal::partials.switch', ['key' => $rg_r::DETECT, 'label' => __('refreshglobal::reply.detect'),

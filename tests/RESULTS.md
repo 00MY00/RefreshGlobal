@@ -740,3 +740,11 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
   au toucher, dans l’écran, sans ouvrir le ticket, refermés ensuite ; 11 réussis, aucune erreur JavaScript.
 - Cas non réussi : liste à 820 px avec Refresh, panneau des vues ouvert : la colonne du sujet a une largeur de 0 (aussi sans
   le badge), rien n’y est visible. Défaut antérieur, non corrigé ici.
+
+## 50. Bouton « Afficher les images », messages précédents (1.29.0, 2026-11-25)
+
+- PHPUnit : suite complète 224 tests, 0 échec, 2 ignorés ; php -l PHP 7.1 et 8.4 ; RG-HOOK-55 et RG-CORE-33 OK.
+- Navigateur, avec et sans Refresh, ordinateur, tablette, téléphone : aucune image chargée avant le clic, bouton visible et
+  cliquable, confirmation en mode bloqué, images chargées ensuite ; messages précédents : toute la conversation par défaut,
+  choix visible, valeur envoyée « full » puis « none » ; rien dans les notes ni les transferts ; aucune erreur JavaScript.
+- Non vérifié : l’e-mail reçu par le client (c’est FreeScout qui joint les messages).
