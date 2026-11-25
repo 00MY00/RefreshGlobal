@@ -756,3 +756,7 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
   placé dans les 6 cas, aucune erreur JavaScript. Un cas intermittent (une fois sur deux passages) : indicateur de
   modification lu pendant l’enregistrement du brouillon après le choix d’un profil ; le texte lui-même est juste.
 - Mention de FreeScout : vérifiée sur les quatre gabarits d’e-mail, pas sur un e-mail réellement envoyé.
+
+## 52. Variable `$br` (1.31.0, 2026-11-25)
+
+- PHPUnit `ReplyTest` : réussi ; php -l PHP 7.1 et 8.4. Navigateur non relancé.

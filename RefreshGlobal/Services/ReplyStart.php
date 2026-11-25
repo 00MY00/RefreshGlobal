@@ -11,6 +11,8 @@ namespace Modules\RefreshGlobal\Services;
  *   $first_name            the value, or nothing: the spaces before it go too ("Hello $first_name," -> "Hello,")
  *   $first_name|customer|  the value, or "customer" when it is empty
  *
+ *   $br                    a line break, also at the end of the text (1.31.0)
+ *
  * Unknown variables are left as they are. Everything is escaped: values come from customers.
  */
 class ReplyStart
@@ -34,12 +36,13 @@ class ReplyStart
     const EXCEPT = 'except';
 
     const VARIABLES = ['first_name', 'last_name', 'full_name', 'email', 'company', 'subject', 'ticket_number', 'mailbox',
-        'agent_first_name', 'agent_last_name', 'agent_full_name', 'date'];
+        'agent_first_name', 'agent_last_name', 'agent_full_name', 'date', 'br'];
 
     /** Values of the preview of the settings page. */
     const SAMPLE = ['first_name' => 'Jane', 'last_name' => 'Doe', 'full_name' => 'Jane Doe', 'email' => 'jane@example.test', 'company' => 'Example Ltd',
         'subject' => 'Invoice', 'ticket_number' => '1234', 'mailbox' => 'Support', 'agent_first_name' => 'Sam', 'agent_last_name' => 'Agent',
-        'agent_full_name' => 'Sam Agent', 'date' => '2026-01-31'];
+        'agent_full_name' => 'Sam Agent', 'date' => '2026-01-31', 'br' => "
+"];
 
     public static function enabled()
     {
@@ -181,6 +184,10 @@ class ReplyStart
             if (!in_array($m[2], self::VARIABLES, true)) {
                 return $m[0];
             }
+            if ($m[2] === 'br') {
+                return "
+";
+            }
             // one line: a value never adds lines to the text
             $value = trim(preg_replace('/\s+/u', ' ', (string) ($values[$m[2]] ?? '')));
             if ($value === '') {
@@ -194,7 +201,8 @@ class ReplyStart
     /** HTML for the editor: one block per line, everything escaped, then an empty line to write on. '' for nothing. */
     public static function html($text)
     {
-        $text = rtrim((string) $text);
+        // line breaks at the end are kept: they come from $br
+        $text = rtrim((string) $text, " 	");
         if (trim($text) === '') {
             return '';
         }

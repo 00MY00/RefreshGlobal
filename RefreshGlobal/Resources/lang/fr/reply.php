@@ -72,5 +72,6 @@ return [
     'var_agent_first_name' => 'Prénom de l’agent',
     'var_agent_last_name' => 'Nom de l’agent',
     'var_agent_full_name' => 'Prénom et nom de l’agent',
+    'var_br' => 'Saut de ligne (aussi à la fin du texte)',
     'var_date' => 'Date du jour',
 ];

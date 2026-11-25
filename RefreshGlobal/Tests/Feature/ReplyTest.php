@@ -25,6 +25,10 @@ class ReplyTest extends TestCase
         $this->assertSame('Bonjour Zoé,', ReplyStart::fill('Bonjour $first_name|client|,', $v));
         $this->assertSame('Zoé #42 A B', ReplyStart::fill('$first_name #$ticket_number $company', $v), 'a value never adds a line');
         $this->assertSame('$nom $first_names 5$', ReplyStart::fill('$nom $first_names 5$', $v), 'unknown: left as it is');
+        // 1.31.0: line break, kept at the end
+        $this->assertSame('<div>Hi Zoé,</div><div><br></div><div><br></div>', ReplyStart::html(ReplyStart::fill('Hi $first_name,$br', $v)));
+        $this->assertSame("A
+B", ReplyStart::fill('A $br|x|B', $v));
         // a value is never read as a variable
         $this->assertSame('$email', ReplyStart::fill('$first_name', ['first_name' => '$email', 'email' => 'x@example.test']));
         foreach (ReplyStart::VARIABLES as $name) {

@@ -72,5 +72,6 @@ return [
     'var_agent_first_name' => 'Nome do agente',
     'var_agent_last_name' => 'Sobrenome do agente',
     'var_agent_full_name' => 'Nome e sobrenome do agente',
+    'var_br' => 'Quebra de linha (também no final do texto)',
     'var_date' => 'Data do dia',
 ];

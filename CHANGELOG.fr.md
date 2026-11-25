@@ -5,6 +5,11 @@ sont tenus à jour ensemble à chaque version.
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.31.0] — 2026-11-25
+
+### Ajouté
+- Variable `$br` dans les textes de début de réponse : un saut de ligne, aussi à la fin du texte.
+
 ## [1.30.0] — 2026-11-25
 
 ### Ajouté

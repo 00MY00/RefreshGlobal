@@ -8,6 +8,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) — versions: [
 Every published change gets a new version number: FreeScout's Manage › Modules page and UpdateGuard only offer an
 update when the version changes.
 
+## [1.31.0] — 2026-11-25
+
+### Added
+- Variable `$br` in the starting texts of a reply: a line break, also at the end of the text.
+
 ## [1.30.0] — 2026-11-25
 
 ### Added

@@ -72,5 +72,6 @@ return [
     'var_agent_first_name' => 'Voornaam van de agent',
     'var_agent_last_name' => 'Achternaam van de agent',
     'var_agent_full_name' => 'Voor- en achternaam van de agent',
+    'var_br' => 'Regeleinde (ook aan het einde van de tekst)',
     'var_date' => 'Datum van vandaag',
 ];

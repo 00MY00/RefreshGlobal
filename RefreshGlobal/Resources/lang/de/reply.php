@@ -72,5 +72,6 @@ return [
     'var_agent_first_name' => 'Vorname des Agenten',
     'var_agent_last_name' => 'Nachname des Agenten',
     'var_agent_full_name' => 'Vor- und Nachname des Agenten',
+    'var_br' => 'Zeilenumbruch (auch am Ende des Textes)',
     'var_date' => 'Heutiges Datum',
 ];
