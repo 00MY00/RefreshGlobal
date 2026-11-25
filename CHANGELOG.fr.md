@@ -5,6 +5,27 @@ sont tenus à jour ensemble à chaque version.
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.30.0] — 2026-11-25
+
+### Ajouté
+- Quand il y a des profils mais qu'une réponse ne reçoit aucun texte de début, les administrateurs voient pourquoi au-dessus
+  de l'éditeur (désactivé, aucun profil pour cette boîte, erreur), avec un lien vers les réglages.
+
+- Interrupteur pour **« Support powered by FreeScout »** au bas des e-mails envoyés aux clients (réponses et réponses
+  automatiques), dans Paramètres › RefreshGlobal › Réponses.
+
+### Modifié
+- « Support powered by FreeScout » n'est **plus ajouté par défaut**. Le réglage propre à FreeScout n'est pas modifié.
+- **« Commencer les réponses par un texte » est maintenant activé par défaut** : les profils servent dès qu'il y en a un.
+
+### Corrigé
+- L'interrupteur était éteint par défaut et s'enregistrait éteint avec les profils : ils n'étaient jamais utilisés.
+- Un caractère illisible dans les données d'un client ne fait plus perdre le texte de début.
+
+### Migration
+- L'ancien état de l'interrupteur n'est pas repris : un « éteint » voulu ne se distingue pas du défaut. Pour l'éteindre de
+  nouveau : Paramètres › RefreshGlobal › Réponses.
+
 ## [1.29.0] — 2026-11-25
 
 ### Ajouté

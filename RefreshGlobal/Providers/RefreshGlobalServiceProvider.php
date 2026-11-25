@@ -243,6 +243,23 @@ class RefreshGlobalServiceProvider extends ServiceProvider
      */
     protected function registerReplyStart()
     {
+        // "Support powered by FreeScout" of the e-mails to customers (Settings::replyBranding()): their templates read the
+        // option "email_branding" (resources/views/emails/customer/*.blade.php); only the copy in memory is changed, while
+        // they are rendered, and it is read again for the notifications of the agents
+        try {
+            \View::composer(['emails.customer.reply_fancy', 'emails.customer.reply_fancy_text', 'emails.customer.auto_reply', 'emails.customer.auto_reply_text', 'emails.user.layouts.system'], function ($view) {
+                try {
+                    unset(\App\Option::$cache['email_branding']);
+                    if (strpos(str_replace('/', '.', $view->getName()), 'emails.customer.') === 0 && !\Modules\RefreshGlobal\Services\Settings::replyBranding()) {
+                        \App\Option::$cache['email_branding'] = false;
+                    }
+                } catch (\Throwable $e) {
+                    // the e-mail goes out as FreeScout makes it
+                }
+            });
+        } catch (\Throwable $e) {
+            // optional
+        }
         // previous messages sent with a reply (Settings::replyHistory()): the choice of FreeScout's reply form, shown above the editor
         \Eventy::addAction('layout.head', function () {
             try {
@@ -263,8 +280,9 @@ class RefreshGlobalServiceProvider extends ServiceProvider
             }
         });
         \Eventy::addAction('layout.head', function () {
+            $why = '';
             try {
-                if (!auth()->check() || !\Route::is('conversations.view') || !\Modules\RefreshGlobal\Services\ReplyStart::enabled()) {
+                if (!auth()->check() || !\Route::is('conversations.view')) {
                     return;
                 }
                 $conversation = self::ticket((int) request()->route('id'));
@@ -273,13 +291,24 @@ class RefreshGlobalServiceProvider extends ServiceProvider
                 }
                 $texts = \Modules\RefreshGlobal\Services\ReplyStart::forTicket($conversation, auth()->user(), $lang);
                 if ($texts) {
-                    echo '<meta name="refreshglobal-reply" content="'.e(json_encode(['texts' => $texts, 'confirm' => __('refreshglobal::reply.only_start'),
+                    echo '<meta name="refreshglobal-reply" content="'.e(\Modules\RefreshGlobal\Services\ReplyStart::json(['texts' => $texts, 'confirm' => __('refreshglobal::reply.only_start'),
                         'choose' => __('refreshglobal::reply.choose'), 'none' => __('refreshglobal::reply.none'),
-                        'lang' => $lang, 'lang_label' => __('refreshglobal::reply.lang_message')],
-                        JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)).'">'."\n";
+                        'lang' => $lang, 'lang_label' => __('refreshglobal::reply.lang_message')])).'">'."\n";
+                } else {
+                    $why = \Modules\RefreshGlobal\Services\ReplyStart::why($conversation);
                 }
             } catch (\Throwable $e) {
-                \Log::warning('[RefreshGlobal] [reply-start] '.get_class($e));
+                $why = 'error';
+                \Log::warning('[RefreshGlobal] [reply-start] '.get_class($e).' '.basename($e->getFile()).':'.$e->getLine());
+            }
+            // profiles exist but nothing is put in: administrators are told why, above the editor
+            try {
+                if ($why !== '' && auth()->user()->isAdmin()) {
+                    echo '<meta name="refreshglobal-reply-why" content="'.e(\Modules\RefreshGlobal\Services\ReplyStart::json(['text' => __('refreshglobal::reply.why_'.$why, ['switch' => __('refreshglobal::reply.enabled')]),
+                        'settings' => __('refreshglobal::reply.why_settings'), 'url' => route('settings', ['section' => 'refreshglobal']).'#rg-replies'])).'">'."\n";
+                }
+            } catch (\Throwable $e) {
+                // optional
             }
         });
     }

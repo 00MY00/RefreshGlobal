@@ -21,6 +21,8 @@
         <p class="form-help">{{ __('refreshglobal::reply.history_help') }}</p>
     </div>
 </div>
+@include('refreshglobal::partials.switch', ['key' => $rg_s::REPLY_BRANDING, 'label' => __('refreshglobal::reply.branding'),
+    'help' => __('refreshglobal::reply.branding_help')])
 @include('refreshglobal::partials.switch', ['key' => $rg_r::ENABLED, 'label' => __('refreshglobal::reply.enabled'),
     'help' => __('refreshglobal::reply.enabled_help')])
 @include('refreshglobal::partials.switch', ['key' => $rg_r::DETECT, 'label' => __('refreshglobal::reply.detect'),

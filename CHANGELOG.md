@@ -8,6 +8,27 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) — versions: [
 Every published change gets a new version number: FreeScout's Manage › Modules page and UpdateGuard only offer an
 update when the version changes.
 
+## [1.30.0] — 2026-11-25
+
+### Added
+- When there are profiles but a reply gets no starting text, administrators see why above the editor (switched off, no
+  profile for this mailbox, error), with a link to the settings.
+
+- Switch for **“Support powered by FreeScout”** under the e-mails sent to customers (replies and auto replies), in Settings ›
+  RefreshGlobal › Replies.
+
+### Changed
+- “Support powered by FreeScout” is **no longer added by default**. FreeScout's own setting is not changed.
+- **“Start replies with a text” is now on by default**: the profiles are used as soon as there is one.
+
+### Fixed
+- The switch was off by default and was saved off together with the profiles: they were never used.
+- A character that can not be read in a customer's data no longer loses the starting text.
+
+### Migration
+- The former state of the switch is not kept, because an intended “off” can not be told from the default. To turn it off
+  again: Settings › RefreshGlobal › Replies.
+
 ## [1.29.0] — 2026-11-25
 
 ### Added

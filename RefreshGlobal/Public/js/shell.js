@@ -1155,13 +1155,25 @@
      * (fs_reply_changed), and it goes away when the agent turns to a note or a forward. Sending it alone is asked first.
      */
     $(function () {
-        var cfg = null;
+        var cfg = null, why = null, block = document.querySelector('.conv-reply-block');
+        // 1.30.0, administrators: why nothing is put in although there are profiles
+        try { why = JSON.parse(document.querySelector('meta[name="refreshglobal-reply-why"]').getAttribute('content')); } catch (e) { /* nothing to say */ }
+        if (why && block) {
+            var note = null, tell = function () {
+                var editor = block.querySelector('.note-editor');
+                if (!note && editor) {
+                    note = $('<div class="rg-reply-choice rg-reply-why" role="status">').append($('<span>').text(why.text + ' '), $('<a>').attr('href', why.url).text(why.settings)).insertBefore(editor);
+                }
+                if (note) { note.toggle(!block.classList.contains('conv-note-block') && !block.classList.contains('conv-forward-block')); }
+            };
+            new MutationObserver(function () { setTimeout(tell, 60); }).observe(block, { attributes: true, attributeFilter: ['class'] });
+            setTimeout(tell, 400);
+        }
         try {
             cfg = JSON.parse(document.querySelector('meta[name="refreshglobal-reply"]').getAttribute('content'));
         } catch (e) {
             return;
         }
-        var block = document.querySelector('.conv-reply-block');
         if (!cfg || !cfg.texts || !cfg.texts.length || !block || typeof window.setReplyBody !== 'function') {
             return;
         }
@@ -1188,7 +1200,7 @@
             };
             clean();
             var timer = setInterval(clean, 25);
-            setTimeout(function () { clearInterval(timer); clean(); }, 1200);
+            setTimeout(function () { clearInterval(timer); clean(); }, 6000);
         };
         // the agent wrote, erased or chose something since the reply opened: nothing is put in any more
         var touched = false, wasReply = false;

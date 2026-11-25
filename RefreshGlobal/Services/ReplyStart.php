@@ -15,7 +15,8 @@ namespace Modules\RefreshGlobal\Services;
  */
 class ReplyStart
 {
-    const ENABLED = 'refreshglobal.reply_start';
+    /** on unless turned off since 1.30.0: the former switch ("refreshglobal.reply_start"), off by default, was saved off together with the profiles */
+    const ENABLED = 'refreshglobal.reply_start_on';
     const TEXT = 'refreshglobal.reply_start_text';
     const MAILBOXES = 'refreshglobal.reply_start_mailboxes';
     /** 1.25.0: list of ['name', 'text', 'where', 'mailboxes', 'lang']; TEXT and MAILBOXES (1.24.0) are read until it is saved */
@@ -43,7 +44,7 @@ class ReplyStart
     public static function enabled()
     {
         try {
-            return (bool) Settings::option(self::ENABLED, false);
+            return (bool) Settings::option(self::ENABLED, true);
         } catch (\Throwable $e) {
             return false;
         }
@@ -217,6 +218,30 @@ class ReplyStart
         }
 
         return array_merge($groups[0], $groups[1], $groups[2]);
+    }
+
+    /** Why a reply in this ticket starts with no text: 'off', 'mailbox' (no profile for it), '' for nothing to say (no profile, chat). */
+    public static function why($conversation)
+    {
+        if (!$conversation || $conversation->isChat() || !self::texts()) {
+            return '';
+        }
+
+        return !self::enabled() ? 'off' : (self::textsFor($conversation->mailbox_id) ? '' : 'mailbox');
+    }
+
+    /** JSON of a <meta>: a character that can not be read never loses the whole (JSON_INVALID_UTF8_SUBSTITUTE is PHP 7.2). */
+    public static function json(array $data)
+    {
+        $json = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        if ($json === false) {
+            array_walk_recursive($data, function (&$v) {
+                $v = is_string($v) ? mb_convert_encoding($v, 'UTF-8', 'UTF-8') : $v;
+            });
+            $json = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        }
+
+        return (string) $json;
     }
 
     /**

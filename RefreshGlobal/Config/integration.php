@@ -117,6 +117,9 @@ return [
         'RG-HOOK-53' => ['hook' => 'send_reply', 'family' => 'hook_reply', 'file' => 'app/Http/Controllers/ConversationsController.php', 'needle' => "case 'send_reply':", 'severity' => 'warning', 'source' => 'app/Http/Controllers/ConversationsController.php:2953 (getRedirectUrl)'],
         'RG-HOOK-54' => ['hook' => 'menu.manage.after_mailboxes', 'file' => 'resources/views/layouts/app.blade.php', 'needle' => "@action('menu.manage.after_mailboxes')", 'severity' => 'warning', 'source' => 'resources/views/layouts/app.blade.php:110'],
         'RG-HOOK-55' => ['hook' => 'conv_history', 'family' => 'hook_reply', 'file' => 'resources/views/conversations/view.blade.php', 'needle' => 'name="conv_history"', 'severity' => 'warning', 'source' => 'resources/views/conversations/view.blade.php:272'],
+        // "Support powered by FreeScout" (1.30.0)
+        'RG-HOOK-56' => ['hook' => 'email_branding', 'family' => 'hook_reply', 'file' => 'resources/views/emails/customer/reply_fancy.blade.php', 'needle' => "Option::get('email_branding')", 'severity' => 'warning', 'source' => 'resources/views/emails/customer/reply_fancy.blade.php:95'],
+        'RG-HOOK-57' => ['hook' => 'Option::$cache', 'family' => 'hook_reply', 'file' => 'app/Option.php', 'needle' => 'public static $cache = []', 'severity' => 'warning', 'source' => 'app/Option.php:16,82'],
         'RG-HOOK-35' => ['hook' => 'stylesheets', 'file' => 'resources/views/layouts/app.blade.php', 'needle' => "\Eventy::filter('stylesheets'", 'severity' => 'warning', 'source' => 'resources/views/layouts/app.blade.php:33'],
         'RG-HOOK-07' => ['hook' => 'refresh.rail_items', 'refresh' => true, 'file' => 'Providers/RefreshServiceProvider.php', 'needle' => "'refresh.rail_items'", 'severity' => 'degraded', 'source' => 'Modules/Refresh/Providers/RefreshServiceProvider.php:742'],
     ],

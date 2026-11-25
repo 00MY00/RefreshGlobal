@@ -75,7 +75,7 @@ class ReplyTest extends TestCase
     {
         $c = $this->s['t_support_open'];
         $sales = $this->s['t_sales_open'];
-        $this->assertSame([], $this->htmls($c), 'off by default');
+        $this->assertSame([], $this->htmls($c), 'no profile');
         $this->actingAs($this->s['admin'])->post(route('settings.save', ['section' => 'refreshglobal']), ['settings' => [
             ReplyStart::ENABLED => '1', ReplyStart::TEXTS => [
                 'n2' => ['name' => 'General', 'text' => "Bonjour,\r\nticket \$ticket_number", 'where' => 'all'],
@@ -103,6 +103,57 @@ class ReplyTest extends TestCase
         $this->assertStringNotContainsString('name="refreshglobal-reply"', $this->ticketsPage($this->s['bob'])->getContent());
         \App\Option::set(ReplyStart::ENABLED, 0);
         $this->assertStringNotContainsString('name="refreshglobal-reply"', $this->actingAs($this->s['bob'])->get($c->url())->getContent());
+    }
+
+    /** 1.30.0: profiles are used unless the switch was turned off since; administrators see why nothing is put in. */
+    public function testOnByDefaultAndReason()
+    {
+        $c = $this->s['t_support_open'];
+        $page = function ($who) use ($c) {
+            return $this->actingAs($this->s[$who])->get($c->url())->getContent();
+        };
+        $this->assertStringNotContainsString('refreshglobal-reply', $page('admin'), 'no profile: nothing');
+        $row = ['name' => 'P', 'text' => 'Hello', 'where' => 'all', 'mailboxes' => [], 'lang' => ''];
+        \App\Option::set('refreshglobal.reply_start', 0);
+        \App\Option::set(ReplyStart::TEXTS, [$row]);
+        \App\Option::remove(ReplyStart::ENABLED);
+        $this->assertCount(1, $this->htmls($c), 'the former switch, off, is not read any more');
+        $this->assertSame('', ReplyStart::why($c));
+        $this->assertStringNotContainsString('refreshglobal-reply-why', $page('admin'));
+        \App\Option::set(ReplyStart::TEXTS, [['where' => 'only', 'mailboxes' => [$this->s['sales']->id]] + $row]);
+        $this->assertSame('mailbox', ReplyStart::why($c));
+        $this->assertStringContainsString('refreshglobal-reply-why', $page('admin'));
+        $this->assertStringNotContainsString('refreshglobal-reply-why', $page('bob'), 'administrators only');
+        \App\Option::set(ReplyStart::ENABLED, 0);
+        $this->assertSame('off', ReplyStart::why($c));
+        // a broken character never loses the whole
+        $this->assertNotEmpty(json_decode(ReplyStart::json(['texts' => [['html' => "a\xC3"]]]), true));
+    }
+
+    /** 1.30.0: "Support powered by FreeScout" of the e-mails to customers */
+    public function testBranding()
+    {
+        \App\Option::set('email_branding', true);
+        \App\Option::remove(Settings::REPLY_BRANDING);
+        $this->assertFalse(Settings::replyBranding(), 'off by default');
+        $c = $this->s['t_support_open'];
+        $thread = new \App\Thread();
+        $thread->forceFill(['conversation_id' => $c->id, 'type' => \App\Thread::TYPE_CUSTOMER, 'status' => 1, 'state' => 2, 'source_via' => 1, 'source_type' => 1, 'customer_id' => $c->customer_id,
+            'created_by_customer_id' => $c->customer_id, 'body' => 'Hello']);
+        $thread->save();
+        $threads = collect([$thread->fresh()]);
+        $data = ['conversation' => $c, 'mailbox' => $c->mailbox, 'threads' => $threads, 'threads_count' => count($threads), 'mailbox_change_history' => [],
+            'headers' => ['Message-ID' => 'x@example.test'], 'auto_reply_message' => 'Hello', 'subject' => 'S'];
+        foreach (['reply_fancy', 'reply_fancy_text', 'auto_reply', 'auto_reply_text'] as $name) {
+            foreach (['emails/customer/', 'emails.customer.'] as $dir) {
+                Settings::setFlag(Settings::REPLY_BRANDING, false);
+                $this->assertStringNotContainsString('powered by', view($dir.$name, $data)->render(), $name);
+                Settings::setFlag(Settings::REPLY_BRANDING, true);
+                $this->assertStringContainsString('powered by', view($dir.$name, $data)->render(), $name.': FreeScout decides');
+            }
+        }
+        $this->assertTrue((bool) \App\Option::where('name', 'email_branding')->value('value'), 'never changed');
+        $this->seeIn($this->actingAs($this->s['admin'])->get(route('settings', ['section' => 'refreshglobal'])), 'settings['.Settings::REPLY_BRANDING.']');
     }
 
     /** 1.29.0: previous messages sent with a reply */

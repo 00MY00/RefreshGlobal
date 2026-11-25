@@ -748,3 +748,11 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
   cliquable, confirmation en mode bloqué, images chargées ensuite ; messages précédents : toute la conversation par défaut,
   choix visible, valeur envoyée « full » puis « none » ; rien dans les notes ni les transferts ; aucune erreur JavaScript.
 - Non vérifié : l’e-mail reçu par le client (c’est FreeScout qui joint les messages).
+
+## 51. Texte de début activé par défaut, mention de FreeScout (1.30.0, 2026-11-25)
+
+- PHPUnit : suite complète 226 tests, 0 échec, 2 ignorés ; php -l PHP 7.1 et 8.4 ; RG-HOOK-56 et 57 OK.
+- Navigateur, ancien interrupteur éteint et profils présents, avec et sans Refresh, ordinateur, tablette, téléphone : texte
+  placé dans les 6 cas, aucune erreur JavaScript. Un cas intermittent (une fois sur deux passages) : indicateur de
+  modification lu pendant l’enregistrement du brouillon après le choix d’un profil ; le texte lui-même est juste.
+- Mention de FreeScout : vérifiée sur les quatre gabarits d’e-mail, pas sur un e-mail réellement envoyé.

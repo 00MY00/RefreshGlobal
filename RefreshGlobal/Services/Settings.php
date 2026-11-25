@@ -337,6 +337,21 @@ class Settings
         return in_array($value, self::REPLY_HISTORY_VALUES, true) ? $value : 'global';
     }
 
+    /**
+     * "Support powered by FreeScout" under the e-mails sent to customers (1.30.0): off by default; on, FreeScout's own
+     * setting decides ("Spread the Word", option "email_branding", which is never changed).
+     */
+    const REPLY_BRANDING = 'refreshglobal.reply_branding';
+
+    public static function replyBranding()
+    {
+        try {
+            return (bool) self::option(self::REPLY_BRANDING, false);
+        } catch (\Throwable $e) {
+            return true;
+        }
+    }
+
     /** Options shown in Manage › Settings › RefreshGlobal (saved by FreeScout itself) => current value. */
     public static function sectionValues()
     {
@@ -348,6 +363,7 @@ class Settings
             self::SHOW_MAILBOX            => self::showMailbox(),
             self::REPLY_GOES_NEXT         => self::replyGoesNext(),
             self::REPLY_HISTORY           => self::replyHistory(),
+            self::REPLY_BRANDING          => self::replyBranding(),
             ReplyStart::ENABLED           => ReplyStart::enabled(),
             ReplyStart::DETECT            => ReplyStart::detect(),
             ReplyStart::TEXTS             => ReplyStart::texts(),
