@@ -280,6 +280,12 @@ return [
         'effect' => 'De flowstatistieken, de pagina met onbehandelde e-mails of de tijdelijke flows werken mogelijk niet. De rest werkt.',
         'action' => 'Werk Workflow Packs (3.20.0 of nieuwer) en RefreshGlobal bij en voer daarna php artisan refreshglobal:check uit.',
     ],
+    'db_timer' => [
+        'check' => 'Tabel en kolommen van Workflow Packs aanwezig: :item',
+        'label' => 'Een tabel of kolom van Workflow Packs voor de wachtende tickets ontbreekt: :item.',
+        'effect' => 'Het label van tickets die in een flow wachten wordt niet getoond. De rest werkt.',
+        'action' => 'Werk Workflow Packs bij (3.20.0 of nieuwer) en voer de migraties uit, daarna php artisan refreshglobal:check.',
+    ],
     'db_flows' => [
         'check'  => 'Tabel en kolommen van de flowstatistieken aanwezig: :item',
         'label'  => 'Een tabel of kolom van de flowstatistieken ontbreekt: :item.',

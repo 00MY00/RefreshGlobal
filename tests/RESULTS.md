@@ -731,3 +731,12 @@ FreeScout 1.8.245 + Refresh 1.4.3 neufs, `refreshglobal:check` : état OK (RG-HO
 - Corrigé pendant ces essais : après un changement de profil, l'enregistrement automatique de FreeScout pouvait parfois
   tomber avant la remise à zéro de l'indicateur « modifié » (brouillon du texte seul, passage en note sans effet).
 - Un essai sur quatre passages s'est arrêté sans trouver le bouton de réponse ; cause non trouvée, aucune erreur serveur.
+
+## 49. Temps restant dans un flux Workflow Packs (1.28.0, 2026-11-25)
+
+- PHPUnit avec Workflow Packs 4.0.2 réel : suite complète 223 tests, 0 échec, 2 ignorés ; php -l PHP 7.1 et 8.4 ;
+  RG-DB-19 à 21 OK.
+- Navigateur, avec et sans Refresh, ordinateur, tablette, téléphone, liste et ticket (12 cas) : badge, détails au survol ou
+  au toucher, dans l’écran, sans ouvrir le ticket, refermés ensuite ; 11 réussis, aucune erreur JavaScript.
+- Cas non réussi : liste à 820 px avec Refresh, panneau des vues ouvert : la colonne du sujet a une largeur de 0 (aussi sans
+  le badge), rien n’y est visible. Défaut antérieur, non corrigé ici.

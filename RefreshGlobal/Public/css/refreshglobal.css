@@ -569,3 +569,11 @@ button.rf-v.rg-views-order { color: var(--fd-text-2, #475569); }
 .rg-manage-logo { width: 16px; height: 16px; flex: none; vertical-align: -3px; margin-right: 4px; }
 .rf-rail-menu .rg-manage-logo { margin-right: 0; }
 .rg-manage-item > a > .rf-i { display: none !important; }
+/* tickets waiting in a flow of Workflow Packs (Services/FlowTimers.php) */
+.rg-timer { position: relative; z-index: 2; display: inline-block; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0 6px 4px 0; color: #1e3a8a; background: #eaf0fe; border-color: #c7d5f7; cursor: help; }
+.rg-timer::before, .rg-timer-pill::before { content: ""; display: inline-block; width: 11px; height: 11px; margin-right: 5px; vertical-align: -1px; background: currentColor; -webkit-mask: var(--rg-clock) center / contain no-repeat; mask: var(--rg-clock) center / contain no-repeat; --rg-clock: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='8' cy='8' r='6.5'/%3E%3Cpath d='M8 4.5V8l2.5 1.5'/%3E%3C/svg%3E"); }
+.rg-timer-box { position: fixed; z-index: 10050; max-width: min(340px, calc(100vw - 16px)); padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; color: #1e293b; box-shadow: 0 6px 24px rgba(15, 23, 42, .18); font-size: 13px; line-height: 1.45; overflow-wrap: anywhere; }
+.rg-timer-part { margin-top: 6px; }
+.rg-timer-part + .rg-timer-part { padding-top: 6px; border-top: 1px solid #e2e8f0; }
+.rg-timer-part ul { margin: 2px 0; padding-left: 18px; }
+.rg-timer-dep { color: #64748b; }

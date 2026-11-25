@@ -8,6 +8,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) — versions: [
 Every published change gets a new version number: FreeScout's Manage › Modules page and UpdateGuard only offer an
 update when the version changes.
 
+## [1.28.0] — 2026-11-25
+
+### Added
+- **Time left in a flow of Workflow Packs** (3.20+, engine on): a ticket that waits in a flow has a badge with the time left
+  and the next action (“30 min → Status: Closed”), in every ticket list and on the ticket page. Hover, keyboard focus or a
+  tap shows the date, the flow and the possible next actions when conditions decide. Kept up to date in the page.
+
+### Compatibility
+- Workflow Packs is only read (three tables, checks RG-DB-19 to 21, warnings); without it nothing is shown. No migration.
+  The FreeScout Interop contract is unchanged.
+
 ## [1.27.0] — 2026-11-25
 
 ### Added

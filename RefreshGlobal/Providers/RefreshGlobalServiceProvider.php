@@ -71,6 +71,7 @@ class RefreshGlobalServiceProvider extends ServiceProvider
         $this->registerRemoteImages();
         $this->registerMailMove();
         $this->registerReplyStart();
+        $this->registerFlowTimers();
         $this->registerInterop();
 
         // Ticket deleted for good: its e-mails are queued for the mail server's trash (Services/MailServerTrash.php).
@@ -260,6 +261,54 @@ class RefreshGlobalServiceProvider extends ServiceProvider
                 }
             } catch (\Throwable $e) {
                 \Log::warning('[RefreshGlobal] [reply-start] '.get_class($e));
+            }
+        });
+    }
+
+    /**
+     * Tickets waiting in a flow of Workflow Packs (Services/FlowTimers.php): badge of every ticket list
+     * ("conversations_table.preload_table_data", one query for the page, then "conversations_table.before_subject") and of
+     * the ticket page ("conversation.after_subject"); details on hover or tap: Public/js/shell.js.
+     */
+    protected function registerFlowTimers()
+    {
+        $F = '\Modules\RefreshGlobal\Services\FlowTimers';
+        \Eventy::addFilter('conversations_table.preload_table_data', function ($conversations) use ($F) {
+            try {
+                $rows = $conversations instanceof \Illuminate\Contracts\Pagination\Paginator ? $conversations->items() : $conversations;
+                $F::forConversations(collect($rows)->pluck('id')->all());
+            } catch (\Throwable $e) {
+                // optional
+            }
+
+            return $conversations;
+        }, 30, 1);
+        \Eventy::addAction('conversations_table.before_subject', function ($conversation) use ($F) {
+            try {
+                if ($conversation) {
+                    echo $F::badge($F::forConversations([$conversation->id])[$conversation->id] ?? []);
+                }
+            } catch (\Throwable $e) {
+                // optional
+            }
+        }, 3);
+        \Eventy::addAction('conversation.after_subject', function ($conversation, $mailbox = null) use ($F) {
+            try {
+                if ($conversation) {
+                    $badge = $F::badge($F::forConversations([$conversation->id])[$conversation->id] ?? [], true);
+                    echo $badge === '' ? '' : '<span class="rg-conv-tags">'.$badge.'</span>';
+                }
+            } catch (\Throwable $e) {
+                // optional
+            }
+        }, 31, 2);
+        \Eventy::addAction('layout.head', function () use ($F) {
+            try {
+                if (auth()->check() && $F::available()) {
+                    echo '<meta name="refreshglobal-timer" content="'.e(json_encode($F::texts(), JSON_UNESCAPED_UNICODE)).'">'."\n";
+                }
+            } catch (\Throwable $e) {
+                // optional
             }
         });
     }

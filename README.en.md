@@ -41,6 +41,8 @@ otherwise it uses FreeScout's standard look.
   `$email`, `$company`, `$subject`, `$ticket_number`, `$mailbox`, `$agent_first_name`, `$agent_last_name`,
   `$agent_full_name`, `$date`), replacement text `$first_name|dear customer|`, guide and preview in the settings. After a
   reply without a next ticket the agent stays on the ticket; option “next ticket of All mailboxes”.
+- **Time left in a flow** (Workflow Packs 3.20+): badge “30 min → Status: Closed” in the lists and on the ticket, details on
+  hover or tap.
 - **Performance** (administrators, diagnostic page › *Performance*): hardware as seen by PHP (processor, limits of the
   container, memory, disk, waits), database, OPcache, cache, and **sensors** switched on for 15 minutes to 4 hours: time
   of each page, SQL requests per module, slow requests, time in the browser. No address, no user, no value; plain text

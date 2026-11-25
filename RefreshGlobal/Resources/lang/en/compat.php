@@ -284,6 +284,12 @@ return [
         'effect' => 'The flow statistics, the untreated e-mails page or the temporary flows may not work. The rest works.',
         'action' => 'Update Workflow Packs (3.20.0 or newer) and RefreshGlobal, then run php artisan refreshglobal:check.',
     ],
+    'db_timer' => [
+        'check' => 'Workflow Packs table and columns present: :item',
+        'label' => 'A Workflow Packs table or column used for the waiting tickets is missing: :item.',
+        'effect' => 'The badge of the tickets waiting in a flow is not shown. The rest works.',
+        'action' => 'Update Workflow Packs (3.20.0 or newer) and run its migrations, then run php artisan refreshglobal:check.',
+    ],
     'db_flows' => [
         'check'  => 'Table and columns of the flow statistics present: :item',
         'label'  => 'A table or column of the flow statistics is missing: :item.',

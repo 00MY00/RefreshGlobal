@@ -280,6 +280,12 @@ return [
         'effect' => 'Les statistiques des flux, la page des e-mails non traités ou les flux temporaires peuvent ne pas fonctionner. Le reste fonctionne.',
         'action' => 'Mettez à jour Workflow Packs (3.20.0 ou plus récent) et RefreshGlobal, puis lancez php artisan refreshglobal:check.',
     ],
+    'db_timer' => [
+        'check' => 'Table et colonnes de Workflow Packs présentes : :item',
+        'label' => 'Une table ou une colonne de Workflow Packs utilisée pour les tickets en attente est absente : :item.',
+        'effect' => 'Le badge des tickets en attente dans un flux n’est pas affiché. Le reste fonctionne.',
+        'action' => 'Mettez à jour Workflow Packs (3.20.0 ou plus) et lancez ses migrations, puis php artisan refreshglobal:check.',
+    ],
     'db_flows' => [
         'check'  => 'Table et colonnes des statistiques des flux présentes : :item',
         'label'  => 'Une table ou une colonne des statistiques des flux manque : :item.',

@@ -5,6 +5,18 @@ sont tenus à jour ensemble à chaque version.
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) — versions : [SemVer](https://semver.org/lang/fr/).
 
+## [1.28.0] — 2026-11-25
+
+### Ajouté
+- **Temps restant dans un flux Workflow Packs** (3.20+, moteur allumé) : un ticket en attente dans un flux a un badge avec le
+  temps restant et la prochaine action (« 30 min → Statut : Fermé »), dans toutes les listes et sur la page du ticket. Au
+  survol, au clavier ou en touchant : la date, le flux et les actions possibles quand des conditions décident. Le temps est
+  tenu à jour dans la page.
+
+### Compatibilité
+- Workflow Packs est seulement lu (trois tables, vérifications RG-DB-19 à 21, avertissements) ; sans lui rien n'est affiché.
+  Aucune migration. Le contrat FreeScout Interop ne change pas.
+
 ## [1.27.0] — 2026-11-25
 
 ### Ajouté

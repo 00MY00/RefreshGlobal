@@ -356,6 +356,7 @@ démarrage de tous les modules). Sans cela : routes en 404, aucun lien, aucun é
 | action `workflowpacks.temp_flow_finished` ($flowId, $summary) | `TempFlows.php:153` | fin notée dans `refreshglobal_temp_flows` (RG-HOOK-49) |
 | `App\Module::isActive()`, `App\User::STATUS_ACTIVE` | `app/Module.php:43`, `app/User.php:62` | module actif ; bouton réservé aux administrateurs actifs (RG-CORE-25) |
 | action `conversations.before_delete_forever` | `app/Conversation.php:2174` (FreeScout 1.8.250) | lignes d'un ticket supprimé définitivement effacées (`FlowChanges::forget()`) (RG-HOOK-24) |
+| tables `workflowpacks_flow_runs` (:40, `state`, `wake_at`, `resume`), `workflowpacks_flow_versions` (:29, `data`), `workflowpacks_flows` (:16) (1.28.0) | `Modules/WorkflowPacks/Database/Migrations/2026_11_14_000000_create_workflowpacks_flows_tables.php` ; sens de `resume` : `Services/Engine/Engine.php:120-135, 150-157` | lecture seule, `Services/FlowTimers.php` : temps restant et prochaine action (RG-DB-19 à 21) ; affichage par `conversations_table.preload_table_data`, `conversations_table.before_subject`, `conversation.after_subject` |
 | tables du module `refreshglobal_flow_changes`, `refreshglobal_temp_flows` | `Database/Migrations/2026_11_19_000000_create_refreshglobal_flow_tables.php` | statistiques et flux temporaires (RG-DB-16/17) |
 
 Les contrôles RG-HOOK-42…49 relisent les fichiers de Workflow Packs et sont **non applicables** sans lui ou avant 3.20

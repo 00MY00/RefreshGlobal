@@ -280,6 +280,12 @@ return [
         'effect' => 'Die Flow-Statistik, die Seite der unbearbeiteten E-Mails oder die temporären Flows funktionieren eventuell nicht. Der Rest funktioniert.',
         'action' => 'Aktualisieren Sie Workflow Packs (3.20.0 oder neuer) und RefreshGlobal und führen Sie dann php artisan refreshglobal:check aus.',
     ],
+    'db_timer' => [
+        'check' => 'Tabelle und Spalten von Workflow Packs vorhanden: :item',
+        'label' => 'Eine für die wartenden Tickets verwendete Tabelle oder Spalte von Workflow Packs fehlt: :item.',
+        'effect' => 'Das Kennzeichen der in einem Flow wartenden Tickets wird nicht angezeigt. Der Rest funktioniert.',
+        'action' => 'Workflow Packs aktualisieren (3.20.0 oder neuer) und seine Migrationen ausführen, dann php artisan refreshglobal:check.',
+    ],
     'db_flows' => [
         'check'  => 'Tabelle und Spalten der Flow-Statistik vorhanden: :item',
         'label'  => 'Eine Tabelle oder Spalte der Flow-Statistik fehlt: :item.',

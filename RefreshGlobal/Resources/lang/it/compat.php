@@ -280,6 +280,12 @@ return [
         'effect' => 'Le statistiche dei flussi, la pagina delle e-mail non trattate o i flussi temporanei potrebbero non funzionare. Il resto funziona.',
         'action' => 'Aggiorna Workflow Packs (3.20.0 o successivo) e RefreshGlobal, poi esegui php artisan refreshglobal:check.',
     ],
+    'db_timer' => [
+        'check' => 'Tabella e colonne di Workflow Packs presenti: :item',
+        'label' => 'Manca una tabella o colonna di Workflow Packs usata per i ticket in attesa: :item.',
+        'effect' => 'L’etichetta dei ticket in attesa in un flusso non viene mostrata. Il resto funziona.',
+        'action' => 'Aggiornare Workflow Packs (3.20.0 o successivo) ed eseguire le sue migrazioni, poi php artisan refreshglobal:check.',
+    ],
     'db_flows' => [
         'check'  => 'Tabella e colonne delle statistiche dei flussi presenti: :item',
         'label'  => 'Manca una tabella o una colonna delle statistiche dei flussi: :item.',

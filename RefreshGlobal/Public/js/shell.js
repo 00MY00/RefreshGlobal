@@ -1299,6 +1299,96 @@
         }, true);
     });
 
+    /* 1.28.0: tickets waiting in a flow of Workflow Packs (Services/FlowTimers.php): time left kept up to date, details on hover,
+       keyboard focus or (touch) tap */
+    $(function () {
+        var t;
+        try { t = JSON.parse(document.querySelector('meta[name="refreshglobal-timer"]').getAttribute('content')); } catch (e) { return; }
+        var left = function (at) {
+            var m = Math.ceil((at - Date.now() / 1000) / 60), h = Math.floor(m / 60);
+            if (m < 1) { return t.now; }
+            if (m < 60) { return m + ' min'; }
+            if (m < 2880) { return h + ' h' + (m % 60 ? ' ' + (m % 60 < 10 ? '0' : '') + (m % 60) : ''); }
+            return Math.floor(h / 24) + ' ' + t.day + (h % 24 ? ' ' + (h % 24) + ' h' : '');
+        };
+        var waits = function (el) { try { return JSON.parse(el.getAttribute('data-rg-timer')) || []; } catch (e) { return []; } };
+        // phones with Refresh: the badge is copied, as text, into a pill of the row
+        var pill = function (el) {
+            var row = el.closest('.conv-row');
+            return row ? $(row).find('.rf-m-pill').filter(function () { return $(this).text() === el.textContent; })[0] : null;
+        };
+        var refresh = function () {
+            $('[data-rg-timer]').each(function () {
+                var w = waits(this), text = w.length ? left(w[0].at) + (this.getAttribute('data-rg-what') || '') : '';
+                if (!text) { return; }
+                var copy = pill(this);
+                if (copy) { $(copy).addClass('rg-timer-pill'); }
+                if (text !== this.textContent) {
+                    if (copy) { copy.textContent = text; }
+                    this.textContent = text;
+                }
+            });
+        };
+        setTimeout(refresh, 1200);
+        setInterval(refresh, 20000);
+        var box = null, from = null;
+        var hide = function () { if (box) { box.remove(); box = null; from = null; } };
+        var show = function (anchor, el) {
+            if (from === anchor) { return; }
+            hide();
+            var w = waits(el);
+            if (!w.length) { return; }
+            from = anchor;
+            box = $('<div class="rg-timer-box" role="tooltip"></div>').append($('<strong>').text(t.title));
+            $.each(w, function (i, x) {
+                var at = '';
+                try { at = new Date(x.at * 1000).toLocaleString(document.documentElement.lang || undefined, { dateStyle: 'short', timeStyle: 'short' }); } catch (e) { at = new Date(x.at * 1000).toLocaleString(); }
+                var part = $('<div class="rg-timer-part">').appendTo(box), now = x.at * 1000 <= Date.now();
+                $('<div>').text((now ? t.in.replace(/\s*\S*\s*:time/, ' : ' + t.now) : t.in.replace(':time', left(x.at)) + ' (' + at + ')')).appendTo(part);
+                if (x.depends) { $('<div class="rg-timer-dep">').text(t.depends).appendTo(part); }
+                var list = $('<ul>').appendTo(part);
+                $.each(x.steps || [], function (j, s) { $('<li>').text(s).appendTo(list); });
+                if (x.flow) { $('<div class="rg-timer-dep">').text(t.flow + ' : ' + x.flow).appendTo(part); }
+            });
+            box.appendTo(document.body);
+            var r = anchor.getBoundingClientRect(), h = box.outerHeight(), width = box.outerWidth();
+            var top = r.bottom + 6 + h > window.innerHeight && r.top - 6 - h > 0 ? r.top - 6 - h : r.bottom + 6;
+            box.css({ top: Math.max(8, Math.min(top, window.innerHeight - h - 8)), left: Math.max(8, Math.min(r.left, document.documentElement.clientWidth - width - 8)) });
+        };
+        // the badge an event is about: itself, or the one whose text a pill of the phone shows
+        var find = function (target) {
+            if (!target || !target.closest) { return null; }
+            var el = target.closest('[data-rg-timer]');
+            if (el) { return [el, el]; }
+            var p = target.closest('.rf-m-pill'), row = p && p.closest('.conv-row'), hit = null;
+            if (row) { $(row).find('[data-rg-timer]').each(function () { if (this.textContent === p.textContent) { hit = [p, this]; } }); }
+            return hit;
+        };
+        // by the pointer really used: a computer may have a touch screen, a tablet a mouse
+        var down = { touch: false, at: 0 };
+        document.addEventListener('pointerdown', function (e) { down = { touch: e.pointerType === 'touch', at: Date.now() }; }, true);
+        document.addEventListener('pointerover', function (e) {
+            if (e.pointerType !== 'mouse') { return; }
+            var f = find(e.target);
+            if (f) { show(f[0], f[1]); } else if (box && !(e.target.closest && e.target.closest('.rg-timer-box'))) { hide(); }
+        });
+        // touch: the tap opens the details instead of the ticket; another tap closes them
+        document.addEventListener('click', function (e) {
+            var f = find(e.target), touch = down.touch && Date.now() - down.at < 1500;
+            if (f && (touch || f[1].getAttribute('role') === 'button')) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                if (touch && from === f[0]) { hide(); } else { show(f[0], f[1]); }
+            } else if (box && !(e.target.closest && e.target.closest('.rg-timer-box'))) {
+                hide();
+            }
+        }, true);
+        document.addEventListener('focusin', function (e) { if (Date.now() - down.at < 1000) { return; } var f = find(e.target); if (f) { show(f[0], f[1]); } });
+        document.addEventListener('focusout', function (e) { if (find(e.target)) { hide(); } });
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { hide(); } });
+        window.addEventListener('scroll', hide, true);
+    });
+
     /* 1.24.0, 1.25.0: settings of the texts a reply starts with: list, variables, previews (same rules as ReplyStart::fill()) */
     $(function () {
         var list = document.querySelector('[data-rg-reply-list]');
